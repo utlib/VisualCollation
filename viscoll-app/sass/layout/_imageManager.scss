@@ -1,0 +1,199 @@
+.imageManager {
+  .form {
+    .row {
+      display: flex;
+      .label {
+        padding-top:1em;
+        min-width: 120px;
+      }
+      .input {
+        flex-grow: 1;
+      }
+    }
+  }
+  .manageManifests {
+    padding: 0em 2em;
+    .manifestCard {
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      padding: 1.5em 1.5em 1em 1.5em;
+      font-size: 1.1em;
+      font-weight: 500;
+      span {
+        font-size: 0.8em;
+        font-weight: normal;
+        color: transparentize($black, 0.4);
+      }
+      &>div {
+        flex-grow: 1;
+      }
+      .thumbnails {
+        text-align: right;
+      }
+    }
+  }
+  .imageMapper {
+    .draggableItem {
+      height: 50px;
+      background: $white;
+      border-width: 0px 1px 0px 1px;
+      border-style: solid;
+      border-color: $gray;
+      cursor: move;
+      @include border-radius(3px);
+      padding-left: 0.5em;
+      
+
+      .text {
+        display: inline-block;
+        color: $black;
+        padding-left: 0.5em;
+        @include centerize(0%, 50%);
+        &>span {
+          font-size: 0.8em;
+          color: transparentize($black, 0.3);
+        }
+      }
+      .thumbnail {
+        opacity: 0.5;
+        display: inline-block;
+        width: 1.5em;
+        @include transition(all, 200ms, ease-in-out);
+        
+        &:hover {
+          opacity: 1;
+          cursor: pointer;
+        }
+      }
+    }
+
+    .panelBar {
+      background: $white;
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 2px solid $gray;
+      height: 40px;
+      .title {
+        padding-left: 1em;
+        text-transform: uppercase;
+        color: $black;
+        font-weight: bold;
+      }
+      .action {
+        padding-right: 0.5em;
+      }
+    }
+    .topPanel {
+      flex-grow: 2;
+      display: flex;
+      flex-direction: column;
+      width: 97%;
+      height: 40vh;
+      margin-top: 1em;
+      margin-left: 1em;
+      background: darken($gray, 3);
+      color: $black;
+      &>div {
+        // display: block;
+        width: 100%;
+        height: 100%;
+        margin: 0em;
+        // padding: 0.5em;
+      }
+      .panelBarGroup {
+        height: 50px;
+        display: flex;
+      }
+      .boards {
+        display: flex;
+        width: 100%;
+        overflow-y: auto;
+        &>div {
+          width: 50%;
+        }
+      }
+      .binText {
+        @include centerize(50%,50%);
+        text-transform: uppercase;
+        text-align: center;
+      }
+    }
+    .bottomPanel {
+      flex-grow: 2;
+      display: flex;
+      justify-content: space-between; 
+      width: 97%;
+      // height: 42vh;
+      margin-top: 1em;
+      margin-left: 1em;
+      // background: red;
+      .backlog {
+        width: 49%;
+        padding: 0em;
+        
+        .scrollable {
+          overflow-y: auto;
+        }
+      }
+      .sideBacklog {
+        @extend .backlog;
+        .scrollable {
+          text-align: left;
+          height: 32vh;
+        }
+      }
+      .imageBacklog {
+        @extend .backlog;
+        height: 37vh;
+        .manifestSelection {
+          // background: teal;
+          height: 40px;
+          padding: 0em 1em;
+          display: flex;
+          justify-content: space-evenly;
+          border-bottom: 2px solid $gray;
+          background: $white;
+          
+          .title {
+            width:70px;
+            padding-top: 10px;
+            padding-right: 10px;
+            color: $black;
+          }
+          .form {
+            flex-grow: 1;
+            // background: green;
+          }
+        }
+        .scrollable {
+          height: 27vh;
+        }
+      }
+    }
+    .mainToolbar {
+      position: fixed;
+      bottom: 0;
+      width: 100%;
+      height: 50px;
+      display: flex;
+      align-items: center;
+      background: $white;
+      @include box-shadow(0px -2px 2px 0px rgba(0,0,0,0.05));
+      .message {
+        padding-left: 1em;
+        text-transform: uppercase;
+        color: $black;
+        font-size: 0.9em;
+      }
+      .actions {
+        text-align: right;
+      }
+      &>div {
+        width: 40%;
+      }
+    }
+  }
+}

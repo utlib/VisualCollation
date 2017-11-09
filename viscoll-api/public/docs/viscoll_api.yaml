@@ -1,0 +1,2910 @@
+swagger: '2.0'
+info:
+  description: Documentation of all endpoints 
+  version: 1.0.0
+  title: VisColl API
+
+
+# tags are used for organizing operations
+tags:
+- name: Authentication
+  description: JWT based authentication
+- name: Users
+  description: Operations on User model
+- name: Projects
+  description: Operations on Project model
+- name: Groups
+  description: Operations on Group model
+- name: Leafs
+  description: Operations on Leaf model
+- name: Sides
+  description: Operations on Side model
+- name: Notes
+  description: Operations on Note model
+  
+paths:
+  /session:
+    post:
+      tags:
+        - Authentication
+      summary: creates a session for a user
+      operationId: loginUser
+      description: |
+        By passing in the appropriate options, you can login a user and create a session
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters: 
+        - in: body
+          name: session
+          required: true
+          description: session object to create
+          schema:
+            $ref: '#/definitions/UserLoginParams'
+      responses:
+        200:
+          description: user session successfully created
+          schema:
+            $ref: '#/definitions/UserLoginSuccess'
+        422:
+          description: bad input parameter
+          schema:
+            $ref: '#/definitions/UserLoginError'
+    delete:
+      tags:
+        - Authentication
+      summary: deletes the session for a user
+      operationId: logoutUser
+      description: |
+        By passing in the appropriate options, you can logout a user and delete the session
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - in: header
+          name: Authorization
+          type: string
+          required: true
+          description: Authentication token
+      responses:
+        204:
+          description: user session successfully deleted
+        401:
+          description: Unauthorized Action
+        422:
+          description: bad token header
+          schema:
+            $ref: '#/definitions/UserLogoutError'
+  /registration:
+    post:
+      tags:
+        - Authentication
+      summary: creates a new user
+      operationId: addUser
+      description: |
+        By passing in the appropriate options, you can add a new user to the database
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters: 
+        - in: body
+          name: user
+          required: true
+          description: user object to create
+          schema:
+            $ref: '#/definitions/UserRegisterParams'
+      responses:
+        201:
+          description: user object successfully created and confirmation email sent to activate
+          schema:
+            $ref: '#/definitions/UserRegisterSuccess'
+        422:
+          description: bad input parameter
+          schema:
+            $ref: '#/definitions/UserRegisterError'
+  /confirmation:
+    put:
+      tags:
+        - Authentication
+      summary: confirms a user
+      operationId: confirmUser
+      description: |
+        By passing in the appropriate options, you can confirm a new user
+      consumes:
+        - application/json
+      produces: 
+        - application/json
+      parameters: 
+        - in: body
+          name: token
+          required: true
+          description: confirmation token sent by email
+          schema:
+            $ref: '#/definitions/UserConfirmParams'
+      responses:
+        204:
+          description: user successfully confirmed
+        422:
+          description: bad input parameter
+          schema:
+            $ref: '#/definitions/UserConfirmError'
+  /password:
+    post:
+      tags: 
+        - Authentication
+      summary: sends email to reset password
+      operationId: resetPasswordRequest
+      description: |
+        By passing in the appropriate options, you can request an email for password reset
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters: 
+        - in: body
+          name: password
+          required: true
+          description: email address to send password reset link
+          schema:
+            $ref: '#/definitions/UserPasswordResetRequestParams'
+      responses:
+        204:
+          description: email was sent with password reset link
+        422:
+          description: bad input parameter
+          schema:
+            $ref: '#/definitions/UserPasswordResetRequestError'
+    put:
+      tags: 
+        - Authentication
+      summary: resets the user's password 
+      operationId: resetPassword
+      description: |
+        By passing in the appropriate options, you can reset the password of the user 
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters: 
+        - in: body
+          name: passwordReset
+          required: true
+          description: reset password token and new password
+          schema:
+            $ref: '#/definitions/UserPasswordResetParams'
+      responses:
+        204:
+          description: password was successfully reset
+        422:
+          description: bad input parameter
+          schema:
+            $ref: '#/definitions/UserPasswordResetError'
+  /users/{userID}:
+    get:
+      tags: 
+        - Users
+      summary: gets information about a user
+      operationId: getUser
+      description: |
+        By passing in the appropriate options, you can view the user's information
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - in: header
+          name: Authorization
+          type: string
+          required: true
+          description: authentication token
+        - in: path
+          name: userID
+          type: string
+          required: true
+          description: ID of the user
+      responses:
+        200:
+          description: successfully retrieved the user's information
+          schema:
+            $ref: '#/definitions/UserResponseSimple'
+        404:
+          description: user not found with id userID
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+                example: user not found with id userID
+        401:
+          description: Unauthorized Action
+        400:
+          description: Bad request due to token authorization
+          schema:
+            $ref: '#/definitions/TokenError'
+    delete:
+      tags: 
+        - Users
+      summary: deletes a user
+      operationId: deleteUser
+      description: |
+        By passing in the appropriate options, you can delete a user
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - in: header
+          name: Authorization
+          type: string
+          required: true
+          description: authentication token
+        - in: path
+          name: userID
+          type: string
+          required: true
+          description: ID of the user
+      responses:
+        204:
+          description: successfully deleted the user
+        401:
+          description: Unauthorized Action
+        404:
+          description: user with userID not found
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+                example: user not found with id 5951303fc9bf3c7b9a573a3f
+    put:
+      tags: 
+        - Users
+      summary: updates information about a user
+      operationId: updateUser
+      description: |
+        By passing in the appropriate options, you can update the user's information
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - in: header
+          name: Authorization
+          type: string
+          required: true
+          description: authentication token
+        - in: path
+          name: userID
+          type: string
+          required: true
+          description: ID of the user
+        - in: body
+          name: user
+          required: true
+          description: |
+            Passing a new email address will invoke a confirmation mail sent which needs to be activated.
+          schema:
+            $ref: '#/definitions/UserUpdateParams'
+      responses:
+        200:
+          description: successfully updated the user's information
+          schema:
+            $ref: '#/definitions/UserResponseSimple'
+        401:
+          description: Unauthorized Action
+        422:
+          description: bad input parameter
+          schema:
+            $ref: '#/definitions/UserUpdateError'
+        404:
+          description: user not found with id userID
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+                example: user not found with id userID
+        400:
+          description: Bad request due to token authorization
+          schema:
+            $ref: '#/definitions/TokenError'
+  /projects:
+    post:
+      tags: 
+        - Projects
+      summary: creates a new project
+      operationId: createProject
+      description: |
+        By passing in the appropriate options, you can create a new project
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - in: header
+          name: Authorization
+          type: string
+          required: true
+          description: authentication token
+        - in: body
+          name: project
+          required: true
+          description: project, manuscript and groups information
+          schema:
+            $ref: '#/definitions/ProjectCreateParams'
+      responses:
+        200:
+          description: successfully created the project
+          schema:
+            $ref: '#/definitions/ProjectResponseSimple'
+        422:
+          description: bad input parameter
+          schema:
+            $ref: '#/definitions/ProjectCreateError'
+        401:
+          description: Unauthorized Action
+    get:
+      tags: 
+        - Projects
+      summary: gets list of all user projects
+      operationId: getProjects
+      description: |
+        By passing in the appropriate options, you can view all projects of the current user
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - in: header
+          name: Authorization
+          type: string
+          required: true
+          description: authentication token
+      responses:
+        200:
+          description: successfully retrieved the user's projects
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/ProjectResponseSimple'
+        401:
+          description: Unauthorized Action
+  /projects/{projectID}:
+    get:
+      tags: 
+        - Projects
+      summary: gets information about a project
+      operationId: getProject
+      description: |
+        By passing in the appropriate options, you can view the project's information
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - in: header
+          name: Authorization
+          type: string
+          required: true
+          description: authentication token
+        - in: path
+          name: projectID
+          type: string
+          required: true
+          description: ID of the project
+      responses:
+        200:
+          description: successfully retrieved the project's information
+          schema:
+            $ref: '#/definitions/ProjectResponseFull'
+        404:
+          description: project not found with id sad84d709c9bf3c1f76fd3fb
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+                example: project not found
+        401:
+          description: Unauthorized Action
+    put:
+      tags: 
+        - Projects
+      summary: creates a new project
+      operationId: updateProject
+      description: |
+        By passing in the appropriate options, you can update a project
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - in: header
+          name: Authorization
+          type: string
+          required: true
+          description: authentication token
+        - in: path
+          name: projectID
+          type: string
+          required: true
+          description: ID of the project
+        - in: body
+          name: project
+          required: true
+          description: project and manuscript information
+          schema:
+            $ref: '#/definitions/ProjectUpdateParams'
+      responses:
+        200:
+          description: successfully created the project
+          schema:
+            $ref: '#/definitions/ProjectResponseSimple'
+        422:
+          description: bad input parameter
+          schema:
+            $ref: '#/definitions/ProjectUpdateError'
+        404:
+          description: project not found with id sad84d709c9bf3c1f76fd3fb
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+                example: project not found
+        401:
+          description: Unauthorized Action
+    delete:
+      tags: 
+        - Projects
+      summary: deletes a project
+      operationId: deleteProject
+      description: |
+        By passing in the appropriate options, you can delete a project
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - in: header
+          name: Authorization
+          type: string
+          required: true
+          description: authentication token
+        - in: path
+          name: projectID
+          type: string
+          required: true
+          description: ID of the project
+      responses:
+        204:
+          description: successfully deleted the project
+        401:
+          description: Unauthorized Action
+        404:
+          description: project not found with id sad84d709c9bf3c1f76fd3fb
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+                example: project not found
+  /projects/{projectID}/filter:
+    get:
+      tags: 
+        - Projects
+      summary: filter the project
+      operationId: filterProject
+      description: |
+        By passing in the appropriate options, you can filter objects from the project
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - in: header
+          name: Authorization
+          type: string
+          required: true
+          description: authentication token
+        - in: path
+          name: projectID
+          type: string
+          required: true
+          description: ID of the project
+        - in: body
+          name: filter
+          required: true
+          description: filter information
+          schema:
+            $ref: '#/definitions/ProjectFilterParams'
+      responses:
+        200:
+          description: successfully filtered the project's information
+          schema:
+            $ref: '#/definitions/ProjectFilterResponse'
+        422:
+          description: bad input parameter
+          schema:
+            $ref: '#/definitions/ProjectFilterError'
+        404:
+          description: project not found with id sad84d709c9bf3c1f76fd3fb
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+                example: project not found
+        401:
+          description: Unauthorized Action
+  /projects/{projectID}/notes:
+    get:
+      tags: 
+        - Projects
+      summary: gets all notes in a project
+      operationId: getNotes
+      description: |
+        By passing in the appropriate options, you can view all notes in a project
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - in: header
+          name: Authorization
+          type: string
+          required: true
+          description: authentication token
+        - in: path
+          name: projectID
+          type: string
+          required: true
+          description: ID of the project
+      responses:
+        200:
+          description: successfully retrieved all notes for the project
+          schema:
+            $ref: '#/definitions/NotesFullResponse'
+        401:
+          description: Unauthorized Action
+        404:
+          description: project not found with id sad84d709c9bf3c1f76fd3fb
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+                example: project not found with id sad84d709c9bf3c1f76fd3fb
+  /projects/{projectID}/children:
+    get:
+      tags: 
+        - Projects
+      summary: gets all children objects of a project
+      operationId: getChildren
+      description: |
+        By passing in the appropriate options, you can view all children objects of a project
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - in: header
+          name: Authorization
+          type: string
+          required: true
+          description: authentication token
+        - in: path
+          name: projectID
+          type: string
+          required: true
+          description: ID of the project
+      responses:
+        200:
+          description: successfully retrieved all children objects of the project
+          schema:
+            $ref: '#/definitions/ProjectChildrenResponse'
+        401:
+          description: Unauthorized Action
+        404:
+          description: project not found with id sad84d709c9bf3c1f76fd3fb
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+                example: project not found with id sad84d709c9bf3c1f76fd3fb
+
+  /groups:
+    post:
+      tags: 
+        - Groups
+      summary: creates a new group
+      operationId: createGroup
+      description: |
+        By passing in the appropriate options, you can create a new group
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - in: header
+          name: Authorization
+          type: string
+          required: true
+          description: authentication token
+        - in: body
+          name: group
+          required: true
+          description: group information
+          schema:
+            $ref: '#/definitions/GroupCreateParams'
+      responses:
+        200:
+          description: successfully created the group
+          schema:
+            $ref: '#/definitions/ProjectResponseFull'
+        422:
+          description: bad input parameter
+          schema:
+            $ref: '#/definitions/GroupCreateError'
+        401:
+          description: Unauthorized Action
+    put:
+      tags: 
+        - Groups
+      summary: updates list of groups
+      operationId: updateGroups
+      description: |
+        By passing in the appropriate options, you can update a list of groups
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - in: header
+          name: Authorization
+          type: string
+          required: true
+          description: authentication token
+        - in: body
+          name: groups
+          required: true
+          description: groups information
+          schema:
+            $ref: '#/definitions/GroupUpdateMultipleParams'
+      responses:
+        200:
+          description: successfully updated the groups
+          schema:
+            $ref: '#/definitions/ProjectResponseFull'
+        422:
+          description: bad input parameter
+          schema:
+            $ref: '#/definitions/GroupUpdateMultipleError'
+        401:
+          description: Unauthorized Action
+    delete:
+      tags: 
+        - Groups
+      summary: deletes list of groups
+      operationId: deletegroups
+      description: |
+        By passing in the appropriate options, you can delete the given groups
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - in: header
+          name: Authorization
+          type: string
+          required: true
+          description: authentication token
+        - in: body
+          name: groups
+          required: true
+          description: groups information
+          schema:
+            $ref: '#/definitions/GroupDeleteMultipleParams'
+      responses:
+        200:
+          description: successfully updated the groups
+          schema:
+            $ref: '#/definitions/ProjectResponseFull'
+        422:
+          description: bad input parameter
+          schema:
+            $ref: '#/definitions/GroupDeleteMultipleError'
+        401:
+          description: Unauthorized Action
+        404:
+          description: group with groupID not found
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+                example: group not found
+  /groups/{groupID}:
+    put:
+      tags: 
+        - Groups
+      summary: updates a group
+      operationId: updateGroup
+      description: |
+        By passing in the appropriate options, you can update a group
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - in: header
+          name: Authorization
+          type: string
+          required: true
+          description: authentication token
+        - in: path
+          name: groupID
+          type: string
+          required: true
+          description: ID of the group
+        - in: body
+          name: group
+          required: true
+          description: group information
+          schema:
+            $ref: '#/definitions/GroupUpdateParams'
+      responses:
+        200:
+          description: successfully updated the group
+          schema:
+            $ref: '#/definitions/ProjectResponseFull'
+        422:
+          description: bad input parameter
+          schema:
+            $ref: '#/definitions/GroupUpdateError'
+        401:
+          description: Unauthorized Action
+        404:
+          description: group with groupID not found
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+                example: group not found
+    delete:
+      tags: 
+        - Groups
+      summary: deletes a group
+      operationId: deleteGroup
+      description: |
+        By passing in the appropriate options, you can delete a group
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - in: header
+          name: Authorization
+          type: string
+          required: true
+          description: authentication token
+        - in: path
+          name: groupID
+          type: string
+          required: true
+          description: ID of the group
+      responses:
+        204:
+          description: successfully deleted the group
+          schema:
+            $ref: '#/definitions/ProjectResponseFull'
+        401:
+          description: Unauthorized Action
+        404:
+          description: group with groupID not found
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+                example: group not found
+  
+  
+  
+  /leafs:
+    post:
+      tags: 
+        - Leafs
+      summary: creates a new leaf
+      operationId: createLeaf
+      description: |
+        By passing in the appropriate options, you can create a new leaf
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - in: header
+          name: Authorization
+          type: string
+          required: true
+          description: authentication token
+        - in: body
+          name: leaf
+          required: true
+          description: leaf information
+          schema:
+            $ref: '#/definitions/LeafCreateParams'
+      responses:
+        200:
+          description: successfully created the leaf
+          schema:
+            $ref: '#/definitions/ProjectResponseFull'
+        422:
+          description: bad input parameter
+          schema:
+            $ref: '#/definitions/LeafCreateError'
+        401:
+          description: Unauthorized Action
+    put:
+      tags: 
+        - Leafs
+      summary: updates list of leaves
+      operationId: updateLeafs
+      description: |
+        By passing in the appropriate options, you can update a list of leaves
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - in: header
+          name: Authorization
+          type: string
+          required: true
+          description: authentication token
+        - in: body
+          name: leafs
+          required: true
+          description: leafs information
+          schema:
+            $ref: '#/definitions/LeafUpdateMultipleParams'
+      responses:
+        200:
+          description: successfully updated the leafs
+          schema:
+            $ref: '#/definitions/ProjectResponseFull'
+        422:
+          description: bad input parameter
+          schema:
+            $ref: '#/definitions/LeafUpdateMultipleError'
+        401:
+          description: Unauthorized Action
+    delete:
+      tags: 
+        - Leafs
+      summary: deletes list of leaves
+      operationId: deleteLeafs
+      description: |
+        By passing in the appropriate options, you can delete the give leaevs
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - in: header
+          name: Authorization
+          type: string
+          required: true
+          description: authentication token
+        - in: body
+          name: leafs
+          required: true
+          description: leafs information
+          schema:
+            $ref: '#/definitions/LeafDeleteMultipleParams'
+      responses:
+        200:
+          description: successfully updated the leaf
+          schema:
+            $ref: '#/definitions/ProjectResponseFull'
+        422:
+          description: bad input parameter
+          schema:
+            $ref: '#/definitions/LeafDeleteMultipleError'
+        401:
+          description: Unauthorized Action
+        404:
+          description: leaf with leafID not found
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+                example: leaf not found
+  /leafs/{leafID}:
+    put:
+      tags: 
+        - Leafs
+      summary: updates a leaf
+      operationId: updateLeaf
+      description: |
+        By passing in the appropriate options, you can update a leaf
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - in: header
+          name: Authorization
+          type: string
+          required: true
+          description: authentication token
+        - in: path
+          name: leafID
+          type: string
+          required: true
+          description: ID of the leaf
+        - in: body
+          name: leaf
+          required: true
+          description: leaf information
+          schema:
+            $ref: '#/definitions/LeafUpdateParams'
+      responses:
+        200:
+          description: successfully updated the leaf
+          schema:
+            $ref: '#/definitions/ProjectResponseFull'
+        422:
+          description: bad input parameter
+          schema:
+            $ref: '#/definitions/LeafUpdateError'
+        401:
+          description: Unauthorized Action
+        404:
+          description: leaf with leafID not found
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+                example: leaf not found
+    delete:
+      tags: 
+        - Leafs
+      summary: deletes a leaf
+      operationId: deleteLeaf
+      description: |
+        By passing in the appropriate options, you can delete a leaf
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - in: header
+          name: Authorization
+          type: string
+          required: true
+          description: authentication token
+        - in: path
+          name: leafID
+          type: string
+          required: true
+          description: ID of the leaf
+      responses:
+        204:
+          description: successfully deleted the leaf
+          schema:
+            $ref: '#/definitions/ProjectResponseFull'
+        401:
+          description: Unauthorized Action
+        404:
+          description: leaf with leafID not found
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+                example: leaf not found
+            
+            
+  /sides:
+    put:
+      tags: 
+        - Sides
+      summary: updates list of sides
+      operationId: updateSides
+      description: |
+        By passing in the appropriate options, you can update a list of sides
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - in: header
+          name: Authorization
+          type: string
+          required: true
+          description: authentication token
+        - in: body
+          name: sides
+          required: true
+          description: sides information
+          schema:
+            $ref: '#/definitions/SideUpdateMultipleParams'
+      responses:
+        200:
+          description: successfully updated the sides
+          schema:
+            $ref: '#/definitions/ProjectResponseFull'
+        422:
+          description: bad input parameter
+          schema:
+            $ref: '#/definitions/SideUpdateMultipleError'
+        401:
+          description: Unauthorized Action
+  /sides/{sideID}:
+    put:
+      tags: 
+        - Sides
+      summary: updates a side
+      operationId: updateSide
+      description: |
+        By passing in the appropriate options, you can update a side
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - in: header
+          name: Authorization
+          type: string
+          required: true
+          description: authentication token
+        - in: path
+          name: sideID
+          type: string
+          required: true
+          description: ID of the side
+        - in: body
+          name: side
+          required: true
+          description: side information
+          schema:
+            $ref: '#/definitions/SideUpdateParams'
+      responses:
+        200:
+          description: successfully updated the side
+          schema:
+            $ref: '#/definitions/ProjectResponseFull'
+        422:
+          description: bad input parameter
+          schema:
+            $ref: '#/definitions/SideUpdateError'
+        401:
+          description: Unauthorized Action
+        404:
+          description: side with sideID not found
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+                example: side not found
+
+  /notes:
+    post:
+      tags: 
+        - Notes
+      summary: creates a new note
+      operationId: createNote
+      description: |
+        By passing in the appropriate options, you can create a new note
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - in: header
+          name: Authorization
+          type: string
+          required: true
+          description: authentication token
+        - in: body
+          name: note
+          required: true
+          description: note information
+          schema:
+            $ref: '#/definitions/NoteCreateParams'
+      responses:
+        200:
+          description: successfully created the note
+          schema:
+            $ref: '#/definitions/NotesFullResponse'
+        422:
+          description: bad input parameter
+          schema:
+            $ref: '#/definitions/NoteCreateError'
+        401:
+          description: Unauthorized Action
+
+
+
+  /notes/{noteID}:
+    put:
+      tags: 
+        - Notes
+      summary: updates a notes
+      operationId: updateNote
+      description: |
+        By passing in the appropriate options, you can update a note
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - in: header
+          name: Authorization
+          type: string
+          required: true
+          description: authentication token
+        - in: path
+          name: noteID
+          type: string
+          required: true
+          description: ID of the note
+        - in: body
+          name: note
+          required: true
+          description: note information
+          schema:
+            $ref: '#/definitions/NoteUpdateParams'
+      responses:
+        200:
+          description: successfully updated the leaf
+          schema:
+            $ref: '#/definitions/NotesFullResponse'
+        422:
+          description: bad input parameter
+          schema:
+            $ref: '#/definitions/NoteCreateError'
+        401:
+          description: Unauthorized Action
+        404:
+          description: note with noteID not found
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+                example: note not found
+    delete:
+      tags: 
+        - Notes
+      summary: deletes a note
+      operationId: deleteNote
+      description: |
+        By passing in the appropriate options, you can delete a note
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - in: header
+          name: Authorization
+          type: string
+          required: true
+          description: authentication token
+        - in: path
+          name: noteID
+          type: string
+          required: true
+          description: ID of the note
+      responses:
+        204:
+          description: successfully deleted the note
+          schema:
+            $ref: '#/definitions/NotesFullResponse'
+        401:
+          description: Unauthorized Action
+        404:
+          description: note with noteID not found
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+                example: note not found
+  /notes/{noteID}/link:
+    put:
+      tags: 
+        - Notes
+      summary: links a note to the given objects
+      operationId: linkNote
+      description: |
+        By passing in the appropriate options, you can link a note to objects
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - in: header
+          name: Authorization
+          type: string
+          required: true
+          description: authentication token
+        - in: path
+          name: noteID
+          type: string
+          required: true
+          description: ID of the note
+        - in: body
+          name: note
+          required: true
+          description: note information
+          schema:
+            $ref: '#/definitions/NoteLinkParams'
+      responses:
+        200:
+          description: successfully linked the note
+          schema:
+            $ref: '#/definitions/NotesFullResponse'
+        422:
+          description: bad input parameter
+          schema:
+            $ref: '#/definitions/NoteLinkError'
+        401:
+          description: Unauthorized Action
+        404:
+          description: note with noteID not found
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+                example: note not found
+  /notes/{noteID}/unlink:
+    put:
+      tags: 
+        - Notes
+      summary: unlinks a note from the given objects
+      operationId: unlinkNote
+      description: |
+        By passing in the appropriate options, you can unlink a note from objects
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - in: header
+          name: Authorization
+          type: string
+          required: true
+          description: authentication token
+        - in: path
+          name: noteID
+          type: string
+          required: true
+          description: ID of the note
+        - in: body
+          name: note
+          required: true
+          description: note information
+          schema:
+            $ref: '#/definitions/NoteLinkParams'
+      responses:
+        200:
+          description: successfully unlinked the note
+          schema:
+            $ref: '#/definitions/NotesFullResponse'
+        422:
+          description: bad input parameter
+          schema:
+            $ref: '#/definitions/NoteLinkError'
+        401:
+          description: Unauthorized Action
+        404:
+          description: note with noteID not found
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+                example: note not found
+  /notes/type:
+    post:
+      tags: 
+        - Notes
+      summary: creates a note type
+      operationId: createNoteType
+      description: |
+        By passing in the appropriate options, you can create a note type
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - in: header
+          name: Authorization
+          type: string
+          required: true
+          description: authentication token
+        - in: body
+          name: noteType
+          required: true
+          description: note information
+          schema:
+            $ref: '#/definitions/NoteTypeCreateParams'
+      responses:
+        200:
+          description: successfully created the note type
+          schema:
+            $ref: '#/definitions/NoteTypeResponse'
+        422:
+          description: bad input parameter
+          schema:
+            $ref: '#/definitions/NoteTypeCreateError'
+        401:
+          description: Unauthorized Action
+    put:
+      tags: 
+        - Notes
+      summary: updates a note type
+      operationId: updateNoteType
+      description: |
+        By passing in the appropriate options, you can update a note type
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - in: header
+          name: Authorization
+          type: string
+          required: true
+          description: authentication token
+        - in: body
+          name: noteType
+          required: true
+          description: note information
+          schema:
+            $ref: '#/definitions/NoteTypeUpdateParams'
+      responses:
+        200:
+          description: successfully updated the note type
+          schema:
+            $ref: '#/definitions/NoteTypeResponse'
+        422:
+          description: bad input parameter
+          schema:
+            $ref: '#/definitions/NoteTypeUpdateError'
+        401:
+          description: Unauthorized Action
+    delete:
+      tags: 
+        - Notes
+      summary: deletes a note type
+      operationId: deleteNoteType
+      description: |
+        By passing in the appropriate options, you can delete a note type
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - in: header
+          name: Authorization
+          type: string
+          required: true
+          description: authentication token
+        - in: body
+          name: noteType
+          required: true
+          description: note information
+          schema:
+            $ref: '#/definitions/NoteTypeCreateParams'
+      responses:
+        200:
+          description: successfully deleted the note type
+          schema:
+            $ref: '#/definitions/NoteTypeResponse'
+        422:
+          description: bad input parameter
+          schema:
+            $ref: '#/definitions/NoteTypeDeleteError'
+        401:
+          description: Unauthorized Action
+                
+                
+                
+            
+definitions:
+  UserRegisterParams:
+    type: object
+    properties:
+      user:
+        type: object
+        required:
+          - email
+          - password
+        properties:
+          email:
+            type: string
+            example: example@mail.com
+          password:
+            type: string
+            example: secret123
+          name:
+            type: string
+            example: John
+  UserRegisterSuccess:
+    type: object
+    properties:
+      user:
+        type: object
+        properties:
+          id:
+            type: string
+            format: uuid
+            example: 5951303fc9bf3c7b9a573a3f
+          email:
+            type: string
+            example: example@mail.com
+          name:
+            type: string
+            example: John
+          password_digest:
+            type: string
+            format: password encrypt
+            example: $2a$10$/CY5b5qDleekbFbMVIFTZ.61VIjAsNGaOB5vQ4zrSWwyHvVL.G/P6
+          confirmation_token:
+            type: string
+            example: LTn4sV79adhRDyc5k1r3yaQk
+          confirmation_sent_at:
+            type: string
+            format: date-time
+            example: "2017-07-12T14:04:34.799Z"
+  UserRegisterError:
+    type: object
+    properties:
+      errors:
+        type: object
+        properties:
+          email:
+            type: array
+            items:
+              type: string
+            example: [can't be blank, is not an email, is already taken]
+          password:
+            type: array
+            items:
+              type: string
+            example: [can't be blank]
+  UserConfirmParams:
+    type: object
+    required: 
+      - confirmation_token
+    properties:
+      confirmation_token:
+        type: string
+        example: 5951303fc9bf3c7b9a573a3f
+  UserConfirmError:
+    type: object
+    properties:
+      errors:
+        type: object
+        properties:
+          confirmation_token:
+            type: array
+            items:
+              type: string
+            example: [not found]
+  UserLoginParams:
+    type: object
+    properties:
+      session:
+        type: object
+        required: 
+          - email
+          - password
+        properties:
+          email:
+            type: string
+            example: example@mail.com
+          password:
+            type: string
+            example: secret123
+  UserLoginSuccess:
+    type: object
+    properties:
+      session:
+        type: object
+        properties:
+          jwt:
+            type: string
+            example: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJhdXRoX3Rva2VuIjoiTjVGZkN
+          id:
+            type: string
+            format: uuid
+            example: 5951303fc9bf3c7b9a573a3f
+          email:
+            type: string
+            example: example@mail.com
+          name:
+            type: string
+            example: John
+          lastLoggedIn:
+            type: string
+            format: date-time
+            example: 2017-07-12T14:04:34.799Z
+          projects:
+            type: array
+            items:
+              $ref: '#/definitions/ProjectResponseSimple'
+  UserLoginError:
+    type: object
+    properties:
+      errors:
+        type: object
+        properties:
+          session:
+            type: array
+            items:
+              type: string
+            example: [invalid email / password, unconfirmed email]  
+  UserLogoutError:
+    type: object
+    properties:
+      error:
+        type: string
+        example: Authorization Header Signature verification raised, Not enough or too many segments
+  UserPasswordResetRequestParams:
+    type: object
+    properties:
+      password:
+        type: object
+        required: 
+          - email
+        properties:
+          email:
+            type: string
+            example: example@mail.com
+  UserPasswordResetRequestError:
+    type: object
+    properties:
+      errors:
+        type: object
+        properties:
+          email:
+            type: array
+            items:
+              type: string
+              example: [unconfirmed email, not found]
+  UserPasswordResetParams:
+    type: object
+    required: 
+     - reset_password_token
+    properties:
+      reset_password_token:
+        type: string
+        example: 5951303fc9bf3c7b9a573a3f
+      password:
+        type: object
+        required: 
+          - password
+          - password_confirmation
+        properties:
+          password:
+            type: string
+            example: secret123
+          password_confirmation:
+            type: string
+            example: secret123
+  UserPasswordResetError:
+    type: object
+    properties:
+      errors:
+        type: object
+        properties:
+          reset_password_token:
+            type: array
+            items:
+              type: string
+            example: [not found, has expired please request a new one]
+          password:
+            type: array
+            items:
+              type: string
+            example: [blank]
+          password_confirmation:
+            type: array
+            items:
+              type: string
+            example: [doesn't match Password]
+  UserUpdateParams:
+    type: object
+    properties:
+      user:
+        type: object
+        properties:
+          name:
+            type: string
+            example: John
+          email:
+            type: string
+            example: example@mail.com
+          current_password:
+            type: string
+            example: secret123
+          password:
+            type: string
+            example: new_secret123
+  UserUpdateError:
+    type: object
+    properties:
+      email:
+        type: array
+        items:
+          type: string
+        example: [is already taken, is not at email]
+      current_password:
+        type: array
+        items:
+          type: string
+        example: [invalid, blank, nil]
+      password:
+        type: array
+        items:
+          type: string
+        example: [invalid, blank, nil]
+  UserResponseSimple:
+    type: object
+    properties:
+      id:
+        type: string
+        format: uuid
+        example: 5951303fc9bf3c7b9a573a3f
+      email:
+        type: string
+        example: example@mail.com
+      name:
+        type: string
+        example: John
+      projects:
+        type: array
+        items:
+          $ref: '#/definitions/ProjectResponseSimple'
+  TokenError:
+    type: object
+    properties:
+      error:
+        type: string
+        example: Authorization Token Signature verification raised, Nil JSON web token, Not enough or too many segments
+  ProjectResponseSimple:
+    type: object
+    properties:
+      id:
+        type: string
+        format: uuid
+        example: 5951303fc9bf3c7b9a573a3f
+      title: 
+        type: string
+        example: My first project
+      created_at:
+        type: string
+        example: "2017-07-12T14:04:34.799Z"
+      updated_at:
+        type: string
+        example: "2017-07-12T14:04:34.799Z"
+      manuscript:
+        $ref: '#/definitions/ManuscriptResponseSimple'
+  ManuscriptResponseSimple:
+    type: object
+    properties:
+      id:
+        type: string
+        format: uuid
+        example: 5951303fc9bf3c7b9a573a3f
+      shelfmark: 
+        type: string
+        example: MSS 123
+      uri: 
+        type: string
+        format: url
+        example: some iiif manifest url
+      date: 
+        type: string
+        example: 18th century
+      created_at:
+        type: string
+        example: "2017-07-12T14:04:34.799Z"
+      updated_at:
+        type: string
+        example: "2017-07-12T14:04:34.799Z"
+  ProjectCreateParams:
+    type: object
+    properties:
+      project: 
+        type: object
+        properties:
+          title:
+            type: string
+            example: My first project
+      manuscript:
+        type: object
+        properties:
+          shelfmark:
+            type: string
+            example: MSS 123
+          uri:
+            type: string
+            format: url
+            example: some iiif manifest url
+          date:
+            type: string
+            example: 18th century
+      groups:
+        type: array
+        items:
+          type: object
+          properties:
+            number:
+              type: integer
+              example: 1
+              description: the group order amoung other groups
+            leaves:
+              type: integer
+              example: 4
+              description: number of leaves in this group
+            conjoin:
+              type: boolean
+              example: true
+              description: whether to auto-conjoin or not
+            oddLeaf:
+              type: integer
+              example: 3
+              description: if auto-conjoining odd number of leaves, the leaf number to exclude
+  ProjectCreateError:
+    type: object
+    properties:
+      project:
+        type: object
+        properties:
+          title:
+            type: array
+            items:
+              type: string
+              example: [Project title is required, Project title should be unique]
+      manuscript: 
+        type: object
+        properties:
+          shelfmark:
+            type: array
+            items:
+              type: string
+              example: [Manuscript shelfmark is required]
+      groups:
+        type: array
+        items:
+          type: object
+          properties:
+            groupID:
+              type: integer
+              example: 1
+              description: the group number that has errors
+            number:
+              type: array
+              items:
+                type: string
+                example: [should be an Integer, should be greater than 0, should be equal to 1]
+            leaves:
+              type: array
+              items:
+                type: string
+                example: [should be an Integer, should be greater than 0]
+            conjoin:
+              type: array
+              items:
+                type: string
+                example: [should be a Boolean]
+            oddLeaf:
+              type: array
+              items:
+                type: string
+                example: [should be an Integer, should be greater than 0, cannot be greater than leaves]
+
+  ProjectUpdateParams:
+    type: object
+    properties:
+      project: 
+        type: object
+        properties:
+          title:
+            type: string
+            example: My first project
+      manuscript:
+        type: object
+        properties:
+          shelfmark:
+            type: string
+            example: MSS 123
+          uri:
+            type: string
+            format: url
+            example: some iiif manifest url
+          date:
+            type: string
+            example: 18th century
+            
+  ProjectUpdateError:
+    type: object
+    properties:
+      project:
+        type: object
+        properties:
+          title:
+            type: array
+            items:
+              type: string
+              example: [Project title is required, Project title should be unique]
+      manuscript: 
+        type: object
+        properties:
+          shelfmark:
+            type: array
+            items:
+              type: string
+              example: [Manuscript shelfmark is required]
+
+  ProjectResponseFull:
+    type: object
+    properties:
+      id:
+        type: string
+        format: uuid
+        example: 5951303fc9bf3c7b9a573a3f
+      title: 
+        type: string
+        example: My first project
+      created_at:
+        type: string
+        example: "2017-07-12T14:04:34.799Z"
+      updated_at:
+        type: string
+        example: "2017-07-12T14:04:34.799Z"
+      noteTypes:
+        type: array
+        items:
+          type: string
+        example: [Unknown, Ink, Hand]
+      notes:
+        $ref: '#/definitions/NotesFullResponse'
+      manuscript:
+        $ref: '#/definitions/ManuscriptResponseFull'
+  ManuscriptResponseFull:
+    type: object
+    properties:
+      id:
+        type: string
+        format: uuid
+        example: 5951303fc9bf3c7b9a573a3f
+      shelfmark: 
+        type: string
+        example: MSS 154
+      uri: 
+        type: string
+        format: url
+        example: http://universalviewer.azurewebsites.net/manifests.json
+      date: 
+        type: string
+        example: 16th century
+      created_at:
+        type: string
+        example: "2017-07-12T14:04:34.799Z"
+      updated_at:
+        type: string
+        example: "2017-07-12T14:04:34.799Z"
+      numberOfLeaves: 
+        type: integer
+        example: 6
+      numberOfGroups: 
+        type: integer
+        example: 2
+      attachedToLeafs:
+        type: array
+        items:
+          type: object
+          properties:
+            id:
+              type: string
+              format: uuid
+              example: 5951303fc9bf3c7b9a573a3f
+            order:
+              type: string
+              example: None or Binding
+      groups:
+        type: array
+        items:
+          $ref: '#definitions/GroupFullResponse'
+  GroupFullResponse:
+    type: object
+    properties:
+      id:
+        type: string
+        format: uuid
+        example: 5951303fc9bf3c7b9a573a3f
+      order:
+        type: integer
+        example: 1
+        description: global order within the project
+      title: 
+        type: string
+        example: Deafult
+      type: 
+        type: string
+        example: Quire/Booklet
+      member_type: 
+        type: string
+        example: Group
+      member_order: 
+        type: integer
+        example: 1
+      nestLevel: 
+        type: integer
+        example: 0
+        description: nested level within groups
+      members:
+        type: array
+        items:
+          $ref: '#definitions/MemberFullResponse'
+  MemberFullResponse:
+    type: object
+    properties:
+      member_type: 
+        type: string
+        example: Group/Leaf
+      member_order: 
+        type: integer
+        example: 1
+        description: local order within the group
+      id:
+        type: string
+        format: uuid
+        example: 5951303fc9bf3c7b9a573a3f
+      order:
+        type: integer
+        example: 1 
+        description: global order within the project
+      nestLevel: 
+        type: integer
+        example: 0
+        description: nested level within groups
+      conjoined_leaf_order:
+        type: integer
+        example: 3
+        description: leaf order of this leaf's conjoined member
+      material:
+        type: string
+        example: Parchment
+      type:
+        type: string
+        example: Added
+      attachment_method:
+        type: string
+        example: Glued
+      conjoined_to:
+        type: string
+        example: 595e59f3c9bf3c6760f2e328
+        description: leafID of the conjoined leaf
+      attached_to:
+        type: array
+        items:
+          type: string
+          example: 595e59f3c9bf3c6760f2e328
+          description: leafIDs of the attached_to leafs
+      stub:
+        type: string
+        example: Original
+      created_at:
+        type: string
+        example: "2017-07-12T14:04:34.799Z"
+      updated_at:
+        type: string
+        example: "2017-07-12T14:04:34.799Z"
+      parent: 
+        type: object
+        properties:
+          id:
+            type: string
+            format: uuid
+            example: 5951303fc9bf3c7b9a573a3f
+          title: 
+            type: string
+            example: Deafult
+          order:
+            type: integer
+            example: 1
+            description: global order within the project
+          type: 
+            type: string
+            example: Quire/Booklet
+      sides:
+        type: array
+        items:
+          $ref: '#definitions/SideFullResponse'
+  SideFullResponse:
+    type: object
+    properties:
+      id:
+        type: string
+        format: uuid
+        example: 5951303fc9bf3c7b9a573a3f
+      order:
+        type: integer
+        example: 0
+        description: either 0 or 1, Recto or Verso
+      folio_number: 
+        type: string
+        example: 2v
+      texture: 
+        type: string
+        example: Hair
+      uri: 
+        type: string
+        format: url
+        example: some iiif image url
+      script_direction: 
+        type: string
+        example: Left
+      created_at:
+        type: string
+        example: "2017-07-12T14:04:34.799Z"
+      updated_at:
+        type: string
+        example: "2017-07-12T14:04:34.799Z"
+  LeafCreateParams:
+    type: object
+    properties:
+      leaf:
+        type: object
+        required: 
+          - manuscript_id
+        properties:
+          manuscript_id:
+            type: string
+            example: 5951303fc9bf3c7b9a573a3f
+          order:
+            type: integer
+            example: 2
+          material:
+            type: string
+            example: Parchment
+          type:
+            type: string
+            example: Added
+          attachment_method:
+            type: string
+            example: Glued
+          conjoined_to:
+            type: string
+            example: 5951303fc9bf3c7b9a573a3f
+            description: leafID of the conjoined leaf
+          atached_to:
+            type: array
+            items:
+              type: string
+              example: 5951303fc9bf3c7b9a573a3f
+              description: leafIDs of the attached_to leafs
+          stub:
+            type: string
+            example: Original
+      additional:
+        type: object
+        required: 
+         - groupID
+         - memberOrder
+         - noOfLeafs
+         - conjoin
+         - oddMemberLeftOut
+         - noOfRepeats
+        properties:
+          groupID:
+            type: string
+            example: 5951303fc9bf3c7b9a573a3f
+            description: groupID of the group this leaf belongs to
+          memberOrder:
+            type: integer
+            example: 2
+            description: the local order within this group
+          noOfLeafs:
+            type: integer
+            example: 5
+            description: total number of leaves to add
+          conjoin:
+            type: boolean
+            example: true
+            description: whether to auto-conjoin or not
+          oddMemberLeftOut:
+            type: integer
+            example: 2
+            description: if auto-conjoining odd number of leaves, the leaf number to exclude
+          noOfRepeats:
+            type: integer
+            example: 2
+            description: if auto-conjoining, the number of times to repeat this action
+            
+            
+  GroupCreateParams:
+    type: object
+    properties:
+      group:
+        type: object
+        properties:
+          manuscript_id:
+            type: string
+            example: 5951303fc9bf3c7b9a573a3f
+          type:
+            type: string
+            example: Quire/Booklet
+          title:
+            type: string
+            example: Some title
+          order:
+            type: integer
+            example: 2
+      additional:
+        type: object
+        properties:
+          parentGroupID:
+            type: string
+            example: 5951303fc9bf3c7b9a573a3f
+            description: groupID of the group this group belongs to. can be null if this is a root group.
+          memberOrder:
+            type: integer
+            example: 2
+            description: the local order of this group within the manuscript
+          noOfGroups:
+            type: integer
+            example: 5
+            description: total number of groups to add
+          noOfLeafs:
+            type: integer
+            example: 5
+            description: total number of leaves to add in the group
+          conjoin:
+            type: boolean
+            example: true
+            description: whether to auto-conjoin or not
+          oddMemberLeftOut:
+            type: integer
+            example: 2
+            description: if auto-conjoining odd number of leaves, the leaf number to exclude
+  GroupCreateError:
+    type: object
+    properties:
+      group:
+        type: object
+        properties:
+          manuscript_id:
+            type: array
+            items:
+              type: string
+            example: [is required, should be a String, manuscript not found]
+          type:
+            type: array
+            items:
+              type: string
+            example: [is required, should be either Quire or Booklet]
+          order:
+            type: array
+            items:
+              type: string
+            example: [is required, should be an Integer]
+      additional:
+        type: object
+        properties:
+          parentGroupID:
+            type: array
+            items:
+              type: string
+            example: [is required, should be a String, Group with groupID does not exist]
+          memberOrder:
+            type: array
+            items:
+              type: integer
+            example: [is required, should be an Integer, should be greater than 0]
+          noOfGroups:
+            type: array
+            items:
+              type: integer
+            example: [is required, should be an Integer, should be greater than 0 or less than 999]
+          noOfLeafs:
+            type: array
+            items:
+              type: integer
+            example: [is required, should be an Integer, should be greater than 0 or less than 999]
+          conjoin:
+            type: array
+            items:
+              type: boolean
+            example: [is required, should be a Boolean, should be false if noOfLeafs is 1]
+          oddMemberLeftOut:
+            type: array
+            items:
+              type: integer
+            example: [is required, should be an Integer, should be greater than 0 and less than noOfLeafs, should only be 0 if noOfLeafs is even]
+
+  GroupUpdateParams:
+    type: object
+    properties:
+      group:
+        type: object
+        properties:
+          type:
+            type: string
+            example: Quire
+          title:
+            type: string
+            example: Some title
+  GroupUpdateError:
+    type: object
+    properties:
+      group:
+        type: object
+        properties:
+          type:
+            type: array
+            items:
+              type: string
+              example: [should be either Quire or Booklet]
+  GroupUpdateMultipleParams:
+    type: object
+    properties:
+      groups:
+        type: array
+        items:
+          type: object
+          properties:
+            id:
+              type: string
+              example: 5951303fc9bf3c7b9a573a3f
+            attributes:
+              type: object
+              properties:
+                type:
+                  type: string
+                  example: Quire/Booklet
+                title:
+                  type: string
+                  example: Some title
+
+  GroupUpdateMultipleError:
+    type: object
+    properties:
+      groups:
+        type: array
+        items:
+          type: object
+          properties:
+            id:
+              type: string
+              example: group not found with id 5971005ec9bf3c32462bdd37s
+            attributes:
+              type: object
+              properties:
+                type:
+                  type: string
+                  example: should be either Quire or Booklet
+  GroupDeleteMultipleParams:
+    type: object
+    properties:
+      groups:
+        type: array
+        items:
+          type: string
+          example: 5951303fc9bf3c7b9a573a3f
+  GroupDeleteMultipleError:
+    type: object
+    properties:
+      groups:
+        type: array
+        items:
+          type: string
+        example: [group not found with id 5971005ec9bf3c32462bdd37s]
+  
+            
+  LeafCreateError:
+    type: object
+    properties:
+      leaf:
+        type: object
+        properties:
+          manuscript_id:
+            type: array
+            items:
+              type: string
+            example: [is required, should be a String, manuscript not found]
+          order:
+            type: array
+            items:
+              type: integer
+            example: [is required, should be an Integer, should be greater than 0]
+      additional:
+        type: object
+        properties:
+          groupID:
+            type: array
+            items:
+              type: string
+            example: [is required, should be a String, Group with groupID does not have manuscript_id as a member, group not found]
+          memberOrder:
+            type: array
+            items:
+              type: string
+            example: [is required, should be an Integer, should be greater than 0]
+          noOfLeafs:
+            type: array
+            items:
+              type: string
+            example: [is required, should be an Integer, should be greater than 0 or less than 999]
+          conjoin:
+            type: array
+            items:
+              type: string
+            example: [is required, should be a Boolean, should be false if noOfLeafs is 1]
+          oddMemberLeftOut:
+            type: array
+            items:
+              type: string
+            example: [is required, should be an Integer, should be greater than 0 and less than noOfLeafs, should only be 0 if noOfLeafs is even]
+          noOfRepeats:
+            type: array
+            items:
+              type: string
+            example: [is required, should be an Integer, should only be 1 if conjoin is false, should be greater than 1 or less than 99]
+  LeafUpdateParams:
+    type: object
+    properties:
+      leaf:
+        type: object
+        properties:
+          order:
+            type: integer
+            example: 2
+          material:
+            type: string
+            example: Parchment
+          type:
+            type: string
+            example: Added
+          attachment_method:
+            type: string
+            example: Glued
+          conjoined_to:
+            type: string
+            example: 5951303fc9bf3c7b9a573a3f
+            description: leafID of the conjoined leaf
+          attached_to:
+            type: object
+            properties:
+              aboveID:
+                type: string
+                example: 5951303fc9bf3c7b9a573a3f
+              aboveMethod:
+                type: string
+                example: Glued
+              belowID:
+                type: string
+                example: 5951303fc9bf3c7b9a573a3f
+              belowMethod:
+                type: string
+                example: Sewn
+          stub:
+            type: string
+            example: Original            
+  LeafUpdateError:
+    type: object
+    properties:
+      leaf:
+        type: object
+        properties:
+          order:
+            type: array
+            items:
+              type: integer
+              example: should be an Integer, should be greater than 0
+          conjoined_to:
+            type: array
+            items:
+              type: integer
+              example: conjoined_to leaf does not exist
+          attached_to:
+            type: object
+            properties:
+              aboveID:
+                type: array
+                items:
+                  type: string
+                example: [Missing parameter aboveID, Leaf not found with id 5951303fc9bf3c7b9a573a3f]
+              aboveMethod:
+                type: array
+                items:
+                  type: string
+                example: [Should be one of Glued Sewn or Tacketed]
+              belowID:
+                type: array
+                items:
+                  type: string
+                example: [Missing parameter belowID, Leaf not found with id 5951303fc9bf3c7b9a573a3f]
+              belowMethod:
+                type: array
+                items:
+                  type: string
+                example: [Should be one of Glued Sewn or Tacketed]
+  LeafUpdateMultipleParams:
+    type: object
+    properties:
+      leafs:
+        type: array
+        items:
+          type: object
+          properties:
+            id:
+              type: string
+              example: 5951303fc9bf3c7b9a573a3f
+            attributes:
+              type: object
+              properties:
+                material:
+                  type: string
+                  example: Parchment
+                type:
+                  type: string
+                  example: Added
+                stub:
+                  type: string
+                  example: Original            
+  LeafUpdateMultipleError:
+    type: object
+    properties:
+      leafs:
+        type: array
+        items:
+          type: object
+          properties:
+            id:
+              type: array
+              items:
+                type: string
+                example: leaf not found with id 5951303fc9bf3c7b9a573a3f
+            attributes:
+              type: object
+              properties:
+                material:
+                  type: array
+                  items:
+                    type: string
+                  example: [Invalid]
+                type:
+                  type: array
+                  items:
+                    type: string
+                  example: [Invalid]
+                stub:
+                  type: array
+                  items:
+                    type: string
+                  example: [Invalid]
+  LeafDeleteMultipleParams:
+    type: object
+    properties:
+      leafs:
+        type: array
+        items:
+          type: string
+          example: 5951303fc9bf3c7b9a573a3f
+
+  LeafDeleteMultipleError:
+    type: object
+    properties:
+      leafs:
+        type: array
+        items:
+          type: string
+          example: leaf not found with id 5951303fc9bf3c7b9a573a3f
+              
+              
+
+  SideUpdateParams:
+    type: object
+    properties:
+      side:
+        type: object
+        properties:
+          folio_number:
+            type: string
+            example: 1v
+          texture:
+            type: string
+            example: Paper
+          uri:
+            type: string
+            example: some IIIF image url
+          script_direction:
+            type: string
+            example: left
+  SideUpdateError:
+    type: object
+    properties:
+      side:
+        type: object
+        properties:
+          folio_number:
+            type: array
+            items:
+              type: string
+            example: [Invalid]
+          texture:
+            type: array
+            items:
+              type: string
+            example: [Invalid]
+          uri:
+            type: array
+            items:
+              type: string
+            example: [Invalid URL]
+          script_direction:
+            type: array
+            items:
+              type: string
+            example: [Invalid]
+    
+  SideUpdateMultipleParams:
+    type: object
+    properties:
+      sides:
+        type: array
+        items:
+          type: object
+          properties:
+            id:
+              type: string
+              example: 5951303fc9bf3c7b9a573a3f
+            attributes:
+              type: object
+              properties:
+                texture:
+                  type: string
+                  example: Paper
+                script_direction:
+                  type: string
+                  example: left
+    
+  SideUpdateMultipleError:
+    type: object
+    properties:
+      sides:
+        type: array
+        items:
+          type: object
+          properties:
+            id:
+              type: array
+              items:
+                type: string
+                example: side not found with id 5951303fc9bf3c7b9a573a3f
+  
+  NoteCreateParams:
+    type: object
+    properties:
+      note:
+        type: object
+        properties:
+          project_id:
+            type: string
+            example: 5951303fc9bf3c7b9a573a3f
+          title:
+            type: string
+            example: some title for note
+          type:
+            type: string
+            example: Ink
+          description:
+            type: string
+            example: blue ink
+  
+  NoteUpdateParams:
+    type: object
+    properties:
+      note:
+        type: object
+        properties:
+          title:
+            type: string
+            example: some title for note
+          type:
+            type: string
+            example: Ink
+          description:
+            type: string
+            example: blue ink
+            
+  NotesFullResponse:
+    type: array
+    items:
+      $ref: '#definitions/NoteFullResponse'
+      
+  
+  NoteFullResponse:
+    type: object
+    properties:
+      id:
+        type: string
+        example: 5951303fc9bf3c7b9a573a3f
+      title:
+        type: string
+        example: some title for note
+      type:
+        type: string
+        example: Ink
+      description:
+        type: string
+        example: blue ink
+      created_at:
+        type: string
+        example: "2017-07-12T14:04:34.799Z"
+      updated_at:
+        type: string
+        example: "2017-07-12T14:04:34.799Z"
+      objects:
+        type: object
+        properties:
+          Group:
+            type: object
+            properties:
+              5951303fc9bf3c7b9a573a3f:
+                type: string
+                example: 1
+          Leaf:
+            type: object
+            properties:
+              5951303fc9bf3c7b9a573a3f:
+                type: string
+                example: 2
+          Side:
+            type: object
+            properties:
+              5951303fc9bf3c7b9a573a3f:
+                type: string
+                example: 1
+
+  NoteLinkParams:
+    type: object
+    properties:
+      objects:
+        type: array
+        items:
+          type: object
+          properties:
+            id:
+              type: string
+              example: 5951303fc9bf3c7b9a573a3f
+            type:
+              type: string
+              example: Group
+
+  NoteCreateError:
+    type: object
+    properties:
+      title:
+        type: array
+        example: [Note title should be uniue]
+      type:
+        type: array
+        example: [Note type is required]
+              
+  NoteLinkError:
+    type: object
+    properties:
+      id:
+        type: string
+        example: Group object not found with id 5984d709c9bf3c1f76fd3fb
+      type:
+        type: string
+        example: object not found with type Groupssss
+              
+  NoteTypeCreateParams:
+    type: object
+    properties:
+      noteType:
+        type: object
+        properties:
+          project_id:
+            type: string
+            example: 5951303fc9bf3c7b9a573a3f
+          type:
+            type: string
+            example: Ink
+            
+  NoteTypeUpdateParams:
+    type: object
+    properties:
+      noteType:
+        type: object
+        properties:
+          project_id:
+            type: string
+            example: 5951303fc9bf3c7b9a573a3f
+          type:
+            type: string
+            example: Ink
+          old_type:
+            type: string
+            example: Inkss
+            
+  NoteTypeCreateError:
+    type: object
+    properties:
+      project_id:
+        type: string
+        example: project object not found with id 5984d709c9bf3c1f76fd3fb
+      type:
+        type: string
+        example: already exists in the project
+            
+            
+  NoteTypeUpdateError:
+    type: object
+    properties:
+      project_id:
+        type: string
+        example: project object not found with id 5984d709c9bf3c1f76fd3fb
+      type:
+        type: string
+        example: already exists in the project
+      old_type:
+        type: string
+        example: doesn't exist in the project
+            
+            
+  NoteTypeDeleteError:
+    type: object
+    properties:
+      project_id:
+        type: string
+        example: project object not found with id 5984d709c9bf3c1f76fd3fb
+      type:
+        type: string
+        example: doesn't exist in the project
+            
+  NoteTypeResponse:
+    type: object
+    properties:
+      noteTypes:
+        type: array
+        items:
+          type: string
+        example: [Ink, Hand]
+
+              
+  ProjectFilterParams:
+    type: object
+    properties:
+      queries:
+        type: array
+        items:
+          type: object
+          properties:
+            type:
+              type: string
+              example: Leaf
+            attribute:
+              type: string
+              example: Material
+            condition:
+              type: string
+              example: equals
+            values:
+              type: array
+              example: [paper, parchment]
+            conjunction:
+              type: string
+              example: AND
+
+  ProjectFilterResponse:
+    type: object
+    properties:
+      Groups:
+        type: array
+        items:
+          type: string
+        example: [5984d709c9bf3c1f76fd3fb, 5984d709c9bf3c1f76asdsadb, sad84d709c9bf3c1f76fd3fb]
+      Leafs:
+        type: array
+        items:
+          type: string
+        example: [5984d709c9bf3c1f76fd3fb, 5984d709c9bf3c1f76asdsadb, sad84d709c9bf3c1f76fd3fb]
+      Sides:
+        type: array
+        items:
+          type: string
+        example: [5984d709c9bf3c1f76fd3fb, 5984d709c9bf3c1f76asdsadb, sad84d709c9bf3c1f76fd3fb]
+      Notes:
+        type: array
+        items:
+          type: string
+        example: [5984d709c9bf3c1f76fd3fb, 5984d709c9bf3c1f76asdsadb, sad84d709c9bf3c1f76fd3fb]
+      GroupsOfLeafs:
+        type: array
+        items:
+          type: string
+        example: [5984d709c9bf3c1f76fd3fb, 5984d709c9bf3c1f76asdsadb, sad84d709c9bf3c1f76fd3fb]
+                     
+  ProjectFilterError:
+    type: object
+    properties:
+      errors:
+        type: array
+        items:
+          type: object
+          properties:
+            type:
+              type: string
+              example: valid attributes for group are type, title
+            attribute:
+              type: string
+              example: valid attributes for leafare type, material, conjoined_to, attached_to, stub
+            condition:
+              type: string
+              example: valid conditions for leaf attribute are equals, not_equals
+            values:
+              type: string
+              example: filter value cannot be empty
+            conjunction:
+              type: string
+              example: conjunction should be one of AND, OR
+      
+  ProjectChildrenResponse:
+    type: object
+    properties:
+      groups:
+        type: array
+        items:
+          type: object
+          properties:
+            id:
+              type: string
+              example: 5984d709c9bf3c1f76fd3fb
+            order:
+              type: string
+              example: 2
+      leafs:
+        type: array
+        items:
+          type: object
+          properties:
+            id:
+              type: string
+              example: 5984d709c9bf3c1f76fd3fb
+            order:
+              type: string
+              example: 2
+      sides:
+        type: array
+        items:
+          type: object
+          properties:
+            id:
+              type: string
+              example: 5984d709c9bf3c1f76fd3fb
+            order:
+              type: string
+              example: 2
+              
+
+basePath: /api
+

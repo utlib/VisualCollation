@@ -1,0 +1,604 @@
+import paper from 'paper';
+import PaperLeaf from "./PaperLeaf.js";
+import PaperGroup from "./PaperGroup.js";
+
+PaperManager.prototype = {
+    constructor: PaperManager,
+    createGroup: function(group) {
+        let g = new PaperGroup({
+            manager: this,
+            group: group,
+            y: this.groupYs[group.order-1],
+            x: (group.nestLevel-1)*(this.spacing),
+            width: this.width,
+            groupHeight: this.getGroupHeight(group),
+            isActive: this.activeGroups.includes(group.id),
+            groupColor: this.groupColor,
+            groupColorActive: this.groupColorActive,
+            filterColor: this.strokeColorFilter,
+            handleObjectClick: this.handleObjectClick,
+            textColor: this.groupTextColor,
+            visibleAttributes: this.visibleAttributes.group,
+            viewingMode: this.viewingMode,
+            spacing: this.spacing,
+        });
+
+        g.draw();
+        g.setMouseEventHandlers();
+
+        // Add this group to collections
+        this.groupGroups.addChild(g.filterHighlight);
+        this.groupGroups.addChild(g.highlight);
+        this.groupGroups.addChild(g.path);
+        this.groupGroups.addChild(g.text);
+        this.paperGroups.push(g);
+        
+        // Add this group to list of items to flash if it's in the flashItems list
+        if (this.flashItems.groups.includes(group.order)) {
+            this.flashGroups.push(g);
+        }
+        
+    },
+    createLeaf: function(leaf) {
+        let l = new PaperLeaf({
+            manager: this,
+            origin: this.origin,
+            width: this.width,
+            spacing: this.spacing,
+            strokeWidth: this.strokeWidth * Math.min(1.0, this.multipliers[leaf.order]),
+            strokeColor: this.strokeColor,
+            strokeColorActive: this.strokeColorActive,
+            strokeColorGroupActive: this.strokeColorGroupActive,
+            strokeColorAdded: this.strokeColorAdded,
+            leaf: leaf,
+            recto: this.Rectos[leaf.rectoID],
+            verso: this.Versos[leaf.versoID],
+            groupIDs: this.groupIDs,
+            leafIDs: this.leafIDs,
+            Groups: this.Groups,
+            Notes: this.Notes,
+            y: this.leafYs[leaf.order-1],
+            isActive: this.activeLeafs.includes(leaf.id) || this.activeRectos.includes(leaf.rectoID) || this.activeVersos.includes(leaf.versoID),
+            customSpacings: this.customSpacings,
+            handleObjectClick: this.handleObjectClick,
+            multiplier: this.multipliers[leaf.order],
+            strokeColorFilter: this.strokeColorFilter,
+            visibleAttributes: this.visibleAttributes,
+            viewingMode: this.viewingMode,
+        });
+        this.paperLeaves.push(l);
+        this.groupLeaves.addChild(l.path);
+        this.groupLeaves.addChild(l.textLeafOrder);
+        this.groupLeaves.addChild(l.textRecto);
+        this.groupLeaves.addChild(l.textVerso);
+        this.groupLeaves.addChild(l.attachment);
+        this.groupLeaves.addChild(l.textNotes);
+        if (this.flashItems.leaves.includes(leaf.order)) {
+            this.flashLeaves.push(l);
+        }
+        return l;
+    },
+    draw: function() {
+        // Clear existing drawn elements
+        this.leafYs = [];
+        this.groupYs = [];
+        this.paperLeaves = [];
+        this.paperGroups = [];
+        this.flashGroups = [];
+        this.flashLeaves = [];
+        this.groupLeaves.removeChildren();
+        this.groupGroups.removeChildren();
+        this.groupContainer.removeChildren();
+        this.groupTacket.removeChildren();
+
+        // Calculate y positions of groups and leaves
+        let currentY = 0;
+        for (let groupID of this.groupIDs) {
+            const group = this.Groups[groupID];
+            if (group.nestLevel === 1) {
+                this.groupYs.push(currentY);
+                currentY = this.calculateYs(group.memberIDs, currentY, this.spacing);
+                currentY = currentY + this.spacing;
+                if (group.memberIDs.length===0) {
+                    currentY = currentY + this.spacing/2.0;
+                }
+            }
+        }
+        
+        // Create background Rectangle for each group
+        for (let groupID of this.groupIDs) {
+            const group = this.Groups[groupID];
+            this.createGroup(group);
+        }
+
+        // Create all the leaves
+        for (let leafID of this.leafIDs) {
+            this.createLeaf(this.Leafs[leafID]);
+        }
+        // Draw all leaves and set mouse event handlers
+        this.paperLeaves.forEach((leaf)=> {
+            leaf.draw();
+            leaf.setMouseEventHandlers();
+        });
+        
+        // Show filter
+        this.showFilter();
+        
+        // Draw tacketing
+        this.drawTackets();
+        
+        this.groupContainer.addChild(this.groupGroups);
+        this.groupContainer.addChild(this.groupLeaves);
+        this.groupContainer.addChild(this.groupTacket);
+        this.groupContainer.addChild(this.groupTacketGuide);
+        // Reposition the drawing
+        this.groupContainer.position.y += 10;
+        this.fitCanvas();
+    },
+    activateTacketTool: function(groupID) {
+        // Remove existing tacket
+        this.groupTacket.removeChildren();
+        this.groupTacketGuide.removeChildren();
+        this.groupTacketGuideLine.removeChildren();
+        
+        this.tacketToolIsActive = true;
+        this.tool = new paper.Tool();
+        this.tool.minDistance=5;
+        let targets = [];
+        
+        // Remove hover cursor effect on groups and leaves
+        this.paperGroups.forEach((group)=>group.removeMouseEventHandlers());
+        this.paperLeaves.forEach((leaf)=>leaf.removeMouseEventHandlers());
+        document.body.style.cursor = "crosshair";
+        
+        this.drawTacketGuide(groupID);
+
+        this.tool.onMouseDown = (event) => {
+            this.tacketLineDrag = new paper.Path();
+            this.tacketLineDrag.strokeColor = this.strokeColorTacket;
+            this.tacketLineDrag.strokeWidth = 5;
+            this.tacketLineDrag.add(event.point);
+            this.groupTacketGuide.addChild(this.tacketLineDrag);
+        }
+        this.tool.onMouseUp = (event) => {
+            // Remove line from canvas
+            this.groupTacketGuide.removeChildren();
+            // Reset colour of leaves
+            this.paperLeaves.forEach((leaf)=> {
+                leaf.deactivate();
+            });
+            this.toggleTacket("");
+            if (targets.length>0) {
+                let targetLeaf = targets[targets.length/2];
+                this.addTacket(targetLeaf.leaf.parentID, targetLeaf.leaf.id);
+            } else {
+                // Redraw old tacket
+                this.drawTackets();
+            }
+        }
+        this.tool.onMouseDrag = (event) => {
+            // Update line
+            if (!this.tacketLineDrag.segments[1]) {
+                this.tacketLineDrag.add(event.point);
+            } else {
+                this.tacketLineDrag.segments[1].point = event.point;
+            }
+            targets = [];
+            // Highlight leaves that intersect the line
+            const targetGroup = this.paperGroups.find((member)=>{return (member.group.id===groupID)});
+            targetGroup.group.memberIDs.forEach((memberID)=> {
+                if (memberID.charAt(0)==="L") {
+                    const leaf = this.getLeaf(this.Leafs[memberID].order);
+                    if (leaf.isConjoined() && (this.tacketLineDrag.getIntersections(leaf.path).length>0 || 
+                    this.tacketLineDrag.getIntersections(leaf.conjoinedLeaf().path).length>0)) {
+                        leaf.path.strokeColor = "#ffffff";
+                        leaf.conjoinedLeaf().path.strokeColor = "#ffffff";
+                        // Add leaf to list of targets to tacket
+                        targets.push(leaf);
+                    } else {
+                        leaf.deactivate();
+                    }
+                }
+                
+            });
+        }
+    },
+    drawTacketGuide: function(groupID) {
+        const targetGroup = this.paperGroups.find((member)=>{return (member.group.id===groupID)});
+        const guideY = targetGroup.path.bounds.height/2;
+        const guideX = targetGroup.path.bounds.left;
+        let guideLine = new paper.Path();
+        guideLine.strokeColor = "#ffffff";
+        guideLine.strokeWidth = 5;
+        guideLine.dashArray = [10,10];
+        guideLine.add(new paper.Point(guideX, targetGroup.path.bounds.y + guideY+ (this.strokeWidth/2)));
+        guideLine.add(new paper.Point(guideX+targetGroup.path.bounds.width/3, targetGroup.path.bounds.y + guideY+(this.strokeWidth/2)));
+        let guideLineArrow = new paper.Path();
+        guideLineArrow.strokeColor = "#ffffff";
+        guideLineArrow.strokeWidth = 3;
+        guideLineArrow.add(guideLine.segments[1].point.x-10, guideLine.segments[1].point.y-10);
+        guideLineArrow.add(guideLine.segments[1].point.x, guideLine.segments[1].point.y);
+        guideLineArrow.add(guideLine.segments[1].point.x-10, guideLine.segments[1].point.y+10);
+        let guideLineX1 = new paper.Path();
+        guideLineX1.strokeColor = "#ffffff";
+        guideLineX1.strokeWidth = 3;
+        guideLineX1.add(new paper.Point(guideX-10, guideLine.segments[0].point.y-10));
+        guideLineX1.add(new paper.Point(guideX+10, guideLine.segments[0].point.y+10));
+        let guideLineX2 = new paper.Path();
+        guideLineX2.strokeColor = "#ffffff";
+        guideLineX2.strokeWidth = 3;
+        guideLineX2.add(new paper.Point(guideX-10, guideLine.segments[0].point.y+10));
+        guideLineX2.add(new paper.Point(guideX+10, guideLine.segments[0].point.y-10));
+
+        let guideText = new paper.PointText({
+            content: "DRAW TACKET LINE",
+            point: [guideX+20, targetGroup.path.bounds.y + guideY - 20],
+            fillColor: "#000000",
+            fontSize: 12,
+          });
+        let guideTextRectangle = new paper.Rectangle(
+            new paper.Point(guideX+15, targetGroup.path.bounds.y + guideY - 35),
+            new paper.Size(guideText.bounds.width + 10, guideText.bounds.height + 5)
+        );
+        let guideTextBackground = new paper.Path.Rectangle(guideTextRectangle);
+        guideTextBackground.fillColor = "rgba(255,255,255,0.75)";
+        this.groupTacketGuideLine.addChild(guideLine);
+        this.groupTacketGuideLine.addChild(guideLineArrow);
+        this.tacketToolOriginalPosition = this.groupTacketGuideLine.position.x;
+        this.groupTacketGuide.addChild(this.groupTacketGuideLine);
+        this.groupTacketGuide.addChild(guideTextBackground);
+        this.groupTacketGuide.addChild(guideText);
+        this.groupTacketGuide.addChild(guideLineX1);
+        this.groupTacketGuide.addChild(guideLineX2);
+    },
+    deactivateTacketTool: function() {
+        this.tacketToolIsActive = false;
+        this.groupTacketGuide.removeChildren();
+        if (this.tool) {
+            this.tool.remove();
+        }
+        document.body.style.cursor = "default";
+        this.paperGroups.forEach((group)=>group.setMouseEventHandlers());
+        this.paperLeaves.forEach((leaf)=>leaf.setMouseEventHandlers());
+    },
+    drawTackets: function() {
+        this.paperGroups.forEach((group)=> {
+            if (group.group.tacketed!==null && group.group.tacketed.length>0) {
+                const targetLeafMemberID = group.group.memberIDs.find((memberID)=>{return (memberID.charAt(0)==="L"&& memberID===group.group.tacketed)});
+                if (targetLeafMemberID!==undefined) {
+                    const paperLeaf = this.getLeaf(this.Leafs[targetLeafMemberID].order);
+                    let tacketPath1 = new paper.Path();
+                    tacketPath1.name = "tacket1";
+                    tacketPath1.strokeColor = this.strokeColorTacket;
+                    tacketPath1.strokeWidth = 3;
+                    tacketPath1.add(new paper.Point(15, paperLeaf.path.segments[0].point.y-2));
+                    tacketPath1.add(new paper.Point(paperLeaf.path.segments[0].point.x+this.strokeWidth, paperLeaf.path.segments[0].point.y-2));
+                    tacketPath1.add(new paper.Point(tacketPath1.segments[1].point.x+5, tacketPath1.segments[1].point.y-3));
+                    let tacketPath2 = new paper.Path();
+                    tacketPath2.name = "tacket2";
+                    tacketPath2.strokeColor = this.strokeColorTacket;
+                    tacketPath2.strokeWidth = 3;
+                    tacketPath2.add(new paper.Point(15, paperLeaf.path.segments[0].point.y+2));
+                    tacketPath2.add(new paper.Point(paperLeaf.path.segments[0].point.x+this.strokeWidth, paperLeaf.path.segments[0].point.y+2));
+                    tacketPath2.add(new paper.Point(tacketPath2.segments[1].point.x+5, tacketPath2.segments[1].point.y+3));
+                    const that = this;
+                    // Add listeners
+                    tacketPath1.onClick = function(event) {
+                        that.handleObjectClick(group.group, event);
+                    }
+                    tacketPath2.onClick = function(event) {
+                        that.handleObjectClick(group.group, event);
+                    }
+                    tacketPath1.onMouseEnter = function(event) {
+                        document.body.style.cursor = "pointer";
+                    }
+                    tacketPath1.onMouseLeave = function(event) {
+                        document.body.style.cursor = "default";
+                    }
+                    tacketPath2.onMouseEnter = function(event) {
+                        document.body.style.cursor = "pointer";
+                    }
+                    tacketPath2.onMouseLeave = function(event) {
+                        document.body.style.cursor = "default";
+                    }
+                    this.groupTacket.addChild(tacketPath1);
+                    this.groupTacket.addChild(tacketPath2);
+                }
+            }
+        });
+    },
+    getYOfFirstMember: function(groupID) {
+        let group = this.Groups[groupID];
+        if (group.memberIDs.length===0) {
+            let y = this.groupYs[group.order-1];
+            return y;
+        } 
+        let firstMemberID = group.memberIDs[0];
+        let firstMember = this[firstMemberID.split("_")[0]+"s"][firstMemberID];
+        if (firstMemberID.memberType==="Group") {
+            return this.getYOfFirstMember(firstMemberID);
+        } else {
+            let firstLeafY = this.leafYs[firstMember.order-1];
+            return firstLeafY;
+        }
+    },
+    getYOfLastMember: function(groupID) {
+        const group = this.Groups[groupID];
+        const lastMember = this.getLastMember(groupID);
+        if (lastMember && lastMember.memberType==="Group") {
+            let y = this.groupYs[lastMember.order-1];
+            return y+((lastMember.nestLevel-group.nestLevel)*this.spacing + (this.spacing));
+        } else if (lastMember && lastMember.memberType==="Leaf") {
+            let lastLeafY = this.leafYs[lastMember.order-1] + this.strokeWidth + this.spacing/2.0;
+            return lastLeafY+((lastMember.nestLevel-group.nestLevel-1)*this.spacing);
+        } else {
+            return 0;
+        }
+    },
+    getLastMember: function(groupID) {
+        let lastMember = null;
+        for (let memberID of this.Groups[groupID].memberIDs) {
+            let memberObject = this[memberID.split("_")[0]+"s"][memberID];
+            if (lastMember===null || (memberObject.memberOrder>lastMember.memberOrder)) {
+                lastMember = memberObject;
+            }
+            if (memberID.charAt(0)==="G" && memberObject.memberIDs.length>0) {
+                let result = this.getLastMember(memberID);
+                if (result) lastMember = result;
+            }
+        }
+        return lastMember;
+    }, 
+    getGroupHeight: function(group) {
+        if (group.memberIDs.length>0) {
+            let height = this.getYOfLastMember(group.id) - this.groupYs[group.order-1];
+            return height+this.spacing;
+        } else {
+            return this.spacing;
+        }
+    },
+    numLeaves: function() {
+        return this.paperLeaves.length;
+    },
+    getLeaf: function(leaf_order) {
+        return this.paperLeaves[leaf_order-1];
+    },
+    getLastLeaf: function() {
+        return this.paperLeaves[this.numLeaves()-1];
+    },
+    calculateYs: function(members, currentY, spacing) {
+        if (members.length<1) {
+            return currentY;
+        }
+        let multiplier = 1; 
+        if (members.length>70) {
+            multiplier = 0.5;
+        } else if (members.length>45) {
+            multiplier = 0.6;
+        } else if (members.length>35 || this.viewingMode) {
+            multiplier = 0.8;
+        }
+        members.forEach((memberID, i)=> {
+            let memberObject = this[memberID.split("_")[0]+"s"][memberID];
+            let notesToShow = memberObject.notes.filter((noteID)=>{return this.Notes[noteID].show});
+            
+            if (memberObject.memberType==="Leaf" && memberObject.memberOrder===1 && notesToShow.length>0) {
+                // First leaf in the group with a note 
+                this.multipliers[memberObject.order] = multiplier;
+                currentY = currentY + spacing*(notesToShow.length+1);
+                if (i > 0 && members[i-1].memberType==="Group" && members[i-1].memberIDs.length) {
+                    // Previous sibling is a group with children
+                    currentY = currentY - memberObject.nestLevel*spacing;
+                }
+                this.leafYs.push(currentY); 
+                if (i===(members.length-1)) {
+                    // Last member of group
+                    currentY = currentY + (memberObject.nestLevel)*spacing;
+                }
+            } else if (memberObject.memberType==="Leaf" && memberObject.order > 0) {
+                this.multipliers[memberObject.order] = multiplier;
+                currentY = currentY + spacing*(Math.max(1,notesToShow.length));
+                if (i > 0 && members[i-1].memberType==="Group" && this.Groups[members[i-1]].memberIDs.length) {
+                    // Previous sibling is a group with children
+                    currentY = currentY - memberObject.nestLevel*spacing;
+                }
+                this.leafYs.push(currentY); 
+                if (i===members.length-1) {
+                    // Last member of group
+                    currentY = currentY + (memberObject.nestLevel)*spacing/4;
+                }
+            } else if (memberObject.memberType==="Group") {
+                currentY = currentY + spacing;
+                if (i > 0 && members[i-1].memberType==="Group" && this.Groups[members[i-1]].memberIDs.length>0) {
+                    currentY = currentY - memberObject.nestLevel*spacing;
+                }
+                this.groupYs.push(currentY);
+                if (memberObject.memberIDs.length<1) {
+                    // No nested members, so give padding equal to
+                    // the height of this empty group, which is spacing
+                    currentY = currentY + spacing;
+                    if (i===members.length-1) {
+                        // If we are the last member and it's empty group
+                        currentY = currentY + (memberObject.nestLevel)*spacing;
+                    }
+                }
+                // Recursify!!!
+                currentY = this.calculateYs(memberObject.memberIDs, currentY, spacing);
+            }
+        });
+        return currentY;
+    },
+    fitCanvas: function() {
+        // Resize canvas so that nothing is cut off
+        this.canvas.height = this.groupGroups.bounds.bottom+10;
+    },
+    setWidth: function(value) {
+        this.width = value;
+    },
+    setProject: function(project) {
+        this.groupIDs = project.groupIDs;
+        this.leafIDs = project.leafIDs;
+        this.Groups = project.Groups;
+        this.Leafs = project.Leafs;
+        this.Rectos = project.Rectos;
+        this.Versos = project.Versos;
+        this.Notes = project.Notes;
+    },
+    setActiveGroups: function(value) {
+        this.activeGroups = value;
+        if (this.paperGroups.length>0) {
+            this.paperGroups.forEach((group)=>{
+                group.deactivate();
+            });
+            this.paperGroups.forEach((paperGroup)=> {
+                if (this.activeGroups.includes(paperGroup.group.id)) {
+                    paperGroup.activate();
+                }
+            });
+        }
+    },
+    setActiveLeafs: function(value) {
+        this.activeLeafs = value;
+        if (this.paperLeaves.length>0) {
+            this.paperLeaves.forEach((leaf)=>{
+                leaf.deactivate();
+            });
+            this.paperLeaves.forEach((paperLeaf)=> {
+                if (this.activeLeafs.includes(paperLeaf.leaf.id)) {
+                    paperLeaf.activate();
+                }
+            });
+        }
+    },
+    setActiveRectos: function(value) {
+        this.activeRectos = value;
+        if (this.paperLeaves.length>0) {
+            this.paperLeaves.forEach((leaf)=>{
+                leaf.deactivate();
+            });
+            this.paperLeaves.forEach((paperLeaf)=> {
+                if (this.activeRectos.includes(paperLeaf.leaf.rectoID)) {
+                    paperLeaf.activate();
+                }
+            });
+        }
+    },
+    setActiveVersos: function(value) {
+        this.activeVersos = value;
+        if (this.paperLeaves.length>0) {
+            this.paperLeaves.forEach((leaf)=>{
+                leaf.deactivate();
+            });
+            this.paperLeaves.forEach((paperLeaf)=> {
+                if (this.activeVersos.includes(paperLeaf.leaf.versoID)) {
+                    paperLeaf.activate();
+                }
+            });
+        }
+    },
+    setFlashItems: function(value) {
+        this.flashItems = value;
+    },
+    setFilter: function(filters) {
+        this.filters = filters;
+        this.showFilter();
+    },
+    showFilter: function() {
+        this.paperLeaves.forEach((leaf)=>{
+            leaf.filterHighlight.opacity = 0;
+            if (this.filters.Leafs.includes(leaf.leaf.id) 
+                || this.filters.Sides.includes(leaf.leaf.rectoID)
+                || this.filters.Sides.includes(leaf.leaf.versoID)) {
+                leaf.filterHighlight.opacity = 1;
+            }
+        });
+        this.paperGroups.forEach((group)=>{
+            group.filterHighlight.opacity = 0;
+            if (this.filters.Groups.includes(group.group.id)) {
+                group.filterHighlight.opacity = 1;
+            }
+        });
+    },
+    setVisibility: function(visibleAttributes) {
+        this.visibleAttributes = visibleAttributes;
+        this.paperGroups.forEach((group)=>group.setVisibility(visibleAttributes.group));
+        this.paperLeaves.forEach((leaf)=>leaf.setVisibility(visibleAttributes));
+    },
+}
+function PaperManager(args) {
+    this.canvas = document.getElementById(args.canvasID);
+    paper.setup(this.canvas);
+    this.tool = null;
+    this.groupIDs = args.groupIDs;
+    this.leafIDs = args.leafIDs;
+    this.Groups = args.Groups;
+    this.Leafs = args.Leafs;
+    this.Rectos = args.Rectos;
+    this.Versos = args.Versos;
+    this.Notes = args.Notes;
+    this.origin = args.origin;
+    this.width = paper.view.viewSize.width;
+    this.spacing = this.width*args.spacing;
+    this.strokeWidth = this.width*args.strokeWidth;
+    this.strokeColor = args.strokeColor;
+    this.strokeColorActive = args.strokeColorActive;
+    this.strokeColorAdded = args.strokeColorAdded;
+    this.strokeColorGroupActive = args.strokeColorGroupActive;
+    this.strokeColorTacket = args.strokeColorTacket;
+    this.groupColor = args.groupColor;
+    this.groupColorActive = args.groupColorActive;
+    this.groupTextColor = args.groupTextColor;
+    this.handleObjectClick = args.handleObjectClick;
+    this.groupLeaves = new paper.Group();// Groups of leaf paths
+    this.groupGroups = new paper.Group();// Group of group paths
+    this.groupContainer = new paper.Group();
+    this.activeGroups = args.activeGroups;
+    this.activeLeafs = args.activeLeafs;
+    this.activeRectos = args.activeRectos;
+    this.activeVersos = args.activeVersos;
+    this.paperLeaves = [];
+    this.paperGroups = [];
+    this.leafYs = [];
+    this.groupYs = [];
+    this.multipliers = {};
+    this.flashItems = args.flashItems;
+    this.flashLeaves = [];
+    this.flashGroups = [];
+    this.filters = args.filters;
+    this.strokeColorFilter = args.strokeColorFilter;
+    this.visibleAttributes = args.visibleAttributes;
+    this.viewingMode = args.viewingMode;
+    this.tacketLineDrag = new paper.Path();
+    this.groupTacketGuide = new paper.Group();
+    this.groupTacketGuideLine = new paper.Group();
+    this.groupTacket = new paper.Group();
+    this.toggleTacket = args.toggleTacket;
+    this.addTacket = args.addTacket;
+    this.tacketToolIsActive = false;
+    this.tacketToolOriginalPosition = 0;
+    this.slideForward = true;
+    let that = this;
+    // Flash newly added items
+    paper.view.onFrame = function(event) {
+        for (let i=0; i<that.flashLeaves.length; i++) {
+            that.flashLeaves[i].highlight.opacity = Math.min(0.80, that.flashLeaves[i].highlight.opacity+0.05);
+        }
+        for (let i=0; i<that.flashGroups.length; i++) {
+            that.flashGroups[i].highlight.opacity = Math.min(0.80, that.flashGroups[i].highlight.opacity+0.05);
+        }
+        if (that.tacketToolIsActive) {
+            if (that.slideForward) {
+                that.groupTacketGuideLine.position.x += 0.5;
+                if (that.groupTacketGuideLine.position.x > that.tacketToolOriginalPosition+25) {
+                    that.slideForward = false;
+                }
+            } else {
+                that.groupTacketGuideLine.position.x -= 0.5;
+                if (that.groupTacketGuideLine.position.x < that.tacketToolOriginalPosition) {
+                    that.slideForward = true;
+                }
+            }
+        }
+    }
+}
+export default PaperManager;

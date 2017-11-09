@@ -1,0 +1,21 @@
+.appLoading {
+  width: 100vw;
+  height: 100vh;
+  background: $bg_blue;
+  display: flex;
+  align-items: center;
+  .container {
+    width: 100vw;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin-top: -5%;
+  }
+  .logo { 
+    width: 30%;
+    max-width: 300px;
+    margin-bottom: 1em;
+  }
+ 
+}

@@ -1,0 +1,67 @@
+.tooltip {
+  position: relative;
+  display: inline-block;
+  width: 100%;
+
+  .text {
+    visibility: hidden;
+    width: 210px;
+    font-weight: 300;
+    background: transparentize(darken($black, 15%), 0.1);
+    color: #fff;
+    text-align: center;
+    @include border-radius(6px);
+    padding: 0.5em;
+    margin: 1em;
+    font-size: 0.9em;
+    opacity: 0;
+    @include transition(all, 200ms, ease-in-out);
+
+    /* Position the tooltip */
+    position: absolute;
+    z-index: 100;
+
+    &::after {
+      content: " ";
+      position: absolute;
+      bottom: 100%;  /* At the top of the tooltip */
+      left: 50%;
+      margin-left: -5px;
+      border-width: 5px;
+      border-style: solid;
+      border-color: transparent transparent transparentize(darken($black, 15%), 0.1) transparent;
+    }
+  }
+
+  &.addDialog {
+    .text {
+      width: 70%;
+      &.active {
+        visibility: visible;
+        opacity: 1;
+      }
+      &::after {
+        left: 20%;
+      }
+    }
+  }
+  
+  &.eyeToggle {
+    width: initial;
+    .text {
+      left: -5%;
+      margin-left: 0;
+      width: 100px;
+    
+      &::after {
+        bottom: 100%;  /* At the top of the tooltip */
+        left: 15%;
+        margin-left: -5px;
+      }
+      &.active {
+        visibility: visible;
+        opacity: 1;
+      }
+    }
+  }
+}

@@ -1,0 +1,12 @@
+.projectPanelInfo {
+  padding: 1em;
+  line-height: 2em;
+
+  .info {
+    padding-top: 1em;
+    font-size: 0.9em;
+    span {
+      color: transparentize($black, 0.2);
+    }
+  }
+}
