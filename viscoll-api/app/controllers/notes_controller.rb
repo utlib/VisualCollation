@@ -1,0 +1,250 @@
+class NotesController < ApplicationController
+  before_action :authenticate!
+  before_action :set_note, only: [:update, :link, :unlink, :destroy]
+
+  # POST /notes
+  def create
+    @note = Note.new(note_create_params)
+    if @note.save
+      if not Project.find(@note.project_id).noteTypes.include?(@note.type)
+        render json: {type: "should be one of " +Project.find(@note.project_id).noteTypes.to_s}, status: :unprocessable_entity
+        @note.delete
+        return
+      end
+      @project = Project.find(@note.project_id)
+      @data = generateResponse()
+      render :'projects/show', status: :ok
+    else
+      render json: @note.errors, status: :unprocessable_entity
+    end
+  end
+
+  # PATCH/PUT /notes/1
+  def update
+    type = note_update_params.to_h[:type]
+    if not Project.find(@note.project_id).noteTypes.include?(type)
+      render json: {type: "should be one of " +Project.find(@note.project_id).noteTypes.to_s}, status: :unprocessable_entity
+      return
+    end
+    if @note.update(note_update_params)
+      @data = generateResponse()
+      render :'projects/show', status: :ok
+    else
+      render json: @note.errors, status: :unprocessable_entity
+    end
+  end
+
+  # DELETE /notes/1
+  def destroy
+    @note.destroy
+    @data = generateResponse()
+    render :'projects/show', status: :ok
+  end
+
+  # PUT /notes/1/link
+  def link
+    begin
+      objects = note_object_link_params.to_h[:objects]
+      objects.each do |object|
+        type = object[:type]
+        id = object[:id]
+        begin
+          case type
+          when "Group"
+            @object = Group.find(id)
+            authorized = @object.project.user_id == current_user.id
+          when "Leaf"
+            @object = Leaf.find(id)
+            authorized = @object.project.user_id == current_user.id
+          when "Side"
+            type = id[0]=="R" ? "Recto" : "Verso"
+            @object = Side.find(id)
+            authorized = @object.project.user_id == current_user.id
+          else
+            render json: {type: "object not found with type "+type}, status: :unprocessable_entity
+            return
+          end
+          unless authorized
+            render json: {error: ''}, status: :unauthorized
+            return
+          end
+        rescue Mongoid::Errors::DocumentNotFound
+          render json: {id: type + " object not found with id "+id}, status: :unprocessable_entity
+          return
+        end
+        @object.notes.push(@note)
+        @object.save
+        if (not @note.objects[type].include?(id))
+          @note.objects[type].push(id)
+        end
+        @note.save
+      end
+    rescue Exception => e
+      render json: {error: e.message}, status: :unprocessable_entity
+      return
+    end
+    @data = generateResponse()
+    render :'projects/show', status: :ok
+  end
+
+  # PUT /notes/1/unlink
+  def unlink
+    begin
+      objects = note_object_link_params.to_h[:objects]
+      objects.each do |object|
+        type = object[:type]
+        id = object[:id]
+        begin
+          case type
+          when "Group"
+            @object = Group.find(id)
+            authorized = @object.project.user_id == current_user.id
+          when "Leaf"
+            @object = Leaf.find(id)
+            authorized = @object.project.user_id == current_user.id
+          when "Recto", "Verso"
+            @object = Side.find(id)
+            authorized = @object.project.user_id == current_user.id
+          else
+            render json: {type: "object not found with type "+type}, status: :unprocessable_entity
+            return
+          end
+          unless authorized
+            render json: {error: ''}, status: :unauthorized
+            return
+          end
+        rescue Mongoid::Errors::DocumentNotFound
+          render json: {id: type + " object not found with id "+id}, status: :unprocessable_entity
+          return
+        end
+        @object.notes.delete(@note)
+        @object.save
+        @note.objects[type].delete(id)
+        @note.save
+      end
+    rescue Exception => e
+      render json: {error: e.message}, status: :unprocessable_entity
+      return
+    end
+    @data = generateResponse()
+    render :'projects/show', status: :ok
+  end
+
+
+
+  # POST /notes/type
+  def createType
+    type = note_type_params.to_h[:type]
+    project_id = note_type_params.to_h[:project_id]
+    begin
+      @project = Project.find(project_id)
+    rescue Mongoid::Errors::DocumentNotFound
+      render json: {project_id: "project not found with id "+project_id}, status: :unprocessable_entity
+      return
+    end
+    if @project.noteTypes.include?(type)
+      render json: {type: type+" type already exists in the project"}, status: :unprocessable_entity
+      return
+    else
+      @project.noteTypes.push(type)
+      @project.save
+    end
+    @data = generateResponse()
+    render :'projects/show', status: :ok
+  end
+
+
+  # DELETE /notes/type
+  def deleteType
+    type = note_type_params.to_h[:type]
+    project_id = note_type_params.to_h[:project_id]
+    begin
+      @project = Project.find(project_id)
+    rescue Mongoid::Errors::DocumentNotFound
+      render json: {project_id: "project not found with id "+project_id}, status: :unprocessable_entity
+      return
+    end
+    if not @project.noteTypes.include?(type)
+      render json: {type: type+" type doesn't exist in the project"}, status: :unprocessable_entity
+      return
+    else
+      @project.noteTypes.delete(type)
+      @project.save
+      @project.notes.where(type: type).each do |note|
+        note.update(type: "Unknown")
+        note.save
+      end
+    end
+    @data = generateResponse()
+    render :'projects/show', status: :ok
+  end
+
+
+  # PUT /notes/type
+  def updateType
+    old_type = note_type_params.to_h[:old_type]
+    type = note_type_params.to_h[:type]
+    project_id = note_type_params.to_h[:project_id]
+    begin
+      @project = Project.find(project_id)
+    rescue Mongoid::Errors::DocumentNotFound
+      render json: {project_id: "project not found with id "+project_id}, status: :unprocessable_entity
+      return
+    end
+    if not @project.noteTypes.include?(old_type)
+      render json: {old_type: old_type+" type doesn't exist in the project"}, status: :unprocessable_entity
+      return
+    elsif @project.noteTypes.include?(type)
+      render json: {type: type+" already exists in the project"}, status: :unprocessable_entity
+      return
+    else
+      indexToEdit = @project.noteTypes.index(old_type)
+      @project.noteTypes[indexToEdit] = type
+      @project.save
+      @project.notes.where(type: old_type).each do |note|
+        note.update(type: type)
+        note.save
+      end
+    end
+    @data = generateResponse()
+    render :'projects/show', status: :ok
+  end
+
+
+
+  private
+    # Use callbacks to share common setup or constraints between actions.
+    def set_note
+      begin
+        @note = Note.find(params[:id])
+        @project = Project.find(@note.project_id)
+        if (@project.user_id!=current_user.id)
+          render json: {error: ""}, status: :unauthorized
+          return
+        end
+      rescue Mongoid::Errors::DocumentNotFound
+        render json: {error: "note not found with id "+params[:id]}, status: :not_found
+      rescue Exception => e
+        render json: {error: e.message}, status: :unprocessable_entity
+      end
+    end
+
+    # Never trust parameters from the scary internet, only allow the white list through.
+    def note_create_params
+      params.require(:note).permit(:project_id, :title, :type, :description)
+    end
+
+    def note_update_params
+      params.require(:note).permit(:title, :type, :description, :show)
+    end
+
+    def note_object_link_params
+      params.permit(:objects => [:id, :type])
+    end
+
+    def note_type_params
+      params.require(:noteType).permit(:type, :project_id, :old_type)
+    end
+
+
+end

@@ -1,0 +1,75 @@
+.addDialog {
+
+  .title {
+    color: $black;
+
+  }
+  h3 {
+    border-bottom: 1px solid #ddd;
+  }
+
+  h4 {
+    color: $black;
+    margin-top: 2em;
+    margin-bottom: 0em;
+    font-weight:600;
+  }
+
+  .label {
+    width: 200px;
+    display:inline-block;
+  }
+  .input {
+    width: 200px;
+    display:inline-block;
+    text-align: right;
+  }
+}
+.feedbackDialog {
+  .label {
+    width: 100px;
+    display:inline-block;
+    vertical-align: top;
+  }
+  .input {
+    width: 200px;
+    display:inline-block;
+    text-align: right;
+  }
+}
+.newProjectDialog {
+  h1 {
+    font-weight: normal;
+    text-transform: inherit;
+  }
+  .newProjectSelection {
+    .selectItem {
+      display: flex;
+      padding: 1.9em 0em;
+      @include transition(all, 200ms, ease-in-out);
+      border: 2px solid $white;
+      
+      &:hover {
+        border: 2px solid $teal;
+        cursor: pointer;
+      }
+      
+      .icon {
+        width: 50px;
+        padding:0px 15px;
+      }
+      .text {
+        h1 {
+          font-size: 2em;
+          margin:0;
+        }
+        h2 {
+          font-size: 1em;
+          color: lighten($black, 25);
+          padding-top:5px;
+          margin:0;
+        }
+      }
+    }
+  }
+}

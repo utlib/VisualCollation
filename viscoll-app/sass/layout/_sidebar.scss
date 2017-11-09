@@ -1,0 +1,90 @@
+.sidebar {
+  position: fixed;
+  display: block;
+  top: 55px;
+  width: 18%;
+  height: 100%;
+  background: $bg_blue;
+  opacity: 1;
+  @include transition(all, 200ms, ease-in-out);
+  
+  &.hidden {
+    opacity: 0;
+  }
+  hr {
+    border: 1px solid $teal;
+    margin: 0;
+  }
+  h1 {
+    color: $white;
+    font-size: 1em;
+    font-weight: lighter;
+  }
+  .selectMode {
+    padding: 1em 1em 2em 1em;
+    text-align: center;
+    
+    span {
+      font-size: 13px;
+      color: $teal;
+      text-transform: uppercase;
+    }
+    .tip {
+      font-size: 0.8em;
+      color: $gray;
+      text-align: left;
+      line-height: 1.5em;
+    }
+    .close {
+      text-align: right;
+      margin-right: -10px;
+      margin-top: -10px;
+    }
+    background: darken($bg_blue, 3%);
+  }
+  .manager {
+    text-align: center;
+    padding: 0.5em 0em;
+    cursor: pointer;
+    margin: 0px -16px;
+    text-transform: uppercase;
+    @include transition(all, 100ms, ease-in-out);
+    
+    &:hover {
+      background: transparentize($white,0.98);
+      font-weight: bold;
+    }
+
+    &.active {
+      background: transparentize($white,0.95);
+      font-weight: bold;
+      border-left: 3px solid $teal;
+    }
+  }
+  .export {
+    div + div {
+      margin-top: 10px;
+    }
+  }
+
+}
+
+
+
+.feedback {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 18%;
+  z-index:10000;
+  text-align: center;
+}
+
+.editIcon {
+  @include transition(all, 200ms, ease-in-out);
+  background: #BABABA !important;
+  &:hover {
+    background: #A5A5A5 !important;
+    cursor: pointer;
+  }
+}

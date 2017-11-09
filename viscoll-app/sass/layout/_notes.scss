@@ -1,0 +1,112 @@
+.notesManager {
+  height: 100%;
+  .container {
+    padding: 1em 2em 0em 2em;
+  }
+  
+
+  .browse {
+    height: 100%;
+    .notesList {
+      .item {
+        margin: 1em;
+        padding: 1em;
+        display: block;
+        background: $gray;
+        cursor: pointer;
+        @include transition(background, 200ms, ease-in-out);
+
+        &:hover {
+          background: lighten($gray, 4);
+        }
+        &.active {
+          font-weight: 600;
+          background: $teal;
+        }
+        &.add {
+          border: 1px solid lighten($success, 30);
+          background: lighten($gray, 10);
+
+          &.active {
+            background: $success;
+            color: $white;
+          }
+        }
+      }
+    }
+    .details {
+      position: relative;
+      left: 256px;
+      width: 65%;
+    }
+  }
+  .noteType {
+    padding: 1em 2em;
+    .items {
+      display: flex;
+      flex-wrap: wrap;
+    }
+    .item {
+      width: 220px;
+      margin-right: 1em;
+    }
+    .create {
+      display: flex;
+      margin-bottom: 2em;
+      .input {
+        margin-right: 1em;
+      }
+    }
+  }
+}
+.notesInfobox {
+  display: flex;
+  flex-wrap: wrap;
+}
+.noteSearch {
+  height: 56px;
+
+  .searchTextbox {
+    padding-top: 5px;
+  }
+}
+.searchOptions {
+  visibility: hidden;
+  opacity: 0;
+  background: $white;
+  @include border-radius(0px 0px 6px 6px);
+  @include transition(all, 200ms, ease-in-out);
+
+  padding: 0em 1em;
+  &.active{
+    visibility: visible;
+    opacity: 1;
+  }
+}
+.noteForm {
+  width: 100%;
+  margin-left: 2%;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+
+  .label {
+    padding-top:1em;
+    width: 20%;
+  }
+  .input {
+    width: 80%;
+    .textOnly {
+      margin-top: 1em;
+      color: $black;
+    }
+  }
+  .buttons {
+    text-align: right;
+    width: 100%;
+    padding-top: 2em;
+  }
+  .objectAttachments {
+    width: 100%;
+  }
+}
