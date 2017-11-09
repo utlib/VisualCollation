@@ -1,0 +1,21 @@
+@import 'lib/variables';
+@import 'lib/mixins';
+@import 'layout/landing';
+@import 'layout/sidebar';
+@import 'layout/projectPanel';
+@import 'layout/infobox';
+@import 'layout/workspace';
+@import 'layout/tabular';
+@import 'layout/topbar';
+@import 'layout/notes';
+@import 'layout/filter';
+@import 'layout/loading';
+@import 'layout/404';
+@import 'layout/imageManager';
+@import 'components/dialog';
+@import 'components/tooltip';
+@import 'typography';
+
+html, body {
+  background: #F2F2F2;
+}

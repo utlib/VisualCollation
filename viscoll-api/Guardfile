@@ -1,0 +1,14 @@
+guard :rspec, cmd: "bundle exec rspec" do
+  require "guard/rspec/dsl"
+  dsl = Guard::RSpec::Dsl.new(self)
+
+  # RSpec files
+  rspec = dsl.rspec
+  watch(rspec.spec_files)
+
+  # Rails files
+  watch(%r{^app/controllers/*}) { rspec.spec_dir }
+  watch(%r{^app/models/*}) { rspec.spec_dir }
+  watch(%r{^app/views/*}) { rspec.spec_dir }
+  watch(%r{^app/config/*}) { rspec.spec_dir }
+end

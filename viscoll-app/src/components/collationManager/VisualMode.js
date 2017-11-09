@@ -1,0 +1,147 @@
+import React from 'react';
+import PropTypes from 'prop-types';
+import PaperManager from "../../assets/visualMode/PaperManager.js";
+
+/** Contains the collation drawing in a canvas element */
+export default class VisualMode extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      paperManager: {},
+    };
+  }
+
+  componentDidMount() {
+    this.props.toggleTacket("");
+    window.addEventListener("resize", this.drawOnCanvas);
+    this.setState({
+      paperManager: new PaperManager({
+        canvasID: 'myCanvas',
+        origin: 0,
+        spacing: 0.04,
+        strokeWidth: 0.015,
+        strokeColor: 'rgb(82,108,145)',
+        strokeColorActive: 'rgb(78,214,203)',
+        strokeColorGroupActive: 'rgb(82,108,145)',
+        strokeColorFilter: '#95fff6',
+        strokeColorAdded: "#5F95D6",
+        groupColor: '#e7e7e7',
+        groupColorActive: 'rgb(78,214,203)',
+        groupTextColor: "#727272",
+        strokeColorTacket: "#4e4e4e",
+        handleObjectClick: this.props.handleObjectClick,
+        groupIDs: this.props.project.groupIDs,
+        leafIDs: this.props.project.leafIDs,
+        Groups: this.props.project.Groups,
+        Leafs: this.props.project.Leafs,
+        Rectos: this.props.project.Rectos,
+        Versos: this.props.project.Versos,
+        Notes: this.props.project.Notes,
+        activeGroups: this.props.collationManager.selectedObjects.type==="Group"? this.props.collationManager.selectedObjects.members : [],
+        activeLeafs: this.props.collationManager.selectedObjects.type==="Leaf"? this.props.collationManager.selectedObjects.members : [],
+        activeRectos: this.props.collationManager.selectedObjects.type==="Recto"? this.props.collationManager.selectedObjects.members : [],
+        activeVersos: this.props.collationManager.selectedObjects.type==="Verso"? this.props.collationManager.selectedObjects.members : [],
+        flashItems: this.props.collationManager.flashItems,
+        filters: this.props.collationManager.filters,
+        visibleAttributes: this.props.collationManager.visibleAttributes,
+        toggleTacket: this.props.toggleTacket,
+        addTacket: this.addTacket,
+      })
+    }, ()=>{this.drawOnCanvas();});
+  }
+  componentWillUnmount() {
+    this.props.toggleTacket("");
+    this.state.paperManager.deactivateTacketTool();
+    window.removeEventListener("resize", this.drawOnCanvas);
+  }
+
+  shouldComponentUpdate(nextProps, nextState) {
+    return (this.props.project.Groups!==nextProps.project.Groups || 
+      this.props.project.Sides!==nextProps.project.Sides || 
+      this.props.project.Rectos!==nextProps.project.Rectos || 
+      this.props.project.Versos!==nextProps.project.Versos ||
+      this.props.project.Notes!==nextProps.project.Notes ||
+      this.props.collationManager.selectedObjects!==nextProps.collationManager.selectedObjects ||
+      this.props.collationManager.flashItems !== nextProps.collationManager.flashItems ||
+      this.props.collationManager.filters !== nextProps.collationManager.filters ||
+      this.props.collationManager.visibleAttributes !== nextProps.collationManager.visibleAttributes ||
+      this.props.tacketing !== nextProps.tacketing
+    );
+  }
+
+  componentWillUpdate(nextProps) {
+    if (Object.keys(this.state.paperManager).length>0) {
+      this.state.paperManager.setProject(nextProps.project);
+      this.state.paperManager.setFlashItems(nextProps.collationManager.flashItems);
+      this.state.paperManager.setActiveGroups(nextProps.collationManager.selectedObjects.type==="Group"? nextProps.collationManager.selectedObjects.members : []);
+      this.state.paperManager.setActiveLeafs(nextProps.collationManager.selectedObjects.type==="Leaf"? nextProps.collationManager.selectedObjects.members : []);
+      this.state.paperManager.setActiveRectos(nextProps.collationManager.selectedObjects.type==="Recto"? nextProps.collationManager.selectedObjects.members : []);
+      this.state.paperManager.setActiveVersos(nextProps.collationManager.selectedObjects.type==="Verso"? nextProps.collationManager.selectedObjects.members : []);
+      this.state.paperManager.setFilter(nextProps.collationManager.filters);
+      this.state.paperManager.setVisibility(nextProps.collationManager.visibleAttributes);
+      this.drawOnCanvas();
+      if (nextProps.tacketing!=="") {
+          this.state.paperManager.activateTacketTool(nextProps.tacketing);
+      } else {
+          this.state.paperManager.deactivateTacketTool();
+      }
+    }
+  }
+
+
+  addTacket = (groupID, leafID) => {
+    let updatedGroup = {
+      tacketed: leafID,
+    }
+    this.props.updateGroup(groupID, updatedGroup);
+  }
+
+  /**
+   * Update canvas size based on current window size
+   * @public
+   */
+  updateCanvasSize = () => {
+    // Resize the canvas
+    let maxWidth = window.innerWidth-window.innerWidth*0.46;
+    document.getElementById("myCanvas").width=maxWidth;
+    this.state.paperManager.setWidth(maxWidth);
+  }
+  
+  /**
+   * Draw canvas
+   * @public
+   */
+  drawOnCanvas = () => {
+      // Create leaves through manager
+      this.updateCanvasSize();
+      this.state.paperManager.draw();
+  }
+
+  render() {
+    let canvasAttr = {
+      'data-paper-hidpi': 'off',
+      'height': "99999999px",
+      'width': window.innerWidth-window.innerWidth*0.46,
+    };
+    return (
+        <div>
+          <canvas id="myCanvas" {...canvasAttr}></canvas>
+        </div>
+    );
+  }
+}
+VisualMode.propTypes = {
+  /** Array of root group objects */
+  groups: PropTypes.arrayOf(PropTypes.object),
+  /** Callback for handling clicking on an object (group or leaf) */
+  handleObjectClick: PropTypes.func,
+  /** Dictionary of selected objects */
+  selectedObjects: PropTypes.object,
+  /** Dictionary containing arrays of updated leaf/group ID's to 'flash' - from Redux store */
+  flashItems: PropTypes.shape({
+    leaves: PropTypes.arrayOf(PropTypes.number),
+    groups: PropTypes.arrayOf(PropTypes.number)
+  }),
+  /** Dictionary of filter matches */
+  filters: PropTypes.object,
+}

@@ -1,0 +1,53 @@
+@mixin border-radius($radius) {
+  -webkit-border-radius: $radius;
+     -moz-border-radius: $radius;
+      -ms-border-radius: $radius;
+          border-radius: $radius;
+}
+
+@mixin box-shadow($shadow...) {
+   -webkit-box-shadow: $shadow;
+   box-shadow: $shadow;
+}
+
+@mixin transition($target, $duration, $transitionType) {
+  -webkit-transition: $target $duration $transitionType;
+      -ms-transition: $target $duration $transitionType;
+          transition: $target $duration $transitionType;
+}
+
+@mixin breakpoint($point) {
+  @media(nth($point, 1): nth($point, 2)) { @content; }
+}
+
+@mixin centerize($x_percent, $y_percent) {
+    position: relative;
+    top: $y_percent;
+    left: $x_percent;
+    transform: translateY(-$y_percent) translateX(-$x_percent);
+}
+
+@mixin  user-select($value) {
+-webkit-touch-callout: $value; /* iOS Safari */
+  -webkit-user-select: $value; /* Safari */
+   -khtml-user-select: $value; /* Konqueror HTML */
+     -moz-user-select: $value; /* Firefox */
+      -ms-user-select: $value; /* Internet Explorer/Edge */
+          user-select: $value; /* Non-prefixed version, currently
+                                supported by Chrome and Opera */
+}
+
+@mixin keyframes($name) {
+  @-webkit-keyframes #{$name} {
+    @content; 
+  }
+  @-moz-keyframes #{$name} {
+    @content;
+  }
+  @-ms-keyframes #{$name} {
+    @content;
+  }
+  @keyframes #{$name} {
+    @content;
+  } 
+}
