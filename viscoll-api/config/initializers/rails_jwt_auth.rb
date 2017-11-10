@@ -18,7 +18,7 @@ RailsJwtAuth.setup do |config|
   #config.simultaneously_sessions = 3
 
   # mailer sender
-  config.mailer_sender = 'noreply@utlviscoll.library.utoronto.ca'
+  config.mailer_sender = 'noreply-utlviscoll@library.utoronto.ca'
 
   # url used to create email link with confirmation token
   config.confirmation_url = if Rails.env.production? then 'https://utlviscoll.library.utoronto.ca/confirmation' else 'http://127.0.0.1:3000/confirmation' end
