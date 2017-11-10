@@ -1,7 +1,6 @@
 if defined?(ActionMailer)
   class RailsJwtAuth::Mailer < ApplicationMailer
     default from: RailsJwtAuth.mailer_sender
-
     def confirmation_instructions(user)
       @user = user
 
@@ -9,7 +8,6 @@ if defined?(ActionMailer)
         url, params = RailsJwtAuth.confirmation_url.split('?')
         params = params ? params.split('&') : []
         params.push("confirmation_token=#{@user.confirmation_token}")
-
         @confirmation_url = "#{url}?#{params.join('&')}"
       else
         @confirmation_url = confirmation_url(confirmation_token: @user.confirmation_token)
@@ -22,12 +20,10 @@ if defined?(ActionMailer)
 
     def reset_password_instructions(user)
       @user = user
-
       if RailsJwtAuth.reset_password_url
         url, params = RailsJwtAuth.reset_password_url.split('?')
         params = params ? params.split('&') : []
         params.push("reset_password_token=#{@user.reset_password_token}")
-
         @reset_password_url = "#{url}?#{params.join('&')}"
       else
         @reset_password_url = password_url(reset_password_token: @user.reset_password_token)
