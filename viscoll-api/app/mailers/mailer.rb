@@ -3,7 +3,6 @@ if defined?(ActionMailer)
     default from: RailsJwtAuth.mailer_sender
     def confirmation_instructions(user)
       @user = user
-
       if RailsJwtAuth.confirmation_url
         url, params = RailsJwtAuth.confirmation_url.split('?')
         params = params ? params.split('&') : []

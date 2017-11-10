@@ -148,9 +148,14 @@ node {
         sh 'cp viscoll-app/node_modules ./REACT/node_modules -f -r'
         sh 'mkdir -p test_report'
         if (isProductionBranch()){
-          sh 'sed -i "21 s/utlviscoll/viscoll/" viscoll-api/config/initializers/rails_jwt_auth.rb'
-          sh 'sed -i "24 s/utlviscoll/viscoll/" viscoll-api/config/initializers/rails_jwt_auth.rb'
-          sh 'sed -i "30 s/utlviscoll/viscoll/" viscoll-api/config/initializers/rails_jwt_auth.rb'
+          sh 'sed -i "21 s/dummy/viscoll/" RAILS/config/initializers/rails_jwt_auth.rb'
+          sh 'sed -i "24 s/dummy/viscoll/" RAILS/config/initializers/rails_jwt_auth.rb'
+          sh 'sed -i "30 s/dummy/viscoll/" RAILS/config/initializers/rails_jwt_auth.rb'
+        }
+        if (isUsabilityBranch()){
+          sh 'sed -i "21 s/dummy/utlviscoll/" RAILS/config/initializers/rails_jwt_auth.rb'
+          sh 'sed -i "24 s/dummy/utlviscoll/" RAILS/config/initializers/rails_jwt_auth.rb'
+          sh 'sed -i "30 s/dummy/utlviscoll/" RAILS/config/initializers/rails_jwt_auth.rb'
         }
       }
       catch (e) { if (!errorOccurred) {errorOccurred = e} }
