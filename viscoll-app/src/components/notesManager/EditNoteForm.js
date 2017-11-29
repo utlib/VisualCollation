@@ -230,6 +230,7 @@ export default class EditNoteForm extends Component {
       return (
         <div style={{width: '100%', textAlign:'right'}}>
           <RaisedButton
+            aria-label="Submit"
             primary
             icon={<IconSubmit />}
             style={{minWidth:"60px",marginLeft:"5px"}}
@@ -238,10 +239,11 @@ export default class EditNoteForm extends Component {
             disabled={name==="title" && this.state.errors.title!==""}
           />
           <RaisedButton
+            aria-label="Cancel"
             secondary
             icon={<IconClear />}
             style={{minWidth:"60px",marginLeft:"5px"}}
-            onTouchTap={(e)=>this.onCancelUpdate(name)}
+            onClick={(e)=>this.onCancelUpdate(name)}
           />
         </div>
       )
@@ -307,7 +309,8 @@ export default class EditNoteForm extends Component {
         key={id}
         style={{marginRight:4, marginBottom:4}}
         onRequestDelete={deleteFn}
-        onClick={()=>{}}
+        onKeyPress={(e)=>{if(e.key===" "||e.key==="Enter"){deleteFn()}}}
+        tabIndex={this.props.tabIndex}
       >
         {name}
       </Chip>
@@ -327,6 +330,7 @@ export default class EditNoteForm extends Component {
           <MultiSelectAutoComplete 
             updateSelectedItems={(selected) => this.updatedObjects(selected, "Group")}
             selectedItems={this.props.linkedGroups}
+            tabIndex={this.props.tabIndex}
           >
             {Object.keys(this.props.Groups).map((itemID)=>this.renderMenuItem(itemID, "Group"))}
           </MultiSelectAutoComplete >
@@ -338,6 +342,7 @@ export default class EditNoteForm extends Component {
           <MultiSelectAutoComplete 
             updateSelectedItems={(selected) => this.updatedObjects(selected, "Leaf")}
             selectedItems={this.props.linkedLeaves}
+            tabIndex={this.props.tabIndex}
           >
             {Object.keys(this.props.Leafs).map((itemID)=>this.renderMenuItem(itemID, "Leaf"))}
           </MultiSelectAutoComplete >
@@ -349,6 +354,7 @@ export default class EditNoteForm extends Component {
           <MultiSelectAutoComplete 
             updateSelectedItems={(selected) => this.updatedObjects(selected, "Side")}
             selectedItems={this.props.linkedSides}
+            tabIndex={this.props.tabIndex}
           >
             {Object.keys(this.props.Sides).map((itemID, index)=>this.renderMenuItem(itemID, "Side", index))}
           </MultiSelectAutoComplete >
@@ -372,11 +378,13 @@ export default class EditNoteForm extends Component {
           {this.props.isReadOnly?"":<div>
           <h2>Attach a new item</h2>
           <SelectField
+            aria-label="Select type of object to attach"
             floatingLabelText="Type"
             maxHeight={300}
             onChange={(e,i,v)=>this.setState({linkType:v})}
             value={this.state.linkType}
             style={{marginTop:"-2em",width:120}}
+            tabIndex={this.props.tabIndex}
           >
             {["Group", "Leaf", "Side"].map((type) => {
               return <MenuItem key={`${type}`} value={`${type}`} primaryText={`${type}`} /> ;
@@ -391,6 +399,8 @@ export default class EditNoteForm extends Component {
             item={this.props.note?"note": ""}
             noteID={this.props.note? this.props.note.id : ""}
             action={{deleteNote: this.props.action.deleteNote}}
+            togglePopUp={this.props.togglePopUp}
+            tabIndex={this.props.tabIndex}
           />
         </div>
     }
@@ -398,58 +408,68 @@ export default class EditNoteForm extends Component {
       <div className="container">
         <h1>{title}</h1> 
         <div className="noteForm">
-          <div className="label">
+          <div className="label" id="noteTitleLabel">
             Title
           </div>
           <div className="input">
             {this.props.isReadOnly? <div className="textOnly">{this.state.title}</div> :
             <form onSubmit={(e)=>this.update(e, "title")}>
               <TextField
-              name="title"
-              value={this.state.title}
-              errorText={this.state.errors.title}
-              onChange={(e,v)=>this.onChange("title",v)}
-              fullWidth
+                aria-labelledby="noteTitleLabel"
+                name="title"
+                value={this.state.title}
+                errorText={this.state.errors.title}
+                onChange={(e,v)=>this.onChange("title",v)}
+                fullWidth
+                autoFocus
+                aria-invalid={this.state.errors.title.length>0}
+                tabIndex={this.props.tabIndex}
               />
               {this.renderSubmitButtons("title")}
             </form>}
           </div>
-          <div className="label">
+          <div className="label" id="noteTypeLabel">
             Type
           </div>
           <div className="input">
             {this.props.isReadOnly? <div className="textOnly">{this.state.type}</div> :
             <SelectField
+              aria-labelledby="noteTypeLabel"
               value={this.state.type}
               onChange={(e,i,v)=>this.onChange("type",v)}
+              tabIndex={this.props.tabIndex}
             >
               {this.props.noteTypes.map(this.renderNoteTypes)}
             </SelectField>}
           </div>
-          <div className="label">
+          <div className="label" id="noteDescriptionLabel">
             Description
           </div>
           <div className="input">
             {this.props.isReadOnly? <div className="textOnly">{this.state.description}</div> :
             <form onSubmit={(e)=>this.update(e, "description")}>
               <TextField
+                aria-labelledby="noteDescriptionLabel"
                 name="description"
                 value={this.state.description}
                 onChange={(e,v)=>this.onChange("description",v)}
                 multiLine
                 fullWidth
+                tabIndex={this.props.tabIndex}
               />
               {this.renderSubmitButtons("description")}
             </form>}
           </div>
-          <div className="label">
+          <div className="label" id="noteShowLabel">
             Show in diagram
           </div>
           <div className="input">
             <Checkbox
+              aria-labelledby="noteShowLabel"
               checked={this.props.note.show}
               style={{paddingTop:20}}
               onCheck={(e,v)=>this.props.action.updateNote(this.props.note.id, {title:this.state.title,type:this.state.type,description:this.state.description,show:v})}
+              tabIndex={this.props.tabIndex}
             />
           </div>
           {linkedObjects}

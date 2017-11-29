@@ -2,7 +2,6 @@ import React, {Component} from 'react';
 import { connect } from "react-redux";
 import PropTypes from 'prop-types';
 import TopBar from "./TopBar";
-import Feedback from "./Feedback";
 import ManageNotes from "../components/notesManager/ManageNotes";
 import NoteType from "../components/notesManager/NoteType";
 import {Tabs, Tab} from 'material-ui/Tabs';
@@ -130,6 +129,8 @@ class NotesManager extends Component {
                   Leafs={this.props.Leafs}
                   Rectos={this.props.Rectos}
                   Versos={this.props.Versos}
+                  togglePopUp={this.props.togglePopUp} 
+                  tabIndex={this.props.popUpActive?-1:0}
                 />
     } else if (this.props.activeTab==="TYPES") {
       content = <NoteType 
@@ -140,28 +141,31 @@ class NotesManager extends Component {
                     createNoteType: this.props.createNoteType, 
                     updateNoteType: this.props.updateNoteType, 
                     deleteNoteType: (noteTypes)=>this.props.deleteNoteType(noteTypes, this.props) }}
+                  togglePopUp={this.props.togglePopUp} 
+                  tabIndex={this.props.popUpActive?-1:0}
                 />
     }
 
     const sidebar = (
-      <div className={"sidebar"}>
+      <div className="sidebar" role="region" aria-label="sidebar">
         <hr />  
-        <Panel title="Managers" defaultOpen={true}>
-          <div
+        <Panel title="Managers" defaultOpen={true} noPadding={true} tabIndex={this.props.popUpActive?-1:0}>
+          <button
             className={ this.props.managerMode==="collationManager" ? "manager active" : "manager" }        
-            onTouchTap={() => this.props.changeManagerMode("collationManager")} >
+            onClick={() => this.props.changeManagerMode("collationManager")} 
+            aria-label="Collation Manager"
+            tabIndex={this.props.popUpActive?-1:0}
+          >
             Collation
-          </div>
-          <div
+          </button>
+          <button
             className={ this.props.managerMode==="notesManager" ? "manager active" : "manager" }        
-            onTouchTap={() => this.props.changeManagerMode("notesManager")} >
+            onClick={() => this.props.changeManagerMode("notesManager")} 
+            aria-label="Notes Manager"
+            tabIndex={this.props.popUpActive?-1:0}
+          >
             Notes
-          </div>
-          <div
-            className={ this.props.managerMode==="imageManager" ? "manager active" : "manager" }        
-            onTouchTap={() => this.props.changeManagerMode("imageManager")} >
-            Images
-          </div>
+          </button>
         </Panel>
       </div>
     );
@@ -175,23 +179,21 @@ class NotesManager extends Component {
           onTypeChange={this.onTypeChange}
           filterTypes={this.state.filterTypes}
           history={this.props.history}
+          tabIndex={this.props.popUpActive?-1:0}
         >
           <Tabs 
             tabItemContainerStyle={{backgroundColor: '#ffffff'}}
             value={this.props.activeTab} 
             onChange={(v)=>this.props.changeNotesTab(v)}
           >
-            <Tab label="Manage notes" value="MANAGE" buttonStyle={topbarStyle.tab} />
-            <Tab label="Edit note types" value="TYPES" buttonStyle={topbarStyle.tab} />
+            <Tab label="Manage notes" value="MANAGE" buttonStyle={topbarStyle.tab} tabIndex={this.props.popUpActive?-1:0} />
+            <Tab label="Edit note types" value="TYPES" buttonStyle={topbarStyle.tab} tabIndex={this.props.popUpActive?-1:0} />
           </Tabs>
         </TopBar>
         {sidebar}
         <div className="notesWorkspace">
           {content}
         </div>
-        <Feedback 
-          action = {{sendFeedback: (title, message)=>this.props.sendFeedback(title, message, this.props.user.id)}}
-        />
       </div>
     )
   }

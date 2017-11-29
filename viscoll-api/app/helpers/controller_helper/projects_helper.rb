@@ -1,6 +1,7 @@
 require 'net/http'
 module ControllerHelper
   module ProjectsHelper
+    include ControllerHelper::LeafsHelper
     def addGroupsLeafsConjoin(project, allGroups)
       groupIDs = []
       allGroups.each do |groupInfo|
@@ -66,7 +67,7 @@ module ControllerHelper
         if manifestName.length>50 
           manifestName = manifestName[0,47] + "..."
         end
-        @projectInformation[:manifests][manifestID][:images] = manifestInformation[:images]
+        @projectInformation[:manifests][manifestID][:images] = manifestInformation[:images].map { |image| image.merge({manifestID: manifestID})}
         @projectInformation[:manifests][manifestID][:name] = manifestName
       end
 
@@ -80,6 +81,7 @@ module ControllerHelper
           "type": group.type,
           "title": group.title,
           "tacketed": group.tacketed,
+          "sewing": group.sewing,
           "nestLevel": group.nestLevel,
           "parentID": group.parentID,
           "notes": [],
@@ -91,9 +93,9 @@ module ControllerHelper
           rootMemberOrder += 1
         end
       end
-      @groups.each do | group | 
-        if group[1][:nestLevel] == 1
-          getLeafMembers(group[1][:memberIDs])
+      @groups.each do | groupID, group | 
+        if group[:nestLevel] == 1
+          getLeafMembers(group[:memberIDs])
         end
       end
       @project.leafs.each do | leaf |
@@ -118,11 +120,7 @@ module ControllerHelper
         }
       end
       
-      @leafIDs.each do | leafID |
-        leaf = @leafs[leafID]
-        @rectoIDs.push(leaf[:rectoID])
-        @versoIDs.push(leaf[:versoID])
-      end
+      
 
       @project.sides.each do | side | 
         parentOrder =  @leafIDs.index(side.parentID) + 1
@@ -130,7 +128,7 @@ module ControllerHelper
           "id": side.id.to_s,
           "parentID": side.parentID,
           "parentOrder": parentOrder,
-          "folio_number": side.folio_number ? side.folio_number : parentOrder.to_s + side.id[0],
+          "folio_number": side.folio_number,
           "texture": side.texture, 
           "image": side.image,
           "script_direction": side.script_direction,
@@ -142,6 +140,38 @@ module ControllerHelper
         elsif side.id[0] == "V"
           @versos[side.id.to_s] = obj
         end
+      end
+
+      # Generate list of recto and verso ID's
+      # Generate folio numbers for sides that do not have folio numbers parentOrder.to_s + side.id[0]
+      endleafCount = 0
+      folioNumberCount = 0
+      @leafIDs.each do | leafID |
+        leaf = @leafs[leafID]
+        @rectoIDs.push(leaf[:rectoID])
+        @versoIDs.push(leaf[:versoID])
+        recto = @rectos[leaf[:rectoID]]
+        verso = @versos[leaf[:versoID]]
+        if leaf[:type] == "Endleaf"
+          endleafCount += 1
+          if recto[:folio_number] == nil
+            recto[:folio_number] = to_roman(endleafCount) + recto[:id][0]
+          end
+          if verso[:folio_number] == nil
+            verso[:folio_number] = to_roman(endleafCount) + verso[:id][0]
+          end
+        else
+          if (recto[:folio_number] == nil) || (verso[:folio_number] == nil)
+            folioNumberCount += 1
+          end
+          if recto[:folio_number] == nil
+            recto[:folio_number] = (folioNumberCount).to_s + recto[:id][0]
+          end
+          if verso[:folio_number] == nil
+            verso[:folio_number] = (folioNumberCount).to_s + verso[:id][0]
+          end
+        end
+
       end
 
       @project.notes.each do | note | 
@@ -192,6 +222,35 @@ module ControllerHelper
           @leafs[memberID] = {"memberOrder": index + 1}
         end
       end
+    end
+
+    def roman_mapping
+      {
+        1000 => "m",
+        900 => "cm",
+        500 => "d",
+        400 => "cd",
+        100 => "c",
+        90 => "xc",
+        50 => "l",
+        40 => "xl",
+        10 => "x",
+        9 => "ix",
+        5 => "v",
+        4 => "iv",
+        1 => "i"
+      }
+    end
+
+    def to_roman(value)
+      result = ""
+      number = value
+      roman_mapping.keys.each do |divisor|
+        quotient, modulus = number.divmod(divisor)
+        result << roman_mapping[divisor] * quotient
+        number = modulus
+      end
+      result
     end
 
   end

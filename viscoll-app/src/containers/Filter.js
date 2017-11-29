@@ -334,13 +334,14 @@ class Filter extends Component {
             addRow={this.addRow}
             disableAddRow={this.disableAddRow()}
             disableNewRow={this.disableNewRow()}
+            tabIndex={this.props.tabIndex}
           />
         );
       }
     let filterContainerStyle = this.props.open?{top:'56px'}:{top:'-'+this.state.filterPanelHeight+'px'};
     if (this.props.fullWidth) filterContainerStyle.width="100%";
     let panel = 
-    <div className="filter" style={this.props.open?{opacity:1}:{opacity:0}}>
+    <div role={this.props.open?"region":""} aria-label={this.props.open?"filter panel":""} className="filter" style={this.props.open?{opacity:1}:{opacity:0}}>
       <div id="filterContainer" className="filterContainer" style={filterContainerStyle}>
         {queries}
         <div style={{paddingLeft: 15, display: "flex", alignItems: "baseline", justifyContent:"space-between"}}>
@@ -351,16 +352,18 @@ class Filter extends Component {
             <div style={{marginRight: 10}}>
             <Toggle
               label="Hide non-matches"
-              onToggle={this.props.toggleFilterDisplay}
+              aria-label="Hide non-matches"
+              onClick={this.props.toggleFilterDisplay}
               disabled={!this.props.filterActive}
-              style={this.props.viewMode==="TABULAR"? {width:"inherit"}:{display:"none"}}
+              style={(this.props.viewMode!=="TABULAR"||!this.props.open)? {display:"none"}:{width:"inherit"}}
               labelPosition="right"
-              labelStyle={{color:"rgb(82, 108, 145)", textTransform:"uppercase", fontWeight: 500, fontSize: 14}}
+              labelStyle={this.props.filterActive?{color:"rgb(82, 108, 145)", textTransform:"uppercase", fontWeight: 500, fontSize: 14}: {textTransform:"uppercase", fontWeight: 500, fontSize: 14}}
+              tabIndex={this.props.tabIndex}
             />
             </div>
             <div style={{marginRight: 10}}>
             <RaisedButton
-              onTouchTap={this.handleSelectOpen}
+              onClick={this.handleSelectOpen}
               disabled={!this.props.filterActive}
               label={
                 this.state.select==="" 
@@ -371,6 +374,8 @@ class Filter extends Component {
               }
               labelPosition="before"
               icon={<ArrowDown />}
+              tabIndex={this.props.tabIndex}
+              style={this.props.open?{}:{display:"none"}}
             />
             <Popover
               open={this.state.selectPopover}
@@ -382,10 +387,10 @@ class Filter extends Component {
               <Menu
                 onChange={(e,v)=>{this.setState({select:v});this.handleSelection(v)}}
               >
-                <MenuItem value={"Groups_matching"} primaryText="Select Matching Groups" />
-                <MenuItem value={"Leafs_matching"} primaryText="Select Matching Leaves" />
-                <MenuItem value={"Rectos_matching"} primaryText="Select Matching Rectos" />
-                <MenuItem value={"Versos_matching"} primaryText="Select Matching Versos" />
+                <MenuItem value={"Groups_matching"} primaryText="Select Matching Groups" disabled={this.props.groupMatches.length>0?false:true} />
+                <MenuItem value={"Leafs_matching"} primaryText="Select Matching Leaves" disabled={this.props.leafMatches.length>0?false:true}/>
+                <MenuItem value={"Rectos_matching"} primaryText="Select Matching Rectos" disabled={this.props.sideMatches.length>0?false:true}/>
+                <MenuItem value={"Versos_matching"} primaryText="Select Matching Versos" disabled={this.props.sideMatches.length>0?false:true}/>
                 {this.props.selectedObjects.members.length > 0 ? 
                   <MenuItem value={""} primaryText="Clear Selection" />
                   : null
@@ -397,17 +402,17 @@ class Filter extends Component {
             <RaisedButton
               label="CLEAR FILTER"
               onClick={()=>this.resetFilters()}
-              style={{marginRight: 15}}
-              backgroundColor="#D87979"
-              labelColor="#ffffff"    
+              backgroundColor="#b53c3c"
+              labelColor="#ffffff"
+              tabIndex={this.props.tabIndex}
+              style={this.props.open?{marginRight: 15}:{display:"none"}}
             />
             </div>
           </div>
         </div>
       </div>
       </div>
-    
-    return panel;
+      return panel;
   }
 }
 

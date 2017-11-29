@@ -394,32 +394,15 @@ export function deleteNoteType(noteType) {
 }
 
 
-export function mapSidesToImages(linkedSideIDs, images, unlinkedSideIDs) {
-  // linkedSideIDs = [{id, ...}, {id, ...}]
-  // images = [{manifestID: 123, label: "imageName", url: "http..."}]
-  // unlinkedSideIDs = [id, id, id]
-  let sides = [];
-  for (const index of linkedSideIDs.keys()) {
-    let side = {id: linkedSideIDs[index].id};
-    side["attributes"] = {
-      image: {manifestID: images[index].manifestID, label: images[index].id, url: images[index].url}
-    }
-    sides.push(side);
-  }
-  for (const id of unlinkedSideIDs) {
-    let side = {id};
-    side["attributes"] = {
-      image: {}
-    }
-    sides.push(side);
-  }
+export function mapSidesToImages(sideMappings) {
+  // sideMappings = [{id: 112, image: {}}, ...]
   return { 
     types: ['SHOW_LOADING','MAP_SIDES_SUCCESS','MAP_SIDES_FAILED'],
     payload: {
       request : {
         url: `/sides`,
         method: 'put',
-        data: {sides},
+        data: {sides: sideMappings},
         successMessage: "Successfully updated the sides" ,
         errorMessage: "Ooops! Something went wrong"
       }

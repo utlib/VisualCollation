@@ -9,10 +9,9 @@ import Visibility from 'material-ui/svg-icons/action/visibility';
 import VisibilityOff from 'material-ui/svg-icons/action/visibility-off';
 import {getLeafsOfGroup} from '../../helpers/getLeafsOfGroup';
 import Chip from 'material-ui/Chip';
-import AddNote from './dialog/AddNote';
-import NoteDialog from './dialog/NoteDialog';
-import ImageViewer from "../global/ImageViewer";
 import Dialog from 'material-ui/Dialog';
+import AddNote from './dialog/AddNote';
+import ImageViewer from "../global/ImageViewer";
 
 export default class LeafInfoBox extends React.Component {
 
@@ -21,7 +20,6 @@ export default class LeafInfoBox extends React.Component {
     
     this.state = {
       imageModalOpen: false,
-      activeNote: null,
       isBatch: this.props.selectedLeaves.length>1,
       ...this.emptyAttributeState(),
       ...this.batchAttributeToggleState(),
@@ -68,15 +66,6 @@ export default class LeafInfoBox extends React.Component {
     if (!this.state.isBatch) {
       this.setState({...this.emptyAttributeState()});
     }
-    if (nextProps.commonNotes.length===0) {
-      this.setState({activeNote:null});
-    }
-    // Update active note 
-    nextProps.commonNotes.forEach((noteID)=> {
-      if (this.state.activeNote!==null && noteID===this.state.activeNote.id) {
-        this.setState({activeNote: nextProps.Notes[noteID]});
-      }
-    });
   }
 
   hasActiveAttributes = () => {
@@ -181,7 +170,8 @@ export default class LeafInfoBox extends React.Component {
           key={note.id}
           style={{marginRight:4, marginBottom:4}}
           onRequestDelete={deleteFn}
-          onClick={()=>this.setState({activeNote: note})}
+          onClick={()=>this.props.openNoteDialog(note)}
+          tabIndex={this.props.tabIndex}
         >
           {note.title}
         </Chip>);
@@ -191,10 +181,12 @@ export default class LeafInfoBox extends React.Component {
 
   closeNoteDialog = () => {
     this.setState({activeNote:null});
+    this.props.togglePopUp(false);
   }
 
   toggleImageModal = (imageModalOpen) => {  
     this.setState({imageModalOpen})
+    this.props.togglePopUp(imageModalOpen);
   }
 
   render() {
@@ -218,18 +210,19 @@ export default class LeafInfoBox extends React.Component {
       // Generate eye toggle checkbox
       let eyeCheckbox = "";
       if (this.props.viewMode==="TABULAR" && this.state.isBatch) {
-
         eyeCheckbox = 
         <div className="tooltip eyeToggle">
           <Checkbox
+            aria-label={this.props.visibleAttributes[attributeDict.name]?"Hide '" + attributeDict.displayName + "' attribute in collation":"Show '" + attributeDict.displayName + "' attribute in collation"}
             checkedIcon={<Visibility  />}
             uncheckedIcon={<VisibilityOff />}
-            onCheck={(event,value)=>this.props.action.toggleVisibility("leaf", attributeDict.name, !this.props.visibleAttributes[attributeDict.name])}
+            onClick={(event,value)=>this.props.action.toggleVisibility("leaf", attributeDict.name, !this.props.visibleAttributes[attributeDict.name])}
             style={{display:"inline-block",width:"25px"}}
             iconStyle={{marginRight:"10px"}}
             checked={this.props.visibleAttributes[attributeDict.name]}
             onMouseEnter={()=>{this.setState({["visibility_hover_"+attributeDict.name]:true})}}
             onMouseOut={()=>{this.setState({["visibility_hover_"+attributeDict.name]:false})}}
+            tabIndex={this.props.tabIndex}
           />
           <div className={this.state["visibility_hover_"+attributeDict.name]===true?"text active":"text"}>
             {this.props.visibleAttributes[attributeDict.name]?
@@ -243,16 +236,18 @@ export default class LeafInfoBox extends React.Component {
         label = 
         <div className="tooltip eyeToggle">
           <Checkbox
+            aria-label={this.props.visibleAttributes[attributeDict.name]?"Hide '" + attributeDict.displayName + "' attribute in collation":"Show '" + attributeDict.displayName + "' attribute in collation"}
             key={"single_"+attributeDict.displayName}
             label={attributeDict.displayName} 
             checkedIcon={<Visibility />}
             uncheckedIcon={<VisibilityOff />}
-            onCheck={(event,value)=>this.props.action.toggleVisibility("leaf", attributeDict.name, !this.props.visibleAttributes[attributeDict.name])}
+            onClick={(event,value)=>this.props.action.toggleVisibility("leaf", attributeDict.name, !this.props.visibleAttributes[attributeDict.name])}
             style={{display:"inline-block",width:"25px"}}
             checked={this.props.visibleAttributes[attributeDict.name]}
             iconStyle={{marginRight:"10px", color:"gray"}}
             onMouseEnter={()=>{this.setState({["visibility_hover_"+attributeDict.name]:true})}}
             onMouseOut={()=>{this.setState({["visibility_hover_"+attributeDict.name]:false})}}
+            tabIndex={this.props.tabIndex}
           />
           <div className={this.state["visibility_hover_"+attributeDict.name]===true?"text active":"text"}>
             {this.props.visibleAttributes[attributeDict.name]?
@@ -265,14 +260,16 @@ export default class LeafInfoBox extends React.Component {
       if (this.state.isBatch && !this.props.isReadOnly) {
         // In batch edit for either edit modes
         label = <Checkbox
+                  aria-label={"Select '" + attributeDict.displayName + "' to batch edit"}
                   key={"batch_"+attributeDict.displayName}
                   label={attributeDict.displayName} 
-                  onCheck={(event,value)=>this.toggleCheckbox(attributeDict.name,value)}
+                  onClick={(event,value)=>this.toggleCheckbox(attributeDict.name,value)}
                   labelStyle={!this.state["batch_"+attributeDict.name]?{color:"gray"}:{}}
                   checked={this.state["batch_"+attributeDict.name]}
                   style={{display:"inline-block",width:"25px"}}
                   iconStyle={{marginRight:"10px"}}
-                   disabled={(attributeDict.name==="conjoined_leaf_order"||attributeDict.name.includes("attached_to"))}
+                  disabled={(attributeDict.name==="conjoined_leaf_order"||attributeDict.name.includes("attached_to"))}
+                  tabIndex={this.props.tabIndex}
                 />;
       }
       let input = leafAttributes[attributeDict.name];
@@ -290,10 +287,12 @@ export default class LeafInfoBox extends React.Component {
           });
           input = 
             <SelectField
+              aria-label={attributeDict.displayName + " attribute dropdown" }
               value={activeLeaf.conjoined_to}
               onChange={(e, i, v)=>this.onConjoinChange(e,i,activeLeaf,v)}
               fullWidth={true}
               disabled={this.state.isBatch}
+              tabIndex={this.props.tabIndex}
             >
               {menuItems}
             </SelectField>
@@ -314,10 +313,12 @@ export default class LeafInfoBox extends React.Component {
           }
           input = 
             <SelectField
+              aria-label={attributeDict.displayName + " attribute dropdown" }
               value={value}
               onChange={(e, i, v)=>this.dropDownChange(e,i,v,attributeDict.name)}
               fullWidth={true}
               disabled={this.state.isBatch && !this.state["batch_"+attributeDict.name]}
+              tabIndex={this.props.tabIndex}
             >
               {menuItems}
             </SelectField>
@@ -342,9 +343,10 @@ export default class LeafInfoBox extends React.Component {
     if (this.state.isBatch && this.hasActiveAttributes()) {
       submitBtn = <RaisedButton 
                     primary fullWidth 
-                    onTouchTap={this.batchSubmit} 
+                    onClick={this.batchSubmit} 
                     label="Submit changes" 
                     style={{marginBottom:10}}
+                    tabIndex={this.props.tabIndex}
                   />
     }
     let addBtn = "";
@@ -354,6 +356,8 @@ export default class LeafInfoBox extends React.Component {
                 Leafs={this.props.Leafs}
                 selectedLeaves={this.props.selectedLeaves}
                 projectID={this.props.projectID}
+                togglePopUp={this.props.togglePopUp}
+                tabIndex={this.props.tabIndex}
                />
     }
     let deleteBtn = (
@@ -364,15 +368,18 @@ export default class LeafInfoBox extends React.Component {
         memberType="Leaf"
         Leafs={this.props.Leafs}
         Groups={this.props.Groups}
+        togglePopUp={this.props.togglePopUp}
+        tabIndex={this.props.tabIndex}
       />
     ); 
 
     let conjoinButton = (
       <RaisedButton 
         primary fullWidth 
-        onTouchTap={this.props.conjoinLeafs} 
+        onClick={this.props.conjoinLeafs} 
         label="Conjoin Selected Leaves"
         style={{marginBottom:10}}
+        tabIndex={this.props.tabIndex}
       />
     );
     if (this.props.selectedLeaves.length<2){
@@ -398,30 +405,42 @@ export default class LeafInfoBox extends React.Component {
         imageModalContent = (<ImageViewer rectoURL={rectoURL} versoURL={versoURL} />);
         if (rectoURL) {
           imageThumbnails.push(
-            <div key="rectoThumbnail" style={{display: "inline-block"}}>
+            <button 
+              className="image"
+              aria-label="Recto image" 
+              key="rectoThumbnail" 
+              style={{display: "inline-block"}} 
+              onClick={()=>this.toggleImageModal(true)}
+              tabIndex={this.props.tabIndex}
+            >
               <img 
                 alt={recto.folio_number}
                 src={rectoURL+"/full/80,/0/default.jpg"} 
-                onClick={()=>this.toggleImageModal(true)}
                 style={{cursor: "pointer"}}
               />
               <br />
               {recto.folio_number}
-            </div>
+            </button>
           )
         }
         if (versoURL) {
           imageThumbnails.push(
-            <div key="versoThumbnail" style={{paddingLeft: 5, display: "inline-block"}}>
+            <button 
+              className="image"
+              aria-label="Verso image" 
+              key="versoThumbnail" 
+              style={{paddingLeft: 5, display: "inline-block"}}
+              onClick={()=>this.toggleImageModal(true)}
+              tabIndex={this.props.tabIndex}
+            >
               <img 
                 alt={verso.folio_number}
                 src={versoURL+"/full/80,/0/default.jpg"} 
-                onClick={()=>this.toggleImageModal(true)}
                 style={{cursor: "pointer"}}
               />
               <br />
               {verso.folio_number}
-            </div>
+            </button>
           )
         }
       }
@@ -445,6 +464,8 @@ export default class LeafInfoBox extends React.Component {
                 createAndAttachNote: this.props.action.createAndAttachNote
               }}
               noteTypes={this.props.noteTypes}
+              togglePopUp={this.props.togglePopUp}
+              tabIndex={this.props.tabIndex}
             />}
               <div>
                 <h3 key="notesHeading">
@@ -466,29 +487,7 @@ export default class LeafInfoBox extends React.Component {
               {deleteBtn}
             </div>
           }
-          
-          <NoteDialog
-            open={this.state.activeNote!==null}
-            commonNotes={this.props.commonNotes}
-            activeNote={this.state.activeNote ? this.state.activeNote : {id: null}}
-            closeNoteDialog={this.closeNoteDialog}
-            action={{
-              updateNote: this.props.action.updateNote, 
-              linkNote: this.props.action.linkDialogNote, 
-              unlinkNote: this.props.action.unlinkDialogNote,
-              linkAndUnlinkNotes: this.props.action.linkAndUnlinkNotes,
-              deleteNote: this.props.action.deleteNote,
-            }}             
-            projectID={this.props.projectID}  
-            notification={this.props.notification}
-            noteTypes={this.props.noteTypes}
-            Notes={this.props.Notes}
-            Groups={this.props.Groups}
-            Leafs={this.props.Leafs}
-            Rectos={this.props.Rectos}
-            Versos={this.props.Versos}
-            isReadOnly={this.props.isReadOnly}
-          />
+
           <Dialog
           modal={false}
           open={this.state.imageModalOpen}

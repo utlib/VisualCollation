@@ -23,26 +23,26 @@ class Note
   def update_objects_before_delete
     self.objects[:Group].each do |groupID|
       if group = Group.where(:id => groupID).first
-        @group.notes.delete(self)
-        @group.save
+        group.notes.delete(self)
+        group.save
       end
     end
     self.objects[:Leaf].each do |leafID|
       if leaf = Leaf.where(:id => leafID).first
-        @leaf.notes.delete(self)
-        @leaf.save
+        leaf.notes.delete(self)
+        leaf.save
       end
     end
     self.objects[:Recto].each do |sideID|
       if side = Side.where(:id => sideID).first
-        @side.notes.delete(self)
-        @side.save
+        side.notes.delete(self)
+        side.save
       end
     end
     self.objects[:Verso].each do |sideID|
       if side = Side.where(:id => sideID).first
-        @side.notes.delete(self)
-        @side.save
+        side.notes.delete(self)
+        side.save
       end
     end
   end

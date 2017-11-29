@@ -136,6 +136,7 @@ export default class NoteType extends Component {
       return (
         <div style={{float:'right', marginRight:'25%'}}>
           <RaisedButton
+            aria-label="Submit"
             primary
             icon={<IconSubmit />}
             style={{minWidth:"60px",marginLeft:"5px"}}
@@ -144,10 +145,11 @@ export default class NoteType extends Component {
             disabled={!this.isValid(this.state.types[index])}
           />
           <RaisedButton
+            aria-label="Submit"
             secondary
             icon={<IconClear />}
             style={{minWidth:"60px",marginLeft:"5px"}}
-            onTouchTap={(e)=>this.onCancelUpdate(index)}
+            onClick={(e)=>this.onCancelUpdate(index)}
           />
         </div>
       )
@@ -161,17 +163,23 @@ export default class NoteType extends Component {
       <div key={"type_"+index} className="item">
         <form onSubmit={(e)=>this.onUpdate(e, index)}>
           <TextField 
+            aria-label={noteType + " note type"}
             name={"type_"+index}
             value={this.state.types[index]}
             onChange={(e,v)=>this.onChange(v,index)}
             errorText={this.state.errorTypes[index]}
+            aria-invalid={this.state.errorTypes[index].length>0}
             style={{width:"75%"}}
+            tabIndex={this.props.tabIndex}
           />
           { noteType==="Unknown"? "" : 
             <DeleteConfirmation 
               item="note type"
               onDelete={this.onDelete}
               index={index}
+              itemName={noteType}
+              togglePopUp={this.props.togglePopUp}
+              tabIndex={this.props.tabIndex}
             />
           }
           {this.renderSubmitButtons(index)}
@@ -185,17 +193,20 @@ export default class NoteType extends Component {
   }
 
   render() {
-    return <div className="noteType">
+    return <div className="noteType" role="region" aria-label="main">
       <h2 style={{paddingTop:0}}>Add a new note type</h2>
         <form onSubmit={(e)=>this.onCreate(e)}>
           <div className="create">
           <div className="input">
             <TextField
+              aria-label="New note type"
               name="newType"
               value={this.state.newType}
               onChange={(e,v)=>this.onNewTypeChange(v)}
               errorText={this.state.errorNewType}
+              aria-invalid={this.state.errorNewType.length>0}
               style={{width: 300}}
+              tabIndex={this.props.tabIndex}
             />
           </div>
           <div className="submit">
@@ -204,6 +215,7 @@ export default class NoteType extends Component {
               primary
               type="submit"
               disabled={!this.isValid(this.state.newType)}
+              tabIndex={this.props.tabIndex}
             />
           </div>
       </div>

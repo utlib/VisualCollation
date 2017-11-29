@@ -1,17 +1,27 @@
 class NotesController < ApplicationController
   before_action :authenticate!
   before_action :set_note, only: [:update, :link, :unlink, :destroy]
+  before_action :set_attached_project, only: [:createType, :deleteType, :updateType]
 
   # POST /notes
   def create
     @note = Note.new(note_create_params)
+    begin
+      @project = Project.find(@note.project_id)
+    rescue Mongoid::Errors::DocumentNotFound
+      render json: {project_id: "project not found with id "+@note.project_id}, status: :unprocessable_entity
+      return
+    end
+    if @project.user != current_user
+      render json: {error: ''}, status: :unauthorized
+      return
+    end
     if @note.save
       if not Project.find(@note.project_id).noteTypes.include?(@note.type)
         render json: {type: "should be one of " +Project.find(@note.project_id).noteTypes.to_s}, status: :unprocessable_entity
         @note.delete
         return
       end
-      @project = Project.find(@note.project_id)
       @data = generateResponse()
       render :'projects/show', status: :ok
     else
@@ -135,13 +145,6 @@ class NotesController < ApplicationController
   # POST /notes/type
   def createType
     type = note_type_params.to_h[:type]
-    project_id = note_type_params.to_h[:project_id]
-    begin
-      @project = Project.find(project_id)
-    rescue Mongoid::Errors::DocumentNotFound
-      render json: {project_id: "project not found with id "+project_id}, status: :unprocessable_entity
-      return
-    end
     if @project.noteTypes.include?(type)
       render json: {type: type+" type already exists in the project"}, status: :unprocessable_entity
       return
@@ -157,13 +160,6 @@ class NotesController < ApplicationController
   # DELETE /notes/type
   def deleteType
     type = note_type_params.to_h[:type]
-    project_id = note_type_params.to_h[:project_id]
-    begin
-      @project = Project.find(project_id)
-    rescue Mongoid::Errors::DocumentNotFound
-      render json: {project_id: "project not found with id "+project_id}, status: :unprocessable_entity
-      return
-    end
     if not @project.noteTypes.include?(type)
       render json: {type: type+" type doesn't exist in the project"}, status: :unprocessable_entity
       return
@@ -184,13 +180,6 @@ class NotesController < ApplicationController
   def updateType
     old_type = note_type_params.to_h[:old_type]
     type = note_type_params.to_h[:type]
-    project_id = note_type_params.to_h[:project_id]
-    begin
-      @project = Project.find(project_id)
-    rescue Mongoid::Errors::DocumentNotFound
-      render json: {project_id: "project not found with id "+project_id}, status: :unprocessable_entity
-      return
-    end
     if not @project.noteTypes.include?(old_type)
       render json: {old_type: old_type+" type doesn't exist in the project"}, status: :unprocessable_entity
       return
@@ -228,10 +217,24 @@ class NotesController < ApplicationController
         render json: {error: e.message}, status: :unprocessable_entity
       end
     end
+    
+    def set_attached_project
+      project_id = note_type_params.to_h[:project_id]
+      begin
+        @project = Project.find(project_id)
+        if @project.user_id != current_user.id
+          render json: {error: ""}, status: :unauthorized
+          return
+        end
+      rescue Mongoid::Errors::DocumentNotFound
+        render json: {project_id: "project not found with id "+project_id}, status: :unprocessable_entity
+        return
+      end
+    end
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def note_create_params
-      params.require(:note).permit(:project_id, :title, :type, :description)
+      params.require(:note).permit(:project_id, :title, :type, :description, :show)
     end
 
     def note_update_params

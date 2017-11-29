@@ -33,6 +33,8 @@ class Dashboard extends Component {
       selectedProjectIndex: -1,
       selectedProject: {},
       projectDrawerOpen: false,
+      userProfileDialogOpen: false,
+      feedbackOpen: false,
     };
   }
 
@@ -97,17 +99,27 @@ class Dashboard extends Component {
     });
   }
 
+  modalIsOpen = () => {
+    return this.state.feedbackOpen || this.state.newProjectModalOpen || this.state.newProjectPopoverOpen || this.state.userProfileDialogOpen;
+  }
+
+  userProfileToggle = (userProfileDialogOpen) => {
+    this.setState({userProfileDialogOpen});
+  }
+
   render() {
     let sidebar = (
-      <div className="sidebar">
+      <div role="region" aria-label="sidebar" className="sidebar">
         <hr />           
         <br />            
         <RaisedButton
           label="New"
-          secondary={true}
+          primary
           style={{width:"80%", marginLeft:"10%"}}
           {...btnMd}
-          onTouchTap={() => this.handleNewProjectModalToggle(true)}
+          onClick={() => this.handleNewProjectModalToggle(true)}
+          tabIndex={this.modalIsOpen()? -1 : 0}
+          aria-label="Create new collation"
         />
       </div>
     );
@@ -129,15 +141,16 @@ class Dashboard extends Component {
           deleteProject={this.props.deleteProject}
           user={this.props.user}
           history={this.props.history}
+          tabIndex={this.modalIsOpen()? -1 : 0}
           />
       </Drawer>
     );
 
     return (
       <div>
-        <TopBar history={this.props.history}>
+        <TopBar history={this.props.history} tabIndex={this.modalIsOpen()? -1 : 0} togglePopUp={this.userProfileToggle}>
           <Tabs tabItemContainerStyle={{backgroundColor: '#ffffff'}}>
-            <Tab label="List view" buttonStyle={topbarStyle.tab} />
+            <Tab tabIndex={-1} label="List view" buttonStyle={topbarStyle.tab} />
           </Tabs>
         </TopBar>
         {sidebar}
@@ -152,17 +165,18 @@ class Dashboard extends Component {
           importStatus={this.props.importStatus}
           cloneProject={this.handleCloneProject}
         />
-        <div className={this.state.projectDrawerOpen? "dashboardWorkspace projectPanelOpen" : "dashboardWorkspace"}>
+        <div role="main" className={this.state.projectDrawerOpen? "dashboardWorkspace projectPanelOpen" : "dashboardWorkspace"}>
           <ListView 
-            singleClickIndex={this.state.selectedProjectIndex} 
+            selectedProjectIndex={this.state.selectedProjectIndex}
             selectProject={this.handleProjectSelection} 
             allProjects={this.props.projects} 
             doubleClick={this.doubleClick} 
+            tabIndex={this.modalIsOpen()? -1 : 0}
           />
         </div>     
         <LoadingScreen loading={this.props.loading} />
         <Notification message={this.props.notification} />
-        <Feedback />
+        <Feedback tabIndex={this.modalIsOpen()? -1 : 0 } togglePopUp={(v)=>this.setState({feedbackOpen:v})}/>
       </div>
       );
   }

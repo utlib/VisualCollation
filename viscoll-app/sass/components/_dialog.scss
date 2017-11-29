@@ -26,48 +26,73 @@
   }
 }
 .feedbackDialog {
+  p {
+    color: $black;
+  }
   .label {
+    color: $black;
     width: 100px;
     display:inline-block;
     vertical-align: top;
   }
   .input {
-    width: 200px;
+    width: 250px;
     display:inline-block;
     text-align: right;
   }
 }
 .newProjectDialog {
+  p {
+    color: $black;
+  }
   h1 {
     font-weight: normal;
     text-transform: inherit;
   }
+  h2 {
+    font-size: 1em;
+  }
+  .section {
+    margin-left: 2em;
+  }
   .newProjectSelection {
+    button.btnSelection {
+      width: 100%;
+      background: $white;
+      border: 0;
+      @include box-shadow(0px 2px 10px 0px rgba(0,0,0,0.2));
+      margin-bottom: 1em;
+      outline: 0;
+
+      &:focus, &:hover {
+        outline-style: solid;
+        outline-width: 0.5em;
+        outline-color: transparentize($teal, 0.5); 
+        cursor: pointer;
+      }     
+    }
     .selectItem {
       display: flex;
-      padding: 1.9em 0em;
-      @include transition(all, 200ms, ease-in-out);
-      border: 2px solid $white;
-      
-      &:hover {
-        border: 2px solid $teal;
-        cursor: pointer;
-      }
+      padding: 2.5em 0em;
       
       .icon {
         width: 50px;
         padding:0px 15px;
       }
       .text {
-        h1 {
-          font-size: 2em;
-          margin:0;
+        line-height: 2.5em;
+        span:nth-child(1) {
+          text-align: left;
+          font-size: 2.5em;
+          display: block;
+          color: $black;
+          width: 100%;
         }
-        h2 {
-          font-size: 1em;
-          color: lighten($black, 25);
-          padding-top:5px;
-          margin:0;
+        span:nth-child(2) {
+          font-size: 1.3em;
+          color: lighten($black, 15);
+          width: 100%;
+          display: block;
         }
       }
     }

@@ -1,9 +1,11 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 import Drawer from 'material-ui/Drawer';
+import RaisedButton from 'material-ui/RaisedButton';
 import EditNoteForm from "./EditNoteForm";
 import NewNoteForm from "./NewNoteForm";
 import Add from "material-ui/svg-icons/content/add"
+import {btnGreen,btnMd} from "../../styles/button";
 
 /** Create New Note tab in the Note Manager */
 export default class ManageNotes extends Component {
@@ -38,13 +40,17 @@ export default class ManageNotes extends Component {
   renderList = (noteID) => {
     const note = this.props.Notes[noteID];
     return (
-      <div 
-        className={(this.state.activeNote===note) ? "item active" : "item"} 
-        key={noteID} 
+      <RaisedButton 
+        className={"item active"}
+        key={noteID}
         onClick={()=>this.onItemChange(note)}
-      >
-        {note.title}
-      </div>
+        style={{width:"90%"}}
+        {...btnMd}
+        label={note.title.length>18? note.title.substring(0,18) + "...": note.title}
+        labelStyle={{fontSize:15}}    
+        backgroundColor={this.state.activeNote && this.state.activeNote.id===noteID? "#4ED6CB": "#F2F2F2" }
+        tabIndex={this.props.tabIndex}
+      />
     );
   }
 
@@ -147,7 +153,7 @@ export default class ManageNotes extends Component {
           noteTypes={this.props.noteTypes}
         />
       );
-    } else{
+    } else {
       noteForm = (
         <EditNoteForm 
           action={{ 
@@ -170,6 +176,8 @@ export default class ManageNotes extends Component {
           linkedGroups={this.getLinkedGroups()}
           linkedLeaves={this.getLinkedLeaves()}
           linkedSides={this.getLinkedSides()}
+          togglePopUp={this.props.togglePopUp}
+          tabIndex={this.props.tabIndex}
         />
       );
     }
@@ -183,19 +191,25 @@ export default class ManageNotes extends Component {
           containerStyle={{top:"56px",left:"18%", height: "93%",background:"#e5e5e5",boxShadow:"none"}}
           className="notesList"
         >
-          <div 
-            className={!this.state.activeNote ? "item add active" : "item add"} 
+          <div role="region" aria-label="browse note titles">
+          <RaisedButton 
+            primary={!this.state.activeNote?false:true}
+            className={"item add item"} 
             onClick={()=>this.onItemChange(null)}
+            style={{width:"90%"}}
+            {...btnMd}
+            label="Create New Note"
+            labelStyle={{fontSize:15}}
+            icon={<Add />}
+            labelColor={"#ffffff"}
+            backgroundColor={"#566476"}
+            tabIndex={this.props.tabIndex}
           >
-            Create new note
-            <Add 
-              color={!this.state.activeNote ? "#FFFFFF" : "#34A251"} 
-              style={{float:"right"}} 
-            />
-          </div>
+          </RaisedButton>
           {Object.keys(this.props.Notes).map(this.renderList)}
+          </div>
         </Drawer>
-        <div className="details">
+        <div className="details" role="region" aria-label="note details">
           {noteForm}
         </div>
       </div>

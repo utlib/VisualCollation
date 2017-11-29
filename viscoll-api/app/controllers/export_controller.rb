@@ -9,14 +9,11 @@ class ExportController < ApplicationController
       when "xml"
         exportData = buildDotModel(@project)
         render json: {data: exportData, type: @format}, status: :ok
-      when "formula"
-        exportData = buildFormula(@project)
-        render json: {data: exportData, type: @format}, status: :ok
       when "json"
         @data = buildJSON(@project)
         render :'exports/show', status: :ok
       else
-        render json: {error: "Export format must be one of [json, xml, formula]"}, status: :unprocessable_entity
+        render json: {error: "Export format must be one of [json, xml]"}, status: :unprocessable_entity
       end
     rescue Exception => e
       render json: {error: e.message}, status: :internal_server_error

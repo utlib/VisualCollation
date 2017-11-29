@@ -1,49 +1,39 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import {
-  Table,
-  TableBody,
-  TableHeader,
-  TableHeaderColumn,
-  TableRow,
-  TableRowColumn,
-} from 'material-ui/Table';
 
 /**
  * List the projects in a table format
  */
-const ListView = ({singleClickIndex, selectProject, allProjects=[], doubleClick}) => {
-
+const ListView = ({selectedProjectIndex, selectProject, allProjects=[], doubleClick, tabIndex}) => {
+  const selectedProjectID = selectedProjectIndex>=0? allProjects[selectedProjectIndex].id : null;
+  const viewDate = {year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'}
+  const ariaDate = {year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit'}
   const projectsList = allProjects.map((project, i) => {
-    var selected = singleClickIndex === i;
     return (    
-      <TableRow 
-        key={project.id} 
+      <button 
+        key={project.id}
+        onClick={()=>selectProject(i)}
         onDoubleClick={()=>doubleClick(project.id)} 
-        selected={selected} 
-        style={{background:"rgba(255,255,255,0.2)", cursor:"pointer"}}
+        className={selectedProjectID===project.id? "selected":""}
+        tabIndex={tabIndex}
       >
-        <TableRowColumn>{project.title}</TableRowColumn>
-        <TableRowColumn>{new Date(project.updated_at).toLocaleString('en-US')}</TableRowColumn>
-      </TableRow>
+        <div aria-label={"Project: " + project.title}>{project.title}</div>
+        <div aria-label={"Last modified: " + new Date(project.updated_at).toLocaleString('en-US', ariaDate)} >{new Date(project.updated_at).toLocaleString('en-US',viewDate)}</div>
+      </button>
     );
   });
   return (
-    <Table  
+    <div id="listView" aria-label="List of your projects"
       style={{background:"#f2f2f2"}} 
-      bodyStyle={{background:"#fff"}} 
-      onRowSelection={(index)=>{selectProject(index[0])}}
     >
-      <TableHeader displaySelectAll={false} adjustForCheckbox={false}>
-        <TableRow>
-          <TableHeaderColumn>Name</TableHeaderColumn>
-          <TableHeaderColumn>Date Modified</TableHeaderColumn>
-        </TableRow>
-      </TableHeader>
-      <TableBody deselectOnClickaway={false} displayRowCheckbox={false}>
+      <div className="header" role="presentation">
+        <div style={{color: "#606060"}}>Name</div>
+        <div style={{color: "#606060"}}>Date Modified</div>
+      </div>
+      <div>
         {projectsList}
-      </TableBody>
-    </Table>
+      </div>
+    </div>
   );
 };
 ListView.propTypes = {

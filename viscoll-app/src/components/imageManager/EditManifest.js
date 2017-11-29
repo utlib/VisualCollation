@@ -82,14 +82,16 @@ export default class EditManifest extends Component {
           <div className="imageManager">
             <form className="form" onSubmit={(e)=>this.onSubmit(e)}>
               <div className="row">
-                <div className="label">Manifest name</div>
+                <div className="label" id="manifestNameLabel">Manifest name</div>
                 <div className="input">
                   <TextField 
-                    id="name" 
+                    id="name"
+                    aria-labelledby="manifestNameLabel" 
                     value={this.state.name}
                     errorText={this.state.nameError}
                     onChange={(e,v)=>this.onChange("name", v)}
                     fullWidth
+                    autoFocus
                   />
                 </div>
               </div>

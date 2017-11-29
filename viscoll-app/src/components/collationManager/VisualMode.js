@@ -12,7 +12,8 @@ export default class VisualMode extends React.Component {
   }
 
   componentDidMount() {
-    this.props.toggleTacket("");
+    this.props.toggleVisualizationDrawing({type:"tacketed", value: ""});
+    this.props.toggleVisualizationDrawing({type:"sewing", value: ""});
     window.addEventListener("resize", this.drawOnCanvas);
     this.setState({
       paperManager: new PaperManager({
@@ -44,13 +45,15 @@ export default class VisualMode extends React.Component {
         flashItems: this.props.collationManager.flashItems,
         filters: this.props.collationManager.filters,
         visibleAttributes: this.props.collationManager.visibleAttributes,
-        toggleTacket: this.props.toggleTacket,
-        addTacket: this.addTacket,
+        toggleVisualizationDrawing: this.props.toggleVisualizationDrawing,
+        addVisualization: this.addVisualization,
+        openNoteDialog: this.props.openNoteDialog,
       })
     }, ()=>{this.drawOnCanvas();});
   }
   componentWillUnmount() {
-    this.props.toggleTacket("");
+    this.props.toggleVisualizationDrawing({type:"tacketed", value: ""});
+    this.props.toggleVisualizationDrawing({type:"sewing", value: ""});
     this.state.paperManager.deactivateTacketTool();
     window.removeEventListener("resize", this.drawOnCanvas);
   }
@@ -65,7 +68,8 @@ export default class VisualMode extends React.Component {
       this.props.collationManager.flashItems !== nextProps.collationManager.flashItems ||
       this.props.collationManager.filters !== nextProps.collationManager.filters ||
       this.props.collationManager.visibleAttributes !== nextProps.collationManager.visibleAttributes ||
-      this.props.tacketing !== nextProps.tacketing
+      this.props.tacketed !== nextProps.tacketed || 
+      this.props.sewing !== nextProps.sewing
     );
   }
 
@@ -80,18 +84,19 @@ export default class VisualMode extends React.Component {
       this.state.paperManager.setFilter(nextProps.collationManager.filters);
       this.state.paperManager.setVisibility(nextProps.collationManager.visibleAttributes);
       this.drawOnCanvas();
-      if (nextProps.tacketing!=="") {
-          this.state.paperManager.activateTacketTool(nextProps.tacketing);
+      if (nextProps.tacketed!=="") {
+          this.state.paperManager.activateTacketTool(nextProps.tacketed);
+      } else if (nextProps.sewing!=="") {
+        this.state.paperManager.activateTacketTool(nextProps.sewing, "sewing");
       } else {
           this.state.paperManager.deactivateTacketTool();
       }
     }
   }
 
-
-  addTacket = (groupID, leafID) => {
+  addVisualization = (groupID, type, leafIDs) => {
     let updatedGroup = {
-      tacketed: leafID,
+      [type]: leafIDs,
     }
     this.props.updateGroup(groupID, updatedGroup);
   }

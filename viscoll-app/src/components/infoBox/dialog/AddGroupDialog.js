@@ -32,6 +32,10 @@ export default class AddGroupDialog extends React.Component {
     }
   };
 
+  componentWillReceiveProps() {
+    this.resetForm();
+  }
+
   /**
    * Increment a state's value by one, bounded by `max` and `min`. If the user previously 
    * entered an invalid value, the value is set to `min`.  
@@ -41,7 +45,8 @@ export default class AddGroupDialog extends React.Component {
    * @param {number} max
    * @public
    */
-  incrementNumber = (name, min, max) => {
+  incrementNumber = (name, min, max, e) => {
+    if (e) e.preventDefault();
     let newCount = 0;
     if (!this.isNormalInteger(this.state[name])) {
       newCount = min; 
@@ -63,7 +68,8 @@ export default class AddGroupDialog extends React.Component {
    * @param {number} max
    * @public
    */
-  decrementNumber = (name, min, max) => {
+  decrementNumber = (name, min, max, e) => {
+    if (e) e.preventDefault();
     let newCount = Math.min(max, Math.max(min, this.state[name]-1));
     let newState = {errorText:{}};
     newState[name]=(isNaN(newCount))?min:newCount;
@@ -281,7 +287,7 @@ export default class AddGroupDialog extends React.Component {
       conjoin: false,
       oddLeaf: 2,
       copies: 1,
-      location: "",
+      location: this.props.selectedGroups.length>0?"":"inside",
       errorText: {
         numberOfGroups: "",
         numberOfLeaves: "",
@@ -295,7 +301,7 @@ export default class AddGroupDialog extends React.Component {
     const actions = [
       <FlatButton
         label="Cancel"
-        onTouchTap={()=>{this.resetForm();this.props.closeDialog()}}
+        onClick={()=>{this.props.closeDialog()}}
         style={{width:"49%", marginRight:"1%",border:"1px solid #ddd"}}
       />,
       <RaisedButton
@@ -303,7 +309,7 @@ export default class AddGroupDialog extends React.Component {
         type="submit"
         name="submit"
         primary
-        onTouchTap={this.submit}
+        onClick={this.submit}
         disabled={this.props.addLeafs? false : this.isDisabled()}
         style={{width:"49%"}}
       />,
@@ -327,20 +333,23 @@ export default class AddGroupDialog extends React.Component {
           </div>
           <div className="input">
             <TextField
-                name="numberOfLeaves"
-                value={this.state.numberOfLeaves}
-                errorText={this.state.errorText.numberOfLeaves}
-                onChange={(e,v)=>this.onNumberChange("numberOfLeaves", v)}
-                style={{width:"100px"}}
-                inputStyle={{textAlign:"center"}}
+              aria-label="Number of leaves"
+              name="numberOfLeaves"
+              value={this.state.numberOfLeaves}
+              errorText={this.state.errorText.numberOfLeaves}
+              onChange={(e,v)=>this.onNumberChange("numberOfLeaves", v)}
+              style={{width:"100px"}}
+              inputStyle={{textAlign:"center"}}
             />
             <IconButton
-              onTouchTap={() => this.decrementNumber("numberOfLeaves", 1, 999)}
+              onClick={(e) => this.decrementNumber("numberOfLeaves", 1, 999, e)}
+              aria-label="Decrement number of leaves"
             >
               <RemoveCircle color={light.palette.primary1Color} />
             </IconButton>
             <IconButton
-              onTouchTap={() => this.incrementNumber("numberOfLeaves", 1, 999)}
+              onClick={(e) => this.incrementNumber("numberOfLeaves", 1, 999, e)}
+              aria-label="Increment number of leaves"
             >
               <AddCircle color={light.palette.primary1Color}/>
             </IconButton >
@@ -356,6 +365,7 @@ export default class AddGroupDialog extends React.Component {
         </div>
         <div className="input">
           <Checkbox
+            aria-label="Conjoin leaves"
             checked={this.state.conjoin}
             onCheck={(e,v)=>this.onToggleCheckbox("conjoin", v)}
             />
@@ -370,6 +380,7 @@ export default class AddGroupDialog extends React.Component {
           </div>
           <div className="input">
             <TextField
+              aria-label="Odd leaf to not conjoin"
               name="oddLeaf"
               value={this.state.oddLeaf}
               errorText={this.state.errorText.oddLeaf}
@@ -378,12 +389,14 @@ export default class AddGroupDialog extends React.Component {
               inputStyle={{textAlign:"center"}}
             />
             <IconButton
-              onTouchTap={() => this.decrementNumber("oddLeaf", 1, this.state.numberOfLeaves)}
+              onClick={(e) => this.decrementNumber("oddLeaf", 1, this.state.numberOfLeaves, e)}
+              aria-label="Decrement leaf number"
             >
               <RemoveCircle color={light.palette.primary1Color} />
             </IconButton>
             <IconButton
-              onTouchTap={() => this.incrementNumber("oddLeaf", 1, this.state.numberOfLeaves)}
+              onClick={(e) => this.incrementNumber("oddLeaf", 1, this.state.numberOfLeaves, e)}
+              aria-label="Increment leaf number"
             >
               <AddCircle color={light.palette.primary1Color}/>
             </IconButton >
@@ -397,6 +410,7 @@ export default class AddGroupDialog extends React.Component {
                             </div>
                             <div className="input">
                               <TextField
+                                aria-label="Number of groups"
                                 name="numberOfGroups"
                                 value={this.state.numberOfGroups}
                                 errorText={this.state.errorText.numberOfGroups}
@@ -405,12 +419,16 @@ export default class AddGroupDialog extends React.Component {
                                 inputStyle={{textAlign:"center"}}
                               />
                               <IconButton
-                                onTouchTap={() => this.decrementNumber("numberOfGroups", 1, 999)}
+                                aria-label="Decrement number of groups"
+                                name="Decrement number of groups"
+                                onClick={(e) => this.decrementNumber("numberOfGroups", 1, 999, e)}
                               >
                                 <RemoveCircle color={light.palette.primary1Color} />
                               </IconButton>
                               <IconButton
-                                onTouchTap={() => this.incrementNumber("numberOfGroups", 1, 999)}
+                                aria-label="Increment number of groups"
+                                name="Increment number of groups"
+                                onClick={(e) => this.incrementNumber("numberOfGroups", 1, 999, e)}
                               >
                                 <AddCircle color={light.palette.primary1Color}/>
                               </IconButton >
@@ -420,16 +438,20 @@ export default class AddGroupDialog extends React.Component {
     let radioButtonGroupHeader = <h4 style={{marginBottom:"1em"}}>Add new group(s)</h4>;
     let radioButtonGroup = <RadioButtonGroup name="add_location" defaultSelected={this.state.location} onChange={(e,v)=>this.onLocationChange(v)}>
                               <RadioButton
-                                value="below"
-                                label="below selected item"
-                                style={styles.radioButton}
-                              />
-                              <RadioButton
+                                aria-label="Add new group above selected item"
                                 value="above"
                                 label="above selected item"
                                 style={styles.radioButton}
                               />
                               <RadioButton
+                                aria-label="Add new group below selected item"
+                                value="below"
+                                label="below selected item"
+                                style={styles.radioButton}
+                                autoFocus
+                              />
+                              <RadioButton
+                                aria-label="Add new group inside selected item"
                                 value="inside"
                                 label="inside selected item"
                                 style={styles.radioButton}
@@ -442,8 +464,9 @@ export default class AddGroupDialog extends React.Component {
                               </div>
                               <div className="input">
                                 <Checkbox 
-                                checked={this.state.hasLeaves}
-                                onCheck={(e,v)=>this.onToggleCheckbox("hasLeaves", v)}
+                                  aria-label="Add leaves inside"
+                                  checked={this.state.hasLeaves}
+                                  onCheck={(e,v)=>this.onToggleCheckbox("hasLeaves", v)}
                                 />
                               </div>
                             </div> : "";

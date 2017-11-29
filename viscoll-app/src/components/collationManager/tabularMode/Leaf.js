@@ -1,7 +1,5 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import {Card} from 'material-ui/Card';
-import tabularStyle from '../../../styles/tabular';
 import Side from './Side';
 
 /** Stateless functional component that displays one leaf in the tabular edit mode.  */
@@ -52,11 +50,7 @@ const Leaf = (props) => {
 
 
 
-  let activeLeafStyle = {borderColor: "white"};
-  if (isActive) {
-    activeLeafStyle["backgroundColor"] = "#4ED6CB";
-    activeLeafStyle["borderColor"] = "#4ED6CB";
-  }
+  let activeLeafStyle = {};
   if (isFiltered && !hideOthers) {
     activeLeafStyle["borderColor"] = "#0f7fdb";
   }
@@ -79,29 +73,50 @@ const Leaf = (props) => {
         activeSide={rectoSide} 
         collationManager={props.collationManager}
         handleObjectClick={props.handleObjectClick}
+        toggleFocusLeaf={props.toggleFocusLeaf}
+        focusLeafID={props.focusLeafID}
+        handleObjectPress={props.handleObjectPress}
+        tabIndex={props.tabIndex}
       />
       <Side 
         key={versoSide.id}
         activeSide={versoSide} 
         collationManager={props.collationManager}
         handleObjectClick={props.handleObjectClick}
+        toggleFocusLeaf={props.toggleFocusLeaf}
+        focusLeafID={props.focusLeafID}
+        handleObjectPress={props.handleObjectPress}
+        tabIndex={props.tabIndex}
       />
     </div>
   );
 
 
-  let leafComponent =  <Card 
-                  style={{...tabularStyle.leaf.card}}
-                  className={flashItems.leaves.includes(activeLeaf.order)? "flash" : ""}
+  let sectionStyle = "leafSection ";
+  if (isActive) sectionStyle += "active ";
+  if (props.focusLeafID === activeLeaf.id) sectionStyle += "focus";
+
+  let leafComponent =  <div 
+                  className={flashItems.leaves.includes(activeLeaf.order)? "flash leafContainer" : "leafContainer"}
                 >
                   <div className="itemContainer">
                     <div 
-                      className={isActive?"leafSection active":"leafSection"} 
-                      onMouseDown={(event) => props.handleObjectClick(activeLeaf, event)}
+                      className={sectionStyle} 
+                      onClick={(event) => {props.handleObjectClick(activeLeaf, event);event.stopPropagation()}}
                       style={{ ...activeLeafStyle }}
+                      onMouseEnter={()=>props.toggleFocusLeaf(activeLeaf.id)}
+                      onMouseLeave={()=>props.toggleFocusLeaf(null)}
                     >
                       <div className="itemName">
-                        Leaf {activeLeaf.order}
+                        Leaf {activeLeaf.order} 
+                        <input 
+                          aria-label={"Leaf " + activeLeaf.order}
+                          name={"tabular"} 
+                          type="radio"
+                          onKeyPress={(e)=>{if(e.key===" "){props.handleObjectPress(activeLeaf, e)}}}
+                          onClick={(e)=>{props.handleObjectPress(activeLeaf, e);e.stopPropagation();}}
+                          tabIndex={props.tabIndex}
+                        />
                       </div>
                       {leafAttributes.length>0?
                       <div className="itemAttributes">
@@ -111,10 +126,10 @@ const Leaf = (props) => {
                     </div>
                     {sideComponents}
                   </div>
-                </Card>
+                </div>
 
   if (!isFiltered && hideOthers && isFilterActive && !isAffectedFiltered)
-    leafComponent = <Card></Card>;
+    leafComponent = <div></div>;
 
   return (
     leafComponent

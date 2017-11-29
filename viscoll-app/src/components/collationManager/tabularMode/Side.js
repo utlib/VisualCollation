@@ -34,11 +34,6 @@ const Side = (props) => {
 
   let activeSideStyle = {};
 
-  if (isActive) {
-    activeSideStyle["backgroundColor"] = "#4ED6CB";
-    activeSideStyle["borderColor"] = "#4ED6CB";
-  }
-
   if (isFiltered && !hideOthers) {
     activeSideStyle["borderColor"] = "#0f7fdb";
   }
@@ -49,25 +44,52 @@ const Side = (props) => {
   }
 
   const activeSideName = activeSide.id.split("_")[0];
+
+  let classNames = "side ";
+  if (props.focusLeafID===props.activeSide.id) classNames += "focus ";
+  if (isActive) classNames += "active ";
+
   let sideComponent = (
     <div 
-      className="side" 
+      className={classNames} 
       title={`Activate ${activeSideName} Side`} 
-      onMouseDown={(event) => props.handleObjectClick(activeSide, event)}
+      onClick={(event) => {props.handleObjectClick(activeSide, event); event.stopPropagation();}}
       style={{ ...activeSideStyle }}
+      onMouseEnter={()=>props.toggleFocusLeaf(activeSide.id)}
+      onMouseLeave={()=>props.toggleFocusLeaf(null)}
     >
       {activeSideName.charAt(0)}
+      <input 
+        aria-label={"Leaf " + activeSide.parentOrder + " " + activeSide.memberType + " " + activeSide.folio_number}
+        name={"tabular"} 
+        type="radio"
+        onKeyPress={(e)=>{if(e.key===" "){props.handleObjectPress(activeSide, e)}}}
+        onClick={(e)=>{props.handleObjectPress(activeSide, e);e.stopPropagation();}}
+        tabIndex={props.tabIndex}
+      />
     </div>
   );
 
   if (sideAttributes.length>0) {
     sideComponent = (
       <div 
-        className="side" 
-        onMouseDown={(event) => props.handleObjectClick(activeSide, event)}
+        className={classNames} 
+        onClick={(event) => {props.handleObjectClick(activeSide, event); event.stopPropagation();}}
         style={{ ...activeSideStyle }}
+        onMouseEnter={()=>props.toggleFocusLeaf(activeSide.id)}
+        onMouseLeave={()=>props.toggleFocusLeaf(null)}
       >
-        <div className="name">{activeSideName}</div>
+        <div className="name">
+          {activeSideName}
+          <input 
+            aria-label={"Leaf " + activeSide.parenOrder + " " + activeSide.memberType + " " + activeSide.folio_number}
+            name={"tabular"} 
+            type="radio"
+            onKeyPress={(e)=>{if(e.key===" "){props.handleObjectPress(activeSide, e)}}}
+            onClick={(e)=>{props.handleObjectPress(activeSide, e);e.stopPropagation();}}
+            tabIndex={props.tabIndex}
+          />
+        </div>
         {sideAttributes}
       </div>
     );

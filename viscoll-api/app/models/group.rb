@@ -5,7 +5,8 @@ class Group
   # Fields
   field :title, type: String, default: "None"
   field :type, type: String, default: "None"
-  field :tacketed, type: String, default: ""
+  field :tacketed, type: Array, default: []
+  field :sewing, type: Array, default: []
   field :nestLevel, type: Integer, default: 1
   field :parentID, type: String
   field :memberIDs, type: Array, default: [] # eg [ id1, id2, ... ]

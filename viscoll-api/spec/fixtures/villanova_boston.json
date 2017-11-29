@@ -1,0 +1,93 @@
+{
+    "@context": "http://iiif.io/api/presentation/2/context.json",
+    "@type": "sc:Manifest",
+    "@id": "https://digital.library.villanova.edu/Item/vudl:99213/Manifest",
+    "label": "Boston, and Bunker Hill. Provided by Villanova University.",
+    "metadata": [
+        {
+            "label": "Full Title",
+            "value": "<span>Boston, and Bunker Hill.</span>"
+        },
+        {
+            "label": "Author",
+            "value": "<span><a href=\"https://digital.library.villanova.edu/Search/Results?filter[]=author:Bartlett%2C+W.H.\">Bartlett, W.H.</a></span>"
+        },
+        {
+            "label": "Contributor",
+            "value": "<span><a href=\"https://digital.library.villanova.edu/Search/Results?filter[]=dc_contributor_str_mv:Cousen%2C+C.\">Cousen, C.</a></span>"
+        },
+        {
+            "label": "Date Added",
+            "value": "<span>12 January 2014</span>"
+        },
+        {
+            "label": "Language",
+            "value": "<span><a href=\"https://digital.library.villanova.edu/Search/Results?filter[]=language:English\">English</a></span>"
+        },
+        {
+            "label": "Topic",
+            "value": "<span><a href=\"https://digital.library.villanova.edu/Search/Results?type=Subject&lookfor=%22Prints%22\">Prints</a> &gt; <a href=\"https://digital.library.villanova.edu/Search/Results?type=Subject&lookfor=%22Prints+19th+century.%22\">19th century.</a><br /><a href=\"https://digital.library.villanova.edu/Search/Results?type=Subject&lookfor=%22cultural+landscapes.%22\">cultural landscapes.</a><br /><a href=\"https://digital.library.villanova.edu/Search/Results?type=Subject&lookfor=%22Engravings.%22\">Engravings.</a><br /><a href=\"https://digital.library.villanova.edu/Search/Results?type=Subject&lookfor=%22Landscape+prints.%22\">Landscape prints.</a><br /><a href=\"https://digital.library.villanova.edu/Search/Results?type=Subject&lookfor=%22Cityscape+prints%22\">Cityscape prints</a><br /><a href=\"https://digital.library.villanova.edu/Search/Results?type=Subject&lookfor=%22Views%22\">Views</a> &gt; <a href=\"https://digital.library.villanova.edu/Search/Results?type=Subject&lookfor=%22Views+Massachusetts%22\">Massachusetts</a> &gt; <a href=\"https://digital.library.villanova.edu/Search/Results?type=Subject&lookfor=%22Views+Massachusetts+Boston.%22\">Boston.</a><br /><a href=\"https://digital.library.villanova.edu/Search/Results?type=Subject&lookfor=%22History%22\">History</a> &gt; <a href=\"https://digital.library.villanova.edu/Search/Results?type=Subject&lookfor=%22History+United+States%22\">United States</a> &gt; <a href=\"https://digital.library.villanova.edu/Search/Results?type=Subject&lookfor=%22History+United+States+Massachusetts.%22\">Massachusetts.</a><br /><a href=\"https://digital.library.villanova.edu/Search/Results?type=Subject&lookfor=%22Rivers.%22\">Rivers.</a><br /><a href=\"https://digital.library.villanova.edu/Search/Results?type=Subject&lookfor=%22Waterfronts.%22\">Waterfronts.</a><br /><a href=\"https://digital.library.villanova.edu/Search/Results?type=Subject&lookfor=%22Bridges.%22\">Bridges.</a><br /><a href=\"https://digital.library.villanova.edu/Search/Results?type=Subject&lookfor=%22Sailing+ships.%22\">Sailing ships.</a><br /><a href=\"https://digital.library.villanova.edu/Search/Results?type=Subject&lookfor=%22Livestock.%22\">Livestock.</a></span>"
+        },
+        {
+            "label": "About",
+            "value": "<span><a href=\"https://digital.library.villanova.edu/Record/vudl:99213\">More Details</a><br /><a href=\"https://digital.library.villanova.edu/Item/vudl:99213\">Permanent Link</a></span>"
+        }
+    ],
+    "description": "<p>Image from Patrick Coad Family Papers. These materials are owned by the American Catholic Historical Society and maintained at the Philadelphia Archdiocesan Historical Research Center, 100 E. Wynnewood Rd. Wynnewood, PA 19096. For more information please see: http://www.pahrc.net.</p>",
+    "license": "http://creativecommons.org/licenses/by-nc-nd/3.0/",
+    "attribution": "Digital Library@Villanova University",
+    "related": {
+        "@id": "https://digital.library.villanova.edu/Item/vudl:99213",
+        "format": "text/html"
+    },
+    "within": "https://digital.library.villanova.edu/Collection/vudl:98245/IIIF",
+    "sequences": [
+        {
+            "@type": "sc:Sequence",
+            "label": "Pages",
+            "rendering": [],
+            "viewingDirection": "left-to-right",
+            "viewingHint": "paged",
+            "canvases": [
+                {
+                    "@type": "sc:Canvas",
+                    "@id": "https://digital.library.villanova.edu/Item/vudl:99213/Canvas/p0",
+                    "label": null,
+                    "rendering": [
+                        {
+                            "@id": "https://digital.library.villanova.edu/files/vudl:99215/MASTER",
+                            "format": "image/tiff",
+                            "label": "Original source file"
+                        },
+                        {
+                            "@id": "https://digital.library.villanova.edu/files/vudl:99215/MASTER-MD",
+                            "format": "application/xml",
+                            "label": "Technical Metadata"
+                        }
+                    ],
+                    "height": 3288,
+                    "width": 4260,
+                    "images": [
+                        {
+                            "@type": "oa:Annotation",
+                            "motivation": "sc:painting",
+                            "resource": {
+                                "@id": "https://digital.library.villanova.edu/files/vudl:99215/LARGE",
+                                "@type": "dctypes:Image",
+                                "format": "image/jpeg",
+                                "service": {
+                                    "@context": "http://iiif.io/api/image/2/context.json",
+                                    "@id": "https://iiif.library.villanova.edu/image/vudl%3A99215",
+                                    "profile": "http://iiif.io/api/image/2/level1.json"
+                                },
+                                "height": 3288,
+                                "width": 4260
+                            },
+                            "on": "https://digital.library.villanova.edu/Item/vudl:99213/Canvas/p0"
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

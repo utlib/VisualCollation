@@ -25,3 +25,13 @@ export let btnMd = {
   }
 }
 
+export let btnAuthCancel = {
+  labelStyle: {
+    color: "#a5bde0",
+  }
+}
+
+export let btnGreen = {
+  labelColor: "#ffffff",
+  backgroundColor: "#34A251",
+}

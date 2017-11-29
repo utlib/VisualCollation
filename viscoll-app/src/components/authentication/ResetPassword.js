@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import TextField from 'material-ui/TextField';
 import RaisedButton from 'material-ui/RaisedButton';
 import { btnLg } from '../../styles/button';
-import floatFieldDark from '../../styles/textfield';
+import {floatFieldDark} from '../../styles/textfield';
 /**
  * Contains the form to update password when user forgets password.
  */
@@ -32,7 +32,7 @@ class ResetPassword extends Component {
    * @public
    */
   submit = (e) => {
-    e.preventDefault();
+    if (e) e.preventDefault();
     let resetMessage = ""
     if (!this.state.password || !this.state.passwordConfirm) {
       resetMessage = "Error: Both Password & Password Confirmation must be filled";
@@ -54,7 +54,7 @@ class ResetPassword extends Component {
 
   render() {
     return (
-      <form onSubmit={this.submit}>
+      <form aria-label="reset password" onSubmit={this.submit}>
         <h4 style={{color: "rgb(78, 214, 203)", textAlign: "center"}}>{this.state.resetMessage}</h4>
         <TextField fullWidth onChange={(e,v)=>this.onInputChange(v, "password")} name="password" type="password" floatingLabelText="New Password" {...floatFieldDark} />
         <TextField fullWidth onChange={(e,v)=>this.onInputChange(v, "passwordConfirm")} name="passwordConfirm" type="password" floatingLabelText="Confirm New Password" {...floatFieldDark} />
@@ -66,6 +66,7 @@ class ResetPassword extends Component {
           type="submit"
           name="submit"
           {...btnLg} 
+          onClick={() => this.submit(null)}
         />
       </form>
     );

@@ -2,8 +2,9 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import TextField from 'material-ui/TextField';
 import RaisedButton from 'material-ui/RaisedButton';
-import { btnLg, btnMd } from '../../styles/button';
-import floatFieldDark from '../../styles/textfield';
+import FlatButton from 'material-ui/FlatButton';
+import { btnLg, btnAuthCancel } from '../../styles/button';
+import {floatFieldDark} from '../../styles/textfield';
 /**
  * Contains the reset password request form that is used by the landing page 
  * component called `Landing`.  User inputs their email address and the app 
@@ -35,7 +36,7 @@ class ResetPasswordRequest extends Component {
    * @public
    */
   resetPasswordRequest = (e) => {
-    e.preventDefault();
+    if (e) e.preventDefault();
     let re = /[A-Z0-9._%+-]+@[A-Z0-9.-]+.[A-Z]{2,4}/igm;
     let resetMessage = ""
     if (!this.state.email) {
@@ -52,29 +53,40 @@ class ResetPasswordRequest extends Component {
   };
 
   render() {
-    let cancelMessage = "Cancel";
+    let cancelButton = <FlatButton 
+        default 
+        onClick={() => this.props.tapCancel()}
+        label="Go back" 
+        {...btnAuthCancel}
+      />;
     let submit = 
         <div className="spacingTop">
           <RaisedButton 
             label="Submit" 
             fullWidth 
-            secondary 
+            primary 
             type="submit"
             name="submit"
-            {...btnMd}
-          />
+            {...btnLg}
+            onClick={() => this.resetPasswordRequest(null)}
+            />
         </div>;
     if (this.state.requested) {
-      cancelMessage = "Okay";
+      cancelButton = <RaisedButton
+        fullWidth 
+        onClick={() => this.props.tapCancel()}
+        label="Okay" 
+        {...btnLg}
+      />;
       submit = "";
     }
     return (
-      <form onSubmit={this.resetPasswordRequest}>
+      <form aria-label="request to reset password" onSubmit={this.resetPasswordRequest}>
         <p>{this.state.resetMessage}</p>
         <TextField fullWidth onChange={(e,v)=>this.onInputChange(v,"email")} name="email" floatingLabelText="E-mail" {...floatFieldDark} />
         { submit }
         <div className="spacingTop">
-          <RaisedButton default fullWidth onTouchTap={this.props.tapCancel} label={cancelMessage} {...btnLg} />
+          { cancelButton }
         </div>
       </form>
     )

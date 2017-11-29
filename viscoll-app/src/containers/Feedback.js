@@ -1,7 +1,8 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import { connect } from "react-redux";
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
+import RaisedButton from 'material-ui/RaisedButton';
 import TextField from 'material-ui/TextField';
 import ClientJS from 'clientjs';
 import { exportProjectBeforeFeedback } from "../actions/projectActions";
@@ -18,7 +19,7 @@ class Feedback extends Component {
     }
   }
   handleOpen = () => {
-    this.setState({open: true});
+    this.setState({ open: true });
   }
   handleClose = () => {
     this.setState({
@@ -26,18 +27,20 @@ class Feedback extends Component {
       title: "",
       feedback: "",
     });
+    this.props.togglePopUp(false);
   }
   onChange = (type, value) => {
-    this.setState({[type]:value});
+    this.setState({ [type]: value });
   }
   submit = () => {
-    let feedback = "Feedback Message:\n" + this.state.feedback + "\n\n";
-    try{
+    let feedback = this.state.feedback;
+    let browserInformation;
+    try {
       const client = new ClientJS();
       const result = client.getResult();
-      feedback = feedback + "Browser Information:\n" + JSON.stringify(result);
-    } catch (e){}
-    this.props.sendFeedback(this.state.title, feedback, this.props.userID, this.props.projectID);
+      browserInformation = JSON.stringify(result);
+    } catch (e) { }
+    this.props.sendFeedback(this.state.title, feedback, browserInformation, this.props.projectID);
     this.handleClose();
   }
   render() {
@@ -45,23 +48,24 @@ class Feedback extends Component {
       <FlatButton
         label="Cancel"
         primary={true}
-        onClick={this.handleClose}
+        onClick={() => this.handleClose()}
       />,
-      <FlatButton
+      <RaisedButton
         label="Submit"
         primary={true}
-        disabled={this.state.title.length===0 || this.state.feedback.length===0}
-        onClick={this.submit}
+        disabled={this.state.title.length === 0 || this.state.feedback.length === 0}
+        onClick={() => this.submit()}
       />,
     ];
     return (
       <div>
         <div className="feedback">
-          <FlatButton 
-            label="Feedback" 
-            labelStyle={{color:"#ffffff"}}
-            onClick={this.handleOpen}
+          <FlatButton
+            label="Feedback"
+            labelStyle={{ color: "#ffffff" }}
+            onClick={() => { this.handleOpen(); this.props.togglePopUp(true) }}
             backgroundColor="rgba(82, 108, 145, 0.2)"
+            tabIndex={this.props.tabIndex}
           />
         </div>
         <Dialog
@@ -70,33 +74,34 @@ class Feedback extends Component {
           modal={true}
           open={this.state.open}
           paperClassName="feedbackDialog"
-          contentStyle={{width:"450px"}}
+          contentStyle={{ width: "450px" }}
         >
           <p>Bug? Suggestions? Let us know!</p>
           <div>
-            <div className="label">
-              <h4>Title</h4>
+            <div id="feedbackTitle" className="label">
+              Title
             </div>
             <div className="input">
               <TextField
                 name="title"
+                aria-labelledby="feedbackTitle"
                 value={this.state.title}
-                onChange={(e,v)=>this.onChange("title", v)}
+                onChange={(e, v) => this.onChange("title", v)}
+                autoFocus
               />
             </div>
           </div>
           <div>
-            <div className="label">
-              <h4>Feedback</h4>
+            <div id="feedbackContent" className="label">
+              Feedback
             </div>
             <div className="input">
-              <TextField
+              <textarea
                 name="feedback"
-                multiLine
-                rows={2}
-                rowsMax={5}
+                aria-labelledby="feedbackContent"
                 value={this.state.feedback}
-                onChange={(e,v)=>this.onChange("feedback", v)}
+                onChange={(e) => this.onChange("feedback", e.target.value)}
+                rows={5}
               />
             </div>
           </div>
@@ -114,17 +119,17 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    sendFeedback: (title, message, userID, projectID) => {
-      if (projectID){
+    sendFeedback: (title, message, browserInformation, projectID) => {
+      if (projectID) {
         dispatch(exportProjectBeforeFeedback(projectID, "json"))
-        .then((action)=>{
-          if (action.type==="EXPORT_SUCCESS"){
-            message = message + "\n\nProject Information:\n" + JSON.stringify(action.payload);
-            dispatch(sendFeedback(title, message, userID));
-          }
-        })
+          .then((action) => {
+            if (action.type === "EXPORT_SUCCESS") {
+              const project = JSON.stringify(action.payload);
+              dispatch(sendFeedback(title, message, browserInformation, project));
+            }
+          })
       } else {
-        dispatch(sendFeedback(title, message, userID));
+        dispatch(sendFeedback(title, message, browserInformation));
       }
     }
   };

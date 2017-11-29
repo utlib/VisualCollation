@@ -58,30 +58,80 @@ PaperLeaf.prototype = {
         this.showAttributes();
         this.createAttachments();
 
-        let notesToShow = this.leaf.notes.filter((noteID)=>{return this.Notes[noteID].show});
-        for (let noteIndex = 0; noteIndex < notesToShow.length; noteIndex++) {
-            // Draw note text
-            let x = 0;
-            let fontSize = this.spacing*0.40;
-            let numChars = this.path.bounds.width/fontSize*2.4;
-            if (this.attachment.bounds.width>0) {
-                // This leaf has an attachment (glue, etc)
-                // Place text to the right of attachment drawing
-                x = this.attachment.bounds.right+5;
-            } else if (this.isConjoined()) {
-                // This leaf is conjoined
-                x = this.path.segments[1].point.x;
-            } else {
-                // Separate leaf
-                x = this.path.segments[0].point.x + 10;
-            }
+        const leafNotesToShow = this.leaf.notes.filter((noteID)=>{return this.Notes[noteID].show});
+        const rectoNotesToShow = this.recto.notes.filter((noteID)=>{return this.Notes[noteID].show});
+        const versoNotesToShow = this.verso.notes.filter((noteID)=>{return this.Notes[noteID].show});
+
+        let textX = 0;
+        let textY = this.y;
+        let fontSize = this.spacing*0.50;
+        let numChars = this.path.bounds.width/fontSize*2.4;
+
+        if (this.isConjoined()) {
+            // This leaf is conjoined
+            textX = this.path.segments[1].point.x;
+        } else {
+            // Separate leaf
+            textX = this.path.segments[0].point.x + 10;
+        }
+        if (this.leaf.attached_above.includes("Partial")) {
+            // This leaf has a partial glue attachment
+            // Place text to the right of attachment drawing
+            textX = this.attachment.bounds.right+5;
+        } else if (this.leaf.attached_above.includes("Glued")) {
+            // Other type of glueing exists
+            textY -= this.spacing*0.7;
+        } 
+        
+        let that = this;
+        // Draw recto note text
+        for (let noteIndex = 0; noteIndex < rectoNotesToShow.length; noteIndex++) {
+            const note = this.Notes[rectoNotesToShow[noteIndex]];
             let textNote = new paper.PointText({
-                content: this.Notes[notesToShow[noteIndex]].title.substr(0,numChars),
-                point: [x, this.y - noteIndex*(this.spacing*0.7) - 10],
+                content: "▼ " + this.recto.folio_number + " : " + note.title.substr(0,numChars),
+                point: [textX, textY - noteIndex*(this.spacing*0.7) - this.spacing*0.3],
                 fillColor: this.strokeColor,
                 fontSize: fontSize,
             });
+            textNote.onClick = function(event) {
+                that.openNoteDialog(note);
+            };
             this.textNotes.addChild(textNote);
+        }
+        // Draw leaf note text
+        for (let noteIndex = 0; noteIndex < leafNotesToShow.length; noteIndex++) {
+            const note = this.Notes[leafNotesToShow[noteIndex]];
+            
+            let textNote = new paper.PointText({
+                content: "▼ L" + this.leaf.order + " : " + note.title.substr(0,numChars),
+                point: [textX, textY - rectoNotesToShow.length*(this.spacing*0.7) - noteIndex*(this.spacing*0.7) - this.spacing*0.3],
+                fillColor: this.strokeColor,
+                fontSize: fontSize,
+            });
+            textNote.onClick = function(event) {
+                that.openNoteDialog(note);
+            };
+            this.textNotes.addChild(textNote);
+        }
+        // Draw verso note text
+        for (let noteIndex = 0; noteIndex < versoNotesToShow.length; noteIndex++) {
+            const note = this.Notes[versoNotesToShow[noteIndex]];
+            let textNote = new paper.PointText({
+                content: "▲ " + this.verso.folio_number + " : " + note.title.substr(0,numChars),
+                point: [textX, this.y + noteIndex*(this.spacing*0.7) + this.spacing*0.8],
+                fillColor: this.strokeColor,
+                fontSize: fontSize,
+            });
+            textNote.onClick = function(event) {
+                that.openNoteDialog(note);
+            };
+            this.textNotes.addChild(textNote);
+        }
+        this.textNotes.onMouseEnter = function(event) {
+            document.body.style.cursor = "pointer";
+        }
+        this.textNotes.onMouseLeave = function(event) {
+            document.body.style.cursor = "default";
         }
         return this;
     },
@@ -141,7 +191,7 @@ PaperLeaf.prototype = {
         this.textVerso.onMouseLeave = function(event) {};
     },
     createAttachments: function() {
-        if (this.order>1 && this.leaf.attached_above==="Glued") {
+        if (this.order>1 && this.leaf.attached_above.includes("Glued")) {
             this.createGlue();
         } else if (this.order>1 && this.leaf.attached_above==="Other") {
             this.createOtherAttachment();
@@ -159,16 +209,54 @@ PaperLeaf.prototype = {
                 x = this.prevPaperLeaf().path.segments[0].point.x;
             }
         }
-        for (let i=0; i<6; i++) {
-            let glueLine = new paper.Path();
-            glueLine.add(new paper.Point(x, this.y-10));
-            glueLine.add(new paper.Point(x+10, this.y-20));
-            glueLine.strokeColor = "#707070";
-            glueLine.strokeWidth = 2;
-            this.attachment.addChild(glueLine);
-            x += 5;
+        if (this.leaf.attached_above.includes("Partial")) {
+            for (let i=0; i<6; i++) {
+                let glueLine = new paper.Path();
+                glueLine.add(new paper.Point(x, this.y-this.spacing*0.3));
+                glueLine.add(new paper.Point(x+10, this.y-this.spacing*0.7));
+                glueLine.strokeColor = "#707070";
+                glueLine.strokeWidth = 2;
+                this.attachment.addChild(glueLine);
+                x += 5;
+            }
+        } else if (this.leaf.attached_above.includes("Drumming")) {
+            let glueLineCount = 15;
+            if (this.leaf.stub!=="None") glueLineCount = 4;
+            // Draw left drum glue
+            for (let i=0; i<glueLineCount; i++) {
+                let glueLine = new paper.Path();
+                glueLine.add(new paper.Point(x, this.y-this.spacing*0.3));
+                glueLine.add(new paper.Point(x+10, this.y-this.spacing*0.7));
+                glueLine.strokeColor = "#707070";
+                glueLine.strokeWidth = 2;
+                this.attachment.addChild(glueLine);
+                x += 5;
+            }
+            // Draw right drum glue
+            x = this.path.segments[this.path.segments.length-1].point.x;
+            for (let i=0; i<glueLineCount; i++) {
+                let glueLine = new paper.Path();
+                glueLine.add(new paper.Point(x-10, this.y-this.spacing*0.3));
+                glueLine.add(new paper.Point(x, this.y-this.spacing*0.7));
+                glueLine.strokeColor = "#707070";
+                glueLine.strokeWidth = 2;
+                this.attachment.addChild(glueLine);
+                x -= 5;
+            }
+        } else {
+            // Complete glue
+            while (x <= (this.path.segments[this.path.segments.length-1].point.x-10)) {
+                let glueLine = new paper.Path();
+                glueLine.add(new paper.Point(x, this.y-this.spacing*0.3));
+                glueLine.add(new paper.Point(x+10, this.y-this.spacing*0.7));
+                glueLine.strokeColor = "#707070";
+                glueLine.strokeWidth = 2;
+                this.attachment.addChild(glueLine);
+                x += 5;
+            }
         }
     },
+    // Sewing of conjoined leaves
     createSewn: function() {
         if (this.isConjoined() && this.conjoined_to<this.order) {
             let x = this.path.segments[0].point.x;
@@ -307,7 +395,7 @@ PaperLeaf.prototype = {
         
         if (this.leaf.type==="Added") {
             this.path.strokeColor = this.strokeColorAdded;
-        } else if (this.leaf.type==="Flyleaf"||this.leaf.type==="Endleaf") {
+        } else if (this.leaf.type==="Endleaf") {
             this.path.strokeColor = "#727272";
         } else {
             this.path.strokeColor = this.strokeColor;
@@ -394,6 +482,8 @@ function PaperLeaf(args) {
     this.multiplier = args.multiplier;
     this.attachment = new paper.Group();
     this.textNotes = new paper.Group();
+    this.openNoteDialog = args.openNoteDialog;
+
     this.textLeafOrder = new paper.PointText({
         point: [this.width, this.y+5],
         content: "L"+ this.order,
@@ -415,7 +505,7 @@ function PaperLeaf(args) {
     // Set path properties
     if (this.leaf.type==="Added") {
         this.path.strokeColor = args.strokeColorAdded;
-    } else if (this.leaf.type==="Flyleaf"||this.leaf.type==="Endleaf") {
+    } else if (this.leaf.type==="Endleaf") {
         this.path.strokeColor = "#919191";
     } else {
         this.path.strokeColor = args.strokeColor;

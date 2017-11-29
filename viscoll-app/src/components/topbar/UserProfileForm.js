@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import {floatFieldLight} from '../../styles/textfield';
 import TextField from 'material-ui/TextField';
 import Dialog from 'material-ui/Dialog';
 import RaisedButton from 'material-ui/RaisedButton';
@@ -248,18 +249,21 @@ class UserProfileForm extends React.Component {
       return (
         <div style={{float:"right"}}>
           <RaisedButton
+            aria-label="Submit"
             primary
             icon={<IconSubmit />}
             style={{minWidth:"60px",marginLeft:"5px"}}
             name="submit"
             type="submit"
             disabled={type==="currentPassword"? (this.ifErrorsExist("currentPassword")||this.ifErrorsExist("newPassword")||this.ifErrorsExist("newPasswordConfirm")) : this.ifErrorsExist(type) } 
+            onClick={() => this.handleUserUpdate(null, type)}
           />
           <RaisedButton
+            aria-label="Cancel"
             secondary
             icon={<IconClear />}
             style={{minWidth:"60px",marginLeft:"5px"}}
-            onTouchTap={(e)=>this.handleCancelUpdate(type)}
+            onClick={() => this.handleCancelUpdate(type)}
           />
         </div>
       )
@@ -275,7 +279,7 @@ class UserProfileForm extends React.Component {
    * @public
    */
   handleUserUpdate = (event, type) => {
-    event.preventDefault();
+    if (event) event.preventDefault();
     let updatedUser = { 
       user: {
         [type]: this.state[type],
@@ -305,50 +309,53 @@ class UserProfileForm extends React.Component {
     const userProfileActions = [
       <FlatButton
         label="Close"
-        secondary={true}
-        onTouchTap={() => this.handleUserProfileClose()}
+        primary
+        keyboardFocused={true}
+        onClick={() => this.handleUserProfileClose()}
       />,
       <RaisedButton
         label="Delete Account"
-        labelColor="#D87979"
-        onTouchTap={() => this.handleDeleteDialogToggle(true)}
+        labelColor="#b53c3c"
+        onClick={() => this.handleDeleteDialogToggle(true)}
         style={{float: 'left'}}
       />
     ];
-
+    
     const deleteActions = [
       <FlatButton
         label="Cancel"
-        primary={true}
-        onTouchTap={() => this.handleDeleteDialogToggle()}
+        primary
+        keyboardFocused
+        onClick={() => this.handleDeleteDialogToggle()}
       />,
       <FlatButton
         label="Yes"
-        primary={true}
-        keyboardFocused={true}
-        onTouchTap={this.handleUserAccountDelete}
+        primary
+        onClick={() => this.handleUserAccountDelete()}
       />,
     ];
 
     const unsaveActions = [
       <FlatButton
         label="Go Back"
-        primary={true}
-        onTouchTap={() => this.handleUnsavedDialogToggle()}
+        primary
+        onClick={() => this.handleUnsavedDialogToggle()}
+        
       />,
       <FlatButton
         label="Ignore Changes"
-        primary={true}
-        keyboardFocused={true}
-        onTouchTap={() => this.handleUserProfileClose(true)}
+        primary
+        keyboardFocused
+        onClick={() => this.handleUserProfileClose(true)}
       />,
     ];
 
     const emailConfirmActions = [
       <FlatButton
         label="Okay"
-        primary={true}
-        onTouchTap={() => this.setState({emailMessage:false})}
+        primary
+        onClick={() => this.setState({emailMessage:false})}
+        keyboardFocused
       />
     ];
 
@@ -359,6 +366,7 @@ class UserProfileForm extends React.Component {
             onChange={(e, v)=>this.onInputChange(v, "name")} 
             name="name"  
             floatingLabelText="Name" 
+            floatingLabelStyle={{color:"#6e6e6e"}}
             errorText={this.state.errors.name}
             value={this.state.name}
             fullWidth
@@ -375,6 +383,7 @@ class UserProfileForm extends React.Component {
             onChange={(e,v)=>this.onInputChange(v, "email")} 
             name="email" 
             floatingLabelText="E-mail" 
+            floatingLabelStyle={{color:"#6e6e6e"}}
             errorText={this.state.errors.email} 
             value={this.state.email}
             fullWidth
@@ -391,6 +400,7 @@ class UserProfileForm extends React.Component {
             onChange={(e, v)=>this.onInputChange(v, "currentPassword")} 
             name="currentPassword" 
             floatingLabelText="Current Password" 
+            {...floatFieldLight}
             errorText={this.state.errors.currentPassword} 
             type="password" 
             value={this.state.currentPassword}
@@ -400,6 +410,7 @@ class UserProfileForm extends React.Component {
             onChange={(e, v)=>this.onInputChange(v, "newPassword")} 
             name="newPassword" 
             floatingLabelText="New Password" 
+            {...floatFieldLight}
             errorText={this.state.errors.newPassword} 
             type="password" 
             value={this.state.newPassword}
@@ -409,6 +420,7 @@ class UserProfileForm extends React.Component {
             onChange={(e, v)=>this.onInputChange(v, "newPasswordConfirm")} 
             name="newPasswordConfirm" 
             floatingLabelText="Confirm New Password" 
+            {...floatFieldLight}
             errorText={this.state.errors.newPasswordConfirm} 
             type="password" 
             value={this.state.newPasswordConfirm}
@@ -436,24 +448,24 @@ class UserProfileForm extends React.Component {
           <br/>
           {emailField}
           <br/>
-          <h3 style={{marginBottom:0,textAlign:"left"}}>Update your password</h3>
+          <h3 style={{color:"#4e4e4e",marginBottom:0,textAlign:"left"}}>Update your password</h3>
           {password}
 
           <Dialog
+            key="unsavedActionsDialog"
+            title="It looks like you have been editing something. If you leave before saving, your changes will be lost."
+            actions={unsaveActions}
+            open={this.state.unsavedDialog}
+            onRequestClose={this.handleUnsavedDialogToggle}
+          />
+          <Dialog
+            key="deleteConfirmationDialog"
             title="Are you sure you want to delete your account?"
             actions={deleteActions}
-            modal={false}
             open={this.state.deleteDialog}
             onRequestClose={this.handleDeleteDialogToggle}
           />
 
-          <Dialog
-            title="It looks like you have been editing something. If you leave before saving, your changes will be lost."
-            actions={unsaveActions}
-            modal={false}
-            open={this.state.unsavedDialog}
-            onRequestClose={this.handleUnsavedDialogToggle}
-          />
 
         </Dialog>
         <Dialog

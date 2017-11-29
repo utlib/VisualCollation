@@ -3,8 +3,9 @@ import PropTypes from 'prop-types';
 import ResendConfirmation from './ResendConfirmation';
 import TextField from 'material-ui/TextField';
 import RaisedButton from 'material-ui/RaisedButton';
-import { btnLg } from '../../styles/button';
-import floatFieldDark from '../../styles/textfield';
+import FlatButton from 'material-ui/FlatButton';
+import { btnLg, btnAuthCancel } from '../../styles/button';
+import {floatFieldDark} from '../../styles/textfield';
 /**
  * Contains the login form that is used by the landing page component called `Landing`.
  */
@@ -44,7 +45,7 @@ class Login extends Component {
    * @public
    */
   submit = (e) => {
-    e.preventDefault();
+    if (e) e.preventDefault();
     this.setState({ error: ""});
     this.props.action.loginUser({email: this.state.email, password: this.state.password});
   }
@@ -67,17 +68,25 @@ class Login extends Component {
       fullWidth 
       {...btnLg} 
     />
-    let content = <form onSubmit={this.submit}>
+    let content = <form aria-label="login" onSubmit={this.submit}>
       <p>{this.state.error}</p>
-      <TextField fullWidth onChange={(e,v)=>this.onInputChange(v,"email")} name="email" floatingLabelText="E-mail" {...floatFieldDark} />
-      <TextField fullWidth onChange={(e,v)=>this.onInputChange(v,"password")} name="password" type="password" floatingLabelText="Password" {...floatFieldDark} />
+      <TextField fullWidth onChange={(e,v)=>this.onInputChange(v,"email")} name="email" floatingLabelText="E-mail" {...floatFieldDark} aria-invalid={this.state.error && this.state.error.length>0} aria-required={true}/>
+      <TextField fullWidth onChange={(e,v)=>this.onInputChange(v,"password")} name="password" type="password" floatingLabelText="Password" {...floatFieldDark} aria-invalid={this.state.error && this.state.error.length>0} aria-required={true} />
       <br /><br />
       {submitButton}
       <div className="spacingTop">
-        <RaisedButton default fullWidth onTouchTap={this.cancel} label={"Cancel"} {...btnLg} />
+        <FlatButton 
+          onClick={() => this.cancel()}
+          label={"Go back"} 
+          {...btnAuthCancel}
+        />
+        <FlatButton 
+          label="Forgot password?"
+          labelStyle={{color:"#a5bde0"}}
+          onClick={() => this.props.toggleResetRequest()}
+        />
       </div>
-      <br /><br />
-      <a onClick={this.props.toggleResetRequest}>Forgot password?</a>
+     
     </form>;
     if (this.state.error && this.state.error.includes("unconfirmed")) {
       content = <ResendConfirmation 

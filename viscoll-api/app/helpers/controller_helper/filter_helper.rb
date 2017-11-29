@@ -52,7 +52,7 @@ module ControllerHelper
             end
           when "folio_number", "uri"
             if !["equals", "not equals", "contains", "not contains"].include?(query["condition"])
-              error["condition"] = "valid conditions for group attribute "+query["attribute"]+" : [equals, not equals, contains, not contains]"
+              error["condition"] = "valid conditions for side attribute "+query["attribute"]+" : [equals, not equals, contains, not contains]"
               haveErrors = true
             end
           end

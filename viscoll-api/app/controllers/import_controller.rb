@@ -7,15 +7,19 @@ class ImportController < ApplicationController
     importData = imported_data.to_h[:importData]
     importFormat = imported_data.to_h[:importFormat]
     begin
-      # Skip all callbacks
-      Leaf.skip_callback(:create, :after, :create_sides)
       case importFormat
       when "json"
         handleJSONImport(JSON.parse(importData))
       when "xml"
-        # handleXMLImport(Hash.from_xml(importData))
-      when "formula"
-
+        xml = Nokogiri::XML(importData)
+        schema = Nokogiri::XML::RelaxNG(File.open("public/viscoll-datamodel2.rng"))
+        errors = schema.validate(xml)
+        if errors.empty?
+          handleXMLImport(Hash.from_xml(importData)["viscoll"]["manuscript"], xml)
+        else
+          render json: {error: errors}, status: :unprocessable_entity
+          return
+        end
       end
       # render json: {error: "RETURING ERROR FOR NOW"}, status: :unprocessable_entity
       @projects = current_user.projects.order_by(:updated_at => 'desc')
@@ -23,8 +27,6 @@ class ImportController < ApplicationController
     rescue Exception => e
       render json: {error: errorMessage}, status: :unprocessable_entity
     ensure
-      # Add all callbacks again
-      Leaf.set_callback(:create, :after, :create_sides)
     end
   end
 

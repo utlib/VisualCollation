@@ -30,6 +30,13 @@ class LeafsController < ApplicationController
       render json: {additional: @additionalErrors}, status: :unprocessable_entity
       return
     end
+    
+    # Attempt to validate ownership
+    @project = Project.find(project_id)
+    if current_user.id != @project.user_id
+      render json: { leaf: { project_id: ['unauthorized project_id'] } }, status: :unauthorized
+      return
+    end
 
     newlyAddedLeafIDs = []
     newlyAddedLeafs = []
@@ -67,7 +74,6 @@ class LeafsController < ApplicationController
     @group.add_members(newlyAddedLeafIDs, memberOrder)
 
     # SUCCESS
-    @project = Project.find(project_id)
     @data = generateResponse()
     render :'projects/show', status: :ok
   end
@@ -95,12 +101,22 @@ class LeafsController < ApplicationController
   def updateMultiple
     begin
       allLeafs = leaf_params_batch_update.to_h[:leafs]
-      @project = Project.find(leaf_params_batch_update.to_h[:project_id])
+      begin
+        @project = Project.find(leaf_params_batch_update.to_h[:project_id])
+      rescue Mongoid::Errors::DocumentNotFound => e
+        render json: {error: "project not found with id "+params[:project_id]}, status: :unprocessable_entity
+        return
+      end
       allLeafs.each do |leaf_params, index|
         begin
           @leaf = Leaf.find(leaf_params[:id])
         rescue Exception => e
           render json: {leafs: ["leaf not found with id "+leaf_params[:id]]}, status: :unprocessable_entity
+          return
+        end
+        if @leaf.project.user_id != current_user.id
+          render json: {error: ""}, status: :unauthorized
+          return
         end
         if !@leaf.update(leaf_params[:attributes])
           render json: {leafs: {attributes: {index: @leaf.errors}}}, status: :unprocessable_entity
@@ -162,7 +178,11 @@ class LeafsController < ApplicationController
           @parent = @project.groups.find(leaf.parentID)
         end
         memberOrder = @parent.memberIDs.index(leaf.id.to_s)
-
+        if leaf.project.user_id != current_user.id
+          render json: {error: ""}, status: :unauthorized
+          return
+        end
+        
         # Detach its conjoined leaf if any
         if leaf.conjoined_to
           @project.leafs.find(leaf.conjoined_to).update(conjoined_to: nil)
@@ -206,16 +226,22 @@ class LeafsController < ApplicationController
       # VALIDATION ERRORS
       @errors = []
       haveErrors = false
+      allowed_project_ids = current_user.projects.pluck(:id).collect { |pid| pid.to_s }
       leafIDs.each do |leafID|
         begin
-          leaves.push(Leaf.find(leafID))
+          leaf = Leaf.find(leafID)
+          if not allowed_project_ids.include?(leaf.project_id.to_s)
+            render json: {error: ""}, status: :unauthorized
+            return
+          end
+          leaves.push(leaf)
         rescue Exception => e
           @errors.push("leaf not found with id "+leafID)
           haveErrors = true
         end
       end
       if leafIDs.size < 2
-        @errors = "Minimum of 2 leaves required to conjoin"
+        @errors.push("Minimum of 2 leaves required to conjoin")
         haveErrors = true
       end
       if haveErrors

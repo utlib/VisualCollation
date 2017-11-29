@@ -60,20 +60,22 @@ export default class AddManifest extends Component {
           <div className="input">
             <TextField 
               id="url"
+              aria-label="Manifest URL"
               errorText={this.state.urlError}
               fullWidth 
               value={this.state.url}
               onChange={(e,v)=>this.onChange("url", v)}
+              tabIndex={this.props.tabIndex}
             />
           </div>
         </div>
-
         <div style={{textAlign:"right"}}>
           <RaisedButton
             disabled={this.state.url===""}
             label="Cancel"
             onClick={(e)=>this.onCancel(e)}
             style={{marginRight: 5}}
+            tabIndex={this.props.tabIndex}
           />
           <RaisedButton
             disabled={!this.isValid()}
@@ -82,6 +84,7 @@ export default class AddManifest extends Component {
             type="submit"
             name="submit"
             onClick={(e)=>this.onSubmit(e)}
+            tabIndex={this.props.tabIndex}
           />
         </div>
       </form>

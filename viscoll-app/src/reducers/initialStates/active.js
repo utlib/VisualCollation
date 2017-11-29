@@ -56,7 +56,7 @@ export const initialState = {
         {
           name: 'type',
           displayName: 'Type',
-          options: ['None', 'Original', 'Added', 'Missing', 'Hook', 'Flyleaf', 'Endleaf', 'Replaced'],
+          options: ['None', 'Original', 'Added', 'Missing', 'Hook', 'Endleaf', 'Replaced'],
           isDropdown: true,
         },
         {
@@ -73,13 +73,13 @@ export const initialState = {
         {
           name: 'attached_above',
           displayName: 'Attached Above',
-          options: ['None', 'Glued', 'Other'],
+          options: ['None', 'Glued (Partial)', 'Glued (Complete)', 'Glued (Drumming)', 'Other'],
           isDropdown: true,
         },
         {
           name: 'attached_below',
           displayName: 'Attached Below',
-          options: ['None', 'Glued', 'Other'],
+          options: ['None', 'Glued (Partial)', 'Glued (Complete)', 'Glued (Drumming)', 'Other'],
           isDropdown: true,
         },
         {
@@ -171,7 +171,8 @@ export const initialState = {
       groups: []
     },
     visualizations: {
-      tacketing: "",
+      tacketed: "",
+      sewing: "",
     }
   },
   notesManager: {

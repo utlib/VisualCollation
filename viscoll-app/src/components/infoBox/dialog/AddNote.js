@@ -8,6 +8,8 @@ import AutoComplete from 'material-ui/AutoComplete';
 import SelectField from 'material-ui/SelectField';
 import MenuItem from 'material-ui/MenuItem';
 import TextField from 'material-ui/TextField';
+import Checkbox from 'material-ui/Checkbox';
+
 
 /** Dialog to add a note to an object (leaf, side, or group).  This component is used in the visual and tabular edit modes.  */
 export default class AddNote extends React.Component {
@@ -17,6 +19,7 @@ export default class AddNote extends React.Component {
       open: false,
       type: '',
       description:'',
+      show: false,
       searchText: '',
       noteID: null,
     };
@@ -28,14 +31,17 @@ export default class AddNote extends React.Component {
       open: true,
       type: '',
       description:'',
+      show: false,
       searchText: '',
       noteID: null,
     });
+    this.props.togglePopUp(true);
   };
 
   /** Close this modal component */
   handleClose = () => {
     this.setState({open: false});
+    this.props.togglePopUp(false);
   };
 
   handleUpdateInput = (searchText) => {
@@ -51,7 +57,7 @@ export default class AddNote extends React.Component {
     let noteID = null;
     for (let id in this.props.Notes){
       const note = this.props.Notes[id];
-      if (note.title===request) { console.log("here");noteID = note.id;}
+      if (note.title===request) { noteID = note.id;}
     }
     this.setState({noteID}, ()=>{
       if (noteID) this.submit()
@@ -73,7 +79,7 @@ export default class AddNote extends React.Component {
         this.props.action.linkNote(noteID);
       } else {
         // Did not find note, so create and attach new note to object
-        this.props.action.createAndAttachNote(this.state.searchText, this.state.type, this.state.description);
+        this.props.action.createAndAttachNote(this.state.searchText, this.state.type, this.state.description, this.state.show);
       }
     }
     this.handleClose();
@@ -121,14 +127,14 @@ export default class AddNote extends React.Component {
     const actions = [
       <FlatButton
         label="Cancel"
-        onTouchTap={this.handleClose}
+        onClick={this.handleClose}
         style={{width:"49%", marginRight:"1%",border:"1px solid #ddd"}}
-        
+        keyboardFocused
       />,
       <RaisedButton
         label={(this.noteExists()||this.state.searchText.length===0)? "Attach note" : "Create & attach note"}
         primary
-        onTouchTap={this.submit}
+        onClick={this.submit}
         style={{width:"49%"}}
         disabled={!this.noteExists()&&this.state.type===''}
       />,
@@ -156,6 +162,18 @@ export default class AddNote extends React.Component {
             fullWidth
             style={{marginTop:-20}}
           />
+          <div className="label" style={{paddingTop:20}}>
+            Show in diagram
+          </div>
+          <div className="input">
+            <Checkbox
+              name="show"
+              value={this.state.show}
+              checked={this.state.show}
+              style={{paddingTop:20}}
+              onCheck={(e,v)=>this.onChange("show",v)}
+            />
+          </div>
         </div>
       );
     }
@@ -192,8 +210,12 @@ export default class AddNote extends React.Component {
 
     return (
       <div style={{float:'right'}}>
-        <IconButton tooltip="Attach a note"> 
-          <IconAdd onClick={this.handleOpen} />
+        <IconButton 
+          tooltip="Attach a note"
+          tabIndex={this.props.tabIndex}
+          onClick={this.handleOpen}
+        > 
+          <IconAdd />
         </IconButton>
         {dialog}
       </div>

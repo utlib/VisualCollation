@@ -2,8 +2,9 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import TextField from 'material-ui/TextField';
 import RaisedButton from 'material-ui/RaisedButton';
-import {btnLg} from '../../styles/button';
-import floatFieldDark from '../../styles/textfield';
+import FlatButton from 'material-ui/FlatButton';
+import { btnLg, btnAuthCancel } from '../../styles/button';
+import {floatFieldDark} from '../../styles/textfield';
 /**
  * Contains the registration form that is used by the landing page component called `Landing`.
  */
@@ -31,7 +32,7 @@ class Register extends Component {
    * @public
    */
   submit = (e) => {
-    e.preventDefault();
+    if (e) e.preventDefault();
     this.props.action.registerUser({...this.state});
   }
 
@@ -45,23 +46,8 @@ class Register extends Component {
       registerSuccess = this.props.userState.registerSuccess;
     } catch (e) {}
 
-    let cancelMessage = "Cancel";
-    if (this.props.user && this.props.user.registerSuccess) {
-      cancelMessage = "Okay";
-    }
-    let cancel = (
-        <div className="spacingTop">
-          <RaisedButton 
-            default 
-            fullWidth 
-            onTouchTap={this.props.tapCancel} 
-            label={cancelMessage} 
-            {...btnLg} 
-          />
-        </div>
-      );
     let registerForm = (
-      <form onSubmit={this.submit}>
+      <form aria-label="register" onSubmit={this.submit}>
         <TextField 
           fullWidth onChange={(e, v)=>this.onInputChange(v, "name")} 
           name="name"  
@@ -75,6 +61,8 @@ class Register extends Component {
           floatingLabelText="E-mail" 
           {...floatFieldDark} 
           errorText={emailError} 
+          aria-invalid={emailError && emailError.length>0}
+          aria-required={true}
         />
         
         <TextField 
@@ -85,6 +73,8 @@ class Register extends Component {
           {...floatFieldDark} 
           errorText={passwordError} 
           type="password" 
+          aria-invalid={passwordError && passwordError.length>0}
+          aria-required={true}
         />
 
         <br /><br />
@@ -95,14 +85,28 @@ class Register extends Component {
           type="submit"
           name="submit"
         />
-        {cancel}
+        <div className="spacingTop">
+          <FlatButton 
+            onClick={() => this.props.tapCancel()}
+            label="Go back" 
+            {...btnAuthCancel}
+          />
+        </div>
       </form>
     );
 
     const successMessage = (
-      <p> 
-        Registration successful! You will be notified by email once your account has been approved.
-      </p>
+      <div>
+        <p> 
+          Registration successful! You will be notified by email once your account has been approved.
+        </p>
+        <br />
+        <RaisedButton 
+          fullWidth {...btnLg} 
+          onClick={() => this.props.tapCancel()}
+          label="Okay" 
+        />
+      </div>
     );
     
     if (registerSuccess) {
