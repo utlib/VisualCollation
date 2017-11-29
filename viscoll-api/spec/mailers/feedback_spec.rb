@@ -6,7 +6,7 @@ RSpec.describe FeedbackMailer, type: :mailer do
       @user = User.create(:name => "user", :email => "user@mail.com", :password => "user")
     end
     
-    let(:mail) { FeedbackMailer.sendFeedback("Title of feedback", "My message", @user.id)}
+    let(:mail) { FeedbackMailer.sendFeedback("Title of feedback", "My message", nil, nil, @user.id)}
     
     it "should send email" do
       expect(mail.subject).to eq("Title of feedback")

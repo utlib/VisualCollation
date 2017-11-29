@@ -1,9 +1,7 @@
 import React from 'react';
 import FlatButton from 'material-ui/FlatButton';
 import RaisedButton from 'material-ui/RaisedButton';
-import TextField from 'material-ui/TextField';
 import {RadioButton, RadioButtonGroup} from 'material-ui/RadioButton';
-import Dropzone from 'react-dropzone'
 
 
 export default class ImportProject extends React.Component {
@@ -12,7 +10,7 @@ export default class ImportProject extends React.Component {
     super(props);
     this.state = {
       importData: "",
-      importFormat: "xml",
+      importFormat: "json",
     }
   }
 
@@ -25,7 +23,7 @@ export default class ImportProject extends React.Component {
   }
 
   submit = (event) => {
-    event.preventDefault();
+    if (event) event.preventDefault();
     if (!this.isDisabled()) {
       this.props.importProject({importData: this.state.importData, importFormat: this.state.importFormat});
     } 
@@ -44,7 +42,7 @@ export default class ImportProject extends React.Component {
 
 
   checkIfFileTypeIsInvalid = (file) => {
-    const allowedFileTypes = ["json", "xml", "txt"];
+    const allowedFileTypes = ["json", "xml"];
     return !allowedFileTypes.includes(file.type)
   }
 
@@ -58,68 +56,75 @@ export default class ImportProject extends React.Component {
   }
 
   render() {
-    const dropFileText = <p>
-      Drop a file here, or click to select a file to upload.<br/>
-      Only <strong>*.json, .xml and *.txt</strong> files will be accepted.
-    </p>;
     return (
       <div>
         <div style={{textAlign:"center"}}>
           <h1>Import</h1>
         </div>
-        <p>In the textbox below, please paste the content of your exported collation data.</p>
+        <p>Please paste the content of your exported collation data in the textbox below, or upload a file to import.</p>
         <form onSubmit={this.submit}>
-          <TextField
+          <textarea
+            aria-label="Paste import data here"
+            aria-errormessage="errorMsg"
+            aria-invalid={this.props.importStatus!==undefined}
             name="importData"
             value={this.state.importData}
-            fullWidth
-            multiLine
             rows={7}
-            rowsMax={7}
-            onChange={(e,v)=>this.onChange(v, "importData")}
-            underlineShow={false}
-            style={{border: "1px solid #cccccc", width: "99%"}}
-            textareaStyle={{padding:"0px 15px"}}
+            onChange={(e)=>this.onChange(e.target.value, "importData")}
           />
           <br/>
-          <Dropzone 
-            style={{width: "50%", height: null, border: "#2a8282", borderStyle: "dotted", margin: "0 auto", textAlign: "center"}}
-            onDrop={(accepted, rejected) => {this.handleFileSelected(accepted)}} 
-            accept=".json, .xml, .txt"
-            multiple={false}
-          >
-            {dropFileText}
-          </Dropzone>
-          <p>Import format:</p>
-          <RadioButtonGroup 
-            name="exportType" 
-            defaultSelected="xml"
-            style={{display: 'flex', flexWrap: 'wrap', justifyContent: 'flex-start'}}
-            valueSelected={this.state.importFormat}
-            onChange={(e,v)=>this.onChange(v, "importFormat")}
-          >
-            <RadioButton
-              value="xml"
-              label="XML"
-              style={{display: 'inline-block', width: '125px'}}
+          <h2>Import from file:</h2>
+          <div className="section">
+            <input 
+              type="file" 
+              accept=".json, .xml"
+              name="importUpload" 
+              aria-label="Upload file to import" 
+              onChange={(event)=>this.handleFileSelected(event.target.files)}
+              onClick={(event)=>event.target.value=null}
             />
-            <RadioButton
-              value="json"
-              label="JSON"
-              style={{display: 'inline-block', width: '125px'}}
-            />
-            <RadioButton
-              value="formula"
-              label="Formula"
-              style={{display: 'inline-block', width: '125px'}}
-            />
-          </RadioButtonGroup>
+          </div>
+          <h2>Import format:</h2>
+          <div className="section" role="radiogroup">
+            <RadioButtonGroup 
+              name="exportType" 
+              defaultSelected="json"
+              style={{display: 'flex', flexWrap: 'wrap', justifyContent: 'flex-start'}}
+              valueSelected={this.state.importFormat}
+              onChange={(e,v)=>this.onChange(v, "importFormat")}
+            >
+                <RadioButton
+                  role="radio"
+                  aria-label="JSON"
+                  aria-checked={this.state.importFormat==="json"}
+                  value="json"
+                  label="JSON"
+                  style={{display: 'inline-block', width: '125px'}}
+                />
+                <RadioButton
+                  role="radio"
+                  aria-label="XML"
+                  aria-checked={this.state.importFormat==="xml"}
+                  value="xml"
+                  label="XML"
+                  style={{display: 'inline-block', width: '125px'}}
+                />
+            </RadioButtonGroup>
+          </div>
           <br/>
-          <strong style={{color: "red"}}>{this.props.importStatus}</strong>
+          {this.props.importStatus!==undefined? 
+            <p id="errorMsg" style={{fontWeight:"heavy", color: "red"}}>{this.props.importStatus}</p>
+            : ""            
+          }
           <div style={{textAlign:"center",paddingTop:30}}>
-            <FlatButton label="Back" onTouchTap={this.props.previousStep} />
+            <FlatButton 
+              label="Back" 
+              aria-label="Back" 
+              onClick={() => this.props.previousStep()}
+            />
             <RaisedButton 
               label="Next"
+              aria-label="Next"
               primary
               disabled={this.isDisabled()}
               type="submit"
@@ -130,15 +135,3 @@ export default class ImportProject extends React.Component {
     );
   };
 }
-
-
-
-          // <RaisedButton
-          //    containerElement='label'
-          //    label='Upload an existing file'>
-          //    <input 
-          //     type="file" 
-          //     onChange={this.handleFileSelected}
-          //     accept=".json,.xml,.txt"
-          //   />
-          // </RaisedButton>

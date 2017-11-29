@@ -10,11 +10,12 @@ export default class DeleteManifest extends Component {
         label="Cancel"
         primary={true}
         onClick={this.props.handleClose}
+        keyboardFocused
       />,
       <RaisedButton
         label="Delete"
         onClick={()=>{this.props.handleClose(); this.props.deleteManifest()}}
-        backgroundColor="#D87979"
+        backgroundColor="#b53c3c"
         labelColor="#ffffff"    
       />,
     ];

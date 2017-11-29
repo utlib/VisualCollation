@@ -60,15 +60,17 @@ export default function editCollationReducer(state=initialState, action) {
         }
       };
       break;
-    case "TOGGLE_TACKET": 
+    case "TOGGLE_VISUALIZATION_DRAWING": 
+      let visualizations = {
+        ...state.collationManager.visualizations,
+      };
+      visualizations[action.payload.type] = action.payload.value;
+
       state = {
         ...state,
         collationManager: {
           ...state.collationManager,
-          visualizations: {
-            ...state.collationManager.visualizations,
-            tacketing: action.payload,
-          }
+          visualizations,          
         }
       }
       break;
@@ -129,7 +131,18 @@ export default function editCollationReducer(state=initialState, action) {
     case "DELETE_MANIFEST_FAILED":
     case "MAP_SIDES_FAILED":
       break;
-
+    case "HIDE_PROJECT_TIP":
+      state = {
+        ...state,
+        project: {
+          ...state.project,
+          preferences: {
+            ...state.project.preferences,
+            showTips: false
+          }
+        }
+      }
+      break;
     // INTERACTIONS
     case "persist/REHYDRATE":
       state = {...state, ...action.payload.active}
@@ -307,7 +320,6 @@ export default function editCollationReducer(state=initialState, action) {
       break;
     case "EXPORT_SUCCESS":
       let exportedData = action.payload;
-      console.log()
       if (action.payload.type==="xml"){
         exportedData = action.payload.data;
       } else if (action.payload.type==="formula") {

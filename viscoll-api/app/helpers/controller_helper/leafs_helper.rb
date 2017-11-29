@@ -6,7 +6,7 @@ module ControllerHelper
       if leaves.size.odd?
         oddLeaf = leaves[oddLeafNumber]
         if (oddLeaf.conjoined_to)
-          @project.leaves.find(oddLeaf.conjoined_to).update(conjoined_to: nil)
+          @project.leafs.find(oddLeaf.conjoined_to).update(conjoined_to: nil)
           oddLeaf.update(conjoined_to: nil)
         end
         leaves.delete_at(oddLeafNumber-1)

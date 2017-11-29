@@ -17,8 +17,8 @@ export default class ViewingMode extends React.Component {
       paperManager: new PaperManager({
         canvasID: 'myCanvas',
         origin: 0,
-        spacing: 0.06,
-        strokeWidth: 0.016,
+        spacing: 0.04,
+        strokeWidth: 0.015,
         strokeColor: 'rgb(82,108,145)',
         strokeColorActive: 'rgb(78,214,203)',
         strokeColorGroupActive: 'rgb(82,108,145)',
@@ -55,11 +55,13 @@ export default class ViewingMode extends React.Component {
       this.props.collationManager.selectedObjects!==nextProps.collationManager.selectedObjects ||
       this.props.collationManager.filters !== nextProps.collationManager.filters ||
       this.props.collationManager.visibleAttributes !== nextProps.collationManager.visibleAttributes ||
-      this.props.project.Notes!==nextProps.project.Notes
+      this.props.project.Notes!==nextProps.project.Notes ||
+      this.state.viewingMode !== nextState.viewingMode ||
+      this.props.imageViewerEnabled !== nextProps.imageViewerEnabled
     );
   }
 
-  componentWillUpdate(nextProps) {
+  componentWillUpdate(nextProps, nextState) {
     if (Object.keys(this.state.paperManager).length>0) {
       this.state.paperManager.setProject(nextProps.project);
       this.state.paperManager.setActiveGroups(nextProps.collationManager.selectedObjects.type==="Group"? nextProps.collationManager.selectedObjects.members : []);
@@ -68,8 +70,11 @@ export default class ViewingMode extends React.Component {
       this.state.paperManager.setActiveVersos(nextProps.collationManager.selectedObjects.type==="Verso"? nextProps.collationManager.selectedObjects.members : []);
       this.state.paperManager.setFilter(nextProps.collationManager.filters);
       this.state.paperManager.setVisibility(nextProps.collationManager.visibleAttributes);
-      this.drawOnCanvas();
     }
+  }
+
+  componentDidUpdate() {
+    this.drawOnCanvas();
   }
 
   componentWillUnmount() {
@@ -85,16 +90,23 @@ export default class ViewingMode extends React.Component {
     this.updateCanvasSize();
     this.state.paperManager.draw();
   }
-
   /**
    * Update canvas size based on current window size
    * @public
    */
   updateCanvasSize = () => {
     // Resize the canvas
-    let maxWidth = window.innerWidth-window.innerWidth*0.75;
+    let maxWidth = window.innerWidth-window.innerWidth*0.46;
+    if (this.props.imageViewerEnabled) {
+      maxWidth = window.innerWidth-window.innerWidth*0.75;
+    }
     document.getElementById("myCanvas").width=maxWidth;
     this.state.paperManager.setWidth(maxWidth);
+    if (this.props.imageViewerEnabled) {
+      this.state.paperManager.setScale(0.06, 0.027);
+    } else {
+      this.state.paperManager.setScale(0.04, 0.015);
+    }
   }
     
 
@@ -102,7 +114,7 @@ export default class ViewingMode extends React.Component {
     let canvasAttr = {
       'data-paper-hidpi': 'off',
       'height': "99999999px",
-      'width': window.innerWidth-window.innerWidth*0.75,
+      'width': this.props.imageViewerEnabled? window.innerWidth-window.innerWidth*0.75: window.innerWidth-window.innerWidth*0.46,
     };
 
 
@@ -124,10 +136,14 @@ export default class ViewingMode extends React.Component {
 
     return (
     <div className="viewingMode">
-      <div style={{width: "40%"}}>
+      <div style={this.props.imageViewerEnabled?{width: "40%"}:{}}>
+        
         <canvas id="myCanvas" {...canvasAttr}></canvas>
       </div>
-      <ImageViewer rectoURL={rectoURL} versoURL={versoURL} fixed={true} />
+      {this.props.imageViewerEnabled?
+        <ImageViewer rectoURL={rectoURL} versoURL={versoURL} fixed={true} />
+        :""
+      }
     </div>
     );
   }

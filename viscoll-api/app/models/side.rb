@@ -20,7 +20,8 @@ class Side
   # If linked to note(s), remove link from the note(s)'s side
   def unlink_notes 
     self.notes.each do | note | 
-      note.objects[:Side].delete(self.id.to_s)
+      note.objects[:Recto].delete(self.id.to_s)
+      note.objects[:Verso].delete(self.id.to_s)
       note.save
     end
   end

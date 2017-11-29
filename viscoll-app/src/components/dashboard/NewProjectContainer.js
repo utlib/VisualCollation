@@ -5,6 +5,7 @@ import ProjectDetails from './ProjectDetails';
 import ProjectStructure from './ProjectStructure';
 import ImportProject from './ImportProject';
 import CloneProject from './CloneProject';
+import NewProjectChoice from './NewProjectChoice';
 
 export default class NewProjectContainer extends React.Component {
   constructor(props) {
@@ -15,7 +16,7 @@ export default class NewProjectContainer extends React.Component {
       title: "",
       shelfmark: "",
       date: "",
-      quireNo: 1,
+      quireNo: 2,
       leafNo: 10,
       conjoined: true,
       collationGroups: [],
@@ -227,10 +228,21 @@ export default class NewProjectContainer extends React.Component {
           previousStep={this.reset}
           doErrorsExist={this.doErrorsExist}
         />;
+      } else if (this.state.step===2) { 
+        content = <NewProjectChoice 
+          previousStep={()=>this.set("step", 1)}
+          nextStep={()=>this.set("step",3)}
+          finish={this.finish}
+          />
       } else {
         content = <ProjectStructure 
           finish={this.finish}
-          previousStep={()=>this.set("step", 1)}
+          previousStep={()=>this.setState({
+                          step: 1, 
+                          quireNo: 2,
+                          leafNo: 10,
+                          conjoined: true,
+                          collationGroups: []})}
           set={this.set}
           quireNo={this.state.quireNo}
           leafNo={this.state.leafNo}
@@ -264,18 +276,23 @@ export default class NewProjectContainer extends React.Component {
         />
       );
     }
-    return (
-      <div>
-        <Dialog
-          modal={false}
-          open={this.props.open}
-          onRequestClose={()=>this.handleRequestClose()}
-          className="newProjectDialog"
-          autoScrollBodyContent
-        >
-          {content}
-        </Dialog>
-      </div>
-    );
+    if (this.props.open) {
+      return (
+        <div>
+          <Dialog
+            modal={false}
+            open={this.props.open}
+            onRequestClose={()=>this.handleRequestClose()}
+            className="newProjectDialog"
+            autoScrollBodyContent
+          >
+            {content}
+          </Dialog>
+        </div>
+      );
+    } else {
+      return <div></div>;
+    }
+    
   }
 }

@@ -10,6 +10,7 @@ import UserProfileForm from '../components/topbar/UserProfileForm';
 import FlatButton from 'material-ui/FlatButton';
 import NotesFilter from "../components/notesManager/NotesFilter";
 import FilterIcon from 'material-ui/svg-icons/content/filter-list';
+import Image from 'material-ui/svg-icons/image/image';
 import imgLogo from '../assets/logo_white.svg';
 
 import { connect } from "react-redux";
@@ -46,6 +47,7 @@ class TopBar extends Component {
    */
   toggleUserProfile = (userProfileModalOpen=false) => {
     this.setState({ userProfileModalOpen });
+    this.props.togglePopUp(userProfileModalOpen);
   }
 
   /**
@@ -79,34 +81,63 @@ class TopBar extends Component {
     if (this.props.user.name) {
       UserMenu = ( 
         <IconMenu
-          iconButtonElement={ <IconButton style={{padding:0}}><Avatar backgroundColor="#0b3d59">{this.props.user.name.charAt(0).toUpperCase()}</Avatar></IconButton> }
+          iconButtonElement={ 
+            <IconButton 
+              tabIndex={this.props.tabIndex}
+              style={{padding:0}}
+              aria-label="User icon"
+            >
+              <Avatar color="#3A4B55" backgroundColor="#dfdfdf">{this.props.user.name.charAt(0).toUpperCase()}</Avatar>
+            </IconButton> }
           targetOrigin={{horizontal: 'right', vertical: 'top'}}
           anchorOrigin={{horizontal: 'right', vertical: 'bottom'}}
         >
-          <MenuItem primaryText="Edit Profile" onTouchTap={() => this.toggleUserProfile(true)} />
-          <MenuItem primaryText="Sign out" onTouchTap={this.handleUserLogout} />
+          <MenuItem primaryText="Edit Profile" 
+            onClick={() => this.toggleUserProfile(true)}
+          />
+          <MenuItem primaryText="Sign out" 
+            onClick={() => this.handleUserLogout()}
+          />
         </IconMenu>
       );
     }
 
     return (
-      <div className="topbar" style={this.props.viewMode==="VIEWING"?{left:0, width:"100%"}:{}}>
-        <div className="logo" style={{cursor:"pointer"}} onClick={this.goHome}>
-          <img src={imgLogo} alt="Logo" />
-        </div>
+      <div role="region" aria-label="toolbar" className="topbar" style={this.props.viewMode==="VIEWING"?{left:0, width:"100%"}:{}}>
+        <button 
+          className="logo" 
+          style={{cursor:"pointer", border:0}} 
+          onClick={this.goHome} 
+          aria-label="Click to go home" 
+          tabIndex={this.props.tabIndex}
+        >
+          <img src={imgLogo} alt="Viscoll logo" />
+        </button>
         <Toolbar style={{background:"#ffffff"}}>
           <ToolbarGroup>
               {this.props.children}
           </ToolbarGroup>
           <ToolbarGroup>
+            {this.props.showImageViewerButton ? 
+              <FlatButton
+                primary
+                label={this.props.imageViewerEnabled? "Hide image viewer" : "Image viewer"}
+                onClick={() => this.props.toggleImageViewer()}
+                icon={<Image style={{height:20}}/>}
+                style={{marginRight: 5}}
+                tabIndex={this.props.tabIndex}
+              />
+              : null
+            }
             {this.props.toggleFilterDrawer? 
                 <FlatButton 
                   primary={true} 
-                  onTouchTap={this.props.toggleFilterDrawer}
-                  label={this.props.filterOpen? "HIDE FILTER" : "FILTER"}
+                  onClick={(e)=>{e.preventDefault();this.props.toggleFilterDrawer()}}
+                  label={this.props.filterOpen? "Hide filter" : "Filter"}
                   icon={<FilterIcon style={{height:15}}/>}
-                  >
-                </FlatButton>
+                  style={{marginLeft:0}}
+                  tabIndex={this.props.tabIndex}
+                  />
               : null
             }
             {this.props.notesFilter ? <NotesFilter 
@@ -115,7 +146,9 @@ class TopBar extends Component {
                                         onValueChange={this.props.onValueChange}
                                         onTypeChange={this.props.onTypeChange}
                                         filterTypes={this.props.filterTypes}
+                                        tabIndex={this.props.tabIndex}
                                     /> : null}
+            
             {UserMenu}
           </ToolbarGroup> 
         </Toolbar>

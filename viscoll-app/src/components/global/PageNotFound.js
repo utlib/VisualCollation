@@ -11,7 +11,7 @@ export default class PageNotFound extends Component {
         <RaisedButton 
           label="Go home"
           secondary
-          onTouchTap={()=>this.props.history.push("/dashboard")}
+          onClick={()=>this.props.history.push("/dashboard")}
         /></a>
       </div>
     </div>

@@ -33,6 +33,18 @@ export function toggleFilterPanel(value) {
   };
 }
 
+export function handleObjectPress(selectedObjects, object, event) {
+  selectedObjects = {...selectedObjects, members: [...selectedObjects.members]};
+  selectedObjects.type = object.memberType;
+  selectedObjects.members = [object.id];
+
+  return { 
+    type: "TOGGLE_SELECTED_OBJECTS",
+    payload: selectedObjects
+  };
+  
+}
+
 export function handleObjectClick(selectedObjects, object, event, objects) {
   selectedObjects = {...selectedObjects, members: [...selectedObjects.members]};
   if (event.ctrlKey || event.metaKey || (event.modifiers!==undefined && event.modifiers.command)) {
@@ -63,9 +75,7 @@ export function handleObjectClick(selectedObjects, object, event, objects) {
       }
     }
     if (event.shiftKey || (event.modifiers!==undefined && event.modifiers.shift)) {
-      try {event.preventDefault()}
-      catch (e) {};
-      
+      window.getSelection().removeAllRanges();
       // Object type changed, clear all active selected objects
       if (selectedObjects.type !== object.memberType) {
         selectedObjects.members = [object.id];
@@ -297,9 +307,9 @@ export function updateFilterSelection(selection, matchingFilterObjects, allObjec
 
 }
 
-export function toggleTacket(request) {
+export function toggleVisualizationDrawing(request) {
   return { 
-    type: 'TOGGLE_TACKET',
+    type: 'TOGGLE_VISUALIZATION_DRAWING',
     payload: request
   };
 }

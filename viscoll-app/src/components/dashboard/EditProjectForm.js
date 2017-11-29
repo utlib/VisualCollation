@@ -24,6 +24,11 @@ class EditProjectForm extends React.Component {
         shelfmark: false,
         date: false,
       },
+      errors: {
+        title: "",
+        shelfmark: "",
+        date: "",
+      },
     };
   }
 
@@ -74,7 +79,7 @@ class EditProjectForm extends React.Component {
    * @public
    */
   checkValidationError = (type) => {
-    const errors = {};
+    const errors = {title:"", shelfmark:"", date:""};
     const allProjectsExceptCurrent = [...this.state.allProjects];
     allProjectsExceptCurrent.splice(this.state.selectedProjectIndex, 1);
     allProjectsExceptCurrent.forEach(project => {
@@ -143,7 +148,7 @@ class EditProjectForm extends React.Component {
    * @public
    */
   handleProjectUpdate = (event, field) => {
-    event.preventDefault();
+    if (event) event.preventDefault();
     const projectID = this.props.selectedProject.id;
     const project = {
       title: this.state.title,
@@ -221,18 +226,21 @@ class EditProjectForm extends React.Component {
       return (
         <div style={{float:"right"}}>
           <RaisedButton
+            aria-label="Submit"
             primary
             icon={<IconSubmit />}
             style={{minWidth:"60px",marginLeft:"5px"}}
             name="submit"
             type="submit"
             disabled={this.ifErrorsExist()}
+            onClick={() => this.handleProjectUpdate(null, field)}
           />
           <RaisedButton
+            aria-label="Cancel"
             secondary
             icon={<IconClear />}
             style={{minWidth:"60px",marginLeft:"5px"}}
-            onTouchTap={(e)=>this.handleProjectCancelUpdate(field)}
+            onClick={() => this.handleProjectCancelUpdate(field)}
           />
         </div>
       )
@@ -246,7 +254,6 @@ class EditProjectForm extends React.Component {
     if (!selectedProject)
       return <div></div>;
 
-  
     let projectPanelData = (
       <div className="projectPanelInfo">
         <form onSubmit={(e)=>this.handleProjectUpdate(e, "title")}>
@@ -255,9 +262,12 @@ class EditProjectForm extends React.Component {
             floatingLabelFixed
             value={this.state.title}
             errorText={this.state.errors.title}
+            aria-invalid={this.state.errors.title.length>0}
             onChange={(event, newValue) => this.onInputChange(event, newValue, "title")}
-            floatingLabelStyle={{fontSize: 25}}
+            floatingLabelStyle={{fontSize: 25, color: "#526C91"}}
             fullWidth={true}
+            tabIndex={this.props.tabIndex}
+            autoFocus={true}
           />
           {this.submitButtons("title")}
         </form>
@@ -268,8 +278,9 @@ class EditProjectForm extends React.Component {
             value={this.state.shelfmark}
             errorText={this.state.errors.shelfmark}
             onChange={(event, newValue) => this.onInputChange(event, newValue, "shelfmark")}
-            floatingLabelStyle={{fontSize: 25}}
+            floatingLabelStyle={{fontSize: 25, color: "#526C91"}}
             fullWidth={true}
+            tabIndex={this.props.tabIndex}
           />
           {this.submitButtons("shelfmark")}
         </form>
@@ -279,10 +290,12 @@ class EditProjectForm extends React.Component {
             floatingLabelFixed
             value={this.state.date}
             errorText={this.state.errors.date}
+            aria-invalid={this.state.errors.date.length>0}
             onChange={(event, newValue) => this.onInputChange(event, newValue, "date")}
-            floatingLabelStyle={{fontSize: 25}}
+            floatingLabelStyle={{fontSize: 25, color: "#526C91"}}
             fullWidth={true}
             hintText="N/A"
+            tabIndex={this.props.tabIndex}
           /> 
           {this.submitButtons("date")}
         </form>
@@ -298,13 +311,13 @@ class EditProjectForm extends React.Component {
       <FlatButton
         label="Cancel"
         primary={true}
-        onTouchTap={() => this.handleDeleteDialogToggle()}
+        onClick={() => this.handleDeleteDialogToggle()}
       />,
       <FlatButton
         label="Yes"
         primary={true}
         keyboardFocused={true}
-        onTouchTap={this.handleProjectDelete}
+        onClick={() => this.handleProjectDelete()}
       />,
     ];
 
@@ -312,22 +325,28 @@ class EditProjectForm extends React.Component {
       <FlatButton
         label="Go Back"
         primary={true}
-        onTouchTap={() => this.handleUnsavedDialogToggle()}
+        onClick={() => this.handleUnsavedDialogToggle()}
       />,
       <FlatButton
         label="Ignore Changes"
         primary={true}
         keyboardFocused={true}
-        onTouchTap={() => this.handleProjectPanelClose(true)}
+        onClick={() => this.handleProjectPanelClose(true)}
       />,
     ];
 
 
     return (
-      <div style={{padding: 5 }}>
+      <div style={{padding: 5 }} role="region" aria-label="Info panel of selected project" >
 
-        <IconButton style={{float: 'right'}}> 
-          <CloseIcon onClick={() => this.handleProjectPanelClose()} />
+        <IconButton 
+          aria-label="Close panel"
+          style={{float: 'right'}}
+          onClick={() => this.handleProjectPanelClose()}
+          tabIndex={this.props.tabIndex}
+        > 
+          <CloseIcon 
+          />
         </IconButton>
 
           {projectPanelData}
@@ -335,16 +354,18 @@ class EditProjectForm extends React.Component {
         <br />
 
         <RaisedButton 
+          primary
           label="Open Project" 
-          onTouchTap={() => this.props.history.push(`/project/${this.props.selectedProject.id}`)} 
-          secondary
+          onClick={() => this.props.history.push(`/project/${this.props.selectedProject.id}`)}
           style={{width:"49%",float:"left",marginRight:"2%"}}
+          tabIndex={this.props.tabIndex}
           />
         <RaisedButton 
           label="Delete Project" 
-          onTouchTap={() => this.handleDeleteDialogToggle(true)} 
-          labelColor="#D87979"
+          onClick={() => this.handleDeleteDialogToggle(true)}
+          labelColor="#b53c3c"
           style={{width:"49%"}}
+          tabIndex={this.props.tabIndex}
           />
 
         <Dialog

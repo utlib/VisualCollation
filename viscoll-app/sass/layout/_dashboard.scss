@@ -1,0 +1,46 @@
+#listView {
+  .header {
+    display: flex;
+    padding: 1em 2em;
+    font-size: 0.8em;
+    div {
+      width: 50%;
+    }
+  }
+  button {
+    width: 100%;
+    display: flex;
+    text-align: left;
+    border-left: 1px solid transparentize($white, 0.5);
+    border-right: 1px solid transparentize($white, 0.5);
+    border-top: 1px solid transparentize($dark_gray, 0.8);
+    border-bottom: 1px solid transparentize($white, 0.5);
+    padding: 1em 2em;
+    background: transparentize($white, 0.5);
+    font-size: 0.9em;
+    color: $black;
+    cursor: pointer;
+    @include transition(background, 100ms, ease-in-out);
+    
+    &:hover {
+      background: $white;
+    }
+    &:focus {
+      outline-style: solid;
+      outline-color: transparentize($teal, 0.5);
+      outline-width: 2px;
+      border: 1px solid $teal;
+    }
+    &.selected {
+      background: $teal;
+    }
+
+    &.selected:focus {
+      outline: 0;
+    }
+
+    div {
+      width: 50%;
+    }
+  }
+}

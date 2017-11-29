@@ -32,6 +32,7 @@ group :development, :test do
   gem 'mongoid-rspec', github: 'mongoid-rspec/mongoid-rspec'
   gem 'guard-rspec'
   gem 'rspec_junit_formatter', '~> 0.3.0'
+  gem 'webmock', '~> 3.1.0'
 end
 
 group :development do
@@ -49,7 +50,3 @@ gem 'rails_jwt_auth', '~> 0.16.1'
 
 # Use Rack CORS for handling Cross-Origin Resource Sharing (CORS), making cross-origin AJAX possible
 gem 'rack-cors', '~> 0.4.1'
-
-
-
-

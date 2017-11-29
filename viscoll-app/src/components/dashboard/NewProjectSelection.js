@@ -1,73 +1,70 @@
 import React from 'react';
-import {Card, CardText} from 'material-ui/Card';
-import IconButton from 'material-ui/IconButton';
 import AddIcon from 'material-ui/svg-icons/content/add';
 import CopyIcon from 'material-ui/svg-icons/content/content-copy';
 import ImportIcon from 'material-ui/svg-icons/action/system-update-alt';
 
 const NewProjectSelection = (props) => {
   return (
-    <div style={{width:"100%", margin:"auto"}} className="newProjectSelection">
-      <Card 
-        style={{padding:0,margin:0}}
-        containerStyle={{padding:0,margin:0}}
-        onTouchTap={()=>props.setProjectType("new")}  
+    <div role="menu" style={{width:"100%", margin:"auto"}} className="newProjectSelection">
+      <button 
+        type="button" 
+        name="Create new" 
+        aria-labelledby="createTitle" 
+        aria-describedby="createDescription" 
+        className="btnSelection"
+        onClick={() => props.setProjectType("new")}
+        tabIndex="1"
       >
-        <CardText style={{padding:0,margin:0}}>
-          <div className="selectItem">
-            <div className="icon">
-              <IconButton iconStyle={{color:"#3A4B55",width:30, height:30, marginTop:-10}}>
-                <AddIcon />
-              </IconButton>
-            </div>
-            <div className="text">
-              <h1>Create new</h1>
-              <h2>Create a new collation from scratch</h2>
-            </div>
+        <div className="selectItem">
+          <div className="icon" aria-hidden="true">
+            <AddIcon />
           </div>
-        </CardText>
-      </Card>
-      <br />
-      <Card 
-        style={{padding:0,margin:0}}
-        containerStyle={{padding:0,margin:0}}
-        onTouchTap={()=>props.setProjectType("import")}  
-      >
-        <CardText style={{padding:0,margin:0}}>
-          <div className="selectItem">
-            <div className="icon">
-              <IconButton iconStyle={{color:"#3A4B55",width:30, height:30, marginTop:-10}}>
-                <ImportIcon />
-              </IconButton>
-            </div>
-            <div className="text">
-              <h1>Import</h1>
-              <h2>Import a collation from VisColl XML, JSON or formula</h2>
-            </div>
+          <div className="text">
+            <span id="createTitle">Create new</span>
+            <span id="createDescription">Create a new collation from scratch</span>
           </div>
-        </CardText>
-      </Card>
+        </div>
+      </button>
       
-      <br />
-      <Card 
-        style={{padding:0,margin:0}}
-        containerStyle={{padding:0,margin:0}}
-        onTouchTap={()=>props.setProjectType("clone")}  
+      <button 
+        type="button" 
+        name="Import" 
+        aria-labelledby="importTitle" 
+        aria-describedby="importDescription" 
+        className="btnSelection"
+        onClick={() => props.setProjectType("import")}
+        tabIndex="2"
       >
-        <CardText style={{padding:0,margin:0}}>
-          <div className="selectItem">
-            <div className="icon">
-              <IconButton iconStyle={{color:"#3A4B55",width:30, height:30, marginTop:-10}}>
-                <CopyIcon />
-              </IconButton>
-            </div>
-            <div className="text">
-              <h1>Clone existing</h1>
-              <h2>Clone one of your existing collations</h2>
-            </div>
+        <div className="selectItem">
+          <div className="icon" aria-hidden="true">
+            <ImportIcon />
           </div>
-        </CardText>
-      </Card>
+          <div className="text">
+            <span id="importTitle">Import</span>
+            <span id="importDescription">Import a collation from VisColl XML or JSON</span>
+          </div>
+        </div>
+      </button>
+
+      <button 
+        type="button" 
+        name="Clone" 
+        aria-labelledby="cloneTitle" 
+        aria-describedby="cloneDescription" 
+        className="btnSelection"
+        onClick={() => props.setProjectType("clone")}
+        tabIndex="3"
+      >
+        <div className="selectItem">
+          <div className="icon" aria-hidden="true">
+            <CopyIcon />
+          </div>
+          <div className="text">
+            <span id="cloneTitle">Clone</span>
+            <span id="cloneDescription">Clone one of your existing collations</span>
+          </div>
+        </div>
+      </button>
     </div>
   );
 }

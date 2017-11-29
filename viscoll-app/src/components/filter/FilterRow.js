@@ -1,4 +1,5 @@
 import React, {Component} from 'react';
+import {floatFieldLight} from '../../styles/textfield';
 import SelectField from 'material-ui/SelectField';
 import MenuItem from 'material-ui/MenuItem';
 import TextField from 'material-ui/TextField';
@@ -42,10 +43,12 @@ class FilterRow extends Component {
 
   renderValueField = () => {
     let input =<TextField 
+        aria-label="Query value"
         hintText="Value" 
         style={{paddingTop: 24, width: '100%'}}
         disabled
-        
+        tabIndex={this.props.tabIndex}
+        {...floatFieldLight}
       />;
     if (this.props.attributeIndex!=="") {
       try {
@@ -58,6 +61,8 @@ class FilterRow extends Component {
               multiple
               errorText={(this.props.type!==null && this.props.values.length===0)?"Required":""}
               style={{width:'100%'}}
+              tabIndex={this.props.tabIndex}
+              {...floatFieldLight}
             >
               {this.props.defaultAttributes[this.props.type][this.props.attributeIndex]['options'].map(this.renderValueItems)}
             </SelectField>);
@@ -77,6 +82,7 @@ class FilterRow extends Component {
               listStyle={{ maxHeight: 300, overflow: 'auto' }}
               openOnFocus={true}
               style={{width:'100%'}}
+              tabIndex={this.props.tabIndex}
             />);
         } 
         else if (this.props.defaultAttributes[this.props.type] && this.props.defaultAttributes[this.props.type][this.props.attributeIndex]['name']==="type"){
@@ -97,6 +103,7 @@ class FilterRow extends Component {
               listStyle={{ maxHeight: 300, overflow: 'auto' }}
               openOnFocus={true}
               style={{width:'100%'}}
+              tabIndex={this.props.tabIndex}
             />);
         } 
         else {
@@ -105,6 +112,8 @@ class FilterRow extends Component {
               hintText="Value" 
               style={{paddingTop: 24, width: '100%'}}
               onChange={(e,v)=>this.props.onChange(this.props.queryIndex,"values",e,0,[v])}
+              tabIndex={this.props.tabIndex}
+              {...floatFieldLight}
             />;
         }
       } catch (e) {}
@@ -122,6 +131,8 @@ class FilterRow extends Component {
             onChange={(e,i,v)=>{let queryIndex = this.props.queryIndex; this.props.onChange(queryIndex,"type",e,i,v);}}
             style={{width:'100%'}}
             disabled={this.props.disableNewRow}
+            tabIndex={this.props.tabIndex}
+            {...floatFieldLight}
           >
             <MenuItem value={"leaf"} primaryText="Leaf" />
             <MenuItem value={"group"} primaryText="Group" />
@@ -139,6 +150,8 @@ class FilterRow extends Component {
             errorText={(this.props.type!==null && this.props.attribute==="")?"Required":""}
             autoWidth
             disabled={this.props.disableNewRow}
+            tabIndex={this.props.tabIndex}
+            {...floatFieldLight}
           >
             {this.renderAttributeMenuItems()}
           </SelectField>
@@ -152,6 +165,8 @@ class FilterRow extends Component {
             style={{width:'100%'}}
             errorText={(this.props.type!==null && this.props.condition==="")?"Required":""}
             disabled={this.props.disableNewRow}
+            tabIndex={this.props.tabIndex}
+            {...floatFieldLight}
           >
             {['equals', 'contains', 'not equals', 'not contains'].filter((item)=>this.filterConditionItems(item)).map(this.mapConditionItems)}
           </SelectField>
@@ -169,6 +184,8 @@ class FilterRow extends Component {
             style={{width:'100%'}}
             disabled={this.props.lastRow}
             errorText={(!this.props.lastRow && this.props.conjunction==="")?"Required":""}
+            tabIndex={this.props.tabIndex}
+            {...floatFieldLight}
           >
             <MenuItem key={"and"} value={"AND"} primaryText={"AND"} />
             <MenuItem key={"or"} value={"OR"} primaryText={"OR"} />
@@ -177,17 +194,20 @@ class FilterRow extends Component {
 
         <div className="filterField" style={{paddingTop: 20, flexGrow:1}}>
               <IconButton 
-                onTouchTap={()=>this.props.removeRow(this.props.queryIndex)}
-                style={(this.props.queryIndex===0 && this.props.queriesLength===1)? {opacity:0,pointerEvents:'none'}: {}}
+                aria-label="Remove filter query row"
+                onClick={()=>this.props.removeRow(this.props.queryIndex)}
+                style={(this.props.queryIndex===0 && this.props.queriesLength===1)? {display:"none"}: {}}
               >
                 <IconClear/>
               </IconButton>
               <FloatingActionButton 
+                aria-label="Add new filter query row"
                 mini
-                onTouchTap={()=>this.props.addRow()}
+                onClick={()=>this.props.addRow()}
                 style={(this.props.queryIndex===this.props.queriesLength-1)? {marginLeft:10} : {opacity:0,pointerEvents:'none',marginLeft:10}}
                 secondary
                 disabled={this.props.disableAddRow}
+                tabIndex={this.props.tabIndex}
               >
                 <ContentAdd/>
               </FloatingActionButton>
@@ -196,9 +216,8 @@ class FilterRow extends Component {
     return row;
   }
 
-
   render() {
-    return this.renderRow();
+      return this.renderRow();
   }
 
 }

@@ -16,6 +16,7 @@ export default class DeleteConfirmationDialog extends React.Component {
    */
   handleOpen = () => {
     this.setState({open: true});
+    this.props.togglePopUp(true);
   };
 
   /**
@@ -24,6 +25,7 @@ export default class DeleteConfirmationDialog extends React.Component {
    */
   handleClose = () => {
     this.setState({open: false});
+    this.props.togglePopUp(false);
   };
 
   containsTacketedLeaf = () => {
@@ -64,7 +66,8 @@ export default class DeleteConfirmationDialog extends React.Component {
    * Submit delete request and close dialog 
    * @public
    */
-  submit = () => {
+  submit = (e) => {
+    if (e) e.preventDefault();
     if (this.props.selectedObjects.length===1) {
       // handle single delete
       let id = this.props.selectedObjects[0]
@@ -87,13 +90,13 @@ export default class DeleteConfirmationDialog extends React.Component {
       <FlatButton
         label={this.containsTacketedLeaf()?"Okay":"Cancel"}
         primary
-        onTouchTap={this.handleClose}
+        onClick={this.handleClose}
       />,
       <RaisedButton
         label="Yes, delete"
         keyboardFocused
-        onTouchTap={this.submit}
-        backgroundColor="#D87979"
+        onClick={this.submit}
+        backgroundColor="#b53c3c"
         labelColor="#ffffff" 
         style={this.containsTacketedLeaf()?{display:"none"}:{}}
       />,
@@ -104,10 +107,11 @@ export default class DeleteConfirmationDialog extends React.Component {
         <RaisedButton 
           label="Delete" 
           fullWidth={this.props.fullWidth} 
-          onTouchTap={this.handleOpen} 
+          onClick={this.handleOpen} 
           style={this.props.fullWidth? {} : {width:"49%"}}
-          backgroundColor="#D87979"
-          labelColor="#ffffff"          
+          backgroundColor="#b53c3c"
+          labelColor="#ffffff"
+          tabIndex={this.props.tabIndex}
         />
         <Dialog
           title={this.getTitle()}

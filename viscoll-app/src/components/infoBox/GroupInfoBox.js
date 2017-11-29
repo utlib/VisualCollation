@@ -18,19 +18,19 @@ import IconAdd from 'material-ui/svg-icons/content/add';
 import IconPencil from 'material-ui/svg-icons/content/create';
 import Avatar from 'material-ui/Avatar';
 import AddNote from './dialog/AddNote';
-import NoteDialog from './dialog/NoteDialog';
+import VisualizationDialog from './dialog/VisualizationDialog';
 
 export default class GroupInfoBox extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      activeNote: null,
       ...this.emptyAttributeState(),
       ...this.otherAttributeStates(),
       ...this.visibilityHoverState(),
       addButtonPopoverOpen: false,
       addGroupDialogOpen: false,
       addLeafDialogOpen: false,
+      visualizationDialogActive: "",
     }
     this.batchSubmit = this.batchSubmit.bind(this);
     this.hasActiveAttributes = this.hasActiveAttributes.bind(this);
@@ -68,15 +68,6 @@ export default class GroupInfoBox extends React.Component {
     if (this.props.selectedGroups.length < 2) {
       this.setState({...this.emptyAttributeState()});
     }
-    if (nextProps.commonNotes.length===0) {
-      this.setState({activeNote:null});
-    }
-    // Update active note 
-    nextProps.commonNotes.forEach((noteID)=> {
-      if (this.state.activeNote!==null && noteID===this.state.activeNote.id) {
-        this.setState({activeNote: nextProps.Notes[noteID]});
-      }
-    });
   }
 
   hasActiveAttributes() {
@@ -92,10 +83,12 @@ export default class GroupInfoBox extends React.Component {
 
   toggleAddGroupDialog = (value=false) => {
     this.setState({ addGroupDialogOpen: value, addButtonPopoverOpen: false, })
+    if (value===false) this.props.togglePopUp(false);
   }
 
   toggleAddLeafDialog = (value=false) => {
     this.setState({ addLeafDialogOpen: value, addButtonPopoverOpen: false, })
+    if (value===false) this.props.togglePopUp(false);
   }
 
   handleAddButtonTouchTap = (event) => {
@@ -158,7 +151,7 @@ export default class GroupInfoBox extends React.Component {
     this.setState({...newAttributeState,...newEditingState});
   }
 
-  singleSubmit(attributeName, value) {
+  singleSubmit = (attributeName, value) => {
     let group = {};
     group[attributeName] = value;
     let id = this.props.selectedGroups[0];
@@ -211,10 +204,12 @@ export default class GroupInfoBox extends React.Component {
           key={note.id}
           style={{marginRight:4, marginBottom:4}}
           onRequestDelete={deleteFn}
-          onClick={()=>this.setState({activeNote: note})}
+          onClick={()=>this.props.openNoteDialog(note)}
+          tabIndex={this.props.tabIndex}
         >
           {note.title}
-        </Chip>);
+        </Chip>
+      );
     }
     return chips;
   }
@@ -223,9 +218,51 @@ export default class GroupInfoBox extends React.Component {
     this.setState({activeNote: null});
   }
 
-  toggleTacketing = () => {
-    this.props.action.toggleTacket(this.props.selectedGroups[0]);
+  toggleTacketDrawing = (e) => {
+    e.stopPropagation();
+    this.props.action.toggleVisualizationDrawing({type:"tacketed", value: this.props.selectedGroups[0]});
     this.handleAddButtonRequestClose();
+  }
+
+  toggleSewingDrawing = (e) => {
+    e.stopPropagation();
+    this.props.action.toggleVisualizationDrawing({type:"sewing", value: this.props.selectedGroups[0]});
+    this.handleAddButtonRequestClose();
+  }
+
+
+  handleTacketSewingChange = (type, leafID, index) => {
+    const targetGroup = this.props.Groups[this.props.selectedGroups[0]];
+    const value = leafID==="spine"? null : leafID;
+    let groupPayload = {};
+    groupPayload[type] = targetGroup[type];
+    if (groupPayload[type].length===2) {
+      groupPayload[type][index] = value;
+    } else if (groupPayload[type].length===1 && index===0) {
+      // Array has one item, which is the endleaf.  Insert startleaf ID
+      groupPayload[type].splice(index, 0, value);
+    } else if (groupPayload[type].length===1 && index===1) {
+      // Array has one item, which is the endleaf.  Replace endleaf ID
+      groupPayload[type] = [value];
+    }
+    this.props.action.updateGroup(targetGroup.id, groupPayload);
+  }
+
+  deleteTacket = () => {
+    this.singleSubmit("tacketed", []);
+  }
+
+  deleteSewing = () => {
+    this.singleSubmit("sewing", []);
+  }
+
+  toggleVisualizationDialog = (value) => {
+    this.setState({visualizationDialogActive:value});
+    if (value==="") { 
+      this.props.togglePopUp(false);
+    } else {
+      this.props.togglePopUp(true);
+    }
   }
 
   render() {
@@ -233,11 +270,8 @@ export default class GroupInfoBox extends React.Component {
     let attributeDivs = [];
     let groupAttributes = this.getAttributeValues();
     this.props.defaultAttributes.forEach((attributeDict)=> {
-      // Generate checkbox if we're in batch edit mode
       let label = attributeDict.displayName;
-      // Generate eye toggle checkbox
       let eyeCheckbox = "";
-
       let eyeStyle = {};
       let eyeIsChecked = this.props.visibleAttributes[attributeDict.name];
       if (this.props.viewMode!=="TABULAR") {
@@ -250,14 +284,16 @@ export default class GroupInfoBox extends React.Component {
         eyeCheckbox = 
           <div className="tooltip eyeToggle">
             <Checkbox
+              aria-label={eyeIsChecked?"Hide '" + attributeDict.displayName + "' attribute in collation":"Show '" + attributeDict.displayName + "' attribute in collation"}
               checkedIcon={<Visibility />}
               uncheckedIcon={<VisibilityOff />}
-              onCheck={(event,value)=>this.props.action.toggleVisibility("group", attributeDict.name, !this.props.visibleAttributes[attributeDict.name])}
+              onClick={(event,value)=>this.props.action.toggleVisibility("group", attributeDict.name, !this.props.visibleAttributes[attributeDict.name])}
               style={{display:"inline-block",width:"25px",...eyeStyle}}
               iconStyle={{marginRight:"10px",...eyeStyle}}
               checked={eyeIsChecked}
               onMouseEnter={()=>{this.setState({["visibility_hover_"+attributeDict.name]:true})}}
               onMouseOut={()=>{this.setState({["visibility_hover_"+attributeDict.name]:false})}}
+              tabIndex={this.props.tabIndex}
             />
             <div className={this.state["visibility_hover_"+attributeDict.name]===true?"text active":"text"} style={Object.keys(eyeStyle).length>0?{display:"none"}:{}}>
               {eyeIsChecked?
@@ -267,27 +303,31 @@ export default class GroupInfoBox extends React.Component {
             </div>
           </div>
         label = <Checkbox
+          aria-label={"Select '" + attributeDict.displayName + "' to batch edit"}
           label={attributeDict.displayName} 
-          onCheck={(event,value)=>this.toggleCheckbox(attributeDict.name,value)}
+          onClick={(event,value)=>this.toggleCheckbox(attributeDict.name,value)}
           labelStyle={!this.state["batch_"+attributeDict.name]?{color:"gray"}:{}}
           checked={this.state["batch_"+attributeDict.name]}
           style={{display:"inline-block",width:"25px"}}
           iconStyle={{marginRight:"10px"}}
+          tabIndex={this.props.tabIndex}
         />;
       } else {
         // In single edit - display eye icon with label
         label = 
           <div className="tooltip eyeToggle">
             <Checkbox
+              aria-label={eyeIsChecked?"Hide '" + attributeDict.displayName + "' attribute in collation":"Show '" + attributeDict.displayName + "' attribute in collation"}
               label={attributeDict.displayName} 
               checkedIcon={<Visibility />}
               uncheckedIcon={<VisibilityOff />}
-              onCheck={(event,value)=>this.props.action.toggleVisibility("group", attributeDict.name, !this.props.visibleAttributes[attributeDict.name])}
+              onClick={(event,value)=>this.props.action.toggleVisibility("group", attributeDict.name, !this.props.visibleAttributes[attributeDict.name])}
               style={{display:"inline-block",width:"25px",...eyeStyle}}
               iconStyle={{marginRight:"10px", color:"gray",...eyeStyle}}
               checked={eyeIsChecked}
               onMouseEnter={()=>{this.setState({["visibility_hover_"+attributeDict.name]:true})}}
               onMouseOut={()=>{this.setState({["visibility_hover_"+attributeDict.name]:false})}}
+              tabIndex={this.props.tabIndex}
             />
             <div className={this.state["visibility_hover_"+attributeDict.name]===true?"text active":"text"} style={Object.keys(eyeStyle).length>0?{display:"none"}:{}}>
               {eyeIsChecked?
@@ -316,10 +356,12 @@ export default class GroupInfoBox extends React.Component {
             value = groupAttributes[attributeDict.name];
           }
           input = (<SelectField
+                  aria-label={attributeDict.displayName + " attribute dropdown" }
                   value={value}
                   onChange={(e, i, v)=>this.dropDownChange(e,i,v,attributeDict.name)}
                   fullWidth={true}
                   disabled={isBatch && !this.state["batch_"+attributeDict.name]}
+                  tabIndex={this.props.tabIndex}
                   >
                   {menuItems}
                 </SelectField>
@@ -331,16 +373,20 @@ export default class GroupInfoBox extends React.Component {
             textboxButtons = (
               <div>
                 <RaisedButton
+                  aria-label="Submit"
                   primary
                   icon={<IconSubmit />}
                   style={{minWidth:"60px",marginLeft:"5px"}}
-                  onTouchTap={(e)=>this.textSubmit(e,attributeDict.name)}
+                  onClick={(e)=>this.textSubmit(e,attributeDict.name)}
+                  tabIndex={this.props.tabIndex}
                 />
                 <RaisedButton
+                  aria-label="Cancel"
                   secondary
                   icon={<IconClear />}
                   style={{minWidth:"60px",marginLeft:"5px"}}
-                  onTouchTap={(e)=>this.textCancel(e,attributeDict.name)}
+                  onClick={(e)=>this.textCancel(e,attributeDict.name)}
+                  tabIndex={this.props.tabIndex}
                 />
               </div>
             );
@@ -354,11 +400,13 @@ export default class GroupInfoBox extends React.Component {
           input = (<div>
             <form onSubmit={(e)=>this.textSubmit(e,attributeDict.name)}>
               <TextField
+                aria-label={attributeDict.displayName + " attribute textfield"}
                 name={attributeDict.name}
                 fullWidth={true}
                 value={value}
                 onChange={(e,v)=>this.onTextboxChange(v,attributeDict.name)}
                 disabled={isBatch && !this.state["batch_"+attributeDict.name]}
+                tabIndex={this.props.tabIndex}
               />
               {textboxButtons}
             </form>
@@ -387,9 +435,10 @@ export default class GroupInfoBox extends React.Component {
     if (isBatch && this.hasActiveAttributes()) {
       submitBtn = <RaisedButton 
                     primary fullWidth 
-                    onTouchTap={this.batchSubmit} 
+                    onClick={this.batchSubmit} 
                     label="Submit changes" 
                     style={{marginBottom:10}}
+                    tabIndex={this.props.tabIndex}
                   />
     }
     let addBtn = "";
@@ -404,16 +453,17 @@ export default class GroupInfoBox extends React.Component {
                             animation={PopoverAnimationVertical}
                           >
                             <Menu>
-                              <MenuItem  primaryText="Add New Group" onTouchTap={() => this.toggleAddGroupDialog(true)} />
-                              <MenuItem primaryText="Add Leaf(s) Inside"  onTouchTap={() => this.toggleAddLeafDialog(true)}/>
-                               </Menu>
+                              <MenuItem  primaryText="Add New Group" onClick={()=>{this.props.togglePopUp(true);this.toggleAddGroupDialog(true)}} />
+                              <MenuItem primaryText="Add Leaf(s) Inside" onClick={()=>{this.props.togglePopUp(true);this.toggleAddLeafDialog(true)}}/>
+                            </Menu>
                           </Popover>
 
       addBtn = <RaisedButton 
           primary 
           label={this.props.selectedGroups ? "Add" : "Add New Group"} 
           style={this.props.selectedGroups ? {width:"49%", float:"left", marginRight:"2%"} : {width:"100%", float:"left", marginRight:"2%"}}
-          onTouchTap={this.handleAddButtonTouchTap}
+          onClick={this.handleAddButtonTouchTap}
+          tabIndex={this.props.tabIndex}
         />
     }
     let deleteBtn = 
@@ -423,33 +473,93 @@ export default class GroupInfoBox extends React.Component {
                   selectedObjects={this.props.selectedGroups}
                   memberType="Group"
                   Groups={this.props.Groups}
-
+                  tabIndex={this.props.tabIndex}
+                  togglePopUp={this.props.togglePopUp}
                 />
-    let attributeTacket = 
+    let attributeSewing = "";
+    const sewing = this.props.Groups[this.props.selectedGroups[0]].sewing;
+    if (this.props.selectedGroups.length===1 && sewing.length===0 && this.props.viewMode!=="VIEWING") {
+      attributeSewing = <div>
+      <div style={{float:'right', marginTop:-10}}>
+        <IconButton
+          tooltip="Add sewing"
+          aria-label="Add sewing"
+          onClick={(e)=>{if(this.props.viewMode==="TABULAR"){this.toggleVisualizationDialog("sewing")}else{this.toggleSewingDrawing(e)}}}
+          tabIndex={this.props.tabIndex}
+        > 
+          <IconAdd />
+        </IconButton>
+      </div>
+      <h3>Sewing</h3>
+    </div>
+    } else if (this.props.selectedGroups.length===1 && sewing.length>0) {
+      attributeSewing =
       <div>
-        <div style={this.props.viewMode!=="VISUAL"?{display: 'none'} : {float:'right', marginTop:-10}}>
-          <IconButton tooltip="Add tacket"> 
-            <IconAdd onClick={this.toggleTacketing} />
+        <div>
+        <h3>Sewing</h3>
+        <Chip 
+          aria-label="Click to edit sewing"
+          style={{marginRight:4, marginBottom:4}}
+          onRequestDelete={this.props.viewMode!=="VIEWING"?()=>{this.deleteSewing()}:null}
+          onClick={()=>{if(this.props.viewMode!=="VIEWING")this.toggleVisualizationDialog("sewing")}}
+          tabIndex={this.props.tabIndex}
+        >
+          <div>
+            <div style={{display:"inline-block"}}>
+              {sewing.length===1? 
+                "Spine to Leaf " + this.props.Leafs[sewing[0]].order :
+                "Leaf " + this.props.Leafs[sewing[0]].order + " to Leaf " + this.props.Leafs[sewing[1]].order
+              }
+            </div>
+            <div style={this.props.viewMode==="VISUAL"?{display:"inline-block",margin:0,paddingLeft:8}:{display:"none"}}>
+              <div style={{position:'relative',top:5}}>
+                <Avatar size={20} style={{margin:0,padding:0}} color={"#E0E0E0"} className="editIcon" icon={<IconPencil alt="Redraw" style={{width:20,height:20}} onClick={this.toggleSewingDrawing}/> }/>
+              </div>
+            </div>
+          </div>
+        </Chip>
+        </div>
+        <div style={{clear:"both"}}></div>
+      </div>
+    }
+    const tacketed = this.props.Groups[this.props.selectedGroups[0]].tacketed;
+    let attributeTacket = "";
+    if (this.props.selectedGroups.length===1 && tacketed.length===0 && this.props.viewMode!=="VIEWING") {
+      attributeTacket = <div>
+        <div style={{float:'right', marginTop:-10}}>
+          <IconButton 
+            tooltip="Add tacket"
+            aria-label="Add tacket"
+            onClick={(e)=>{if(this.props.viewMode==="VISUAL"){this.toggleTacketDrawing(e)}else{this.toggleVisualizationDialog("tacketed")}}}
+            tabIndex={this.props.tabIndex}
+          > 
+            <IconAdd />
           </IconButton>
         </div>
-        <h3 style={this.props.viewMode!=="VISUAL"&&this.props.Groups[this.props.selectedGroups[0]].tacketed===""?{display:"none"}:{}}>Tacket</h3>
+        <h3>Tacket</h3>
       </div>
-    if (!this.state.isBatch && this.props.Groups[this.props.selectedGroups[0]].tacketed!=="") {
+    } else if (this.props.selectedGroups.length===1 && tacketed.length>0) {
       attributeTacket =
       <div>
         <div>
         <h3>Tacket</h3>
         <Chip 
+          aria-label="Click to edit tacketing"
           style={{marginRight:4, marginBottom:4}}
-          onRequestDelete={this.props.viewMode==="VISUAL"?()=>{this.singleSubmit("tacketed", "")}:null}
+          onRequestDelete={this.props.viewMode!=="VIEWING"?()=>{this.deleteTacket()}:null}
+          onClick={()=>{if(this.props.viewMode!=="VIEWING")this.toggleVisualizationDialog("tacketed")}}
+          tabIndex={this.props.tabIndex}
         >
           <div>
             <div style={{display:"inline-block"}}>
-            {"Tacketed to Leaf " + this.props.Leafs[this.props.Groups[this.props.selectedGroups[0]].tacketed].order }
+              {tacketed.length===1? 
+                "Spine to Leaf " + this.props.Leafs[tacketed[0]].order :
+                "Leaf " + this.props.Leafs[tacketed[0]].order + " to Leaf " + this.props.Leafs[tacketed[1]].order
+              }
             </div>
             <div style={this.props.viewMode==="VISUAL"?{display:"inline-block",margin:0,paddingLeft:8}:{display:"none"}}>
               <div style={{position:'relative',top:5}}>
-                <Avatar size={20} style={{margin:0,padding:0}} color={"#E0E0E0"} className="editIcon" icon={<IconPencil style={{width:20,height:20}} onClick={this.toggleTacketing}/> }/>
+                <Avatar size={20} style={{margin:0,padding:0}} color={"#E0E0E0"} className="editIcon" icon={<IconPencil alt="Redraw" style={{width:20,height:20}} onClick={this.toggleTacketDrawing}/> }/>
               </div>
             </div>
           </div>
@@ -472,12 +582,15 @@ export default class GroupInfoBox extends React.Component {
                 createAndAttachNote: this.props.action.createAndAttachNote
               }}
               noteTypes={this.props.noteTypes}
+              tabIndex={this.props.tabIndex}
+              togglePopUp={this.props.togglePopUp}
             /> : ""}
             <h3 key="notesHeading" style={this.props.isReadOnly&&notes.length===0?{display:'none'}:{}}>{this.props.selectedGroups.length>1?"Notes in common" : "Notes"}</h3>
             <div className="notesInfobox" style={notes.length===0?{display:'none'}:{}}>
               {notes}
             </div>
           </div>
+          {attributeSewing}
           {attributeTacket}
           {submitBtn} 
           {addButtonPopover}
@@ -503,28 +616,20 @@ export default class GroupInfoBox extends React.Component {
             action={{addLeafs: this.props.action.addLeafs}}
             open={this.state.addLeafDialogOpen}
             closeDialog={this.toggleAddLeafDialog}
-          />     
-          <NoteDialog
-            open={this.state.activeNote!==null}
-            commonNotes={this.props.commonNotes}
-            activeNote={this.state.activeNote ? this.state.activeNote : {id: null}}
-            closeNoteDialog={this.closeNoteDialog}
-            action={{
-              updateNote: this.props.action.updateNote, 
-              deleteNote: this.props.action.deleteNote, 
-              linkNote: this.props.action.linkDialogNote, 
-              unlinkNote: this.props.action.unlinkDialogNote,
-              linkAndUnlinkNotes: this.props.action.linkAndUnlinkNotes,
-            }} 
-            projectID={this.props.projectID} 
-            notification={this.props.notification}
-            noteTypes={this.props.noteTypes}
-            Notes={this.props.Notes}
-            Groups={this.props.Groups}
+          />
+          <VisualizationDialog
+            open={this.state.visualizationDialogActive!==""}
+            type={this.state.visualizationDialogActive}
+            closeDialog={()=>this.toggleVisualizationDialog("")}
+            group={this.props.selectedGroups.length>0? this.props.Groups[this.props.selectedGroups[0]] : null}
+            tacketed={this.props.Groups[this.props.selectedGroups[0]].tacketed}
+            sewing={this.props.Groups[this.props.selectedGroups[0]].sewing}
             Leafs={this.props.Leafs}
-            Rectos={this.props.Rectos}
-            Versos={this.props.Versos}
-            isReadOnly={this.props.isReadOnly}
+            activeGroup={this.props.Groups[this.props.selectedGroups[0]]}
+            handleTacketSewingChange={this.handleTacketSewingChange}
+            delete={()=>this.singleSubmit(this.state.visualizationDialogActive, [])}
+            updateGroup={this.singleSubmit}
+            popUpActive={this.props.popUpActive}
           />
       </div>
     );

@@ -1,5 +1,6 @@
 module ControllerHelper
   module GroupsHelper
+    include ControllerHelper::LeafsHelper
     
     def addLeavesInside(project_id, group, noOfLeafs, conjoin, oddMemberLeftOut)
       newlyAddedLeafs = []

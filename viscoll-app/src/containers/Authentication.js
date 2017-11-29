@@ -103,7 +103,7 @@ class Landing extends Component {
   }
 
   render() {
-    const message = <p>{this.state.message}</p>;
+    const message = this.state.message? <p>{this.state.message}</p> : "";
 
     let resetPassword = "";
     let resetPasswordRequest = "";
@@ -113,7 +113,7 @@ class Landing extends Component {
       <div className="spacingBottom">
         <RaisedButton 
           primary fullWidth 
-          onTouchTap={this.toggleRegister} 
+          onClick={() => this.toggleRegister()}
           label="Create account" 
           {...btnLg} 
         />
@@ -122,9 +122,8 @@ class Landing extends Component {
     let login = (
       <div className="spacingBottom">
         <RaisedButton 
-          secondary 
           fullWidth 
-          onTouchTap={this.toggleLogin} 
+          onClick={() => this.toggleLogin()}
           label="Login" 
           {...btnLg} 
         />
@@ -181,10 +180,10 @@ class Landing extends Component {
       <div className="landing">
         <div className="container">
           <div className="panelLogo">
-            <img src={imgCollation} alt="Logo"/>
+            <img src={imgCollation} alt="Collation illustration"/>
           </div>
-          <div className="panelLogin">
-            <img src={imgLogo} alt="LogoWhite"/>
+          <div className="panelLogin" role="main">
+            <img src={imgLogo} alt="VisColl logo"/>
             <hr />
             <br />
             {message}

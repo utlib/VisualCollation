@@ -1,8 +1,9 @@
 import React, { Component } from 'react';
 import TextField from 'material-ui/TextField';
 import RaisedButton from 'material-ui/RaisedButton';
-import { btnLg } from '../../styles/button';
-import floatFieldDark from '../../styles/textfield';
+import FlatButton from 'material-ui/FlatButton';
+import { btnLg, btnAuthCancel } from '../../styles/button';
+import {floatFieldDark} from '../../styles/textfield';
 
 /**
  * Resend confirmation form.
@@ -38,7 +39,7 @@ class ResendConfirmation extends Component {
 
 
   render() {
-    let form = this.state.submitted? "": <form onSubmit={this.submit}>
+    let form = this.state.submitted? "": <form aria-label="resend confirmation" onSubmit={this.submit}>
         <TextField fullWidth value={this.state.email} onChange={(e,v)=>this.onChange(v,"email")} name="email" floatingLabelText="E-mail" {...floatFieldDark} />
         <br /><br />
         <RaisedButton
@@ -46,16 +47,33 @@ class ResendConfirmation extends Component {
           primary
           fullWidth
           {...btnLg}
-          onTouchTap={this.resendConfirmation}
+          onClick={() => this.resendConfirmation()}
         />
       </form>;
+
+      let cancel = <FlatButton 
+        default 
+        onClick={() => this.props.tapCancel()}
+        label="Go back"
+        {...btnAuthCancel} 
+      />;
+
+      if (this.state.submitted) {
+        cancel = <RaisedButton 
+          default 
+          fullWidth 
+          label="Okay"
+          {...btnLg} 
+          onClick={() => this.props.tapCancel()}
+        />;
+      }
 
     return (
       <div>
         <p>{this.state.message}</p>
         {form}
         <div className="spacingTop">
-          <RaisedButton default fullWidth onTouchTap={this.props.tapCancel} label={this.state.submitted?"Okay": "Cancel"} {...btnLg} />
+          {cancel}
         </div>
       </div>);
   }

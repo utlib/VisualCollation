@@ -65,6 +65,7 @@ PaperManager.prototype = {
             strokeColorFilter: this.strokeColorFilter,
             visibleAttributes: this.visibleAttributes,
             viewingMode: this.viewingMode,
+            openNoteDialog: this.openNoteDialog,
         });
         this.paperLeaves.push(l);
         this.groupLeaves.addChild(l.path);
@@ -124,8 +125,9 @@ PaperManager.prototype = {
         // Show filter
         this.showFilter();
         
-        // Draw tacketing
+        // Draw other visualizations
         this.drawTackets();
+        this.drawSewing();
         
         this.groupContainer.addChild(this.groupGroups);
         this.groupContainer.addChild(this.groupLeaves);
@@ -135,7 +137,7 @@ PaperManager.prototype = {
         this.groupContainer.position.y += 10;
         this.fitCanvas();
     },
-    activateTacketTool: function(groupID) {
+    activateTacketTool: function(groupID, type="tacketed") {
         // Remove existing tacket
         this.groupTacket.removeChildren();
         this.groupTacketGuide.removeChildren();
@@ -151,7 +153,7 @@ PaperManager.prototype = {
         this.paperLeaves.forEach((leaf)=>leaf.removeMouseEventHandlers());
         document.body.style.cursor = "crosshair";
         
-        this.drawTacketGuide(groupID);
+        this.drawTacketGuide(groupID, type);
 
         this.tool.onMouseDown = (event) => {
             this.tacketLineDrag = new paper.Path();
@@ -167,13 +169,19 @@ PaperManager.prototype = {
             this.paperLeaves.forEach((leaf)=> {
                 leaf.deactivate();
             });
-            this.toggleTacket("");
+            this.toggleVisualizationDrawing({type: type, value: ""});
             if (targets.length>0) {
-                let targetLeaf = targets[targets.length/2];
-                this.addTacket(targetLeaf.leaf.parentID, targetLeaf.leaf.id);
+                let targetLeaf1 = targets[0];
+                let targetLeaf2 = targets[targets.length/2];
+                this.addVisualization(targetLeaf1.leaf.parentID, type, [targetLeaf1.leaf.id, targetLeaf2.leaf.id]);
+
             } else {
-                // Redraw old tacket
-                this.drawTackets();
+                // Redraw old visualization
+                if (type==="tacketed") {
+                    this.drawTackets();
+                } else {
+                    this.drawSewing();
+                }
             }
         }
         this.tool.onMouseDrag = (event) => {
@@ -203,7 +211,7 @@ PaperManager.prototype = {
             });
         }
     },
-    drawTacketGuide: function(groupID) {
+    drawTacketGuide: function(groupID, type) {
         const targetGroup = this.paperGroups.find((member)=>{return (member.group.id===groupID)});
         const guideY = targetGroup.path.bounds.height/2;
         const guideX = targetGroup.path.bounds.left;
@@ -230,8 +238,9 @@ PaperManager.prototype = {
         guideLineX2.add(new paper.Point(guideX-10, guideLine.segments[0].point.y+10));
         guideLineX2.add(new paper.Point(guideX+10, guideLine.segments[0].point.y-10));
 
+        const drawType = type==="tacketed"? "TACKET" : "SEWING";
         let guideText = new paper.PointText({
-            content: "DRAW TACKET LINE",
+            content: "DRAW " + drawType + " LINE",
             point: [guideX+20, targetGroup.path.bounds.y + guideY - 20],
             fillColor: "#000000",
             fontSize: 12,
@@ -261,25 +270,93 @@ PaperManager.prototype = {
         this.paperGroups.forEach((group)=>group.setMouseEventHandlers());
         this.paperLeaves.forEach((leaf)=>leaf.setMouseEventHandlers());
     },
+    drawSewing: function() {
+        this.paperGroups.forEach((group)=> {
+            if (group.group.sewing!==null && group.group.sewing.length>0) {
+                const leafID1 = group.group.sewing[0];
+                const leafID2 = group.group.sewing.length>1? group.group.sewing[1] : undefined;
+
+                if (leafID1!==undefined) {
+                    let startX, startY, endX, endY;
+                    let paperLeaf1, paperLeaf2;
+
+                    paperLeaf1 = this.getLeaf(this.Leafs[leafID1].order);
+                    if (leafID2!==undefined) {
+                        paperLeaf2 = this.getLeaf(this.Leafs[leafID2].order);
+                        startX = paperLeaf1.path.segments[0].point.x-this.strokeWidth;
+                        startY = paperLeaf2.path.segments[0].point.y;
+                        endX = paperLeaf2.path.segments[0].point.x;
+                    } else {
+                        startX = 15;
+                        startY = paperLeaf1.path.segments[0].point.y;
+                        endX = paperLeaf1.path.segments[0].point.x;
+                    }
+                    if (group.group.tacketed!==null && group.group.tacketed.length>0) {
+                        startY -= this.spacing*0.15;
+                    }
+                    endY = startY;
+                    let sewingPath = new paper.Path();
+                    sewingPath.name = "tacket1";
+                    sewingPath.strokeColor = this.strokeColorTacket;
+                    sewingPath.strokeWidth = 3;
+                    sewingPath.add(new paper.Point(startX, startY));
+                    sewingPath.add(new paper.Point(endX+this.strokeWidth, endY));
+                    const that = this;
+                    // Add listeners
+                    sewingPath.onClick = function(event) {
+                        that.handleObjectClick(group.group, event);
+                    }
+                    sewingPath.onMouseEnter = function(event) {
+                        document.body.style.cursor = "pointer";
+                    }
+                    sewingPath.onMouseLeave = function(event) {
+                        document.body.style.cursor = "default";
+                    }
+                    this.groupTacket.addChild(sewingPath);
+                }
+            }
+        });
+    },
     drawTackets: function() {
         this.paperGroups.forEach((group)=> {
             if (group.group.tacketed!==null && group.group.tacketed.length>0) {
-                const targetLeafMemberID = group.group.memberIDs.find((memberID)=>{return (memberID.charAt(0)==="L"&& memberID===group.group.tacketed)});
-                if (targetLeafMemberID!==undefined) {
-                    const paperLeaf = this.getLeaf(this.Leafs[targetLeafMemberID].order);
+                const leafID1 = group.group.tacketed[0];
+                const leafID2 =group.group.tacketed[1];
+                if (leafID1!==undefined) {
+                    let startX, startY, endX, endY;
+                    let paperLeaf1, paperLeaf2;
+
+                    paperLeaf1 = this.getLeaf(this.Leafs[leafID1].order);
+                    if (leafID2!==undefined) {
+                        paperLeaf2 = this.getLeaf(this.Leafs[leafID2].order);
+                        startX = paperLeaf1.path.segments[0].point.x-this.strokeWidth;
+                        startY = paperLeaf2.path.segments[0].point.y;
+                        endX = paperLeaf2.path.segments[0].point.x;
+                    } else {
+                        startX = 15;
+                        startY = paperLeaf1.path.segments[0].point.y;
+                        endX = paperLeaf1.path.segments[0].point.x;
+                    }
+                    if (group.group.tacketed!==null && group.group.tacketed.length>0) {
+                        startY -= this.spacing*0.2;
+                    }
+                    if (group.group.sewing!==null && group.group.sewing.length>0) {
+                        startY += this.spacing*0.25;
+                    }
+                    endY = startY;
                     let tacketPath1 = new paper.Path();
                     tacketPath1.name = "tacket1";
                     tacketPath1.strokeColor = this.strokeColorTacket;
                     tacketPath1.strokeWidth = 3;
-                    tacketPath1.add(new paper.Point(15, paperLeaf.path.segments[0].point.y-2));
-                    tacketPath1.add(new paper.Point(paperLeaf.path.segments[0].point.x+this.strokeWidth, paperLeaf.path.segments[0].point.y-2));
+                    tacketPath1.add(new paper.Point(startX, startY-2));
+                    tacketPath1.add(new paper.Point(endX+this.strokeWidth, endY-2));
                     tacketPath1.add(new paper.Point(tacketPath1.segments[1].point.x+5, tacketPath1.segments[1].point.y-3));
                     let tacketPath2 = new paper.Path();
                     tacketPath2.name = "tacket2";
                     tacketPath2.strokeColor = this.strokeColorTacket;
                     tacketPath2.strokeWidth = 3;
-                    tacketPath2.add(new paper.Point(15, paperLeaf.path.segments[0].point.y+2));
-                    tacketPath2.add(new paper.Point(paperLeaf.path.segments[0].point.x+this.strokeWidth, paperLeaf.path.segments[0].point.y+2));
+                    tacketPath2.add(new paper.Point(startX, startY+2));
+                    tacketPath2.add(new paper.Point(endX+this.strokeWidth, endY+2));
                     tacketPath2.add(new paper.Point(tacketPath2.segments[1].point.x+5, tacketPath2.segments[1].point.y+3));
                     const that = this;
                     // Add listeners
@@ -380,29 +457,43 @@ PaperManager.prototype = {
         }
         members.forEach((memberID, i)=> {
             let memberObject = this[memberID.split("_")[0]+"s"][memberID];
-            let notesToShow = memberObject.notes.filter((noteID)=>{return this.Notes[noteID].show});
+            let notesToShowAbove = memberObject.notes.filter((noteID)=>{return this.Notes[noteID].show}).length;
+            let notesToShowBelow = 0;
+            let glueSpacing = 0;
+            if (memberObject.memberType==="Leaf") {
+                // Find if it has side notes 
+                notesToShowAbove += this.Rectos[memberObject.rectoID].notes.filter((noteID)=>{return this.Notes[noteID].show}).length;
+                notesToShowBelow += this.Versos[memberObject.versoID].notes.filter((noteID)=>{return this.Notes[noteID].show}).length;
+                // Find if leaf has glue that's not a partial glue
+                glueSpacing = (notesToShowAbove>0 && memberObject.attached_above.includes("Glued") && !memberObject.attached_above.includes("Partial"))? 1 : 0;
+            }
             
-            if (memberObject.memberType==="Leaf" && memberObject.memberOrder===1 && notesToShow.length>0) {
+            if (memberObject.memberType==="Leaf" && memberObject.memberOrder===1 && notesToShowAbove>0) {
                 // First leaf in the group with a note 
                 this.multipliers[memberObject.order] = multiplier;
-                currentY = currentY + spacing*(notesToShow.length+1);
+                currentY = currentY + spacing*(notesToShowAbove+1);
                 if (i > 0 && members[i-1].memberType==="Group" && members[i-1].memberIDs.length) {
                     // Previous sibling is a group with children
                     currentY = currentY - memberObject.nestLevel*spacing;
                 }
                 this.leafYs.push(currentY); 
+                currentY = currentY + spacing*notesToShowBelow*0.8;
+                
                 if (i===(members.length-1)) {
                     // Last member of group
                     currentY = currentY + (memberObject.nestLevel)*spacing;
                 }
             } else if (memberObject.memberType==="Leaf" && memberObject.order > 0) {
                 this.multipliers[memberObject.order] = multiplier;
-                currentY = currentY + spacing*(Math.max(1,notesToShow.length));
+                currentY = currentY + spacing*(Math.max(1,notesToShowAbove)) + spacing*glueSpacing;
                 if (i > 0 && members[i-1].memberType==="Group" && this.Groups[members[i-1]].memberIDs.length) {
                     // Previous sibling is a group with children
                     currentY = currentY - memberObject.nestLevel*spacing;
                 }
                 this.leafYs.push(currentY); 
+
+                currentY = currentY + spacing*notesToShowBelow*0.8;
+                
                 if (i===members.length-1) {
                     // Last member of group
                     currentY = currentY + (memberObject.nestLevel)*spacing/4;
@@ -524,6 +615,10 @@ PaperManager.prototype = {
         this.paperGroups.forEach((group)=>group.setVisibility(visibleAttributes.group));
         this.paperLeaves.forEach((leaf)=>leaf.setVisibility(visibleAttributes));
     },
+    setScale: function(spacing, strokeWidth) {
+        this.spacing = this.width*spacing;
+        this.strokeWidth = this.width*strokeWidth;
+    },
 }
 function PaperManager(args) {
     this.canvas = document.getElementById(args.canvasID);
@@ -572,11 +667,13 @@ function PaperManager(args) {
     this.groupTacketGuide = new paper.Group();
     this.groupTacketGuideLine = new paper.Group();
     this.groupTacket = new paper.Group();
-    this.toggleTacket = args.toggleTacket;
-    this.addTacket = args.addTacket;
+    this.toggleVisualizationDrawing = args.toggleVisualizationDrawing;
+    this.addVisualization = args.addVisualization;
     this.tacketToolIsActive = false;
     this.tacketToolOriginalPosition = 0;
     this.slideForward = true;
+    this.openNoteDialog = args.openNoteDialog;
+
     let that = this;
     // Flash newly added items
     paper.view.onFrame = function(event) {

@@ -136,14 +136,14 @@ export function deleteProfile(userID) {
   };
 }
 
-export function sendFeedback(title, message) {
+export function sendFeedback(title, message, browserInformation, project) {
   return {
     types: ['NO_LOADING', 'SEND_FEEDBACK_SUCCESS', 'SEND_FEEDBACK_FAILED'],
     payload: {
       request: {
         url: `/feedback`,
         method: 'post',
-        data: {title, message},
+        data: {title, message, browserInformation, project},
         successMessage: "You have successfully sent a feedback!",
         errorMessage: "Ooops! Something went wrong"
       }

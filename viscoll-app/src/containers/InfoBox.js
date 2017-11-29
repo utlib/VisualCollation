@@ -23,10 +23,7 @@ import {
   updateSide, 
   updateSides,
   addNote,
-  updateNote,
-  deleteNote,
   linkNote,
-  unlinkNote,
 } from '../actions/editCollation/modificationActions';
 import {
   toggleVisibility,
@@ -34,7 +31,7 @@ import {
   flashGroups,
   changeInfoBoxTab,
   reapplyFilterProject,
-  toggleTacket,
+  toggleVisualizationDrawing,
 } from '../actions/editCollation/interactionActions';
 
 
@@ -150,42 +147,8 @@ class InfoBox extends React.Component {
    */
   updateSides = (sides) => { this.props.updateSides(sides, this.props.projectID, this.props.filters); }
 
-   /**
-   * Returns items in common
-   * @param {array} list1
-   * @param {array} list2
-   * @public
-   */
-  intersect = (list1, list2) => {
-    if (list1.length >= list2.length)
-      return list1.filter((id1)=>{return list2.includes(id1)});
-    else
-      return list2.filter((id1)=>{return list1.includes(id1)});
-  }
 
-  /**
-   * Returns notes of currently selected objects
-   * @public
-   */
-  getCommonNotes = () => {
-    // Find the common notes of all currently selected objects
-    const memberType = this.props.selectedObjects.type;
-    const members = this.props.selectedObjects.members;
-    let notes = this.props[memberType+"s"][members[0]].notes;
-    for (let id of members) {
-      notes = this.intersect(notes, this.props[memberType+"s"][id].notes);
-    }
-    return notes;
-  }
 
-  updateNote = (noteID, note) => {
-    this.props.updateNote(noteID, note, this.props.projectID, this.props.filters);
-  }
-
-  linkDialogNote = (noteID, objects) => {
-    this.props.linkNote(noteID, objects, this.props.projectID, this.props.filters);
-  }
-  
   linkNote = (noteID) => {
     let objects = [];
     let type = this.props.selectedObjects.type;
@@ -194,29 +157,19 @@ class InfoBox extends React.Component {
     for (let id of this.props.selectedObjects.members) {
       objects.push({id, type});
     }
-    this.props.linkNote(noteID, objects, this.props.projectID, this.props.filters);
-  }
-
-  linkAndUnlinkNotes = (noteID, linkObjects, unlinkObjects) => {
-    this.props.linkAndUnlinkNotes(noteID, linkObjects, unlinkObjects, this.props.projectID, this.props.filters);
-  }
-
-  unlinkDialogNote = (noteID, objects) => {
-    this.props.unlinkNote(noteID, objects, this.props.projectID, this.props.filters);
+    this.props.action.linkNote(noteID, objects, this.props.projectID, this.props.filters);
   }
 
   unlinkNote = (noteID, sideIndex) => {
     let objects = [];
     let type = this.props.selectedObjects.type;
-    if (type==="Recto" || type==="Verso")
-      type = "Side";
     for (let id of this.props.selectedObjects.members) {
       objects.push({id, type});
     }
-    this.props.unlinkNote(noteID, objects, this.props.projectID, this.props.filters);
+    this.props.action.unlinkNote(noteID, objects, this.props.projectID, this.props.filters);
   }
 
-  createAndAttachNote = (noteTitle, noteType, description) => {
+  createAndAttachNote = (noteTitle, noteType, description, show) => {
     let objects = [];
     let type = this.props.selectedObjects.type;
     if (type==="Recto" || type==="Verso")
@@ -229,14 +182,10 @@ class InfoBox extends React.Component {
       title: noteTitle,
       type: noteType,
       description: description,
+      show: show
     }
     this.props.createAndAttachNote(note, objects, this.props.projectID, this.props.filters);
   }
-
-  deleteNote = (noteID) => {
-    this.props.deleteNote(noteID, this.props.projectID, this.props.filters)
-  }
-
 
   handleChangeInfoBoxTab = (value, event) => {
     this.props.changeInfoBoxTab(
@@ -267,7 +216,7 @@ class InfoBox extends React.Component {
             primary 
             label={this.props.selectedGroups ? "Add" : "Add New Group"} 
             style={this.props.selectedGroups ? {width:"49%", float:"left", marginRight:"2%"} : {width:"100%", float:"left", marginRight:"2%"}}
-            onTouchTap={()=>this.toggleAddGroupDialog(true)}
+            onClick={()=>this.toggleAddGroupDialog(true)}
           />
           <AddGroupDialog
             action={{addGroups: this.addGroups}}
@@ -291,35 +240,44 @@ class InfoBox extends React.Component {
         onChange={this.handleChangeInfoBoxTab} 
       >
         <Tab 
-          label="Leaf" 
-          value="Leaf" 
+          aria-label="Leaf tab" 
+          label="Leaf"
+          value="Leaf"
           buttonStyle={infoBoxStyle.tab}
+          tabIndex={this.props.tabIndex}
         /> 
-        <Tab label="Recto" value="Recto" buttonStyle={infoBoxStyle.tab} />
-        <Tab label="Verso" value="Verso" buttonStyle={infoBoxStyle.tab} />
+        <Tab 
+          aria-label="Recto tab" 
+          label="Recto" 
+          value="Recto" 
+          buttonStyle={infoBoxStyle.tab} 
+          tabIndex={this.props.tabIndex}
+        />
+        <Tab 
+          aria-label="Verso tab" 
+          label="Verso" 
+          value="Verso" 
+          buttonStyle={infoBoxStyle.tab} 
+          tabIndex={this.props.tabIndex}
+        />
       </Tabs>
     );
 
     const groupTab = (
       <Tabs tabItemContainerStyle={{backgroundColor: '#ffffff'}} value="Group" >
-        <Tab label="Group" value="Group" buttonStyle={infoBoxStyle.tab}> </Tab>
+        <Tab label="Group" value="Group" buttonStyle={infoBoxStyle.tab} tabIndex={-1} />
       </Tabs>
     );
 
     const noteActions = {
-      updateNote: this.updateNote, 
-      deleteNote: this.deleteNote, 
       linkNote: this.linkNote,
       unlinkNote: this.unlinkNote,
-      linkAndUnlinkNotes: this.linkAndUnlinkNotes,
-      linkDialogNote: this.linkDialogNote,
-      unlinkDialogNote: this.unlinkDialogNote,
       createAndAttachNote: this.createAndAttachNote
     }
 
     if (this.props.selectedObjects.type === "Group") {
       return (
-        <div>
+        <div role="region" aria-label="infobox">
           {groupTab} 
           <GroupInfoBox 
             action={{
@@ -330,7 +288,7 @@ class InfoBox extends React.Component {
               addLeafs: this.addLeafs, 
               deleteGroup: this.deleteGroup, 
               deleteGroups: this.deleteGroups,
-              toggleTacket: this.props.toggleTacket,
+              toggleVisualizationDrawing: this.props.toggleVisualizationDrawing,
               ...noteActions
               }} 
             projectID={this.props.projectID}
@@ -340,20 +298,23 @@ class InfoBox extends React.Component {
             Versos={this.props.Versos}
             Notes={this.props.Notes}
             noteTypes={this.props.noteTypes}
+            commonNotes={this.props.commonNotes}
+            openNoteDialog={this.props.openNoteDialog}
             viewMode={this.props.collationManager.viewMode}
             selectedGroups={this.props.collationManager.selectedObjects.members}
             defaultAttributes={this.props.collationManager.defaultAttributes.group}
             visibleAttributes={this.props.collationManager.visibleAttributes.group}
-            commonNotes={this.getCommonNotes()}
             notesManager={this.props.notesManager}
-            tacketing={this.props.tacketing}
+            tacketed={this.props.tacketed}
             isReadOnly={this.props.collationManager.viewMode==="VIEWING"}
+            togglePopUp={this.props.togglePopUp}
+            tabIndex={this.props.tabIndex}
             />
         </div>
       );
     } else if (this.props.selectedObjects.type === "Leaf") {
       return (
-        <div> 
+        <div role="region" aria-label="infobox"> 
           {leafSideTabs}
           <LeafInfoBox 
             action={{
@@ -372,20 +333,23 @@ class InfoBox extends React.Component {
             Versos={this.props.Versos}
             Notes={this.props.Notes}
             noteTypes={this.props.noteTypes}
+            commonNotes={this.props.commonNotes}
+            openNoteDialog={this.props.openNoteDialog}
             viewMode={this.props.collationManager.viewMode}
             selectedLeaves={this.props.collationManager.selectedObjects.members}
             defaultAttributes={this.props.collationManager.defaultAttributes.leaf}
             visibleAttributes={this.props.collationManager.visibleAttributes.leaf}
-            commonNotes={this.getCommonNotes()}
             notesManager={this.props.notesManager}
             conjoinLeafs={this.conjoinLeafs}
             isReadOnly={this.props.collationManager.viewMode==="VIEWING"}
+            togglePopUp={this.props.togglePopUp}
+            tabIndex={this.props.tabIndex}
           />
         </div>
       );
     } else if (this.props.selectedObjects.type === "Recto") {
       return (
-        <div>
+        <div role="region" aria-label="infobox">
           {leafSideTabs} 
           <SideInfoBox 
             action={{
@@ -402,20 +366,23 @@ class InfoBox extends React.Component {
             Sides={this.props.Rectos}
             Notes={this.props.Notes}
             noteTypes={this.props.noteTypes}
+            commonNotes={this.props.commonNotes}
+            openNoteDialog={this.props.openNoteDialog}
             viewMode={this.props.collationManager.viewMode}
             selectedSides={this.props.collationManager.selectedObjects.members}
             defaultAttributes={this.props.collationManager.defaultAttributes.side}
             visibleAttributes={this.props.collationManager.visibleAttributes.side}
-            commonNotes={this.getCommonNotes()}
             notesManager={this.props.notesManager}
             sideIndex={0}
             isReadOnly={this.props.collationManager.viewMode==="VIEWING"}
+            togglePopUp={this.props.togglePopUp}
+            tabIndex={this.props.tabIndex}
           />
         </div>
       );
     } else if (this.props.selectedObjects.type === "Verso") {
       return (
-        <div>
+        <div role="region" aria-label="infobox">
           {leafSideTabs} 
           <SideInfoBox 
             action={{
@@ -432,14 +399,17 @@ class InfoBox extends React.Component {
             Sides={this.props.Versos}
             Notes={this.props.Notes}
             noteTypes={this.props.noteTypes}
+            commonNotes={this.props.commonNotes}
+            openNoteDialog={this.props.openNoteDialog}
             viewMode={this.props.collationManager.viewMode}
             selectedSides={this.props.collationManager.selectedObjects.members}
             defaultAttributes={this.props.collationManager.defaultAttributes.side}
             visibleAttributes={this.props.collationManager.visibleAttributes.side}
-            commonNotes={this.getCommonNotes()}
             notesManager={this.props.notesManager}
             sideIndex={1}
             isReadOnly={this.props.collationManager.viewMode==="VIEWING"}
+            togglePopUp={this.props.togglePopUp}
+            tabIndex={this.props.tabIndex}
           />
         </div>
       );
@@ -465,14 +435,14 @@ const mapStateToProps = (state) => {
     collationManager: state.active.collationManager,
     notesManager: state.active.notesManager,
     filters: state.active.collationManager.filters,
-    tacketing: state.active.collationManager.visualizations.tacketing,
+    tacketed: state.active.collationManager.visualizations.tacketed,
   };
 };
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    toggleTacket: (toggle) => {
-      dispatch(toggleTacket(toggle));
+    toggleVisualizationDrawing: (data) => {
+      dispatch(toggleVisualizationDrawing(data));
     },
 
     addLeafs: (leaf, additional, projectID, filters) => {
@@ -556,16 +526,6 @@ const mapDispatchToProps = (dispatch) => {
       dispatch(changeInfoBoxTab(newType, selectedObjects, {Leafs, Rectos, Versos}));
     },
 
-    updateNote: (noteID, note, projectID, filters) => {
-      dispatch(updateNote(noteID, note))
-      .then(()=>dispatch(reapplyFilterProject(projectID, filters)));
-    },
-    
-    deleteNote: (noteID, projectID, filters) => {
-      dispatch(deleteNote(noteID))
-      .then(()=>dispatch(reapplyFilterProject(projectID, filters)));
-    },
-
     createAndAttachNote: (note, objects, projectID, filters) => {
       dispatch(addNote(note))
       .then((action)=> {
@@ -580,32 +540,6 @@ const mapDispatchToProps = (dispatch) => {
       })
       .then(()=>dispatch(reapplyFilterProject(projectID, filters)));
     },
-
-    linkNote: (noteID, object, projectID, filters) => {
-      dispatch(linkNote(noteID, object))
-      .then(()=>dispatch(reapplyFilterProject(projectID, filters)));
-    },
-
-    unlinkNote: (noteID, object, projectID, filters) => {
-      dispatch(unlinkNote(noteID, object))
-      .then(()=>dispatch(reapplyFilterProject(projectID, filters)));
-    },
-
-    linkAndUnlinkNotes: (noteID, linkObjects, unlinkObjects, projectID, filters) => {
-      if (linkObjects.length > 0 && unlinkObjects.length > 0){
-        dispatch(linkNote(noteID, linkObjects))
-        .then(action=>dispatch(unlinkNote(noteID, unlinkObjects)))
-        .then(()=>dispatch(reapplyFilterProject(projectID, filters)));
-      }
-      else if (linkObjects.length > 0) {
-        dispatch(linkNote(noteID, linkObjects))
-        .then(()=>dispatch(reapplyFilterProject(projectID, filters)));
-      }
-      else if (unlinkObjects.length > 0) {
-        dispatch(unlinkNote(noteID, unlinkObjects))
-        .then(()=>dispatch(reapplyFilterProject(projectID, filters)));
-      }
-    }
   };
 };
 

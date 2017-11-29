@@ -1,13 +1,13 @@
 import React from 'react';
+import {floatFieldLight} from '../../styles/textfield';
 import TextField from 'material-ui/TextField';
 import RaisedButton from 'material-ui/RaisedButton';
 import FlatButton from 'material-ui/FlatButton';
 
 
-
 const ProjectDetails = (props) => {
   let submit = (event) => {
-    event.preventDefault();
+    if (event) event.preventDefault();
     if(!props.doErrorsExist()) props.nextStep()
   }
   return (
@@ -16,23 +16,32 @@ const ProjectDetails = (props) => {
       <form onSubmit={submit}>
         <div style={{width: "60%", margin: "auto"}}>
           <TextField
+            id="objectTitle"
             floatingLabelText="Object Title"
+            {...floatFieldLight}
             value={props.title}
             errorText={props.errors.title}
+            aria-invalid={props.errors.title.length>0}
             onChange={(event, newValue) => props.set("title", newValue)}
             fullWidth
           />
           <TextField
+            id="manuscriptShelfmark"
             floatingLabelText="Manuscript Shelfmark"
+            {...floatFieldLight}
             value={props.shelfmark}
             errorText={props.errors.shelfmark}
+            aria-invalid={props.errors.shelfmark.length>0}
             onChange={(event, newValue) => props.set("shelfmark", newValue)}
             fullWidth
           />
           <TextField
+            id="manuscriptDate"
             floatingLabelText="Manuscript Date"
+            {...floatFieldLight}
             value={props.date}
             errorText={props.errors.date}
+            aria-invalid={props.errors.date.length>0}
             onChange={(event, newValue) => props.set("date", newValue)}
             fullWidth
           />
@@ -40,13 +49,15 @@ const ProjectDetails = (props) => {
         <div style={{textAlign:"center",paddingTop:30}}>
           <FlatButton 
               label="Back"
-              onTouchTap={props.previousStep}  
+              onClick={() => props.previousStep()}
+              aria-label="Back"
           />
           <RaisedButton 
             label={props.step===1?"Next":"Finish"}
             primary
             disabled={props.doErrorsExist()}
             type="submit"
+            aria-label="Submit"
           />
         </div>
       </form>

@@ -1,115 +1,144 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import Leaf from './Leaf';
-import {Card, CardText, CardHeader} from 'material-ui/Card';
-import tabularStyle from '../../../styles/tabular';
+import IconButton from 'material-ui/IconButton';
+import ExpandMore from 'material-ui/svg-icons/navigation/expand-more';
+import ExpandLess from 'material-ui/svg-icons/navigation/expand-less';
 
-/** Stateless functional component that displays one group in the tabular edit mode. Recursively mounts nested groups and leaves. */
-const Group = (props) => {
-  const { activeGroup } = props;
-  const { Leafs, Groups, Rectos, Versos } = props.project
-  const { 
-    selectedObjects, 
-    filters, 
-    defaultAttributes, 
-    visibleAttributes,
-    flashItems 
-  } = props.collationManager;
-  const isActive = selectedObjects.members.includes(activeGroup.id);
-  const isFiltered = filters.Groups.includes(activeGroup.id);
-  const groupsOfMatchingElements = filters.GroupsOfMatchingLeafs + filters.GroupsOfMatchingSides + filters.GroupsOfMatchingNotes;
-  const isAffectedFiltered = groupsOfMatchingElements.includes(activeGroup.id) && !isFiltered;
-  const hideOthers = filters.hideOthers;
-  const isFilterActive = filters.active;
-  // Populate all the members of this Group.
-  let groupMembers = [];
-  activeGroup.memberIDs.forEach((memberID, index) => {
-    if (memberID.charAt(0)==="L"){
-        let current_leaf = Leafs[memberID];
-        groupMembers.push(
-          <Leaf  
-            key={current_leaf.id}
-            activeLeaf={current_leaf}
-            Rectos={Rectos}
-            Versos={Versos}
-            collationManager={props.collationManager}
-            handleObjectClick={props.handleObjectClick}
-          />
-        );
-      } else {
-        let current_group =  Groups[memberID];
-        groupMembers.push(
-          <Group 
-            key={current_group.id}
-            activeGroup={current_group}
-            project={props.project}
-            collationManager={props.collationManager}
-            handleObjectClick={props.handleObjectClick}
-          />
-        );
-      }
-  });
-
-
-  let attributes = [];
-  for (var i in defaultAttributes.group) {
-    let attributeName = defaultAttributes.group[i].name;
-    if (visibleAttributes.group[attributeName]) {
-      attributes.push(
-        <div className={isActive? "attribute active" : "attribute"} key={"infoGroup"+attributeName}>
-          <div>
-            <span>{defaultAttributes.group[i].displayName}</span>
-            {activeGroup[attributeName]}
-          </div>
-        </div>
-      );
+/** Displays one group in the tabular edit mode. Recursively mounts nested groups and leaves. */
+export default class Group extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      open: true,
     }
   }
 
-  let activeGroupStyle = {borderColor:"white"};
-  if (isActive) {
-    activeGroupStyle["backgroundColor"] = "#4ED6CB";
-    activeGroupStyle["borderColor"] = "#4ED6CB";
+  handleChange = (type, value) => {
+    this.setState({[type]:value});
   }
-  if (isFiltered && !hideOthers) {
-    activeGroupStyle["borderColor"] = "#0f7fdb";
-  }
-  if (isAffectedFiltered && hideOthers && isFilterActive){
-    activeGroupStyle["backgroundColor"] = "#d9dbdb";
-    activeGroupStyle["borderColor"] = "#d9dbdb";
-  }
-  let groupComponent =  <Card 
-                          expandable={true} 
-                          initiallyExpanded={true} 
-                          style={{...tabularStyle.group.card, ...activeGroupStyle}} 
-                          containerStyle={tabularStyle.group.containerStyle}
-                          className={flashItems.groups.includes(activeGroup.order)? "flash groupCard" : "groupCard"}
+
+  render() {
+
+    const isActive = this.props.collationManager.selectedObjects.members.includes(this.props.activeGroup.id);
+    const isFiltered = this.props.collationManager.filters.Groups.includes(this.props.activeGroup.id);
+    const groupsOfMatchingElements = this.props.collationManager.filters.GroupsOfMatchingLeafs + this.props.collationManager.filters.GroupsOfMatchingSides + this.props.collationManager.filters.GroupsOfMatchingNotes;
+    const isAffectedFiltered = groupsOfMatchingElements.includes(this.props.activeGroup.id) && !isFiltered;
+    const hideOthers = this.props.collationManager.filters.hideOthers;
+    const isFilterActive = this.props.collationManager.filters.active;
+    // Populate all the members of this Group.
+    let groupMembers = [];
+    this.props.activeGroup.memberIDs.forEach((memberID, index) => {
+      if (memberID.charAt(0)==="L"){
+          let current_leaf = this.props.project.Leafs[memberID];
+          groupMembers.push(
+            <Leaf  
+              key={current_leaf.id}
+              activeLeaf={current_leaf}
+              Rectos={this.props.project.Rectos}
+              Versos={this.props.project.Versos}
+              collationManager={this.props.collationManager}
+              handleObjectClick={this.props.handleObjectClick}
+              toggleFocusLeaf={this.props.toggleFocusLeaf}
+              focusLeafID={this.props.focusLeafID}
+              handleObjectPress={this.props.handleObjectPress}
+              tabIndex={this.props.tabIndex}
+            />
+          );
+        } else {
+          let current_group =  this.props.project.Groups[memberID];
+          groupMembers.push(
+            <Group 
+              key={current_group.id}
+              activeGroup={current_group}
+              project={this.props.project}
+              collationManager={this.props.collationManager}
+              handleObjectClick={this.props.handleObjectClick}
+              focusLeafID={this.props.focusLeafID}
+              focusGroupID={this.props.focusGroupID}
+              toggleFocusGroup={this.props.toggleFocusGroup}
+              toggleFocusLeaf={this.props.toggleFocusLeaf}
+              handleObjectPress={this.props.handleObjectPress}
+              tabIndex={this.props.tabIndex}
+            />
+          );
+        }
+    });
+
+    let attributes = [];
+    for (var i in this.props.collationManager.defaultAttributes.group) {
+      let attributeName = this.props.collationManager.defaultAttributes.group[i].name;
+      if (this.props.collationManager.visibleAttributes.group[attributeName]) {
+        attributes.push(
+          <div className={isActive? "attribute active" : "attribute"} key={"infoGroup"+attributeName}>
+            <div>
+              <span>{this.props.collationManager.defaultAttributes.group[i].displayName}</span>
+              {this.props.activeGroup[attributeName]}
+            </div>
+          </div>
+        );
+      }
+    }
+
+    let activeGroupStyle = {};
+    if (isFiltered && !hideOthers) {
+      activeGroupStyle["borderColor"] = "#0f7fdb";
+    }
+    if (isAffectedFiltered && hideOthers && isFilterActive){
+      activeGroupStyle["backgroundColor"] = "#d9dbdb";
+      activeGroupStyle["borderColor"] = "#d9dbdb";
+    }
+    let groupContainerClasses = "groupContainer ";
+    if (this.props.collationManager.flashItems.groups.includes(this.props.activeGroup.order)) groupContainerClasses += "flash ";
+    if (isActive) groupContainerClasses += "active ";
+    if (this.props.focusLeafID===null && this.props.focusGroupID === this.props.activeGroup.id) groupContainerClasses += "focus ";
+
+    let groupComponent =  <div 
+                            className={groupContainerClasses}
+                            style={activeGroupStyle}
+                            onMouseEnter={()=>this.props.toggleFocusGroup(this.props.activeGroup.id)}
+                            onMouseLeave={()=>this.props.toggleFocusGroup(null)}
+                            onClick={(event) =>this.props.handleObjectClick(this.props.activeGroup, event)}
                           >
-                          <CardHeader
-                            showExpandableButton={true}
-                            onMouseDown={(event) => props.handleObjectClick(activeGroup, event)}
-                            style={tabularStyle.group.cardHeader}
-                          >
-                            <div className={isActive?"itemContainer group active":"itemContainer group"}>
-                              <div className="itemName">
-                                Group {activeGroup.order}
+                              <div className={"itemContainer group"}>
+                                <div className="groupSection">
+                                  <div className="itemName">
+                                    Group {this.props.activeGroup.order}
+                                    <input 
+                                      aria-label={"Group " + this.props.activeGroup.order}
+                                      name={"tabular"} 
+                                      type="radio"
+                                      onKeyPress={(e)=>{if(e.key===" "){this.props.handleObjectPress(this.props.activeGroup, e)}}}
+                                      onClick={(e)=>{this.props.handleObjectPress(this.props.activeGroup, e);}}
+                                      tabIndex={this.props.tabIndex}
+                                    />
+                                  </div>
+                                  {attributes}
+                                </div>
+                                <div className="toggleButton">
+                                  <IconButton 
+                                    onClick={(e)=>{e.stopPropagation();e.preventDefault();this.handleChange("open", !this.state.open)}}
+                                    aria-label={this.state.open?"Collapse group " + this.props.activeGroup.order : "Expand group " + this.props.activeGroup.order }
+                                    tabIndex={this.props.tabIndex}
+                                    tooltip={this.state.open?"Collapse group" : "Expand group"}
+                                  >
+                                    {this.state.open? <ExpandLess /> : <ExpandMore />}
+                                  </IconButton>
+                                </div>
                               </div>
-                            {attributes}
+                            <div className={this.state.open? "groupMembers" : "groupMembers hidden"}>   
+                              {groupMembers}
                             </div>
-                          </CardHeader>
-                          <CardText expandable={true} style={tabularStyle.group.cardTextStyle}>   
-                             
-                            {groupMembers}
-                          </CardText>
-                        </Card>
+                          </div>
 
-  if (!isFiltered && hideOthers && isFilterActive && !isAffectedFiltered)
-    groupComponent = <Card></Card>;
+      if (!isFiltered && hideOthers && isFilterActive && !isAffectedFiltered)
+        groupComponent = <div></div>;
 
-  return (
-    groupComponent
-  );
-}
+      return (
+        groupComponent
+      );
+    }
+  }
 Group.propTypes = {
   /** Group object */
   activeGroup: PropTypes.object,
@@ -117,4 +146,5 @@ Group.propTypes = {
   handleObjectClick: PropTypes.func,
 }
 
-export default Group;
+
+ 

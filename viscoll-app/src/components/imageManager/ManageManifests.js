@@ -7,7 +7,7 @@ import DeleteManifest from './DeleteManifest';
 import ImageViewer from "../global/ImageViewer";
 import Dialog from 'material-ui/Dialog';
 
-class ManageManifests extends Component {
+export default class ManageManifests extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -20,14 +20,17 @@ class ManageManifests extends Component {
   }
   handleOpen = (name, openManifest) => {
     this.setState({[name]: true, openManifest});
+    this.props.togglePopUp(true);
   };
 
   handleClose = (name) => {
     this.setState({[name]: false});
+    this.props.togglePopUp(false);
   };
 
   toggleImageModal = (imageModalOpen, activeImage) => {  
-    this.setState({imageModalOpen, activeImage})
+    this.setState({imageModalOpen, activeImage});
+    this.props.togglePopUp(imageModalOpen);
   }
 
   renderManifest = (manifestID) => {
@@ -44,21 +47,33 @@ class ManageManifests extends Component {
             </div>
             <div className="thumbnails">
                 {manifest.images.slice(0,4).map((img) => (
-                  <div key={img.url} style={{display:"inline-block", marginLeft: 10}}>
+                  <button 
+                    key={img.url} 
+                    style={{display:"inline-block", marginLeft: 10, border:0,background:"none",padding:0}} 
+                    onClick={()=>this.toggleImageModal(true, img.url)}
+                    tabIndex={this.props.tabIndex}
+                  >
                     <img 
                       src={img.url+"/full/40,/0/default.jpg"} 
                       alt={"Thumbnail of "+img.label} 
-                      onClick={()=>this.toggleImageModal(true, img.url)}
                       style={{cursor: "pointer"}}
                       width="40px"
                     />
-                  </div>
+                  </button>
                 ))}
             </div>
           </div>
             <CardActions style={{clear:"both", textAlign:"left"}}>
-              <FlatButton label="Edit" onClick={()=>this.handleOpen("editOpen", manifest)} />
-              <FlatButton label="Delete" onClick={()=>this.handleOpen("deleteOpen", manifest)} />
+              <FlatButton 
+                label="Edit" 
+                onClick={()=>this.handleOpen("editOpen", manifest)} 
+                tabIndex={this.props.tabIndex}
+              />
+              <FlatButton 
+                label="Delete" 
+                onClick={()=>this.handleOpen("deleteOpen", manifest)} 
+                tabIndex={this.props.tabIndex}
+              />
             </CardActions>
         </Card>
       <br/>
@@ -75,6 +90,7 @@ class ManageManifests extends Component {
           createManifest={this.props.createManifest}
           createManifestError={this.props.createManifestError}
           cancelCreateManifest={this.props.cancelCreateManifest}
+          tabIndex={this.props.tabIndex}
         />
         <EditManifest 
           open={this.state.editOpen} 
@@ -103,4 +119,3 @@ class ManageManifests extends Component {
     );
   }
 }
-export default ManageManifests;

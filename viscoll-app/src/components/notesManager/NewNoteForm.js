@@ -4,6 +4,7 @@ import TextField from 'material-ui/TextField';
 import SelectField from 'material-ui/SelectField';
 import MenuItem from 'material-ui/MenuItem';
 import RaisedButton from 'material-ui/RaisedButton';
+import Checkbox from 'material-ui/Checkbox';
 
 
 /** Create New Note tab in the Note Manager */
@@ -14,6 +15,7 @@ export default class NewNoteForm extends Component {
       title: "",
       type: "",
       description: "",
+      show: false,
       errors: {
         title: "",
       }
@@ -56,6 +58,7 @@ export default class NewNoteForm extends Component {
         title: this.state.title,
         type: value,
         description: this.state.description,
+        show: this.state.show
       }
       if (this.props.note)
         this.props.action.updateNote(this.props.note.id, editing);
@@ -72,6 +75,7 @@ export default class NewNoteForm extends Component {
       "title": this.state.title,
       "type":  this.state.type,
       "description": this.state.description,
+      "show": this.state.show
     }
     this.props.action.addNote(note);
     // Reset form
@@ -79,6 +83,7 @@ export default class NewNoteForm extends Component {
       title: "",
       type: "",
       description: "",
+      show: false,
       errors: {
         title: "",
       }
@@ -100,6 +105,7 @@ export default class NewNoteForm extends Component {
         title:"",
         type:"",
         description:"",
+        show: false
       }
     });
   }
@@ -132,57 +138,75 @@ export default class NewNoteForm extends Component {
     let title = "Create a new note";
     let createButtons = <div className="buttons">
       <RaisedButton
+        label={"Reset"}
+        onClick={()=>this.reset()}
+        style={{width:120}}
+      />    &nbsp;
+      <RaisedButton
         label={"Create"}
         primary
         style={{width:120}}
         onClick={()=>this.create()}
         disabled={this.state.errors.title!=="" || this.state.type==="" || this.state.title===""}
       />
-      &nbsp;
-      <RaisedButton
-        label={"Reset"}
-        onClick={()=>this.reset()}
-        style={{width:120}}
-      />            
+     
+               
     </div>
 
     return (
       <div className="container">
         <h1>{title}</h1> 
         <div className="noteForm">
-          <div className="label">
+          <div className="label" id="newNoteTitle">
             Title
           </div>
           <div className="input">
             <TextField
+            aria-labelledby="newNoteTitle"
             name="title"
             value={this.state.title}
             errorText={this.state.errors.title}
             onChange={(e,v)=>this.onChange("title",v)}
             fullWidth
+            aria-invalid={this.state.errors.title.length>0}
             />
           </div>
-          <div className="label">
+          <div className="label" id="newNoteType">
             Type
           </div>
           <div className="input">
             <SelectField
+              aria-labelledby="newNoteType"
               value={this.state.type}
               onChange={(e,i,v)=>this.onChange("type",v)}
             >
               {this.props.noteTypes.map(this.renderNoteTypes)}
             </SelectField>
           </div>
-          <div className="label">
+          <div className="label" id="newNoteDescription">
             Description
           </div>
           <div className="input">
             <TextField
+              aria-labelledby="newNoteDescription"
               name="description"
               value={this.state.description}
               onChange={(e,v)=>this.onChange("description",v)}
               multiLine
               fullWidth
+            />
+          </div>
+          <div className="label" style={{paddingTop:20}} id="newNoteShow">
+            Show in diagram
+          </div>
+          <div className="input">
+            <Checkbox
+              aria-labelledby="newNoteShow"
+              name="show"
+              value={this.state.show}
+              checked={this.state.show}
+              style={{paddingTop:20}}
+              onCheck={(e,v)=>this.onChange("show",v)}
             />
           </div>
           {createButtons}

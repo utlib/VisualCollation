@@ -72,6 +72,24 @@ describe "POST /notes/type", :type => :request do
         expect(@project.noteTypes).to eq ["Ink"]
       end
     end
+    
+    context 'with unauthorized project' do
+      before do
+        @user2 = FactoryGirl.create(:user)
+        @project2 = FactoryGirl.create(:project, {user: @user2, noteTypes: ["Ink"]})
+        @parameters[:noteType][:project_id] = @project2.id.to_str
+        post '/notes/type', params: @parameters.to_json, headers: {'Authorization' => @authToken, 'CONTENT_TYPE' => 'application/json', 'ACCEPT' => 'application/json'}
+        @project2.reload
+      end
+      
+      it 'should return 403' do
+        expect(response).to have_http_status(:unauthorized)
+      end
+      
+      it 'should leave the types alone' do
+        expect(@project2.noteTypes).not_to include("Paper")
+      end
+    end
   end
 
   context 'with corrupted authorization' do

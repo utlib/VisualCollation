@@ -17,6 +17,7 @@ export default class DeleteConfirmation extends React.Component {
    */
   handleOpen = () => {
     this.setState({open: true});
+    this.props.togglePopUp(true);
   };
   /**
    * Close the dialog 
@@ -24,6 +25,7 @@ export default class DeleteConfirmation extends React.Component {
    */
   handleClose = () => {
     this.setState({open: false});
+    this.props.togglePopUp(false);
   };
 
   submit = () => {
@@ -40,31 +42,36 @@ export default class DeleteConfirmation extends React.Component {
       <FlatButton
         label="Cancel"
         primary
-        onTouchTap={this.handleClose}
+        onClick={this.handleClose}
+        keyboardFocused
       />,
       <RaisedButton
         label="Yes, delete"
-        keyboardFocused
-        onTouchTap={this.submit}
-        backgroundColor="#D87979"
+        onClick={this.submit}
+        backgroundColor="#b53c3c"
         labelColor="#ffffff"          
       />,
     ];
     let deleteIcon = <div style={{paddingTop: 50}} >
             <RaisedButton 
+              aria-label={"Delete note"}
               label="Delete note" 
-              onTouchTap={this.handleOpen} 
-              backgroundColor="#D87979"
-              labelColor="#ffffff"       
+              onClick={this.handleOpen} 
+              backgroundColor="#b53c3c"
+              labelColor="#ffffff"
+              tabIndex={this.props.tabIndex}
             />
           </div>
     let message = "This note will be removed from all groups/sides/leaves that have this note.";
     if (this.props.item==="note type") {
       deleteIcon = <IconButton
-                      onTouchTap={this.handleOpen}
+                      aria-label={"Delete " + this.props.itemName + " note type"}
+                      onClick={this.handleOpen}
+                      tooltip={"Delete " + this.props.itemName}
+                      tabIndex={this.props.tabIndex}
                     >
                       <IconDelete 
-                        color="#ddd"
+                        color="#969696"
                         hoverColor="#4a4a4a"
                       />
                     </IconButton >

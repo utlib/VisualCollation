@@ -33,12 +33,14 @@ export default class AddLeafDialog extends React.Component {
   /** Open this modal component */
   handleOpen = () => {
     this.setState({open: true});
+    this.props.togglePopUp(true);
   };
 
   /** Close this modal component */
   handleClose = () => {
     this.clearForm();
     this.setState({open: false});
+    this.props.togglePopUp(false);
   };
 
   /**
@@ -50,7 +52,8 @@ export default class AddLeafDialog extends React.Component {
    * @param {number} max
    * @public
    */
-  incrementNumber = (name, min, max) => {
+  incrementNumber = (name, min, max, e) => {
+    if (e) e.preventDefault();
     let newCount = 0;
     if (!this.isNormalInteger(this.state[name])) {
       newCount = min; 
@@ -72,7 +75,8 @@ export default class AddLeafDialog extends React.Component {
    * @param {number} max
    * @public
    */
-  decrementNumber = (name, min, max) => {
+  decrementNumber = (name, min, max, e) => {
+    if (e) e.preventDefault();
     let newCount = Math.min(max, Math.max(min, this.state[name]-1));
     let newState = {errorText:{}};
     newState[name]=(isNaN(newCount))?1:newCount;
@@ -201,14 +205,14 @@ export default class AddLeafDialog extends React.Component {
     const actions = [
       <FlatButton
         label="Cancel"
-        onTouchTap={this.handleClose}
+        onClick={this.handleClose}
         style={{width:"49%", marginRight:"1%",border:"1px solid #ddd"}}
         
       />,
       <RaisedButton
         label="Submit"
         primary
-        onTouchTap={this.submit}
+        onClick={this.submit}
         disabled={this.isDisabled(activeLeaf)}
         style={{width:"49%"}}
       />,
@@ -232,6 +236,7 @@ export default class AddLeafDialog extends React.Component {
           </div>
           <div className="input">
             <TextField
+              aria-label="Number of leaves"
               name="numberOfLeaves"
               value={this.state.numberOfLeaves}
               errorText={this.state.errorText.numberOfLeaves}
@@ -240,12 +245,16 @@ export default class AddLeafDialog extends React.Component {
               inputStyle={{textAlign:"center"}}
             />
             <IconButton
-              onTouchTap={() => this.decrementNumber("numberOfLeaves", 1, 999)}
+              aria-label="Decrement number of leaves"
+              name="Decrement number of leaves"
+              onClick={(e) => this.decrementNumber("numberOfLeaves", 1, 999, e)}
             >
               <RemoveCircle color={light.palette.primary1Color} />
             </IconButton>
             <IconButton
-              onTouchTap={() => this.incrementNumber("numberOfLeaves", 1, 999)}
+              aria-label="Increment number of leaves"
+              name="Increment number of leaves"
+              onClick={(e) => this.incrementNumber("numberOfLeaves", 1, 999, e)}
             >
               <AddCircle color={light.palette.primary1Color} />
             </IconButton>
@@ -261,6 +270,7 @@ export default class AddLeafDialog extends React.Component {
           </div>
         <div className="input">
           <Checkbox
+            aria-label="Conjoin leaves"
             onCheck={(e,v)=>this.onToggleConjoin(v)}
             checked={this.state.conjoin && this.state.numberOfLeaves>1}
             style={{verticalAlign:"bottom"}}
@@ -276,6 +286,7 @@ export default class AddLeafDialog extends React.Component {
           </div>
           <div className="input">
             <TextField
+              aria-label="Odd leaf to not conjoin"
               name="oddLeaf"
               value={this.state.oddLeaf}
               errorText={this.state.errorText.oddLeaf}
@@ -284,12 +295,16 @@ export default class AddLeafDialog extends React.Component {
               inputStyle={{textAlign:"center"}}
             />
             <IconButton
-              onTouchTap={() => this.decrementNumber("oddLeaf", 1, this.state.numberOfLeaves)}
+              aria-label="Decrement leaf number"
+              name="Decrement leaf number"
+              onClick={(e) => this.decrementNumber("oddLeaf", 1, this.state.numberOfLeaves, e)}
             >
               <RemoveCircle color={light.palette.primary1Color} />
             </IconButton>
             <IconButton
-              onTouchTap={() => this.incrementNumber("oddLeaf", 1, this.state.numberOfLeaves)}
+              aria-label="Increment leaf number"
+              name="Increment leaf number"
+              onClick={(e) => this.incrementNumber("oddLeaf", 1, this.state.numberOfLeaves, e)}
             >
               <AddCircle color={light.palette.primary1Color} />
             </IconButton>
@@ -331,18 +346,18 @@ export default class AddLeafDialog extends React.Component {
           defaultSelected={defaultAddLocation} 
           onChange={(e,v)=>this.onLocationChange(v)}
         >
-          
           <RadioButton
+            aria-label="Add new leaf above selected item"
+            value="above"
+            label={"above leaf " + activeLeaf.order}
+            style={(activeLeaf.attached_above!=="None")? {display:"none"}: styles.radioButton}
+          /> 
+          <RadioButton
+            aria-label="Add new leaf below selected item"
             value="below"
             label= {"below leaf " + activeLeaf.order}
             style={(activeLeaf.attached_below!=="None")? {display:"none"}: styles.radioButton}
-
           />
-            <RadioButton
-              value="above"
-              label={"above leaf " + activeLeaf.order}
-              style={(activeLeaf.attached_above!=="None")? {display:"none"}: styles.radioButton}
-            /> 
         </RadioButtonGroup>
         {disabledAddAbove}
       </div>
@@ -371,8 +386,9 @@ export default class AddLeafDialog extends React.Component {
         <RaisedButton 
           primary 
           label="Add" 
-          onTouchTap={this.handleOpen} 
+          onClick={this.handleOpen} 
           style={{width:"49%",float:"left",marginRight:"2%"}}
+          tabIndex={this.props.tabIndex}
         />
         {dialog}
       </div>

@@ -10,7 +10,6 @@ import Visibility from 'material-ui/svg-icons/action/visibility';
 import VisibilityOff from 'material-ui/svg-icons/action/visibility-off';
 import Chip from 'material-ui/Chip';
 import AddNote from './dialog/AddNote';
-import NoteDialog from './dialog/NoteDialog';
 import Dialog from 'material-ui/Dialog';
 import ImageViewer from "../global/ImageViewer";
 
@@ -19,7 +18,6 @@ export default class SideInfoBox extends React.Component {
   constructor(props) {
     super(props);
       this.state = {
-      activeNote: null,
       imageModalOpen: false,
       isBatch: this.props.selectedSides.length>1,
       ...this.emptyAttributeState(),
@@ -74,15 +72,6 @@ export default class SideInfoBox extends React.Component {
     if (!this.state.isBatch) {
       this.setState({...this.emptyAttributeState()});
     }
-    if (nextProps.commonNotes.length===0) {
-      this.setState({activeNote:null});
-    }
-    // Update active note 
-    nextProps.commonNotes.forEach((noteID)=> {
-      if (this.state.activeNote!==null && noteID===this.state.activeNote.id) {
-        this.setState({activeNote: nextProps.Notes[noteID]});
-      }
-    });
   }
 
 
@@ -196,7 +185,8 @@ export default class SideInfoBox extends React.Component {
           key={note.id}
           style={{marginRight:4, marginBottom:4}}
           onRequestDelete={deleteFn}
-          onClick={()=>{this.setState({activeNote: note})}}
+          onClick={()=>this.props.openNoteDialog(note)}
+          tabIndex={this.props.tabIndex}
         >
           {note.title}
         </Chip>);
@@ -236,14 +226,16 @@ export default class SideInfoBox extends React.Component {
         eyeCheckbox = 
           <div className="tooltip eyeToggle">
             <Checkbox
+              aria-label={this.props.visibleAttributes[attributeDict.name]?"Hide '" + attributeDict.displayName + "' attribute in collation":"Show '" + attributeDict.displayName + "' attribute in collation"}
               checkedIcon={<Visibility />}
               uncheckedIcon={<VisibilityOff />}
-              onCheck={(event,value)=>this.props.action.toggleVisibility("side", attributeDict.name, !this.props.visibleAttributes[attributeDict.name])}
+              onClick={(event,value)=>this.props.action.toggleVisibility("side", attributeDict.name, !this.props.visibleAttributes[attributeDict.name])}
               style={{display:"inline-block",width:"25px",...eyeStyle}}
               iconStyle={{marginRight:"10px",...eyeStyle}}
               checked={eyeIsChecked}
               onMouseEnter={()=>{this.setState({["visibility_hover_"+attributeDict.name]:true})}}
               onMouseOut={()=>{this.setState({["visibility_hover_"+attributeDict.name]:false})}}
+              tabIndex={this.props.tabIndex}
             />
             <div className={this.state["visibility_hover_"+attributeDict.name]?"text active":"text"} style={Object.keys(eyeStyle).length>0?{display:"none"}:{}}>
               {eyeIsChecked?
@@ -253,28 +245,32 @@ export default class SideInfoBox extends React.Component {
             </div>
           </div>
         label = <Checkbox
+          aria-label={"Select '" + attributeDict.displayName + "' to batch edit"}
           label={attributeDict.displayName} 
-          onCheck={(event,value)=>this.toggleCheckbox(attributeDict.name,value)}
+          onClick={(event,value)=>this.toggleCheckbox(attributeDict.name,value)}
           labelStyle={!this.state["batch_"+attributeDict.name]?{color:"gray"}:{}}
           checked={this.state["batch_"+attributeDict.name]}
           style={{display:"inline-block",width:"25px"}}
           iconStyle={{marginRight:"10px"}}
           disabled={this.state.isBatch && (attributeDict.name==="folio_number"||attributeDict.name==="uri")}
+          tabIndex={this.props.tabIndex}
         />;
       } else {
         // In single edit, display eye icon with label (no checkbox)
         label = 
           <div className="tooltip eyeToggle">
             <Checkbox
+              aria-label={this.props.visibleAttributes[attributeDict.name]?"Hide '" + attributeDict.displayName + "' attribute in collation":"Show '" + attributeDict.displayName + "' attribute in collation"}
               label={attributeDict.displayName} 
               checkedIcon={<Visibility />}
               uncheckedIcon={<VisibilityOff />}
-              onCheck={(event,value)=>this.props.action.toggleVisibility("side", attributeDict.name, !this.props.visibleAttributes[attributeDict.name])}
+              onClick={(event,value)=>this.props.action.toggleVisibility("side", attributeDict.name, !this.props.visibleAttributes[attributeDict.name])}
               style={{display:"inline-block",width:"25px",...eyeStyle}}
               iconStyle={{marginRight:"10px", color:"gray",...eyeStyle}}
               checked={eyeIsChecked}
               onMouseEnter={()=>{this.setState({["visibility_hover_"+attributeDict.name]:true})}}
               onMouseOut={()=>{this.setState({["visibility_hover_"+attributeDict.name]:false})}}
+              tabIndex={this.props.tabIndex}
             />
             <div className={this.state["visibility_hover_"+attributeDict.name]?"text active":"text"} style={Object.keys(eyeStyle).length>0?{display:"none"}:{}}>
               {eyeIsChecked?
@@ -304,10 +300,12 @@ export default class SideInfoBox extends React.Component {
             value = sideAttributes[attributeDict.name];
           }
           input = (<SelectField
+                  aria-label={attributeDict.displayName + " attribute dropdown" }
                   value={value}
                   onChange={(e, i, v)=>this.dropDownChange(e,i,v,attributeDict.name)}
                   fullWidth={true}
                   disabled={this.state.isBatch && !this.state["batch_"+attributeDict.name]}
+                  tabIndex={this.props.tabIndex}
                   >
                   {menuItems}
                 </SelectField>
@@ -319,16 +317,20 @@ export default class SideInfoBox extends React.Component {
             textboxButtons = (
               <div>
                 <RaisedButton
+                  aria-label="Submit"
                   primary
                   icon={<IconSubmit />}
                   style={{minWidth:"60px",marginLeft:"5px"}}
-                  onTouchTap={(e)=>this.textSubmit(e,attributeDict.name)}
+                  onClick={(e)=>this.textSubmit(e,attributeDict.name)}
+                  tabIndex={this.props.tabIndex}
                 />
                 <RaisedButton
+                  aria-label="Cancel"
                   secondary
                   icon={<IconClear />}
                   style={{minWidth:"60px",marginLeft:"5px"}}
-                  onTouchTap={(e)=>this.textCancel(e,attributeDict.name)}
+                  onClick={(e)=>this.textCancel(e,attributeDict.name)}
+                  tabIndex={this.props.tabIndex}
                 />
               </div>
             );
@@ -336,17 +338,19 @@ export default class SideInfoBox extends React.Component {
           let value = "Keep same";
           if (this.state["editing_"+attributeDict.name]) {
             value = this.state[attributeDict.name];
-          } else if (sideAttributes[attributeDict.name]) {
+          } else if (sideAttributes[attributeDict.name]!==null) {
             value = sideAttributes[attributeDict.name];
           }
           input = (<div>
             <form onSubmit={(e)=>this.textSubmit(e,attributeDict.name)}>
               <TextField
+                aria-label={attributeDict.displayName + " attribute textfield"}
                 name={attributeDict.name}
                 fullWidth={true}
                 value={value}
                 onChange={(e,v)=>this.onTextboxChange(v,attributeDict.name)}
                 disabled={this.state.isBatch && !this.state["batch_"+attributeDict.name]}
+                tabIndex={this.props.tabIndex}
               />
               {textboxButtons}
             </form>
@@ -387,6 +391,8 @@ export default class SideInfoBox extends React.Component {
               createAndAttachNote: this.props.action.createAndAttachNote
             }}
             noteTypes={this.props.noteTypes}
+            togglePopUp={this.props.togglePopUp}
+            tabIndex={this.props.tabIndex}
           />}
           <h3>{Object.keys(this.props.selectedSides).length>1?"Notes in common" : "Notes"}</h3>
           <div className="notesInfobox">
@@ -400,8 +406,9 @@ export default class SideInfoBox extends React.Component {
     if (this.state.isBatch && this.hasActiveAttributes()) {
       submitBtn = <RaisedButton 
                     primary fullWidth 
-                    onTouchTap={this.batchSubmit} 
+                    onClick={this.batchSubmit} 
                     label="Submit" 
+                    tabIndex={this.props.tabIndex}
                   />
     }
 
@@ -417,14 +424,20 @@ export default class SideInfoBox extends React.Component {
         imageModalContent = (<ImageViewer rectoURL={rectoURL} versoURL={versoURL} />);
         if (side.image.url){
           imageThumbnail.push(
-            <div key="sideImage" style={{paddingTop: 5, textAlign: "center"}}>
+            <button
+              className="image"
+              aria-label={side.memberType + " image"} 
+              key="sideImage" 
+              style={{paddingTop: 5, textAlign: "center"}}
+              onClick={()=>this.toggleImageModal(true)}
+              tabIndex={this.props.tabIndex}
+            >
               <img 
                 alt={side.folio_number}
                 src={side.image.url+"/full/80,/0/default.jpg"} 
-                onClick={()=>this.toggleImageModal(true)}
                 style={{cursor: "pointer"}}
               /> 
-            </div>
+            </button>
           )
         }
       }
@@ -433,33 +446,11 @@ export default class SideInfoBox extends React.Component {
     return (
       <div className="inner">
           {attributeDivs}
-          <div style={{paddingTop:10}}>
+          <div style={{paddingTop:10, textAlign:"center"}}>
             {imageThumbnail}
           </div>
           {notesDiv}
           {submitBtn}
-          <NoteDialog
-            open={this.state.activeNote!==null}
-            commonNotes={this.props.commonNotes}
-            activeNote={this.state.activeNote ? this.state.activeNote : {id: null}}
-            closeNoteDialog={this.closeNoteDialog}
-            action={{
-              updateNote: this.props.action.updateNote, 
-              deleteNote: this.props.action.deleteNote, 
-              linkNote: this.props.action.linkDialogNote, 
-              unlinkNote: this.props.action.unlinkDialogNote,
-              linkAndUnlinkNotes: this.props.action.linkAndUnlinkNotes,
-            }} 
-            projectID={this.props.projectID} 
-            notification={this.props.notification}
-            noteTypes={this.props.noteTypes}
-            Notes={this.props.Notes}
-            Groups={this.props.Groups}
-            Leafs={this.props.Leafs}
-            Rectos={this.props.Rectos}
-            Versos={this.props.Versos}
-            isReadOnly={this.props.isReadOnly}
-          />
         <Dialog
           modal={false}
           open={this.state.imageModalOpen}

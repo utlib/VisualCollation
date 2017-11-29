@@ -45,22 +45,22 @@ module ValidationHelper
       elsif (!noOfLeafs.is_a?(Integer))
         additionalErrors[:noOfLeafs].push("should be an Integer")
       elsif (noOfLeafs < 1 or noOfLeafs > 999)
-        additionalErrors[:noOfLeafs].push("should be greater than 0 or less than 999")
+        additionalErrors[:noOfLeafs].push("should range from 1 to 999")
       end
       if (conjoin != nil)
         if (!conjoin.is_a?(Boolean))
           additionalErrors[:conjoin].push("should be a Boolean")
         elsif (conjoin and noOfLeafs == 1)
-          additionalErrors[:conjoin].push("should be false if noOfLeafs is 1")
+          additionalErrors[:conjoin].push("should be false if the number of leaves is 1")
         end
       end
       if (oddMemberLeftOut != nil)
         if (!oddMemberLeftOut.is_a?(Integer))
           additionalErrors[:oddMemberLeftOut].push("should be an Integer")
         elsif (oddMemberLeftOut < 1 or oddMemberLeftOut > noOfLeafs)
-          additionalErrors[:oddMemberLeftOut].push("should be greater than 0 and less than noOfLeafs")
+          additionalErrors[:oddMemberLeftOut].push("should range from 1 to the number of leaves")
         elsif (noOfLeafs.even?)
-          additionalErrors[:oddMemberLeftOut].push("should only be 0 if noOfLeafs is even")
+          additionalErrors[:oddMemberLeftOut].push("should be present only if the number of leaves is odd")
         end
       end
       return additionalErrors

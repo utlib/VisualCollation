@@ -13,6 +13,13 @@ import { loadProject } from "../actions/editCollation/modificationActions";
 /** Container for 'Manager (Collation or Notes or Image)', `LoadingScreen`, and `Notification`. */
 class Project extends Component {
 
+  constructor(props) {
+    super(props);
+    this.state = {
+      popUpActive: false,
+    };
+  }
+
   componentWillMount() {
     const projectID = this.props.location.pathname.split("/")[2];
     this.props.user.authenticated ? this.props.loadProject(projectID) : this.props.history.push('/');
@@ -22,10 +29,14 @@ class Project extends Component {
     if (!this.props.user.authenticated) this.props.history.push('/');
   }
 
+  togglePopUp = (value) => {
+    this.setState({popUpActive: value});
+  }
+
   render() { 
-    const collationManager = (<CollationManager history={this.props.history} />);
-    const notesManager = (<NotesManager history={this.props.history} />);
-    const imageManager = (<ImageManager history={this.props.history} />);
+    const collationManager = (<CollationManager history={this.props.history} togglePopUp={this.togglePopUp} popUpActive={this.state.popUpActive} />);
+    const notesManager = (<NotesManager history={this.props.history} togglePopUp={this.togglePopUp} popUpActive={this.state.popUpActive} />);
+    const imageManager = (<ImageManager history={this.props.history} togglePopUp={this.togglePopUp} popUpActive={this.state.popUpActive} />);
     let manager;
     switch (this.props.managerMode) {
       case "collationManager":
@@ -46,7 +57,7 @@ class Project extends Component {
         {manager}
         <LoadingScreen loading={this.props.loading} />
         <Notification message={this.props.notification} />
-        <Feedback />
+        <Feedback togglePopUp={this.togglePopUp} tabIndex={this.state.popUpActive?-1:0} />
       </div>
     )
   }

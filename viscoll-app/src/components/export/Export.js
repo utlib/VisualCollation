@@ -28,6 +28,7 @@ const Export = (props) => {
       label="Close"
       primary={true}
       onClick={()=>props.handleExportToggle(false)}
+      keyboardFocused
     />,
   ];
 

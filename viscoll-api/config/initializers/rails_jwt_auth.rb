@@ -29,6 +29,7 @@ RailsJwtAuth.setup do |config|
   # url used to create email link with reset password token
   config.reset_password_url = if Rails.env.production? then 'https://dummy.library.utoronto.ca/password' else 'http://127.0.0.1:3000/password' end
 
+
   # expiration time for reset password tokens
   #config.reset_password_expiration_time = 1.day
 

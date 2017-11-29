@@ -18,8 +18,18 @@ import { mapSidesToImages } from "../actions/editCollation/modificationActions";
 import { sendFeedback } from "../actions/userActions";
 import ManageManifests from '../components/imageManager/ManageManifests';
 import MapImages from '../components/imageManager/MapImages';
+import {RadioButton, RadioButtonGroup} from 'material-ui/RadioButton';
+import FlatButton from 'material-ui/FlatButton';
+
 
 class ImageManager extends Component {
+
+  constructor(props) {
+    super(props);
+    this.state = {
+      selectAll: ""
+    };
+  }
 
   createManifest = (manifest) => {
     this.props.createManifest(this.props.projectID, manifest)
@@ -33,6 +43,10 @@ class ImageManager extends Component {
     this.props.deleteManifest(this.props.projectID, manifest)
   }
 
+  handleSelection = (selectAll) => {
+    this.setState({ selectAll })
+  }
+
   render() {
     let content = "";
     if (this.props.activeTab==="MANAGE") {
@@ -44,65 +58,142 @@ class ImageManager extends Component {
           deleteManifest={this.deleteManifest}
           createManifestError={this.props.createManifestError}
           cancelCreateManifest={this.props.cancelCreateManifest}
+          tabIndex={this.props.popUpActive?-1:0}
+          togglePopUp={this.props.togglePopUp}
         />
       )
     } else {
       content = (
         <MapImages 
-          manifests={this.props.manifests} 
+          manifests={this.props.manifests}
+          leafIDs={this.props.leafIDs}
+          rectoIDs={this.props.rectoIDs} 
+          versoIDs={this.props.versoIDs}  
           Leafs={this.props.Leafs} 
           Rectos={this.props.Rectos} 
-          Versos={this.props.Versos} 
+          Versos={this.props.Versos}
+          selectAll={this.state.selectAll} 
           mapSidesToImages={this.props.mapSidesToImages}
+          tabIndex={this.props.popUpActive?-1:0}
         />
       )
     }
 
+    let selectionRadioGroup = (
+      <RadioButtonGroup 
+        name="selectionRadioGroup" 
+        defaultSelected={this.state.selectAll} 
+        valueSelected={this.state.selectAll}
+        onChange={(e,v)=>this.setState({selectAll: v})}
+      >
+        <RadioButton
+          value="sideMapBoard"
+          label="Select All Mapped Sides"
+          aria-label="Select All Mapped Sides"
+          labelStyle={{color:"#ffffff",fontSize:"0.9em"}}
+          iconStyle={{fill:"#4ED6CB"}}
+          tabIndex={this.props.popUpActive?-1:0}
+        />
+        <RadioButton
+          value="imageMapBoard"
+          label="Select All Mapped Images"
+          aria-label="Select All Mapped Images"
+          labelStyle={{color:"#ffffff",fontSize:"0.9em"}}
+          iconStyle={{fill:"#4ED6CB"}}
+          tabIndex={this.props.popUpActive?-1:0}
+        />
+        <RadioButton
+          value="sideBacklog"
+          label="Select All Backlog Sides"
+          aria-label="Select All Backlog Sides"
+          labelStyle={{color:"#ffffff",fontSize:"0.9em"}}
+          iconStyle={{fill:"#4ED6CB"}}
+          tabIndex={this.props.popUpActive?-1:0}
+        />
+        <RadioButton
+          value="imageBacklog"
+          label="Select All Backlog Images"
+          aria-label="Select All Backlog Images"
+          labelStyle={{color:"#ffffff",fontSize:"0.9em"}}
+          iconStyle={{fill:"#4ED6CB"}}
+          tabIndex={this.props.popUpActive?-1:0}
+        />
+      </RadioButtonGroup>
+    );
+
+
     const sidebar = (
-      <div className={"sidebar"}>
+      <div className={"sidebar"} role="region" aria-label="sidebar">
         <hr />  
-        <Panel title="Managers" defaultOpen={true}>
-          <div
+        <Panel title="Managers" defaultOpen={true} noPadding={true} tabIndex={this.props.popUpActive?-1:0}>
+          <button
             className={ this.props.managerMode==="collationManager" ? "manager active" : "manager" }        
-            onTouchTap={() => this.props.changeManagerMode("collationManager")} >
+            onClick={() => this.props.changeManagerMode("collationManager")} 
+            aria-label="Collation Manager"
+            tabIndex={this.props.popUpActive?-1:0}
+          >
             Collation
-          </div>
-          <div
+          </button>
+          <button
             className={ this.props.managerMode==="notesManager" ? "manager active" : "manager" }        
-            onTouchTap={() => this.props.changeManagerMode("notesManager")} >
+            onClick={() => this.props.changeManagerMode("notesManager")} 
+            aria-label="Notes Manager"
+            tabIndex={this.props.popUpActive?-1:0}
+          >
             Notes
-          </div>
-          <div
+          </button>
+          <button
             className={ this.props.managerMode==="imageManager" ? "manager active" : "manager" }        
-            onTouchTap={() => this.props.changeManagerMode("imageManager")} >
+            onClick={() => this.props.changeManagerMode("imageManager")} 
+            aria-label="Images Manager"
+            tabIndex={this.props.popUpActive?-1:0}
+          >
             Images
-          </div>
+          </button>
         </Panel>
+        {this.props.activeTab==="MAP" ? 
+          <Panel title="Selector" defaultOpen={true} tabIndex={this.props.popUpActive?-1:0}>
+            {selectionRadioGroup}
+            <FlatButton
+              label="Clear selection" 
+              onClick={(e)=>this.setState({selectAll:""})}
+              secondary
+              fullWidth
+              style={this.state.selectAll===""?{display:"none"}:{}}
+              tabIndex={this.props.popUpActive?-1:0}
+            />
+          </Panel>
+          : null
+        }
       </div>
     );
 
-    return <div>
-      <div className="imageManager">
-        <TopBar 
-          history={this.props.history}
-          onValueChange={this.onValueChange}
-          onTypeChange={this.onTypeChange}
-        >
-          <Tabs 
-            tabItemContainerStyle={{backgroundColor: '#ffffff'}}
-            value={this.props.activeTab} 
-            onChange={(v)=>this.props.changeImageTab(v)}
+    return (
+      <div>
+        <div className="imageManager">
+          <TopBar 
+            history={this.props.history}
+            onValueChange={this.onValueChange}
+            onTypeChange={this.onTypeChange}
+            togglePopUp={this.props.togglePopUp}
+            tabIndex={this.props.popUpActive?-1:0}
           >
-            <Tab label="Manage images" value="MANAGE" buttonStyle={topbarStyle.tab} />
-            <Tab label="Map images" value="MAP" buttonStyle={topbarStyle.tab} />
-          </Tabs>
-        </TopBar>
-        {sidebar}
-        <div className="imageWorkspace">
-          {content}
+            <Tabs 
+              tabItemContainerStyle={{backgroundColor: '#ffffff'}}
+              value={this.props.activeTab} 
+              onChange={(v)=>this.props.changeImageTab(v)}
+            >
+              <Tab label="Manage images" value="MANAGE" buttonStyle={topbarStyle.tab} tabIndex={this.props.popUpActive?-1:0}/>
+              <Tab label="Map images" value="MAP" buttonStyle={topbarStyle.tab} tabIndex={this.props.popUpActive?-1:0}/>
+            </Tabs>
+          </TopBar>
+          {sidebar}
+          <div className="imageWorkspace">
+            {content}
+          </div>
         </div>
       </div>
-    </div>
+    );
   }
 }
 
@@ -113,6 +204,9 @@ const mapStateToProps = (state) => {
     Leafs: state.active.project.Leafs,
     Rectos: state.active.project.Rectos,
     Versos: state.active.project.Versos,
+    leafIDs: state.active.project.leafIDs,
+    rectoIDs: state.active.project.rectoIDs,
+    versoIDs: state.active.project.versoIDs,
     activeTab: state.active.imageManager.activeTab,
     managerMode: state.active.managerMode,
     createManifestError: state.active.imageManager.manageSources.error
@@ -141,8 +235,8 @@ const mapDispatchToProps = (dispatch) => {
     cancelCreateManifest: () => {
       dispatch(cancelCreateManifest())
     },
-    mapSidesToImages: (linkedSideIDs, images, unlinkedSideIDs) => {
-      dispatch(mapSidesToImages(linkedSideIDs, images, unlinkedSideIDs))
+    mapSidesToImages: (sideMappings) => {
+      dispatch(mapSidesToImages(sideMappings))
     },
   };
 };

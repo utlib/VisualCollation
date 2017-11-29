@@ -3,6 +3,12 @@ module ControllerHelper
 
     # JSON IMPORT
     def handleJSONImport(data)
+      # reference variables
+      allGroupsIDsInOrder = []
+      allLeafsIDsInOrder = []
+      allRectosIDsInOrder = []
+      allVersosIDsInOrder = []
+
       # Create the Project
       begin
         Project.find_by(title: data["project"]["title"])
@@ -12,121 +18,200 @@ module ControllerHelper
       data["project"]["user_id"] = current_user.id
       project = Project.create(data["project"])
     
-      allLeafsInOrder = []
       # Create all Leafs
-      data["leafs"].each do |leafID, leafParams|
-        leafParams["project_id"] = project.id
-        leaf = Leaf.create(leafParams)
-        allLeafsInOrder.push(leaf)
+      data["Leafs"].each do |leafOrder, data|
+        data["params"]["project_id"] = project.id
+        leaf = Leaf.create(data["params"])
+        allLeafsIDsInOrder.push(leaf.id.to_s)
+        allRectosIDsInOrder.push(leaf.rectoID)
+        allVersosIDsInOrder.push(leaf.versoID)
       end
 
-      allGroupsInOrder = []
       # Create all Groups
-      data["groups"].each do |groupID, groupParams|
-        if groupParams["tacketed"] != ""
-          groupParams["tacketed"] = allLeafsInOrder[groupParams["tacketed"]].id.to_s
+      data["Groups"].each do |groupOrder, data|
+        tacketed, sewing = [], []
+        data["tacketed"].each do |leafOrder|
+          tacketed.push(allLeafsIDsInOrder[leafOrder-1])
         end
-        groupParams["project_id"] = project.id
-        group = Group.create(groupParams["group"])
-        allGroupsInOrder.push(group)
+        data["sewing"].each do |leafOrder|
+          sewing.push(allLeafsIDsInOrder[leafOrder-1])
+        end
+        data["params"]["tacketed"] = tacketed
+        data["params"]["sewing"] = sewing
+        data["params"]["project_id"] = project.id
+        group = Group.create(data["params"])
+        allGroupsIDsInOrder.push(group.id.to_s)
       end
 
-      # Update all leafs with correct conjoinedTo leaf IDs
-      data["leafs"].each do |leafID, leafParams|
-        if leafParams[:conjoined_to]
-          leafConjoinedTo = allLeafsInOrder[leafParams[:conjoined_leaf_order]]
-          leaf.update(conjoined_to: leafConjoinedTo.id.to_s)
+      project.reload
+      # Update all Group membersIDs and parentID
+      data["Groups"].each do |groupOrder, data|
+        group = project.groups.find(allGroupsIDsInOrder[groupOrder.to_i-1])
+        parentID = data["parentOrder"] ? allGroupsIDsInOrder[data["parentOrder"]-1] : nil
+        memberIDs = []
+        data["memberOrders"].each do |memberOrder|
+          memberType, memberOrder = memberOrder.split("_")
+          if memberType=="Group"
+            memberIDs.push(allGroupsIDsInOrder[memberOrder.to_i-1])
+          else
+            memberIDs.push(allLeafsIDsInOrder[memberOrder.to_i-1])
+            leaf = project.leafs.find(allLeafsIDsInOrder[memberOrder.to_i-1])
+            leaf.update(parentID: group.id.to_s)
+          end
+        end
+        group.update(parentID: parentID, memberIDs: memberIDs)
+      end
+
+      # Update all leafs with correct conjoinedTo leafID
+      data["Leafs"].each do |leafOrder, data|
+        if data["conjoined_leaf_order"]
+          leafIDConjoinedTo = allLeafsIDsInOrder[data["conjoined_leaf_order"]-1]
+          leaf = project.leafs.find(allLeafsIDsInOrder[leafOrder.to_i-1])
+          leaf.update(conjoined_to: leafIDConjoinedTo)
         end      
       end
 
-      # Create all Sides
-      sides = []
-      data["sides"].each do |sideParams|
-        sideParams["side"]["leaf_id"] = project.leafs.find_by(order: sideParams["parentLeafOrder"]).id
-        side = Side.create(sideParams["side"])
-        sides.push(side)
+      # Update all Rectos
+      allRectosIDsInOrder.each_with_index do |rectoID, order|
+        recto = project.sides.find(rectoID)
+        rectoParams = data["Rectos"][(order+1).to_s]["params"]
+        recto.update(rectoParams)
       end
 
+      # Update all Verso
+      allVersosIDsInOrder.each_with_index do |versoID, order|
+        verso = project.sides.find(versoID)
+        versoParams = data["Versos"][(order+1).to_s]["params"]
+        verso.update(versoParams)
+      end
+
+      project.reload
       # Create all Notes
-      data["notes"].each do |noteParams|
-        noteParams["note"]["project_id"] = project.id
-        note = Note.create(noteParams["note"])
-        # Generate objectIDs of Groups with this note
+      data["Notes"].each do |noteOrder, data|
+        data["params"]["project_id"] = project.id
+        note = Note.new(data["params"])
+        # Generate objectIDs of Groups, Leafs, Rectos, Versos with this note
         groupIDs = []
-        noteParams["groupOrders"].each do |order|
-          group = project.groups.find_by(order: order)
+        data["objects"]["Group"].each do |groupOrder|
+          groupID = allGroupsIDsInOrder[groupOrder-1]
+          group = project.groups.find(groupID)
           group.notes.push(note)
           group.save
-          groupIDs.push(group.id.to_s)
+          groupIDs.push(groupID)
         end
         leafIDs = []
-        noteParams["leafOrders"].each do |order|
-          leaf = project.leafs.find_by(order: order)
+        data["objects"]["Leaf"].each do |leafOrder|
+          leafID = allLeafsIDsInOrder[leafOrder-1]
+          leaf = project.leafs.find(leafID)
           leaf.notes.push(note)
           leaf.save
-          leafIDs.push(leaf.id.to_s)
+          leafIDs.push(leafID)
         end
-        sideIDs = []
-        noteParams["sideOrders"].each do |order|
-          side = sides[order-1]
-          side.notes.push(note)
-          side.save
-          sideIDs.push(side.id.to_s)
+        rectoIDs = []
+        data["objects"]["Recto"].each do |rectoOrder|
+          rectoID = allRectosIDsInOrder[rectoOrder-1]
+          recto = project.sides.find(rectoID)
+          recto.notes.push(note)
+          recto.save
+          rectoIDs.push(rectoID)
         end
-        note.objects["Group"] = groupIDs
-        note.objects["Leaf"] = leafIDs
-        note.objects["Side"] = sideIDs
+        versoIDs = []
+        data["objects"]["Verso"].each do |versoOrder|
+          versoID = allVersosIDsInOrder[versoOrder-1]
+          verso = project.sides.find(versoID)
+          verso.notes.push(note)
+          verso.save
+          versoIDs.push(versoID)
+        end
+        note.objects[:Group] = groupIDs
+        note.objects[:Leaf] = leafIDs
+        note.objects[:Recto] = rectoIDs
+        note.objects[:Verso] = versoIDs
+        note.save
       end
 
-      # Create all Groupings
-      data["groupings"].each do |groupingParams|
-        group = project.groups.find_by(order: groupingParams["groupOrder"])
-        memberOrder = groupingParams["memberOrder"]
-        if (groupingParams["memberType"]=="Group")
-          newMember =  project.groups.find_by(order: groupingParams["objectOrder"])
-          group.add_members([newMember], memberOrder)
-        elsif (groupingParams["memberType"]=="Leaf")
-          newMember = project.leafs.find_by(order: groupingParams["objectOrder"])
-          group.add_members([newMember], memberOrder)
-        end
-      end
+      # Update project groupIDs
+      project.groupIDs = allGroupsIDsInOrder
+      project.save
     end
 
 
 
     # XML IMPORT
-    def handleXMLImport(data)
+    def handleXMLImport(data, xml)
+      # reference variables
+      allGroupsIDsInOrder = []
+      allLeafsIDsInOrder = []
+      allRectosIDsInOrder = []
+      allVersosIDsInOrder = []
+      @groups = {}
+      @leafs = {}
+      @rectos = {}
+      @versos = {}
+
+      allGroups = xml.xpath('//x:quire', "x" => "http://schoenberginstitute.org/schema/collation")
+      allLeaves = xml.xpath('//x:leaf', "x" => "http://schoenberginstitute.org/schema/collation")
+      allNotes = xml.xpath('//x:note', "x" => "http://schoenberginstitute.org/schema/collation")
+
       # Create the Project
-      # title = data["manuscript"]["title"]
-      # begin
-      #   Project.find_by(title: title)
-      #   title = "Copy of " + title + " @ " + Time.now.to_s
-      # rescue Exception => e
-      # end
-      # @project = Project.create(title: title, user_id: current_user.id)
+      projectInformation = {}
+      projectInformation[:title] = data["title"]
+      if not projectInformation[:title]
+        projectInformation[:title] = "XML_Import_@_" + Time.now.to_s
+      end
+      begin
+        Project.find_by(title: projectInformation[:title])
+        projectInformation[:title] = "Copy of " + projectInformation[:title] + " @ " + Time.now.to_s
+      rescue Exception => e
+      end
+      projectInformation[:shelfmark] = data["shelfmark"]
+      projectInformation[:metadata] = {date: data["date"]}
 
-      # # Create the Manuscript
-      # shelfmark = data["manuscript"]["shelfmark"]
-      # @project = Manuscript.create(shelfmark: shelfmark, project_id: @project.id)
+      # p projectInformation
+      # @project = Project.create(projectInformation)
+      allLeaves.each do |leaf|
+        leafID = nil
+        leafAttributes = {}
+        leaf.attributes.each do |attr|
+          if attr[1].name == "id"
+            leafID = attr[1].value
+          end
+          leafAttributes[attr[1].name] = attr[1].value
+        end
+        leafChildren = {}
+        leaf.getChildren.each do |child|
+          childAttributes = {}
+          child.attributes.each do |attr|
+            if attr[1].name == "id"
+              leafID = attr[1].value
+            end
+            childAttributes[attr[1].name] = attr[1].value
+          end
+        end
+        @leafs[leafID] = leafAttributes
+      end
+      p @leafs
 
-      # # Create None & Binding Leafs
-      # Leaf.create({project_id: @project.id, order: -1})
-      # Leaf.create({project_id: @project.id, order: 0})
-      # # Create all Groups
-      # data["manuscript"]["quire"].each do |quire|
-      #   p quire
-      #   groupOrder = quire["n"]
-      #   nestLevel = quire["level"]
-      #   groupParams["group"]["project_id"] = @project.id
-      #   @group = Group.create(project_id: @project.id, type: "Quire", order: groupOrder)
-      #   # First, create all Leafs in this Group without attributes
-      #   if (quire["leaf"])
-      #     quire["leaf"].each do |leaf|
-      #       leafOrder = leaf["folio_number"]
-      #       Leaf.create(project_id: @project.id, order: leafOrder)
-      #     end
-      #   end
-      # end
+    end
+
+    def getAttributes(node)
+      attributes = node.attributes.dup
+      attributes.keys.each do |key|
+        attributes[key.to_sym] = attributes.delete(key).to_s
+      end
+      return attributes
+    end
+
+    def getChildren(node)
+      return node.children.filter { |child| child.next_element.class != 'Nokogiri::XML::Text' }
+    end
+
+    def getNodeID(node)
+      node.attributes.each do |attr|
+        if attr[1].name == "id"
+          return attr[1].value
+        end
+      end
     end
 
 

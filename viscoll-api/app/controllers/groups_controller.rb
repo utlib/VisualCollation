@@ -181,7 +181,7 @@ class GroupsController < ApplicationController
   end
 
   def group_params
-    params.require(:group).permit(:project_id, :type, :title, :tacketed)
+    params.require(:group).permit(:project_id, :type, :title, :tacketed=>[], :sewing=>[])
   end
 
   def additional_params

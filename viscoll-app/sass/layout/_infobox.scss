@@ -27,4 +27,16 @@
       width: 55%;
     }
   }
+  button.image {
+    border: 0;
+    background: none;
+    padding: 0;
+    margin: 0;
+    font-size: 1em;
+    & + button {
+      margin-left: 0.5em;
+    }
+    overflow: none;
+    max-width: 40%;
+  }
 }

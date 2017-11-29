@@ -6,23 +6,21 @@ class Project
   field :title, type: String
   field :shelfmark, type: String # (eg) "MS 1754"
   field :metadata, type: Hash, default: lambda { { } } # (eg) {date: "19th century"}
-  field :manifests, type: Hash, default: lambda { { } } # (eg) { "1234556": { id: "123456, name: "", url: "", images: [{label: "", url: ""}]} }
+  field :manifests, type: Hash, default: lambda { { } } # (eg) { "1234556": { id: "123456, name: "", url: ""} }
   field :noteTypes, type: Array, default: ["Unknown"] # custom notetypes
   field :preferences, type: Hash, default: lambda { { :showTips => true } }
   field :groupIDs, type: Array, default: []
 
   # Relations
   belongs_to :user, inverse_of: :projects
-  has_many :groups 
-  has_many :leafs, dependent: :destroy
-  has_many :sides, dependent: :destroy
-  has_many :notes, dependent: :destroy
+  has_many :groups, dependent: :delete
+  has_many :leafs, dependent: :delete
+  has_many :sides, dependent: :delete
+  has_many :notes, dependent: :delete
  
   # Validations
   validates_presence_of :title, :message => "Project title is required."
   validates_uniqueness_of :title, :message => "Project title: '%{value}', must be unique.", scope: :user
-
-  before_destroy :destroy_groups
 
   def add_groupIDs(groupIDs, index)
     if self.groupIDs.length == 0
@@ -38,11 +36,4 @@ class Project
     self.save()
   end
 
-  def destroy_groups
-    self.groups.each do |group|
-      if group.nestLevel == 1
-        group.destroy
-      end
-    end
-  end
 end

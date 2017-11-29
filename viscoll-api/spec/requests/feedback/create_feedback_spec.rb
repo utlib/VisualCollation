@@ -24,6 +24,27 @@ describe "POST /feedback", :type => :request do
           post '/feedback', params: @parameters.to_json, headers: {'Authorization' => @authToken, 'CONTENT_TYPE' => 'application/json', 'ACCEPT' => 'application/json'}
         }.to change { ActionMailer::Base.deliveries.count }.by 1
       end
+      
+      it 'requires a title' do
+        @parameters[:feedback][:title] = ''
+        post '/feedback', params: @parameters.to_json, headers: {'Authorization' => @authToken, 'CONTENT_TYPE' => 'application/json', 'ACCEPT' => 'application/json'}
+        expect(response).to have_http_status(:unprocessable_entity)
+        expect(JSON.parse(response.body)['error']).to eq '[title] and [message] params required.'
+      end
+      
+      it 'requires a message' do
+        @parameters[:feedback][:message] = ''
+        post '/feedback', params: @parameters.to_json, headers: {'Authorization' => @authToken, 'CONTENT_TYPE' => 'application/json', 'ACCEPT' => 'application/json'}
+        expect(response).to have_http_status(:unprocessable_entity)
+        expect(JSON.parse(response.body)['error']).to eq '[title] and [message] params required.'
+      end
+      
+      it 'handles exceptions' do
+        expect(FeedbackMailer).to receive(:sendFeedback).and_raise('AnException')
+        post '/feedback', params: @parameters.to_json, headers: {'Authorization' => @authToken, 'CONTENT_TYPE' => 'application/json', 'ACCEPT' => 'application/json'}
+        expect(response).to have_http_status(:unprocessable_entity)
+        expect(JSON.parse(response.body)['error']).to eq 'AnException'
+      end
     end
   end
 
