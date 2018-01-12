@@ -1,11 +1,21 @@
 h1 {
-  font-size: 1.5em;
-  text-transform: uppercase;
+  font-size: 1.6em;
   font-weight: bold;
   color: $black;
+  @media screen and (max-width: $xsmall) {
+    font-size: 1.3em;
+  } 
 }
 h2 {
-  font-weight: normal;
-  color: $black;
+  color: $dark_gray;
   padding-top: 0.8em;
+  font-size: 1.15em;
+  @media screen and (max-width: $xsmall) {
+    font-size: 1em;
+  } 
+}
+h3 {
+  @media screen and (max-width: $xsmall) {
+    font-size: 1em;
+  } 
 }

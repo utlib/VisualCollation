@@ -1,15 +1,12 @@
 import React, {Component} from 'react';
-import PropTypes from 'prop-types';
 import DeleteConfirmation from './DeleteConfirmation';
 import TextField from 'material-ui/TextField';
-import SelectField from 'material-ui/SelectField';
-import MenuItem from 'material-ui/MenuItem';
 import RaisedButton from 'material-ui/RaisedButton';
 import IconSubmit from 'material-ui/svg-icons/action/done';
 import IconClear from 'material-ui/svg-icons/content/clear';
-import Chip from 'material-ui/Chip';
-import MultiSelectAutoComplete from '../../helpers/MultiSelectAutoComplete';
 import Checkbox from 'material-ui/Checkbox';
+import SelectField from '../global/SelectField';
+import ChipInput from 'material-ui-chip-input'
 
 
 /** Create New Note tab in the Note Manager */
@@ -21,7 +18,6 @@ export default class EditNoteForm extends Component {
       title: props.note.title,
       type: props.note.type,
       description: props.note.description,
-      linkType: "",
       editing: {
         title: false,
         description: false,
@@ -39,7 +35,6 @@ export default class EditNoteForm extends Component {
       title: nextProps.note.title,
       type: nextProps.note.type,
       description: nextProps.note.description,
-      linkType: "",
       editing: {
         title: false,
         description: false,
@@ -136,87 +131,7 @@ export default class EditNoteForm extends Component {
    * @public
    */
   renderNoteTypes = (name) => {
-    return <MenuItem key={name} value={name} primaryText={name} />;
-  }
-
-
-  renderMenuItem = (itemID, type, index) => {
-    const item = this.props[type+"s"][itemID];
-    let label = `${type} ${item.order}`;
-    if (type==="Side") {
-      const leaf = this.props.Leafs[item.parentID];
-      let sideName = item.memberType;
-      label = `Leaf ${leaf.order}: ${type} ${sideName}`
-    }
-    return (
-      <div key={item.id} value={item.id} label={label}>
-        {label}
-      </div>
-    );      
-  }
-
-  getCurrentValues = (type) => {
-    let resultIDs;
-    switch (type) {
-      case "Group":
-        resultIDs = this.props.linkedGroups.map((item)=>{return item.value})
-        break;
-      case "Leaf":
-        resultIDs = this.props.linkedLeaves.map((item)=>{return item.value})
-        break;
-      case "Side":
-        resultIDs = this.props.linkedSides.map((item)=>{return item.value})
-        break;
-      default:
-        break;
-    }
-    return resultIDs;
-  }
-
-
-  getNonIntersectingItems = (newList, oldList) => {
-    let newListUniqueItems = newList.filter((item)=>{return !oldList.includes(item)});
-    let oldListUniqueItems = oldList.filter((item)=>{return !newList.includes(item)});
-    return [...newListUniqueItems, ...oldListUniqueItems]
-  }
-
-
-  updatedObjects = (values, type) => {
-    let objIDs = [];
-    for (let item of values) {
-      objIDs.push(item.value)
-    }
-    let currentValues = this.getCurrentValues(type);
-    let diff = this.getNonIntersectingItems(objIDs, currentValues);
-    let objectsToUnlink = [];
-    let objectsToLink = [];
-    for (let objID of diff) {
-      if (currentValues.includes(objID)){
-        objectsToUnlink.push({id:objID, type})    
-      }
-      if (objIDs.includes(objID)){
-        objectsToLink.push({id:objID, type})
-      }
-    }
-    let linkedObjects;
-    switch (type) {
-      case "Group":
-        linkedObjects = "linkedGroups"
-        break;
-      case "Leaf":
-        linkedObjects = "linkedLeaves"
-        break;
-      case "Side":
-        linkedObjects = "linkedSides"
-        break;
-      default:
-        break;
-    }
-    if (diff.length > 0){
-      this.setState({[linkedObjects]: values}, ()=>{
-        this.props.action.linkAndUnlinkNotes(this.props.note.id, objectsToLink, objectsToUnlink);
-      });
-    }
+    return {value:name, text:name};
   }
 
 
@@ -252,145 +167,93 @@ export default class EditNoteForm extends Component {
     }
   }
 
-  /**
-   * Render all group, leaf and side chips that this note is attached to  
-   * @public
-   */
-  renderChips = () => {
-    let chips = [];
-    if (this.props.note) {
-      for (let key of this.props.note.objects.Group) {
-        chips.push(this.renderChip("Group", key));
-      }
-      for (let key of this.props.note.objects.Leaf) {
-        chips.push(this.renderChip("Leaf", key));
-      }
-      for (let key of this.props.note.objects.Recto) {
-        chips.push(this.renderChip("Side", key));
-      }
-      for (let key of this.props.note.objects.Verso) {
-        chips.push(this.renderChip("Side", key));
-      }
-    }
-    return chips;
+  handleAddChip = (chip, type) => {
+    this.props.action.linkNote(this.props.note.id, [{type, id:chip.value}]);
   }
 
-  /**
-   * Render a single chip
-   * @param {string} type
-   * @param {array} order [object order, leaf order (if object is a side)]
-   * @public
-   */
-  renderChip = (type, id) => {
-    let name;
-    if (type==="Side") {
-      if (this.props.Rectos.hasOwnProperty(id)){
-        const recto = this.props.Rectos[id];
-        const leafOrder = this.props.Leafs[recto.parentID].order
-        name = `Leaf ${leafOrder}: Side Recto`;
-        type = "Recto"
-      } else {
-        const verso = this.props.Versos[id];
-        const leafOrder = this.props.Leafs[verso.parentID].order
-        name = `Leaf ${leafOrder}: Side Verso`;
-        type = "Verso"
-      }
-    } else if (type==="Group"){
-      const group = this.props.Groups[id];
-      name = `Group ${group.order}`;
-    } else {
-      const leaf = this.props.Leafs[id];
-      name = `Leaf ${leaf.order}`;
-    }
-    let deleteFn = ()=>this.props.action.unlinkNote(this.props.note.id, [{type, id}]);
-    if (this.props.isReadOnly) deleteFn = null;
-    return (
-      <Chip 
-        key={id}
-        style={{marginRight:4, marginBottom:4}}
-        onRequestDelete={deleteFn}
-        onKeyPress={(e)=>{if(e.key===" "||e.key==="Enter"){deleteFn()}}}
-        tabIndex={this.props.tabIndex}
-      >
-        {name}
-      </Chip>
-    );
+  handleDeleteChip = (id, index, type) => {
+    this.props.action.unlinkNote(this.props.note.id, [{type, id}]);
   }
-
 
   render() {
     let title = this.props.isReadOnly? this.props.note.title : "Edit " + this.props.note.title;
     let linkedObjects = "";
     let deleteButton = "";
-    let chips = this.renderChips();
-    let objectDropDown = "";
-    if (this.state.linkType==="Group") {
-      objectDropDown = (
-        <div style={{ display: 'inline-block',verticalAlign:'top',marginTop:8,marginLeft:10}}>
-          <MultiSelectAutoComplete 
-            updateSelectedItems={(selected) => this.updatedObjects(selected, "Group")}
-            selectedItems={this.props.linkedGroups}
-            tabIndex={this.props.tabIndex}
-          >
-            {Object.keys(this.props.Groups).map((itemID)=>this.renderMenuItem(itemID, "Group"))}
-          </MultiSelectAutoComplete >
-        </div>
-      );
-    } else if (this.state.linkType==="Leaf") {
-      objectDropDown = (
-        <div style={{ display: 'inline-block',verticalAlign:'top',marginTop:8,marginLeft:10}}>
-          <MultiSelectAutoComplete 
-            updateSelectedItems={(selected) => this.updatedObjects(selected, "Leaf")}
-            selectedItems={this.props.linkedLeaves}
-            tabIndex={this.props.tabIndex}
-          >
-            {Object.keys(this.props.Leafs).map((itemID)=>this.renderMenuItem(itemID, "Leaf"))}
-          </MultiSelectAutoComplete >
-        </div>
-      );
-    } else if (this.state.linkType==="Side") {
-      objectDropDown = (
-        <div style={{ display: 'inline-block',verticalAlign:'top',marginTop:8,marginLeft:10}}>
-          <MultiSelectAutoComplete 
-            updateSelectedItems={(selected) => this.updatedObjects(selected, "Side")}
-            selectedItems={this.props.linkedSides}
-            tabIndex={this.props.tabIndex}
-          >
-            {Object.keys(this.props.Sides).map((itemID, index)=>this.renderMenuItem(itemID, "Side", index))}
-          </MultiSelectAutoComplete >
-        </div>
-      );
+    let sideData = [];
+    for (let i=0; i<this.props.leafIDs.length; i++) {
+      const leaf = this.props.Leafs[this.props.leafIDs[i]];
+      sideData.push({value:leaf.rectoID, label:"L"+(this.props.leafIDs.indexOf(leaf.id)+1)+" Recto ("+this.props.Rectos[leaf.rectoID].folio_number+")"});
+      sideData.push({value:leaf.versoID, label:"L"+(this.props.leafIDs.indexOf(leaf.id)+1)+" Verso ("+this.props.Versos[leaf.versoID].folio_number+")"});
     }
+    const linkToGroups = (
+        <div style={{display:"flex", alignItems:"center"}}>
+          <div style={{width:100}}>Groups</div>
+          <div style={{width:"100%"}}>
+            <ChipInput 
+              value={this.props.linkedGroups}
+              dataSourceConfig={{text:"label", value:"value"}}
+              dataSource={Object.keys(this.props.Groups).map((itemID, index)=>{ return{value:itemID, label:"Group " + (index+1)}})}
+              onRequestAdd={(chip) => this.handleAddChip(chip, "Group")}
+              onRequestDelete={(chip, index) => this.handleDeleteChip(chip, index, "Group")}
+              openOnFocus={true}
+              fullWidth={true}
+              fullWidthInput={false}
+              hintText="Click here to attach groups to this note"
+              menuProps={{maxHeight:200}}
+              tabIndex={this.props.tabIndex}
+            />
+          </div>
+        </div>
+      );
+      const linkToLeaves = (
+        <div style={{display:"flex", alignItems:"center"}}>
+          <div style={{width:100}}>Leaves</div>
+          <div style={{width:"100%"}}>
+            <ChipInput 
+              value={this.props.linkedLeaves}
+              dataSourceConfig={{text:"label", value:"value"}}
+              dataSource={this.props.leafIDs.map((itemID, index)=>{ return{value:itemID, label:"Leaf " + (index+1)}})}
+              onRequestAdd={(chip) => this.handleAddChip(chip, "Leaf")}
+              onRequestDelete={(chip, index) => this.handleDeleteChip(chip, index, "Leaf")}
+              openOnFocus={true}
+              fullWidth={true}
+              fullWidthInput={false}
+              hintText="Click here to attach leaves to this note"
+              menuProps={{maxHeight:200}}
+              tabIndex={this.props.tabIndex}
+            />
+          </div>
+        </div>
+      );
+      const linkToSides = (
+        <div style={{display:"flex", alignItems:"center"}}>
+          <div style={{width:100}}>Sides</div>
+          <div style={{width:"100%"}}>
+            <ChipInput 
+              value={this.props.linkedSides}
+              dataSourceConfig={{text:"label", value:"value"}}
+              dataSource={sideData}
+              onRequestAdd={(chip) => this.handleAddChip(chip, "Side")}
+              onRequestDelete={(chip, index) => this.handleDeleteChip(chip, index, chip.split("_")[0])}
+              openOnFocus={true}
+              fullWidth={true}
+              fullWidthInput={false}
+              hintText="Click here to attach sides to this note"
+              menuProps={{maxHeight:200}}
+              tabIndex={this.props.tabIndex}
+            />
+          </div>
+        </div>
+      );
+    
     if (this.props.note) {
       linkedObjects = (
         <div className="objectAttachments">
-          { chips.length>0? 
-          <div>
-            <h2>Attached to</h2>
-            <div style={{overflowY:"auto",maxHeight:120}}>
-              <div style={{display:"flex",flexWrap:"wrap"}}>
-                {chips}
-              </div>
-            </div>
-          </div>
-          : ""
-          }
           {this.props.isReadOnly?"":<div>
-          <h2>Attach a new item</h2>
-          <SelectField
-            aria-label="Select type of object to attach"
-            floatingLabelText="Type"
-            maxHeight={300}
-            onChange={(e,i,v)=>this.setState({linkType:v})}
-            value={this.state.linkType}
-            style={{marginTop:"-2em",width:120}}
-            tabIndex={this.props.tabIndex}
-          >
-            {["Group", "Leaf", "Side"].map((type) => {
-              return <MenuItem key={`${type}`} value={`${type}`} primaryText={`${type}`} /> ;
-            })}
-          </SelectField>
-          {objectDropDown}
+          <h2>Attached to</h2>
+          {linkToSides}
+          {linkToLeaves}
+          {linkToGroups}
           </div>
           }
         </div>);
@@ -434,13 +297,13 @@ export default class EditNoteForm extends Component {
           <div className="input">
             {this.props.isReadOnly? <div className="textOnly">{this.state.type}</div> :
             <SelectField
-              aria-labelledby="noteTypeLabel"
+              id="noteTypeSelect"
+              label="noteTypeLabel"
               value={this.state.type}
-              onChange={(e,i,v)=>this.onChange("type",v)}
+              onChange={(v)=>this.onChange("type",v)}
               tabIndex={this.props.tabIndex}
-            >
-              {this.props.noteTypes.map(this.renderNoteTypes)}
-            </SelectField>}
+              data={this.props.noteTypes.map(this.renderNoteTypes)}
+            />}
           </div>
           <div className="label" id="noteDescriptionLabel">
             Description
@@ -468,7 +331,7 @@ export default class EditNoteForm extends Component {
               aria-labelledby="noteShowLabel"
               checked={this.props.note.show}
               style={{paddingTop:20}}
-              onCheck={(e,v)=>this.props.action.updateNote(this.props.note.id, {title:this.state.title,type:this.state.type,description:this.state.description,show:v})}
+              onClick={()=>this.props.action.updateNote(this.props.note.id, {title:this.state.title,type:this.state.type,description:this.state.description,show:!this.props.note.show})}
               tabIndex={this.props.tabIndex}
             />
           </div>
@@ -477,9 +340,5 @@ export default class EditNoteForm extends Component {
         </div>
       </div>
     );
-  }
-  static propTypes = {
-    /** Active project ID */
-    projectID: PropTypes.string
   }
 }

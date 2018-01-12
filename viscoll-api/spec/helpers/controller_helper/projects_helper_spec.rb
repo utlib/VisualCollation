@@ -72,7 +72,7 @@ RSpec.describe ControllerHelper::ProjectsHelper, type: :helper do
         'manifests': { '12341234' => {
           'id' => '12341234', 
           'url' => 'https://digital.library.villanova.edu/Item/vudl:99213/Manifest', 
-          'name' => 'Boston, and Bunker Hill. Provided by Villanova ...', 
+          'name' => 'Boston, and Bunker Hill.', 
           'images' => [ { 'label' => nil, 'url' => 'https://iiif.library.villanova.edu/image/vudl%3A99215', 'manifestID' => '12341234' } ]
         } },
       })

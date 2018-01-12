@@ -1,5 +1,4 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import Dialog from 'material-ui/Dialog';
 import loadingImg from '../../assets/viscoll_loading.gif';
 
@@ -9,16 +8,13 @@ const LoadingScreen = (props) => {
   return (
     <Dialog
       open={props.loading}
-      contentStyle={{width: 250, padding: 0}}
-      bodyStyle={{padding: 0}}
+      contentStyle={{width: 250, padding: 0, zIndex: 2500}}
+      bodyStyle={{padding: 0, zIndex: 2500}}
       paperProps={{style:{borderRadius:"100%"}}}
+      style={{zIndex: 2500}}
     >
       {logo}
     </Dialog>
   );
-}
-LoadingScreen.propTypes = {
-  /** `true` if loading screen should be shown */
-  loading: PropTypes.bool,
 }
 export default LoadingScreen;

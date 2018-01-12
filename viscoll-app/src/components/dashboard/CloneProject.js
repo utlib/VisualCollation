@@ -2,9 +2,7 @@ import React from 'react';
 import {floatFieldLight} from '../../styles/textfield';
 import RaisedButton from 'material-ui/RaisedButton';
 import FlatButton from 'material-ui/FlatButton';
-import SelectField from 'material-ui/SelectField';
-import MenuItem from 'material-ui/MenuItem';
-
+import SelectField from '../global/SelectField';
 
 export default class CloneProject extends React.Component {
 
@@ -15,7 +13,7 @@ export default class CloneProject extends React.Component {
     }
   }
 
-  onChange = (event, projectIndex) => {
+  onChange = (projectIndex) => {
     this.setState({ projectIndex });
   }
 
@@ -28,30 +26,22 @@ export default class CloneProject extends React.Component {
 
   render(){
     if (this.props.allProjects.length>0) {
+      const data = this.props.allProjects.map((project, index)=>{
+        return (
+          {text: project.title, value:index} 
+        );
+      });
       return (
         <div style={{width:"70%", margin:"auto"}}>
           <h1 style={{textAlign: "center"}}>Clone Existing Collation</h1>
           <form onSubmit={this.submit}>
-            <SelectField
-              aria-label="Choose a collation to clone"
-              id="cloneDropDownMenu"
-              floatingLabelText="Choose a collation to clone"
-              {...floatFieldLight}
-              value={this.state.projectIndex}
-              onChange={this.onChange}
-              fullWidth
-              maxHeight={300}
-            >
-            {this.props.allProjects.map((project, index)=>{
-              return (
-                <MenuItem 
-                  value={index} 
-                  primaryText={project.title} 
-                  key={project.id} 
-                />
-              );
-            })}
-            </SelectField>
+          <SelectField 
+            id="selectprojectclone"
+            label="Select a project to clone" 
+            floatingLabelText="Select a project to clone"
+            data={data}
+            onChange={this.onChange}
+          />
             <div style={{textAlign:"center",paddingTop:30}}>
               <FlatButton 
                 label="Back"

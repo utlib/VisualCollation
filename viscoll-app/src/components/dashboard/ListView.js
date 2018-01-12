@@ -1,11 +1,9 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 
 /**
  * List the projects in a table format
  */
-const ListView = ({selectedProjectIndex, selectProject, allProjects=[], doubleClick, tabIndex}) => {
-  const selectedProjectID = selectedProjectIndex>=0? allProjects[selectedProjectIndex].id : null;
+const ListView = ({selectedProjectID, selectProject, allProjects=[], doubleClick, tabIndex}) => {
   const viewDate = {year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'}
   const ariaDate = {year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit'}
   const projectsList = allProjects.map((project, i) => {
@@ -36,14 +34,4 @@ const ListView = ({selectedProjectIndex, selectProject, allProjects=[], doubleCl
     </div>
   );
 };
-ListView.propTypes = {
-    /** Index of project that was selected through singleclick by user */
-    singleClickIndex: PropTypes.number,
-    /** Callback used when user selects a project */
-    selectProject: PropTypes.func,
-    /** Array of projects belonging to the user */
-    allProjects: PropTypes.array,
-    /** Callback for doubleclicking on a project  */
-    doubleClick: PropTypes.func,
-  }
 export default ListView;

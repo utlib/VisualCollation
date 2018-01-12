@@ -29,12 +29,15 @@ module ControllerHelper
       project.add_groupIDs(groupIDs, 0)
     end
 
-
     def getManifestInformation(url)
       images = []
-      response = JSON.parse(Net::HTTP.get(URI(url)))
-      response["sequences"][0]["canvases"].each do |canvas|
-        images.push({label: canvas["label"], url: canvas["images"][0]["resource"]["service"]["@id"]})
+      begin
+        response = JSON.parse(Net::HTTP.get(URI(url)))
+        response["sequences"][0]["canvases"].each do |canvas|
+          images.push({label: canvas["label"], url: canvas["images"][0]["resource"]["service"]["@id"]})
+        end
+      rescue
+        return {name: "Unparseable manifest URL", images: images}
       end
       return {name: response["label"][0..150], images: images}
     end
@@ -63,21 +66,35 @@ module ControllerHelper
       }
       @project.manifests.each do |manifestID, manifest|
         manifestInformation = getManifestInformation(manifest[:url])
-        manifestName = manifestInformation[:name]
+        manifestName = manifest[:name] ? manifest[:name] : manifestInformation[:name]
         if manifestName.length>50 
           manifestName = manifestName[0,47] + "..."
         end
         @projectInformation[:manifests][manifestID][:images] = manifestInformation[:images].map { |image| image.merge({manifestID: manifestID})}
         @projectInformation[:manifests][manifestID][:name] = manifestName
       end
+      # Generate all DIY images for this Project
+      @diyImages = []
+      User.find(@project.user_id).images.all.each do |image|
+        if image.projectIDs.include? @project.id.to_s
+          @diyImages.push({
+            label: image.filename,
+            url: @base_api_url+"/images/"+image.id.to_s+"_"+image.filename,
+            manifestID: "DIYImages"
+          })
+        end
+      end
+      # @projectInformation[:manifests][:DIYImages] = {
+      #   id: "DIYImages",
+      #   images: @diyImages,
+      #   name: "Uploaded Images"
+      # }
 
-      rootMemberOrder = 1
       @groupIDs.each_with_index do | groupID, index|
         group = @project.groups.find(groupID)
         # group = Group.find(groupID)
         @groups[group.id.to_s] = { 
           "id": group.id.to_s, 
-          "order": index + 1,
           "type": group.type,
           "title": group.title,
           "tacketed": group.tacketed,
@@ -87,11 +104,7 @@ module ControllerHelper
           "notes": [],
           "memberIDs": group.memberIDs,
           "memberType": "Group",
-          "memberOrder": group.parentID ? nil : rootMemberOrder
         }
-        if group.nestLevel == 1
-          rootMemberOrder += 1
-        end
       end
       @groups.each do | groupID, group | 
         if group[:nestLevel] == 1
@@ -101,12 +114,10 @@ module ControllerHelper
       @project.leafs.each do | leaf |
         @leafs[leaf.id.to_s] = {
           "id": leaf.id.to_s,
-          "order": @leafIDs.index(leaf.id.to_s) + 1,
           "material": leaf.material,
           "type": leaf.type,
           "attachment_method": leaf.attachment_method,
           "conjoined_to": leaf.conjoined_to,
-          "conjoined_leaf_order": leaf.conjoined_to ? @leafIDs.index(leaf.conjoined_to) + 1 : nil,
           "attached_above": leaf.attached_above,
           "attached_below": leaf.attached_below,
           "stub": leaf.stub,
@@ -116,7 +127,6 @@ module ControllerHelper
           "versoID": leaf.versoID,
           "notes": [],
           "memberType": "Leaf",
-          "memberOrder": @leafs[leaf.id.to_s][:memberOrder]
         }
       end
       
@@ -127,7 +137,6 @@ module ControllerHelper
         obj = {
           "id": side.id.to_s,
           "parentID": side.parentID,
-          "parentOrder": parentOrder,
           "folio_number": side.folio_number,
           "texture": side.texture, 
           "image": side.image,
@@ -143,35 +152,10 @@ module ControllerHelper
       end
 
       # Generate list of recto and verso ID's
-      # Generate folio numbers for sides that do not have folio numbers parentOrder.to_s + side.id[0]
-      endleafCount = 0
-      folioNumberCount = 0
       @leafIDs.each do | leafID |
         leaf = @leafs[leafID]
         @rectoIDs.push(leaf[:rectoID])
         @versoIDs.push(leaf[:versoID])
-        recto = @rectos[leaf[:rectoID]]
-        verso = @versos[leaf[:versoID]]
-        if leaf[:type] == "Endleaf"
-          endleafCount += 1
-          if recto[:folio_number] == nil
-            recto[:folio_number] = to_roman(endleafCount) + recto[:id][0]
-          end
-          if verso[:folio_number] == nil
-            verso[:folio_number] = to_roman(endleafCount) + verso[:id][0]
-          end
-        else
-          if (recto[:folio_number] == nil) || (verso[:folio_number] == nil)
-            folioNumberCount += 1
-          end
-          if recto[:folio_number] == nil
-            recto[:folio_number] = (folioNumberCount).to_s + recto[:id][0]
-          end
-          if verso[:folio_number] == nil
-            verso[:folio_number] = (folioNumberCount).to_s + verso[:id][0]
-          end
-        end
-
       end
 
       @project.notes.each do | note | 
@@ -216,10 +200,8 @@ module ControllerHelper
       memberIDs.each_with_index do | memberID, index | 
         if memberID[0] == "G"
           getLeafMembers(@groups[memberID][:memberIDs])
-          @groups[memberID][:memberOrder] = index + 1
         elsif memberID[0] == "L"
           @leafIDs.push(memberID)
-          @leafs[memberID] = {"memberOrder": index + 1}
         end
       end
     end

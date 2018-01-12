@@ -8,6 +8,8 @@ class LeafsController < ApplicationController
     noOfLeafs = additional_params.to_h[:noOfLeafs]
     conjoin = additional_params.to_h[:conjoin]
     oddMemberLeftOut = additional_params.to_h[:oddMemberLeftOut]
+    leafIDs = additional_params.to_h[:leafIDs]
+    sideIDs = additional_params.to_h[:sideIDs]
     project_id = leaf_params.to_h[:project_id]
     parentID = leaf_params.to_h[:parentID]
     
@@ -38,44 +40,54 @@ class LeafsController < ApplicationController
       return
     end
 
-    newlyAddedLeafIDs = []
-    newlyAddedLeafs = []
-    noOfLeafs.times do |noOfLeafsIndex|
-      @leaf = Leaf.new(leaf_params)
-      @leaf.nestLevel = @group.nestLevel
-      if @leaf.save
-        newlyAddedLeafs.push(@leaf)
-        newlyAddedLeafIDs.push(@leaf.id)
-      else
-        render json: {leaf: @leaf.errors}, status: :unprocessable_entity
-        return
+    # Skip all callbacks for side creation if leafIDs and SideIDs were give in the request
+    begin
+      if (leafIDs and sideIDs)
+        Leaf.skip_callback(:create, :before, :create_sides)
+      end
+      newlyAddedLeafIDs = []
+      newlyAddedLeafs = []
+      sideIDIndex = 0
+      noOfLeafs.times do |leafIDIndex|
+        @leaf = Leaf.new(leaf_params)
+        if leafIDs
+          @leaf.id = leafIDs[leafIDIndex]
+        end
+        @leaf.nestLevel = @group.nestLevel
+        if @leaf.save
+          newlyAddedLeafs.push(@leaf)
+          newlyAddedLeafIDs.push(@leaf.id.to_s)
+          # Create new sides for this leaf with given SideIDs
+          if (leafIDs and sideIDs)
+            recto = Side.new({parentID: @leaf.id.to_s, project: @leaf.project, texture: "Hair", id: sideIDs[sideIDIndex]})
+            verso = Side.new({parentID: @leaf.id.to_s, project: @leaf.project, texture: "Flesh", id: sideIDs[sideIDIndex+1] })
+            recto.id = "Recto_"+recto.id.to_s
+            verso.id = "Verso_"+verso.id.to_s
+            recto.save
+            verso.save
+            @leaf.rectoID = recto.id
+            @leaf.versoID = verso.id
+            @leaf.save
+          end
+        else
+          render json: {leaf: @leaf.errors}, status: :unprocessable_entity
+          return
+        end
+        sideIDIndex += 2
+      end
+    rescue
+    ensure
+      if (leafIDs and sideIDs)
+        Leaf.set_callback(:create, :before, :create_sides)
       end
     end
     
     # Time to Auto-Conjoin
-    newlyAddedLeafs = newlyAddedLeafs.reverse
-    if conjoin
-      if newlyAddedLeafs.size.odd?
-        newlyAddedLeafs.delete_at(oddMemberLeftOut-1)
-      end
-      newlyAddedLeafs.size.times do |i|
-        if (newlyAddedLeafs.size/2 == i)
-          break
-        else
-          leafOne = newlyAddedLeafs[i]
-          leafTwo = newlyAddedLeafs[newlyAddedLeafs.size-i-1]
-          leafOne.update(conjoined_to: leafTwo.id.to_s)
-          leafTwo.update(conjoined_to: leafOne.id.to_s)
-        end
-      end
-    end
+    autoConjoinLeaves(newlyAddedLeafs, oddMemberLeftOut) if conjoin
 
     # Add leaves to parent group
     @group.add_members(newlyAddedLeafIDs, memberOrder)
 
-    # SUCCESS
-    @data = generateResponse()
-    render :'projects/show', status: :ok
   end
 
 
@@ -89,8 +101,6 @@ class LeafsController < ApplicationController
       if (leaf_params.to_h.key?(:attached_below)||leaf_params.to_h.key?(:attached_above))
         update_attached_to()
       end
-      @data = generateResponse()
-      render :'projects/show', status: :ok
     else
       render json: {leaf: @leaf.errors}, status: :unprocessable_entity
     end
@@ -126,8 +136,6 @@ class LeafsController < ApplicationController
           update_attached_to()
         end
       end
-      @data = generateResponse()
-      render :'projects/show', status: :ok
     rescue Exception => e
       render json: {error: e.message}, status: :unprocessable_entity
     end
@@ -155,8 +163,6 @@ class LeafsController < ApplicationController
       end
       @leaf.remove_from_group()
       @leaf.destroy
-      @data = generateResponse()
-      render :'projects/show', status: :ok
     rescue Exception => e
       render json: {error: e.message}, status: :unprocessable_entity
     end
@@ -210,8 +216,6 @@ class LeafsController < ApplicationController
       parentAndChildren.each do |parentID, leafIDs|
         @project.groups.find(parentID).remove_members(leafIDs)
       end
-      @data = generateResponse()
-      render :'projects/show', status: :ok
     rescue Exception => e
       render json: {error: e.message}, status: :unprocessable_entity
     end
@@ -249,11 +253,26 @@ class LeafsController < ApplicationController
         return
       end
       @project = Project.find(leaves[0].project_id)
-      autoConjoinLeaves(leaves, leaves.length/2)
-      @data = generateResponse()
-      render :'projects/show', status: :ok
+      autoConjoinLeaves(leaves, (leaves.length+1)/2)
     rescue Exception => e
       render json: {error: e.message}, status: :unprocessable_entity
+    end
+  end
+
+  # PUT /leafs/generateFolio
+  def generateFolio
+    folioNumberCount = leaf_params_folio.to_h[:startNumber].to_i
+    rectoIDs = leaf_params_folio.to_h[:rectoIDs]
+    versoIDs = leaf_params_folio.to_h[:versoIDs]
+    rectoIDs.each_with_index do | rectoID, index | 
+      recto = Side.find(rectoID)
+      verso = Side.find(versoIDs[index])
+      recto.update_attribute(:folio_number, folioNumberCount.to_s+"R")
+      verso.update_attribute(:folio_number, folioNumberCount.to_s+"V")
+      folioNumberCount += 1
+      if index==0
+        @project = Project.find(recto.project_id)
+      end
     end
   end
 
@@ -276,11 +295,11 @@ class LeafsController < ApplicationController
     end
     # Never trust parameters from the scary internet, only allow the white list through.
     def leaf_params
-      params.require(:leaf).permit(:project_id, :parentID, :material, :type, :attachment_method, :conjoined_to, :stub, :attached_above, :attached_below)
+      params.require(:leaf).permit(:id, :project_id, :parentID, :material, :type, :attachment_method, :conjoined_to, :stub, :attached_above, :attached_below)
     end
 
     def additional_params
-      params.require(:additional).permit(:memberOrder, :noOfLeafs, :conjoin, :oddMemberLeftOut)
+      params.require(:additional).permit(:memberOrder, :noOfLeafs, :conjoin, :oddMemberLeftOut, :leafIDs=>[], :sideIDs=>[])
     end
 
     def leaf_params_batch_update
@@ -293,6 +312,10 @@ class LeafsController < ApplicationController
 
     def leaf_params_conjoin
       params.permit(:leafs => [])
+    end
+
+    def leaf_params_folio
+      params.permit(:startNumber, :rectoIDs => [], :versoIDs => [])
     end
 
 end

@@ -162,13 +162,261 @@ module ControllerHelper
 
     def buildDotModel(project)
       @groupIDs = project.groupIDs
+      @groups = {}
       @leafIDs = []
       @leafs = {}
-      @groups = {}
       @rectos = {}
       @versos = {}
+      @notes = {}
+      @noteTitles = []
+      @allGroupAttributeValues = []
+      @allLeafAttributeValues = []
+      @allSideAttributeValues = []
+      @groupIDs.each_with_index do |groupID, index|
+        if @groups.key?(groupID)
+          memberOrder = @groups[groupID][:memberOrder]
+          @groups[groupID] = project.groups.find(groupID)
+          @groups[groupID][:memberOrder] = memberOrder
+        else
+          @groups[groupID] = project.groups.find(groupID)
+          @groups[groupID][:memberOrder] = index+1
+        end
+        if @groups[groupID][:memberIDs]
+          populateLeafSideObjects(@groups[groupID][:memberIDs], project)
+        end
+      end
+
       return Nokogiri::XML::Builder.new { |xml|
         xml.viscoll :xmlns => "http://schoenberginstitute.org/schema/collation" do
+          idPrefix = project.shelfmark.parameterize.underscore
+
+          # Project Attributes Taxonomy
+          ['preferences'].each do |attribute|
+            manuscriptAttribute = {"xml:id": 'manuscript_'+attribute}
+            xml.taxonomy manuscriptAttribute do
+              xml.label do
+                xml.text 'Manuscript ' + attribute
+              end
+              project[attribute].each do |key, value|
+                termID = {"xml:id": "manuscript_"+attribute+"_"+idPrefix+"_"+key}
+                xml.term termID do
+                  xml.text value
+                end
+              end
+            end
+          end
+          if not project.manifests.empty?
+            manifestAttribute = {"xml:id": 'manifests'}
+            xml.taxonomy manifestAttribute do
+              xml.label do
+                xml.text 'List of Manifests'
+              end
+              project.manifests.each do |manifestID, manifest|
+                termID = {"xml:id": 'manifest_'+manifest["id"]}
+                xml.term termID do
+                  xml.text manifest["url"]
+                end
+              end
+            end
+          end
+
+          # Group Attributes Taxonomy
+          ['title', 'type'].each do |attribute|
+            groupAttribute = {"xml:id": 'group_'+attribute}
+            xml.taxonomy groupAttribute do
+              xml.label do
+                xml.text 'List of values for Group ' + attribute
+              end
+              groupAttributeValues = []
+              @groupIDs.each do |groupID|
+                group = @groups[groupID]
+                if not groupAttributeValues.include? group[attribute]
+                  groupAttributeValues.push(group[attribute])
+                end
+              end
+              groupAttributeValues.each do |attributeValue| 
+                termID = {"xml:id": "group_"+attribute+"_"+attributeValue.parameterize.underscore}
+                xml.term termID do
+                  xml.text attributeValue
+                end
+              end
+              @allGroupAttributeValues = @allGroupAttributeValues + groupAttributeValues
+            end
+          end
+          ['tacketed', 'sewing'].each do |attribute|
+            groupAttribute = {"xml:id": 'group_'+attribute}
+            groupAttributeValues = []
+            @groupIDs.each do |groupID|
+              group = @groups[groupID]
+              leaves = ""
+              if not groupAttributeValues.include? group[attribute]
+                group[attribute].each do |leafID|
+                  parents = parentsOrders(leafID, project)
+                  leafemberOrder = parents.pop
+                  idPostfix = parents.join("-")+"-"+leafemberOrder.to_s
+                  leaves = leaves + " #" + idPrefix+"-"+idPostfix + " "
+                  leaves = leaves.strip
+                end
+              end
+              if leaves != ""
+                xml.taxonomy groupAttribute do
+                  xml.label do
+                    xml.text 'List of Groups ' + attribute
+                  end
+                  parents = parentsOrders(groupID, project)
+                  groupOrder = parents.pop
+                  groupMemberOrder = group["memberOrder"]
+                  idPostfix = parents.empty? ? groupOrder.to_s : parents.join("-")+"-"+groupOrder.to_s
+                  termID = {"xml:id": "group_"+attribute+"_"+idPrefix+"-q-"+idPostfix}
+                  xml.term termID do
+                    xml.text leaves
+                  end
+                end
+                @allGroupAttributeValues = @allGroupAttributeValues + [leaves]
+              end
+            end
+          end
+          # Member IDs of each Group
+          groupAttribute = {"xml:id": 'group_members'}
+          xml.taxonomy groupAttribute do
+            xml.label do
+              xml.text 'List of values for each Group\'s members'
+            end
+            @groupIDs.each do |groupID|
+              group = @groups[groupID]
+              memberIDs = []
+              group.memberIDs.each do |memberID|
+                parents = parentsOrders(memberID, project)
+                memberOrder = parents.pop
+                if memberID[0]=="G"
+                  idPostfix = parents.empty? ? memberOrder.to_s : parents.join("-")+"-"+memberOrder.to_s
+                  memberIDs.push(idPrefix+"-q-"+idPostfix)
+                else
+                  idPostfix = parents.join("-")+"-"+memberOrder.to_s
+                  memberIDs.push(idPrefix+"-"+idPostfix)
+                end
+                
+              end
+              memberIDs = memberIDs.join(" #").strip
+              parents = parentsOrders(groupID, project)
+              groupOrder = parents.pop
+              groupMemberOrder = group["memberOrder"]
+              idPostfix = parents.empty? ? groupOrder.to_s : parents.join("-")+"-"+groupOrder.to_s
+              termID = {"xml:id": "group_members_"+idPrefix+"-q-"+idPostfix}
+              xml.term termID do
+                xml.text "#"+memberIDs
+              end
+            end
+          end
+
+          # Leaf Attributes Taxonomy
+          ['material'].each do |attribute|
+            leafAttribute = {"xml:id": 'leaf_'+attribute}
+            leafAttributeValues = []
+            @leafIDs.each do |leafID|
+              leaf = @leafs[leafID]
+              if not leafAttributeValues.include? leaf[attribute] and leaf[attribute] != "None"
+                leafAttributeValues.push(leaf[attribute])
+              end
+            end
+            if not leafAttributeValues.empty?
+              xml.taxonomy leafAttribute do
+                xml.label do
+                  xml.text 'List of values for Leaf ' + attribute
+                end
+                leafAttributeValues.each do |attributeValue| 
+                  termID = {"xml:id": "leaf_"+attribute+"_"+attributeValue.parameterize.underscore}
+                  xml.term termID do
+                    xml.text attributeValue
+                  end
+                end
+                @allLeafAttributeValues += leafAttributeValues
+              end
+            end
+          end
+          leafAttribute = {"xml:id": 'leaf_attachment_method'}
+          xml.taxonomy leafAttribute do
+            xml.label do
+              xml.text 'List of Attachment Methods'
+            end
+            ['Glued_Above_Partial', 'Glued_Above_Complete', 'Glued_Above_Drumming', 'Glued_Above_Other'].each do |attribute|
+              termID = {"xml:id": attribute}
+              xml.term termID do
+                xml.text attribute.split("_")[0]+" ("+attribute.split("_")[2]+")"
+              end
+            end
+            ['Glued_Below_Partial', 'Glued_Below_Complete', 'Glued_Below_Drumming', 'Glued_Below_Other'].each do |attribute|
+              termID = {"xml:id": attribute}
+              xml.term termID do
+                xml.text attribute.split("_")[0]+" ("+attribute.split("_")[2]+")"
+              end
+            end
+          end
+
+          # Side Attributes Taxonomy
+          ['texture', 'script_direction'].each do |attribute|
+            sideAttribute = {"xml:id": 'side_'+attribute}
+            sideAttributeValues = []
+            @rectos.each do |rectoID, recto|
+              if not sideAttributeValues.include? recto[attribute] and recto[attribute] != "None"
+                sideAttributeValues.push(recto[attribute])
+              end
+            end
+            @versos.each do |versoID, verso|
+              if not sideAttributeValues.include? verso[attribute] and verso[attribute] != "None"
+                sideAttributeValues.push(verso[attribute])
+              end
+            end
+            if not sideAttributeValues.empty?
+              xml.taxonomy sideAttribute do            
+                xml.label do
+                  xml.text 'List of values for Side ' + attribute
+                end
+              
+                sideAttributeValues.each do |attributeValue| 
+                  termID = {"xml:id": "side_"+attribute+"_"+attributeValue.parameterize.underscore}
+                  xml.term termID do
+                    xml.text attributeValue
+                  end
+                end
+                @allSideAttributeValues += sideAttributeValues
+              end
+            end
+          end
+
+          # Note Attributes Taxonomy
+          if not project.notes.empty?
+            noteTitle = {"xml:id": 'note_title'}
+            xml.taxonomy noteTitle do  
+              xml.label do
+                xml.text 'List of values for Note Titles'
+              end
+              project.notes.each_with_index do |note, index| 
+                if not @noteTitles.include? note.title
+                  @noteTitles.push(note.title)
+                end
+              end
+              @noteTitles.each do |noteTitle|
+                termID = {"xml:id": "note_title"+"_"+noteTitle.parameterize.underscore}
+                xml.term termID do
+                  xml.text noteTitle
+                end
+              end
+            end
+            noteShow = {"xml:id": 'note_show'}
+            xml.taxonomy noteShow do  
+              xml.label do
+                xml.text 'Whether to show Note in Visualizations'
+              end
+              termID = {"xml:id": "note_show"}
+              xml.term termID do
+                xml.text true
+              end
+            end
+          end
+
+
+          # STRUCTURE
           xml.manuscript do
             xml.title project.title
             xml.shelfmark project.shelfmark
@@ -177,29 +425,29 @@ module ControllerHelper
             idPrefix = project.shelfmark.parameterize.underscore
             xml.quires do
               @groupIDs.each_with_index do |groupID, index|
-                group = project.groups.find(groupID)
-                getLeafMemberIDs(group.memberIDs, project)
+                group = @groups[groupID]
                 parents = parentsOrders(groupID, project)
-                groupMemberOrder = parents.pop
-                idPostfix = parents.empty? ? groupMemberOrder.to_s : parents.join("-")+"-"+groupMemberOrder.to_s
+                groupOrder = parents.pop
+                groupMemberOrder = group["memberOrder"]
+                idPostfix = parents.empty? ? groupOrder.to_s : parents.join("-")+"-"+groupOrder.to_s
                 quireAttributes = {}
                 quireAttributes["xml:id"] = idPrefix+"-q-"+idPostfix
                 quireAttributes[:n] = index + 1
                 quireAttributes[:certainty] = 1
                 if group.parentID
-                  quireAttributes[:parent] = idPrefix+"-q-"+(@groupIDs.index(group.parentID)+1).to_s
+                  quireAttributes[:parent] = idPrefix+"-q-"+parents.join("-")
                 end
                 xml.quire quireAttributes do
                   xml.text index + 1
                 end
-                @groups[groupID] = quireAttributes["xml:id"]
+                @groups[groupID]["xmlID"] = quireAttributes["xml:id"]
               end
             end
             @leafIDs.each_with_index do |leafID, index|
               leaf = project.leafs.find(leafID)
               parents = parentsOrders(leafID, project)
-              leafMemberOrder = parents.pop
-              idPostfix = parents.join("-")+"-"+leafMemberOrder.to_s
+              leafemberOrder = parents.pop
+              idPostfix = parents.join("-")+"-"+leafemberOrder.to_s
               leafAttributes = {}
               leafAttributes["xml:id"] = idPrefix+"-"+idPostfix
               leafAttributes["stub"] = "yes" if leaf.stubType != "None"
@@ -212,15 +460,15 @@ module ControllerHelper
                 end
 
                 mode = {}
-                if leaf.type != "None"
+                if ['original', 'added', 'replaced', 'false', 'missing'].include? leaf.type.downcase
                   mode[:val] = leaf.type.downcase
                   mode[:certainty] = 1
                 end
                 xml.mode mode
 
                 qAttributes = {}
-                qAttributes[:position] = leafMemberOrder
-                qAttributes[:leafno] = leafMemberOrder
+                qAttributes[:position] = project.groups.find(leaf.parentID).memberIDs.index(leafID)+1
+                qAttributes[:leafno] = leafemberOrder
                 qAttributes[:certainty] = 1
                 qAttributes[:target] = "#"+idPrefix+"-q-"+parents.join("-")
                 qAttributes[:n] = parents[-1]
@@ -235,27 +483,9 @@ module ControllerHelper
                   xml.single :val => "yes"
                 end
 
-                if leaf.attached_above != "None" or leaf.attached_below != "None"
-                  targetLeafAbove = parents.join("-")+"-"+(leafMemberOrder.to_i-1).to_s
-                  targetLeafBelow = parents.join("-")+"-"+(leafMemberOrder.to_i+1).to_s
-                  if leaf.attached_above != "None" and leaf.attached_below != "None"
-                    xml.send("attachment-method", :certainty => 1, :target => "#"+targetLeafAbove+" #"+targetLeafBelow, :type => leaf.attached_above) do
-                      xml.text leaf.attached_above + "_To_Above_and_Below"
-                    end
-                  elsif leaf.attached_above != "None"
-                    xml.send("attachment-method", :certainty => 1, :target => "#"+targetLeafAbove, :type => leaf.attached_above) do
-                      xml.text leaf.attached_above + "_To_Above"
-                    end
-                  elsif leaf.attached_below != "None"
-                    xml.send("attachment-method", :certainty => 1, :target => "#"+targetLeafBelow, :type => leaf.attached_below) do
-                      xml.text leaf.attached_below + "_To_Below"
-                    end
-                  end
-                end
-
                 rectoSide = project.sides.find(leaf.rectoID)
                 rectoAttributes = {}
-                rectoAttributes["xml:id"] = leafAttributes["xml:id"]+"-R"
+                rectoAttributes["xml:id"] = leafAttributes["xml:id"]
                 rectoAttributes[:type] = "Recto"
                 if rectoSide.folio_number
                   rectoAttributes[:folioNumber] = rectoSide.folio_number
@@ -268,10 +498,11 @@ module ControllerHelper
                 rectoAttributes[:target] = "#"+leafAttributes["xml:id"]
                 # xml.side rectoAttributes
                 @rectos[leaf.rectoID] = rectoAttributes
+                @rectos[leaf.rectoID]["recto"] = rectoSide
 
                 versoSide = project.sides.find(leaf.versoID)
                 versoAttributes = {}
-                versoAttributes["xml:id"] = leafAttributes["xml:id"]+"-V"
+                versoAttributes["xml:id"] = leafAttributes["xml:id"]
                 versoAttributes[:type] = "Verso"
                 if versoSide.folio_number
                   versoAttributes[:folioNumber] = versoSide.folio_number
@@ -284,57 +515,185 @@ module ControllerHelper
                 versoAttributes[:target] = "#"+leafAttributes["xml:id"]
                 # xml.side versoAttributes
                 @versos[leaf.versoID] = versoAttributes
+                @versos[leaf.versoID]["verso"] = versoSide
               end
               @leafs[leafID]["xmlID"] = leafAttributes["xml:id"]
             end
-
-            project.notes.each_with_index do |note, index| 
-              noteAttributes = {}
-              noteAttributes["xml:id"] = idPrefix+"-n-"+(index+1).to_s
-              noteAttributes[:type] = note.type
-              linkedObjectIDs = []
-              note.objects["Group"].each do |groupID|
-                linkedObjectIDs.push("#"+@groups[groupID])
-              end
-              note.objects["Leaf"].each do |leafID|
-                linkedObjectIDs.push("#"+@leafs[leafID]["xmlID"])
-              end
-              note.objects["Recto"].each do |rectoID|
-                linkedObjectIDs.push("#"+@rectos[rectoID]["xml:id"])
-              end
-              note.objects["Verso"].each do |versoID|
-                linkedObjectIDs.push("#"+@versos[versoID]["xml:id"])
-              end
-              noteAttributes[:target] = linkedObjectIDs.join(" ")
-              xml.note noteAttributes do
-                xml.text note.title + ": " + note.description
-              end
-            end
-
-            # @rectos.each do |rectoID, rectoAttributes|
-            #   noteAttributes = {}
-            #   noteAttributes["xml:id"] = rectoAttributes["xml:id"]
-            #   noteAttributes[:target] = rectoAttributes[:target]
-            #   noteAttributes[:type] = "Recto"
-            #   # noteAttributes[:texture] = rectoAttributes[:texture]
-            #   xml.note noteAttributes do
-            #     xml.text rectoAttributes[:folioNumber]
-            #   end
-            # end
-
           end
 
-          xml.mapping do 
-            @rectos.each do |rectoID, attributes|
-              if attributes[:image]
-                mapAttributes = {}
-                mapAttributes[:side] = attributes["xml:id"]
-                mapAttributes[:target] = attributes[:image]
-                xml.map mapAttributes do
-                  termAttributes = {}
-                  termAttributes[:target] = attributes[:image]
-                  xml.term termAttributes
+          # NOTES
+          if not project.notes.empty?
+            xml.notes do
+              project.notes.each_with_index do |note, index| 
+                noteAttributes = {}
+                noteAttributes["xml:id"] = idPrefix+"-n-"+(index+1).to_s
+                noteAttributes[:type] = note.type
+                xml.note noteAttributes do
+                  xml.text note.description
                 end
+                @notes[note.id.to_s] = {}
+                @notes[note.id.to_s]["xml:id"] = "#"+noteAttributes["xml:id"]
+                @notes[note.id.to_s][:note] = note
+              end
+            end
+          end
+
+          # MAPPING
+          xml.mapping do 
+            # Map quires to attributes and notes and memberIDs
+            @groupIDs.each do |groupID|
+              group = @groups[groupID]
+              parents = parentsOrders(groupID, project)
+              groupOrder = parents.pop
+              groupMemberOrder = group["memberOrder"]
+              idPrefix = project.shelfmark.parameterize.underscore
+              idPostfix = parents.empty? ? groupOrder.to_s : parents.join("-")+"-"+groupOrder.to_s
+              linkedNotes = (group.notes.map {|note| "#note_title"+"_"+note.title.parameterize.underscore}).join(" ")
+              linkedAttributes = []
+              ['title', 'type'].each do |attribute|
+                attributeValue = group[attribute]
+                if @allGroupAttributeValues.include? attributeValue
+                  linkedAttributes.push("group_"+attribute+"_"+attributeValue.parameterize.underscore)
+                end
+              end
+              ['tacketed', 'sewing'].each do |attribute|
+                attributeValue = ""
+                group[attribute].each do |leafID|
+                  parents = parentsOrders(leafID, project)
+                  leafemberOrder = parents.pop
+                  idPostfix = parents.join("-")+"-"+leafemberOrder.to_s
+                  attributeValue = attributeValue + " #" + idPrefix+"-"+idPostfix + " "
+                  attributeValue = attributeValue.strip
+                end
+                if @allGroupAttributeValues.include? attributeValue
+                  parents = parentsOrders(groupID, project)
+                  groupOrder = parents.pop
+                  groupMemberOrder = group["memberOrder"]
+                  idPostfix = parents.empty? ? groupOrder.to_s : parents.join("-")+"-"+groupOrder.to_s
+                  linkedAttributes.push("group_"+attribute+"_"+idPrefix+"-q-"+idPostfix)
+                end
+              end
+              linkedAttributes = linkedAttributes.join(" #")
+              if linkedNotes+linkedAttributes != ""
+                xml.map :target => "#"+idPrefix+"-q-"+idPostfix do
+                  if linkedAttributes != ""
+                    xml.term :target => linkedNotes+" #"+linkedAttributes+" #group_members_"+idPrefix+"-q-"+idPostfix
+                  else
+                    xml.term :target => linkedNotes+" #group_members_"+idPrefix+"-q-"+idPostfix
+                  end
+                end
+              end
+            end
+            # Map leaves to attributes and notes
+            @leafIDs.each do |leafID|
+              leaf = @leafs[leafID]
+              parents = parentsOrders(leafID, project)
+              leafemberOrder = parents.pop
+              idPostfix = parents.join("-")+"-"+leafemberOrder.to_s
+              linkedNotes = (leaf.notes.map {|note| "#note_title"+"_"+note.title.parameterize.underscore}).join(" ")
+              attachementMethods = []
+              if leaf.attached_above != "None"
+                if leaf.attached_above == "Other"
+                  attachementMethods.push("#Glued_Above_Other")
+                else
+                  attachementMethods.push("#Glued_Above_"+leaf.attached_above.split(" ")[1][1..-2])
+                end
+              end
+              if leaf.attached_below != "None"
+                if leaf.attached_below == "Other"
+                  attachementMethods.push("#Glued_Below_Other")
+                else
+                  attachementMethods.push("#Glued_Below_"+leaf.attached_below.split(" ")[1][1..-2])
+                end
+              end
+              attachementMethods = attachementMethods.join(" ").strip
+              material = ""
+              if @allLeafAttributeValues.include? leaf.material and material != ""
+                material = "#leaf_material_"+leaf.material.parameterize.underscore.strip
+              end
+              if linkedNotes+attachementMethods+material != ""
+                xml.map :target => "#"+idPrefix+"-"+idPostfix do
+                  xml.term :target => (linkedNotes+" "+material+attachementMethods).strip
+                end
+              end
+            end
+            # Map rectos to attributes and notes and sides
+            @rectos.each do |rectoID, attributes|
+              recto = attributes["recto"]
+              linkedNotes = (recto.notes.map {|note| "#note_title"+"_"+note.title.parameterize.underscore}).join(" ")
+              linkedImage = recto.image.empty? ? "" : recto.image[:url]
+              linkedAttributes = []
+              ['texture', 'script_direction'].each do |attribute|
+                attributeValue = recto[attribute]
+                if @allSideAttributeValues.include? attributeValue
+                  linkedAttributes.push("side_"+attribute+"_"+attributeValue.parameterize.underscore)
+                end
+              end
+              linkedAttributes = linkedAttributes.empty? ? "" : linkedAttributes.join(" #")
+              if linkedNotes+linkedImage+linkedAttributes.strip != ""
+                if linkedAttributes != ""
+                  termText = linkedNotes.strip+" #"+linkedAttributes
+                  if linkedImage != ""
+                    termText = termText+" "+linkedImage+" #manifest_"+recto.image[:manifestID] 
+                  end
+                  xml.map :side => 'recto', :target => "#"+attributes["xml:id"] do
+                    xml.term :target => termText.strip
+                  end
+                else
+                  termText = linkedNotes.strip
+                  if linkedImage != ""
+                    termText = termText+" "+linkedImage+" #manifest_"+recto.image[:manifestID] 
+                  end
+                  xml.map :side => 'recto', :target => "#"+attributes["xml:id"] do
+                    xml.term :target => termText.strip
+                  end
+                end
+              end
+            end
+            # Map versos to attributes and notes and sides
+            @versos.each do |versoID, attributes|
+              verso = attributes["verso"]
+              linkedNotes = (verso.notes.map {|note| "#note_title"+"_"+note.title.parameterize.underscore}).join(" ")
+              linkedImage = verso.image.empty? ? "" : verso.image[:url]
+              linkedAttributes = []
+              ['texture', 'script_direction'].each do |attribute|
+                attributeValue = verso[attribute]
+                if @allSideAttributeValues.include? attributeValue
+                  linkedAttributes.push("side_"+attribute+"_"+attributeValue.parameterize.underscore)
+                end
+              end
+              linkedAttributes = linkedAttributes.empty? ? "" : linkedAttributes.join(" #")
+              if linkedNotes+linkedImage+linkedAttributes.strip != ""
+                if linkedAttributes != ""
+                  termText = linkedNotes.strip+" #"+linkedAttributes
+                  if linkedImage != ""
+                    termText = termText+" "+linkedImage+" #manifest_"+verso.image[:manifestID] 
+                  end
+                  xml.map :side => 'verso', :target => "#"+attributes["xml:id"] do
+                    xml.term :target => termText.strip
+                  end
+                else
+                  termText = linkedNotes.strip
+                  if linkedImage != ""
+                    termText = termText+" "+linkedImage+" #manifest_"+verso.image[:manifestID] 
+                  end
+                  xml.map :side => 'verso', :target => "#"+attributes["xml:id"] do
+                    xml.term :target => termText.strip
+                  end
+                end
+              end
+            end
+            # Map notes to noteTitles
+            @notes.each do |noteID, attributes|
+              note = attributes[:note]
+              xml.map :target => attributes["xml:id"] do
+                termText = []
+                if @noteTitles.include? note.title
+                  termText.push("note_title"+"_"+note.title.parameterize.underscore)
+                end
+                termText = termText.empty? ? "" : termText.join(" #")
+                note.show ? termText=termText+" #note_show" : nil
+                xml.term :target => "#"+termText.strip
               end
             end
           end
@@ -344,20 +703,28 @@ module ControllerHelper
     end
 
 
-    # Populate leaf orders recursively
-    def getLeafMemberIDs(memberIDs, project, leafMember=1)
+    # Populate leaf and side objects in ascending order
+    def populateLeafSideObjects(memberIDs, project, leafMember=1)
+      groupMember = 1
       memberIDs.each_with_index do | memberID, index | 
         if memberID[0] == "G"
-          getLeafMemberIDs(project.groups.find(memberID).memberIDs, project, leafMember)
+          @groups[memberID] = {"memberOrder": groupMember}
+          populateLeafSideObjects(project.groups.find(memberID).memberIDs, project, leafMember)
+          groupMember += 1
         elsif memberID[0] == "L"
           if not @leafIDs.include? memberID
+            leaf = project.leafs.find(memberID)
             @leafIDs.push(memberID)
-            @leafs[memberID] = {"memberOrder": leafMember}
+            @leafs[memberID] = leaf
+            @leafs[memberID]["memberOrder"] = leafMember
+            @rectos[leaf.rectoID] = project.sides.find(leaf.rectoID)
+            @versos[leaf.versoID] = project.sides.find(leaf.versoID)
             leafMember += 1
           end
         end
       end
     end
+
 
     # Get all parent orders upto root
     def parentsOrders(memberID, project)

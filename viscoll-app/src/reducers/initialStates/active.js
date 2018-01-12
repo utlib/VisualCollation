@@ -7,7 +7,13 @@ export const initialState = {
     metadata: {
       date: ""
     },
-    manifests: {},
+    manifests: {
+      "DIYImages": {
+        id: "DIYImages",
+        name: "Uploaded Images",
+        images: [],
+      }
+    },
     groupIDs: [],
     leafIDs: [],
     rectoIDs: [],
@@ -66,7 +72,7 @@ export const initialState = {
           isDropdown: true,
         },
         {
-          name: 'conjoined_leaf_order',
+          name: 'conjoined_to',
           displayName: 'Conjoined To',
           isDropdown: true,
         },
@@ -184,7 +190,8 @@ export const initialState = {
       error: ""
     }
   },
-  exportedData: ""
+  exportedData: "",
+  exportedImages: ""
 };
 
 

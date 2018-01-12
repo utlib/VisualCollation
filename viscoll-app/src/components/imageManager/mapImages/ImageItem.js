@@ -19,7 +19,6 @@ const imageSource = {
     // const item = monitor.getItem();
     const dropResult = monitor.getDropResult();
     if (dropResult && dropResult.id!==props.parentBoardID) {
-      // console.log("Item: dropped " + item.id +" into ", dropResult);
     }
   }
 };
@@ -65,8 +64,8 @@ class ImageItem extends Component {
       connectDropTarget(
         <div>
           {isDragging? <div style={{height: 50}}></div>:
-          <div className="draggableItem">
-              <div className="thumbnail" onTouchTap={()=>this.props.toggleImageModal(true, image.url)}>
+          <div className="moveableItem">
+              <div className="thumbnail" onTouchTap={()=>this.props.toggleImageModal(true, image.url, image.manifestID.includes("DIY"))}>
                 <ThumbnailIcon />
               </div>
               <div className="text">

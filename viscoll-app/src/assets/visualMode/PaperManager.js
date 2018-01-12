@@ -1,6 +1,7 @@
 import paper from 'paper';
 import PaperLeaf from "./PaperLeaf.js";
 import PaperGroup from "./PaperGroup.js";
+import { getMemberOrder } from '../../helpers/getMemberOrder';
 
 PaperManager.prototype = {
     constructor: PaperManager,
@@ -8,7 +9,8 @@ PaperManager.prototype = {
         let g = new PaperGroup({
             manager: this,
             group: group,
-            y: this.groupYs[group.order-1],
+            groupIDs: this.groupIDs,
+            y: this.groupYs[this.groupIDs.indexOf(group.id)],
             x: (group.nestLevel-1)*(this.spacing),
             width: this.width,
             groupHeight: this.getGroupHeight(group),
@@ -34,7 +36,7 @@ PaperManager.prototype = {
         this.paperGroups.push(g);
         
         // Add this group to list of items to flash if it's in the flashItems list
-        if (this.flashItems.groups.includes(group.order)) {
+        if (this.flashItems.groups.includes(group.id)) {
             this.flashGroups.push(g);
         }
         
@@ -45,7 +47,7 @@ PaperManager.prototype = {
             origin: this.origin,
             width: this.width,
             spacing: this.spacing,
-            strokeWidth: this.strokeWidth * Math.min(1.0, this.multipliers[leaf.order]),
+            strokeWidth: this.strokeWidth * Math.min(1.0, this.multipliers[this.leafIDs.indexOf(leaf.id)+1]),
             strokeColor: this.strokeColor,
             strokeColorActive: this.strokeColorActive,
             strokeColorGroupActive: this.strokeColorGroupActive,
@@ -57,11 +59,11 @@ PaperManager.prototype = {
             leafIDs: this.leafIDs,
             Groups: this.Groups,
             Notes: this.Notes,
-            y: this.leafYs[leaf.order-1],
+            y: this.leafYs[this.leafIDs.indexOf(leaf.id)],
             isActive: this.activeLeafs.includes(leaf.id) || this.activeRectos.includes(leaf.rectoID) || this.activeVersos.includes(leaf.versoID),
             customSpacings: this.customSpacings,
             handleObjectClick: this.handleObjectClick,
-            multiplier: this.multipliers[leaf.order],
+            multiplier: this.multipliers[this.leafIDs.indexOf(leaf.id)+1],
             strokeColorFilter: this.strokeColorFilter,
             visibleAttributes: this.visibleAttributes,
             viewingMode: this.viewingMode,
@@ -74,7 +76,7 @@ PaperManager.prototype = {
         this.groupLeaves.addChild(l.textVerso);
         this.groupLeaves.addChild(l.attachment);
         this.groupLeaves.addChild(l.textNotes);
-        if (this.flashItems.leaves.includes(leaf.order)) {
+        if (this.flashItems.leaves.includes(leaf.id)) {
             this.flashLeaves.push(l);
         }
         return l;
@@ -94,15 +96,23 @@ PaperManager.prototype = {
 
         // Calculate y positions of groups and leaves
         let currentY = 0;
-        for (let groupID of this.groupIDs) {
+        let prevRootGroupID = null;
+        for (let i in this.groupIDs) {
+            const groupID = this.groupIDs[i];
             const group = this.Groups[groupID];
             if (group.nestLevel === 1) {
+                if (i>0 && prevRootGroupID) {
+                    const prevGroupsLastMember = this.getLastMember(prevRootGroupID)
+                    const nestLevel = prevGroupsLastMember? prevGroupsLastMember.nestLevel +1 : 1;
+                    currentY = currentY + this.spacing*(nestLevel);
+                } 
                 this.groupYs.push(currentY);
                 currentY = this.calculateYs(group.memberIDs, currentY, this.spacing);
-                currentY = currentY + this.spacing;
+
                 if (group.memberIDs.length===0) {
-                    currentY = currentY + this.spacing/2.0;
+                    currentY = currentY + this.spacing;
                 }
+                prevRootGroupID = groupID;
             }
         }
         
@@ -144,6 +154,7 @@ PaperManager.prototype = {
         this.groupTacketGuideLine.removeChildren();
         
         this.tacketToolIsActive = true;
+        if (this.tool) this.tool.remove();
         this.tool = new paper.Tool();
         this.tool.minDistance=5;
         let targets = [];
@@ -154,7 +165,7 @@ PaperManager.prototype = {
         document.body.style.cursor = "crosshair";
         
         this.drawTacketGuide(groupID, type);
-
+        
         this.tool.onMouseDown = (event) => {
             this.tacketLineDrag = new paper.Path();
             this.tacketLineDrag.strokeColor = this.strokeColorTacket;
@@ -196,7 +207,7 @@ PaperManager.prototype = {
             const targetGroup = this.paperGroups.find((member)=>{return (member.group.id===groupID)});
             targetGroup.group.memberIDs.forEach((memberID)=> {
                 if (memberID.charAt(0)==="L") {
-                    const leaf = this.getLeaf(this.Leafs[memberID].order);
+                    const leaf = this.getLeaf(this.leafIDs.indexOf(this.Leafs[memberID].id)+1);
                     if (leaf.isConjoined() && (this.tacketLineDrag.getIntersections(leaf.path).length>0 || 
                     this.tacketLineDrag.getIntersections(leaf.conjoinedLeaf().path).length>0)) {
                         leaf.path.strokeColor = "#ffffff";
@@ -210,6 +221,7 @@ PaperManager.prototype = {
                 
             });
         }
+        this.tool.activate();
     },
     drawTacketGuide: function(groupID, type) {
         const targetGroup = this.paperGroups.find((member)=>{return (member.group.id===groupID)});
@@ -280,9 +292,9 @@ PaperManager.prototype = {
                     let startX, startY, endX, endY;
                     let paperLeaf1, paperLeaf2;
 
-                    paperLeaf1 = this.getLeaf(this.Leafs[leafID1].order);
+                    paperLeaf1 = this.getLeaf(this.leafIDs.indexOf(this.Leafs[leafID1].id)+1);
                     if (leafID2!==undefined) {
-                        paperLeaf2 = this.getLeaf(this.Leafs[leafID2].order);
+                        paperLeaf2 = this.getLeaf(this.leafIDs.indexOf(this.Leafs[leafID2].id)+1);
                         startX = paperLeaf1.path.segments[0].point.x-this.strokeWidth;
                         startY = paperLeaf2.path.segments[0].point.y;
                         endX = paperLeaf2.path.segments[0].point.x;
@@ -326,9 +338,9 @@ PaperManager.prototype = {
                     let startX, startY, endX, endY;
                     let paperLeaf1, paperLeaf2;
 
-                    paperLeaf1 = this.getLeaf(this.Leafs[leafID1].order);
+                    paperLeaf1 = this.getLeaf(this.leafIDs.indexOf(this.Leafs[leafID1].id)+1);
                     if (leafID2!==undefined) {
-                        paperLeaf2 = this.getLeaf(this.Leafs[leafID2].order);
+                        paperLeaf2 = this.getLeaf(this.leafIDs.indexOf(this.Leafs[leafID2].id)+1);
                         startX = paperLeaf1.path.segments[0].point.x-this.strokeWidth;
                         startY = paperLeaf2.path.segments[0].point.y;
                         endX = paperLeaf2.path.segments[0].point.x;
@@ -387,7 +399,7 @@ PaperManager.prototype = {
     getYOfFirstMember: function(groupID) {
         let group = this.Groups[groupID];
         if (group.memberIDs.length===0) {
-            let y = this.groupYs[group.order-1];
+            let y = this.groupYs[this.groupIDs.indexOf(group.id)];
             return y;
         } 
         let firstMemberID = group.memberIDs[0];
@@ -395,7 +407,7 @@ PaperManager.prototype = {
         if (firstMemberID.memberType==="Group") {
             return this.getYOfFirstMember(firstMemberID);
         } else {
-            let firstLeafY = this.leafYs[firstMember.order-1];
+            let firstLeafY = this.leafYs[this.leafIDs.indexOf(firstMember.id)];
             return firstLeafY;
         }
     },
@@ -403,32 +415,32 @@ PaperManager.prototype = {
         const group = this.Groups[groupID];
         const lastMember = this.getLastMember(groupID);
         if (lastMember && lastMember.memberType==="Group") {
-            let y = this.groupYs[lastMember.order-1];
-            return y+((lastMember.nestLevel-group.nestLevel)*this.spacing + (this.spacing));
+            let y = this.groupYs[this.groupIDs.indexOf(lastMember.id)];
+            return y+((lastMember.nestLevel-group.nestLevel)*this.spacing);
         } else if (lastMember && lastMember.memberType==="Leaf") {
-            let lastLeafY = this.leafYs[lastMember.order-1] + this.strokeWidth + this.spacing/2.0;
+            let lastLeafY = this.leafYs[this.leafIDs.indexOf(lastMember.id)] + this.strokeWidth + this.spacing/2.0;
             return lastLeafY+((lastMember.nestLevel-group.nestLevel-1)*this.spacing);
         } else {
             return 0;
         }
     },
     getLastMember: function(groupID) {
-        let lastMember = null;
-        for (let memberID of this.Groups[groupID].memberIDs) {
-            let memberObject = this[memberID.split("_")[0]+"s"][memberID];
-            if (lastMember===null || (memberObject.memberOrder>lastMember.memberOrder)) {
-                lastMember = memberObject;
-            }
-            if (memberID.charAt(0)==="G" && memberObject.memberIDs.length>0) {
-                let result = this.getLastMember(memberID);
-                if (result) lastMember = result;
-            }
+        let lastMemberIDs =  this.Groups[groupID].memberIDs;
+        if (lastMemberIDs.length===0) return null;
+        let lastMemberID = lastMemberIDs[lastMemberIDs.length-1];
+        if (lastMemberID.charAt(0)==="L") {
+            return this.Leafs[lastMemberID];
+        } else {
+            let lastMember = this.Groups[lastMemberID];
+            // Check if this group has members
+            let innerLastMember = this.getLastMember(lastMemberID);
+            if (innerLastMember) lastMember = innerLastMember;
+            return lastMember;
         }
-        return lastMember;
     }, 
     getGroupHeight: function(group) {
         if (group.memberIDs.length>0) {
-            let height = this.getYOfLastMember(group.id) - this.groupYs[group.order-1];
+            let height = this.getYOfLastMember(group.id) - this.groupYs[this.groupIDs.indexOf(group.id)];
             return height+this.spacing;
         } else {
             return this.spacing;
@@ -468,51 +480,39 @@ PaperManager.prototype = {
                 glueSpacing = (notesToShowAbove>0 && memberObject.attached_above.includes("Glued") && !memberObject.attached_above.includes("Partial"))? 1 : 0;
             }
             
-            if (memberObject.memberType==="Leaf" && memberObject.memberOrder===1 && notesToShowAbove>0) {
-                // First leaf in the group with a note 
-                this.multipliers[memberObject.order] = multiplier;
+            if (memberObject.memberType === "Leaf" && getMemberOrder(memberObject, this.Groups, this.groupIDs)===1 && notesToShowAbove>0) {
+                // First leaf in the group with a note
+                this.multipliers[this.leafIDs.indexOf(memberObject.id)+1] = multiplier;
                 currentY = currentY + spacing*(notesToShowAbove+1);
-                if (i > 0 && members[i-1].memberType==="Group" && members[i-1].memberIDs.length) {
-                    // Previous sibling is a group with children
-                    currentY = currentY - memberObject.nestLevel*spacing;
-                }
                 this.leafYs.push(currentY); 
                 currentY = currentY + spacing*notesToShowBelow*0.8;
-                
                 if (i===(members.length-1)) {
                     // Last member of group
                     currentY = currentY + (memberObject.nestLevel)*spacing;
                 }
-            } else if (memberObject.memberType==="Leaf" && memberObject.order > 0) {
-                this.multipliers[memberObject.order] = multiplier;
+            } else if (memberObject.memberType==="Leaf" && this.leafIDs.indexOf(memberObject.id)+1 > 0) {
+                this.multipliers[this.leafIDs.indexOf(memberObject.id)+1] = multiplier;
                 currentY = currentY + spacing*(Math.max(1,notesToShowAbove)) + spacing*glueSpacing;
-                if (i > 0 && members[i-1].memberType==="Group" && this.Groups[members[i-1]].memberIDs.length) {
+                if (i > 0 && members[i-1].includes("Group") && this.Groups[members[i-1]].memberIDs.length) {
                     // Previous sibling is a group with children
-                    currentY = currentY - memberObject.nestLevel*spacing;
+                    // Find difference of nest level between current leaf and previous group's last member
+                    const previousMember = this.getLastMember(members[i-1]);
+                    currentY = currentY + (previousMember.nestLevel - memberObject.nestLevel)*spacing;
                 }
                 this.leafYs.push(currentY); 
-
                 currentY = currentY + spacing*notesToShowBelow*0.8;
-                
-                if (i===members.length-1) {
-                    // Last member of group
-                    currentY = currentY + (memberObject.nestLevel)*spacing/4;
-                }
             } else if (memberObject.memberType==="Group") {
                 currentY = currentY + spacing;
-                if (i > 0 && members[i-1].memberType==="Group" && this.Groups[members[i-1]].memberIDs.length>0) {
-                    currentY = currentY - memberObject.nestLevel*spacing;
+                if (i > 0 && members[i-1].includes("Group") && this.Groups[members[i-1]].memberIDs.length>0) {
+                    // Previous sibling is a group with children
+                    const previousMember = this.getLastMember(members[i-1]);
+                    currentY = currentY + (previousMember.nestLevel - memberObject.nestLevel + 1)*spacing;
+                } else if (i > 0 && members[i-1].includes("Group")&& this.Groups[members[i-1]].memberIDs.length===0) {
+                    // Previous sibling is a group without children
+                    currentY = currentY + spacing;
                 }
                 this.groupYs.push(currentY);
-                if (memberObject.memberIDs.length<1) {
-                    // No nested members, so give padding equal to
-                    // the height of this empty group, which is spacing
-                    currentY = currentY + spacing;
-                    if (i===members.length-1) {
-                        // If we are the last member and it's empty group
-                        currentY = currentY + (memberObject.nestLevel)*spacing;
-                    }
-                }
+
                 // Recursify!!!
                 currentY = this.calculateYs(memberObject.memberIDs, currentY, spacing);
             }
@@ -673,6 +673,7 @@ function PaperManager(args) {
     this.tacketToolOriginalPosition = 0;
     this.slideForward = true;
     this.openNoteDialog = args.openNoteDialog;
+    this.leafIDs = args.leafIDs;
 
     let that = this;
     // Flash newly added items

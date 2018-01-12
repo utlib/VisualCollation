@@ -4,17 +4,17 @@ RSpec.describe ControllerHelper::ExportHelper, type: :helper do
   before do
     stub_request(:get, 'https://digital.library.villanova.edu/Item/vudl:99213/Manifest').with(headers: { 'Accept' => '*/*', 'User-Agent' => 'Ruby' }).to_return(status: 200, body: File.read(File.dirname(__FILE__) + '/../../fixtures/villanova_boston.json'), headers: {})
     @project = FactoryGirl.create(:project,
-      title: 'Sample project',
-      shelfmark: 'Ravenna 384.2339',
-      metadata: { date: '18th century' },
-      preferences: { showTips: true },
-      noteTypes: ['Hand', 'Ink', 'Unknown'],
-      manifests: { '12341234': { id: '12341234', url: 'https://digital.library.villanova.edu/Item/vudl:99213/Manifest', name: 'Boston, and Bunker Hill.' } }
+      'title' => 'Sample project',
+      'shelfmark' => 'Ravenna 384.2339',
+      'metadata' => { date: '18th century' },
+      'preferences' => { 'showTips' => true },
+      'noteTypes' => ['Ink', 'Unknown'],
+      'manifests' => { '12341234': { 'id' => '12341234', 'url' => 'https://digital.library.villanova.edu/Item/vudl:99213/Manifest', 'name' => 'Boston, and Bunker Hill.' } }
     )
     # Attach group with 2 leafs - (group with 2 leafs) - 2 conjoined leafs
-    @testgroup = FactoryGirl.create(:group, project: @project, nestLevel: 1)
+    @testgroup = FactoryGirl.create(:group, project: @project, nestLevel: 1, title: 'Group 1')
     @upleafs = 2.times.collect { FactoryGirl.create(:leaf, project: @project, parentID: @testgroup.id.to_s, nestLevel: 1) }
-    @testmidgroup = FactoryGirl.create(:group, project: @project, parentID: @testgroup.id.to_s, nestLevel: 2)
+    @testmidgroup = FactoryGirl.create(:group, project: @project, parentID: @testgroup.id.to_s, nestLevel: 2, title: 'Group 2')
     @midleafs = 2.times.collect { FactoryGirl.create(:leaf, project: @project, parentID: @testmidgroup.id.to_s, nestLevel: 2) }  
     @botleafs = 2.times.collect { FactoryGirl.create(:leaf, project: @project, parentID: @testgroup.id.to_s, nestLevel: 1) }
     @botleafs[1].update(type: 'Endleaf')
@@ -32,11 +32,11 @@ RSpec.describe ControllerHelper::ExportHelper, type: :helper do
       metadata: { 'date' => '18th century' },
       preferences: { 'showTips' => true },
       manifests: { '12341234' => { 'id' => '12341234', 'url' => 'https://digital.library.villanova.edu/Item/vudl:99213/Manifest', 'name' => 'Boston, and Bunker Hill.' } },
-      noteTypes: ['Hand', 'Ink', 'Unknown']
+      noteTypes: ['Ink', 'Unknown']
     })
     expect(result[:groups]).to eq({
-      1 => {:params=>{:type=>"Quire", :title=>"Quire 1", :nestLevel=>1}, :tacketed=>[], :sewing=>[], :parentOrder=>nil, :memberOrders=>["Leaf_1", "Leaf_2", "Group_2", "Leaf_5", "Leaf_6"]},
-      2 => {:params=>{:type=>"Quire", :title=>"Quire 2", :nestLevel=>2}, :tacketed=>[], :sewing=>[], :parentOrder=>1, :memberOrders=>["Leaf_3", "Leaf_4"]}
+      1 => {:params=>{:type=>"Quire", :title=>"Group 1", :nestLevel=>1}, :tacketed=>[], :sewing=>[], :parentOrder=>nil, :memberOrders=>["Leaf_1", "Leaf_2", "Group_2", "Leaf_5", "Leaf_6"]},
+      2 => {:params=>{:type=>"Quire", :title=>"Group 2", :nestLevel=>2}, :tacketed=>[], :sewing=>[], :parentOrder=>1, :memberOrders=>["Leaf_3", "Leaf_4"]}
     })
     expect(result[:leafs]).to eq({
       1 => {:params=>{:material=>"Paper", :type=>"Original", :attachment_method=>"None", :attached_above=>"None", :attached_below=>"None", :stub=>"None", :nestLevel=>1}, :conjoined_leaf_order=>nil, :parentOrder=>1, :rectoOrder=>1, :versoOrder=>1},
@@ -65,5 +65,65 @@ RSpec.describe ControllerHelper::ExportHelper, type: :helper do
     expect(result[:notes]).to eq({
       1 => {:params=>{:title=>"Test Note", :type=>"Ink", :description=>"This is a test", :show=>true}, :objects=>{:Group=>[1], :Leaf=>[5], :Recto=>[5], :Verso=>[5]}}
     })
+  end
+  
+  it 'builds the right XML' do
+    result = Nokogiri::XML(buildDotModel(@project))
+    # Metadata elements
+    expect(result.css("manuscript title").text).to eq 'Sample project'
+    expect(result.css("manuscript shelfmark").text).to eq 'Ravenna 384.2339'
+    expect(result.css("manuscript date").text).to eq '18th century'
+    expect(result.css("taxonomy[xml|id='manuscript_preferences'] term").collect { |t| [t['xml:id'], t.text] }).to include(
+      ['manuscript_preferences_ravenna_384_2339_showTips', 'true']
+    )
+    expect(result.css("taxonomy[xml|id='manifests'] term").collect { |t| [t['xml:id'], t.text] }).to include(
+      ['manifest_12341234', 'https://digital.library.villanova.edu/Item/vudl:99213/Manifest']
+    )
+    # Quires
+    expect(result.css("taxonomy[xml|id='group_type'] term").collect { |t| [t['xml:id'], t.text] }).to include(
+      ['group_type_quire', 'Quire']
+    )
+    expect(result.css("taxonomy[xml|id='group_title'] term").collect { |t| [t['xml:id'], t.text] }).to include(
+      ['group_title_group_1', 'Group 1'],
+      ['group_title_group_2', 'Group 2'],
+    )
+    expect(result.css("taxonomy[xml|id='group_members'] term").collect { |t| [t['xml:id'], t.text] }).to include(
+      ['group_members_ravenna_384_2339-q-1', '#ravenna_384_2339-1-1 #ravenna_384_2339-1-2 #ravenna_384_2339-q-1-2 #ravenna_384_2339-1-3 #ravenna_384_2339-1-4'],
+      ['group_members_ravenna_384_2339-q-1-2', '#ravenna_384_2339-1-2-3 #ravenna_384_2339-1-2-4'],
+    )
+    # Leaves
+    expect(result.css("taxonomy[xml|id='leaf_material'] term").collect { |t| [t['xml:id'], t.text] }).to include(
+      ['leaf_material_paper', 'Paper']
+    )
+    expect(result.css("manuscript leaf").collect { |t| [t['xml:id'], t.css('folioNumber').first.text, t.css('q').first['target'], t.css('q').first['n']] }).to include(
+      ['ravenna_384_2339-1-1', '1', '#ravenna_384_2339-q-1', '1'],
+      ['ravenna_384_2339-1-2', '2', '#ravenna_384_2339-q-1', '1'],
+      ['ravenna_384_2339-1-2-3', '3', '#ravenna_384_2339-q-1-2', '2'],
+      ['ravenna_384_2339-1-2-4', '4', '#ravenna_384_2339-q-1-2', '2'],
+      ['ravenna_384_2339-1-3', '5', '#ravenna_384_2339-q-1', '1'],
+      ['ravenna_384_2339-1-4', '6', '#ravenna_384_2339-q-1', '1']
+    )
+    # Sides and Notes
+    expect(result.css("taxonomy[xml|id='side_texture'] term").collect { |t| [t['xml:id'], t.text] }).to include(
+      ['side_texture_hair', 'Hair'],
+      ['side_texture_flesh', 'Flesh']
+    )
+    expect(result.css("mapping map").collect { |t| [t['target'], t['side'], t.css('term').first['target']]}).to include(
+      ['#ravenna_384_2339-1-1', 'recto', '#side_texture_hair'],
+      ['#ravenna_384_2339-1-2', 'recto', '#side_texture_hair'],
+      ['#ravenna_384_2339-1-2-3', 'recto', '#side_texture_hair'],
+      ['#ravenna_384_2339-1-2-4', 'recto', '#side_texture_hair'],
+      ['#ravenna_384_2339-1-3', 'recto', '#side_texture_hair'],
+      ['#ravenna_384_2339-1-4', 'recto', '#side_texture_hair'],
+      ['#ravenna_384_2339-1-1', 'verso', '#side_texture_flesh'],
+      ['#ravenna_384_2339-1-2', 'verso', '#side_texture_flesh'],
+      ['#ravenna_384_2339-1-2-3', 'verso', '#side_texture_flesh'],
+      ['#ravenna_384_2339-1-2-4', 'verso', '#side_texture_flesh'],
+      ['#ravenna_384_2339-1-3', 'verso', '#side_texture_flesh'],
+      ['#ravenna_384_2339-1-4', 'verso', '#side_texture_flesh']
+    )
+    expect(result.css("mapping map").collect { |t| [t['target'], t.css('term').first['target']]}).to include(
+      ['#ravenna_384_2339-n-1', '#note_title_test_note #note_show'],
+    )
   end
 end

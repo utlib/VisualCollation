@@ -1,11 +1,13 @@
 import React, {Component} from 'react';
-import PropTypes from 'prop-types';
 import Drawer from 'material-ui/Drawer';
 import RaisedButton from 'material-ui/RaisedButton';
 import NewProjectContainer from '../components/dashboard/NewProjectContainer';
 import EditProjectForm from '../components/dashboard/EditProjectForm';
+import ImageCollections from "../components/dashboard/ImageCollections";
 import ListView from '../components/dashboard/ListView';
 import LoadingScreen from "../components/global/LoadingScreen";
+import ServerErrorScreen from "../components/global/ServerErrorScreen";
+import NetworkErrorScreen from "../components/global/NetworkErrorScreen";
 import Notification from "../components/global/Notification";
 import TopBar from "./TopBar";
 import Feedback from "./Feedback";
@@ -19,9 +21,14 @@ import {
   deleteProject,
   loadProjects,
   importProject,
-  cloneProjectExport,
-  cloneProjectImport
-} from "../actions/projectActions";
+  cloneProject,
+} from "../actions/backend/projectActions";
+import {
+  uploadImages,
+  linkImages,
+  unlinkImages,
+  deleteImages,
+} from '../actions/backend/imageActions';
 
 /** Dashboard where user is directed to upon login.  This is where the user an create a new project or edit an existing project. */
 class Dashboard extends Component {
@@ -30,11 +37,12 @@ class Dashboard extends Component {
     this.state = {
       newProjectPopoverOpen: false,
       newProjectModalOpen: false,
-      selectedProjectIndex: -1,
-      selectedProject: {},
+      selectedProject: null,
       projectDrawerOpen: false,
       userProfileDialogOpen: false,
       feedbackOpen: false,
+      deleteConfirmationOpen: false,
+      page: "collations",
     };
   }
 
@@ -42,23 +50,38 @@ class Dashboard extends Component {
     this.props.user.authenticated ? this.props.loadProjects(this.props) : this.props.history.push('/');
   }
 
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.notification!=="") {
+      if (nextProps.projects.length>=this.props.projects.length && this.state.page==="collations") {
+        this.setState({
+          selectedProject: nextProps.projects[0],
+          projectDrawerOpen: true,
+        })
+      } else {
+        this.setState({
+          selectedProject: null,
+          projectDrawerOpen: false,
+        })
+      }
+    }
+  }
+
   componentDidUpdate() {
     if (!this.props.user.authenticated) this.props.history.push('/');
   }
 
   closeProjectPanel = () => {
-    this.setState({projectDrawerOpen: false, selectedProjectIndex: -1, selectedProject: {}});
+    this.setState({projectDrawerOpen: false, selectedProject: null});
   }
 
   doubleClick = projectID => this.props.history.push(`/project/${projectID}`);
 
   handleProjectSelection = (index) => {
     if (index>=0) {
-      let project = this.state.selectedProject;
-      let toggle = this.state.projectDrawerOpen;
-      project = this.props.projects[index];
-      if (!Object.keys(this.state.selectedProject).length>0) {toggle = !toggle};
-      this.setState({projectDrawerOpen: toggle, selectedProject: project, selectedProjectIndex: index});
+      let project = this.props.projects[index];
+      // let toggle = this.state.projectDrawerOpen;
+      // if (this.state.selectedProject) {toggle = !toggle};
+      this.setState({projectDrawerOpen: true, selectedProject: project});
     } 
   }
 
@@ -73,6 +96,10 @@ class Dashboard extends Component {
     this.setState({newProjectModalOpen: value, newProjectPopoverOpen: false});
   }
 
+  handleDeleteConfirmModalToggle = (value) => {
+    this.setState({deleteConfirmationOpen: value});
+  }
+
   handleImportProject = (data) => {
     this.props.importProject(data)
     .then((action)=>{
@@ -83,24 +110,9 @@ class Dashboard extends Component {
     });
   }
 
-  handleCloneProject = (projectID) => {
-    this.props.cloneProjectExport(projectID)
-    .then((action)=>{
-      if (action.type==="CLONE_PROJECT_EXPORT_SUCCESS"){
-        const importData = JSON.stringify(action.payload, null, 4);
-        this.props.cloneProjectImport({importData, importFormat: "json"})
-        .then((action)=>{
-          if (action.type==="CLONE_PROJECT_IMPORT_SUCCESS"){
-            this.handleProjectSelection(0);
-            this.props.importProjectCallback();
-          }
-        })
-      }
-    });
-  }
 
   modalIsOpen = () => {
-    return this.state.feedbackOpen || this.state.newProjectModalOpen || this.state.newProjectPopoverOpen || this.state.userProfileDialogOpen;
+    return this.state.deleteConfirmationOpen || this.state.feedbackOpen || this.state.newProjectModalOpen || this.state.newProjectPopoverOpen || this.state.userProfileDialogOpen;
   }
 
   userProfileToggle = (userProfileDialogOpen) => {
@@ -109,9 +121,9 @@ class Dashboard extends Component {
 
   render() {
     let sidebar = (
-      <div role="region" aria-label="sidebar" className="sidebar">
+      <div role="region" aria-label="sidebar" className="sidebar lowerZIndex">
         <hr />           
-        <br />            
+        <br />
         <RaisedButton
           label="New"
           primary
@@ -121,6 +133,25 @@ class Dashboard extends Component {
           tabIndex={this.modalIsOpen()? -1 : 0}
           aria-label="Create new collation"
         />
+        <br />
+        <br />
+        <br />
+          <button
+            className={ this.state.page==="collations" ? "dashboard active" : "dashboard" }        
+            onClick={() => this.setState({page:"collations", projectDrawerOpen: this.state.selectedProject!==null})} 
+            tabIndex={this.modalIsOpen()?-1:0}
+            aria-label="Collations"
+          >
+            Collations
+          </button>
+          <button
+            className={ this.state.page==="image" ? "dashboard active" : "dashboard" }        
+            onClick={() => this.setState({page:"image",projectDrawerOpen: false})} 
+            tabIndex={this.modalIsOpen()?-1:0}
+            aria-label="Image Collections"
+          >
+            Image Collections
+          </button>
       </div>
     );
     let projectPane = (
@@ -133,8 +164,7 @@ class Dashboard extends Component {
         zDepth={1}
       >
         <EditProjectForm 
-          selectedProject={this.props.projects[this.state.selectedProjectIndex]} 
-          selectedProjectIndex={this.state.selectedProjectIndex}
+          selectedProject={this.state.selectedProject} 
           closeProjectPanel={this.closeProjectPanel}
           allProjects={this.props.projects}
           updateProject={this.props.updateProject}
@@ -142,15 +172,22 @@ class Dashboard extends Component {
           user={this.props.user}
           history={this.props.history}
           tabIndex={this.modalIsOpen()? -1 : 0}
+          togglePopUp={this.handleDeleteConfirmModalToggle}
           />
       </Drawer>
     );
 
     return (
       <div>
-        <TopBar history={this.props.history} tabIndex={this.modalIsOpen()? -1 : 0} togglePopUp={this.userProfileToggle}>
+        <TopBar 
+          history={this.props.history} 
+          tabIndex={this.modalIsOpen()? -1 : 0} 
+          togglePopUp={this.userProfileToggle} 
+          popUpActive={this.modalIsOpen()}
+          goToDashboardProjectList={()=>this.setState({page:"collations"})}
+        >
           <Tabs tabItemContainerStyle={{backgroundColor: '#ffffff'}}>
-            <Tab tabIndex={-1} label="List view" buttonStyle={topbarStyle.tab} />
+            <Tab tabIndex={-1} label="List view" buttonStyle={topbarStyle().tab} />
           </Tabs>
         </TopBar>
         {sidebar}
@@ -163,44 +200,49 @@ class Dashboard extends Component {
           createProject={this.props.createProject}
           importProject={this.handleImportProject}
           importStatus={this.props.importStatus}
-          cloneProject={this.handleCloneProject}
+          cloneProject={this.props.cloneProject}
         />
         <div role="main" className={this.state.projectDrawerOpen? "dashboardWorkspace projectPanelOpen" : "dashboardWorkspace"}>
-          <ListView 
-            selectedProjectIndex={this.state.selectedProjectIndex}
-            selectProject={this.handleProjectSelection} 
-            allProjects={this.props.projects} 
-            doubleClick={this.doubleClick} 
-            tabIndex={this.modalIsOpen()? -1 : 0}
-          />
+          {this.state.page==="collations"?
+            <ListView 
+              selectedProjectID={this.state.selectedProject?this.state.selectedProject.id:null}
+              selectProject={this.handleProjectSelection} 
+              allProjects={this.props.projects} 
+              doubleClick={this.doubleClick} 
+              tabIndex={this.modalIsOpen()? -1 : 0}
+            />
+            :
+            <ImageCollections
+              images={this.props.images}
+              projects={this.props.projects}
+              togglePopUp={(v)=>this.setState({deleteConfirmationOpen:v})}
+              action={{
+                uploadImages: this.props.uploadImages,
+                linkImages: this.props.linkImages,
+                unlinkImages: this.props.unlinkImages,
+                deleteImages: this.props.deleteImages,
+              }}
+            />
+          }
         </div>     
         <LoadingScreen loading={this.props.loading} />
+        <ServerErrorScreen />
+        <NetworkErrorScreen />
         <Notification message={this.props.notification} />
         <Feedback tabIndex={this.modalIsOpen()? -1 : 0 } togglePopUp={(v)=>this.setState({feedbackOpen:v})}/>
       </div>
       );
-  }
-  static propTypes = {
-    /** History object from React Router */
-    history: PropTypes.object,
-    /** User object from Redux store */
-    user: PropTypes.object,
-    /** Array of project objects from Redux store */
-    projects: PropTypes.arrayOf(PropTypes.object),
-    /** Boolean if loading screen should appear - from Redux store */
-    loading: PropTypes.bool,
-    /** Notification message from Redux store */
-    notification: PropTypes.string,
   }
 }
 
 const mapStateToProps = (state) => {
   return {
     user: state.user,
-    projects: state.projects.projects,
-    importStatus: state.projects.importStatus,
+    projects: state.dashboard.projects,
+    images: state.dashboard.images,
+    importStatus: state.dashboard.importStatus,
     loading: state.global.loading,
-    notification: state.global.notification
+    notification: state.global.notification,
   };
 };
 
@@ -212,8 +254,8 @@ const mapDispatchToProps = (dispatch) => {
     updateProject: (projectID, project) => {
       dispatch(updateProject(projectID, project))
     },
-    deleteProject: (projectID) => {
-      dispatch(deleteProject(projectID));
+    deleteProject: (projectID, deleteUnlinkedImages) => {
+      dispatch(deleteProject(projectID, deleteUnlinkedImages));
     },
     loadProjects: (props) => {
       dispatch(loadProjects());
@@ -224,12 +266,21 @@ const mapDispatchToProps = (dispatch) => {
     importProjectCallback: () => {
       dispatch({type: "IMPORT_PROJECT_SUCCESS_CALLBACK"});
     },
-    cloneProjectExport: (projectID) => {
-      return dispatch(cloneProjectExport(projectID));
+    cloneProject: (projectID) => {
+      dispatch(cloneProject(projectID));
     },
-    cloneProjectImport: (data) => {
-      return dispatch(cloneProjectImport(data));
-    }
+    uploadImages: (images) => {
+      dispatch(uploadImages(images));
+    },
+    linkImages: (projectIDs, imageIDs) => {
+      dispatch(linkImages(projectIDs, imageIDs));
+    },
+    unlinkImages: (projectIDs, imageIDs) => {
+      dispatch(unlinkImages(projectIDs, imageIDs));
+    },
+    deleteImages: (imageIDs) => {
+      dispatch(deleteImages(imageIDs));
+    },
   };
 };
 

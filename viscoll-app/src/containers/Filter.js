@@ -13,7 +13,7 @@ import {
   toggleFilterDisplay,
   updateFilterQuery,
   updateFilterSelection
-} from "../actions/editCollation/interactionActions";
+} from "../actions/backend/filterActions";
 
 /** Filter groups, leaves and sides */
 class Filter extends Component {
@@ -34,21 +34,15 @@ class Filter extends Component {
 
   componentDidMount() {
     let conjoinedToAutoComplete = [];
-    for (let id in this.props.attachedToLeafs){
-      conjoinedToAutoComplete.push({
-        textKey: `Leaf ${id}`,
-        valueKey: this.props.attachedToLeafs[id]
+    conjoinedToAutoComplete.push({
+      text: 'None',
+      value: 'None',
+    });
+    conjoinedToAutoComplete = [...conjoinedToAutoComplete, 
+      ...this.props.leafIDs.map((id,index)=>{
+        return {text: `Leaf ${index+1}`, value: id }
       })
-    }
-    if (this.props.Leafs){
-      for (let leafID in this.props.Leafs){
-        const leaf = this.props.Leafs[leafID];
-        conjoinedToAutoComplete.push({
-          textKey: `Leaf ${leaf.order}`,
-          valueKey: leaf.id
-        })
-      }
-    }
+    ]
     this.setState({
       conjoinedToAutoComplete, 
       filterPanelHeight: document.getElementById('filterContainer').offsetHeight
@@ -57,21 +51,15 @@ class Filter extends Component {
 
   componentWillReceiveProps(nextProps) {
     let conjoinedToAutoComplete = [];
-    for (let id in nextProps.attachedToLeafs){
-      conjoinedToAutoComplete.push({
-        textKey: `Leaf ${id}`,
-        valueKey: nextProps.attachedToLeafs[id]
+    conjoinedToAutoComplete.push({
+      text: 'None',
+      value: 'None',
+    });
+    conjoinedToAutoComplete = [...conjoinedToAutoComplete, 
+      ...this.props.leafIDs.map((id,index)=>{
+        return {text: `Leaf ${index+1}`, value: id }
       })
-    }
-    if (nextProps.Leafs){
-      for (let leafID in nextProps.Leafs){
-        const leaf = nextProps.Leafs[leafID];
-        conjoinedToAutoComplete.push({
-          textKey: `Leaf ${leaf.order}`,
-          valueKey: leaf.id
-        })
-      }
-    }
+    ]
     let matches = [];
     if (nextProps.groupMatches.length>0) {
       let plural = nextProps.groupMatches.length>1? "s" : "";
@@ -100,22 +88,13 @@ class Filter extends Component {
       message = "";
     }
 
-    let filter = (this.props.open===nextProps.open && 
-      nextProps.hideOthers===this.props.hideOthers && 
-      nextProps.filterSelection===this.props.filterSelection && 
-      nextProps.selectedObjects.members===this.props.selectedObjects.members &&
-      (this.props.groupMatches===nextProps.groupMatches || this.props.leafMatches===nextProps.leafMatches
-      || this.props.sideMatches===nextProps.sideMatches || this.props.noteMatches===nextProps.noteMatches));
-    
     let filterPanelHeight = document.getElementById('filterContainer').offsetHeight;
+
     this.setState({
       queries: nextProps.queries, 
       conjoinedToAutoComplete, 
       message, filterPanelHeight
-      }, ()=>{ 
-        if (filter) this.filter(this.state.queries);
-    });
-    
+      });
   }
 
   removeRow = (queryIndex) => {
@@ -146,11 +125,11 @@ class Filter extends Component {
     }
   }
 
-  onChange = (queryIndex, fieldName, event, index, value, dataSource) => {
+  onChange = (queryIndex, fieldName, index, value, dataSource) => {
     if (dataSource){
       for (let member of dataSource){
-        if (member.textKey===value){
-          value = [member.valueKey];
+        if (member.text===value){
+          value = [member.value];
           break;
         }
       }
@@ -158,7 +137,22 @@ class Filter extends Component {
     let updatedQueries = this.state.queries;
     if (["group", "leaf", "side", "note"].includes(value))
       updatedQueries = this.clearFilterRowOnType(queryIndex, value); 
-    this.props.updateFilterQuery(updatedQueries, queryIndex, fieldName, index, value);
+    if (fieldName==="attribute") {
+      updatedQueries[queryIndex]["attributeIndex"] = index;
+    }
+    updatedQueries[queryIndex][fieldName] = value;
+    this.props.updateFilterQuery(updatedQueries);
+    // If queries are valid, filter!
+    let validQueries = true;
+    for (let i=0; i<updatedQueries.length; i++) {
+      // Check if this row of query is complete
+      const isComplete = updatedQueries[i].type!==null && updatedQueries[i].attribute!=="" && updatedQueries[i].attributeIndex!=="" && updatedQueries[i].condition!=="" && updatedQueries[i].values.length>0;
+      if (!isComplete) {
+        validQueries = false;
+        break;
+      }
+    }
+    if (validQueries) this.filterProject();
   }
 
   filterProject = () => {
@@ -178,15 +172,16 @@ class Filter extends Component {
         }
       }
     }
-    if (toFilter)
+    if (toFilter) {
       this.props.filterProject(this.props.projectID, {queries: this.state.queries});
+    }
   }
 
   resetFilters = () => {
     this.setState({
       queries: [
         {
-          type: null,
+          type: "",
           attribute: "",
           attributeIndex: "",
           values: [],
@@ -208,7 +203,7 @@ class Filter extends Component {
         queries.push({
           type: type,
           attribute: "",
-          attributeIndex: query.attributeIndex,
+          attributeIndex: "",
           values: [],
           condition: "",
           conjunction: "",
@@ -333,7 +328,7 @@ class Filter extends Component {
             conjoinedToAutoComplete={this.state.conjoinedToAutoComplete}
             addRow={this.addRow}
             disableAddRow={this.disableAddRow()}
-            disableNewRow={this.disableNewRow()}
+            disableNewRow={i===(this.state.queries.length-1) && this.disableNewRow()}
             tabIndex={this.props.tabIndex}
           />
         );
@@ -451,8 +446,8 @@ const mapDispatchToProps = (dispatch) => {
     toggleFilterDisplay: () => {
       dispatch(toggleFilterDisplay());
     },
-    updateFilterQuery: (currentQueries, queryIndex, fieldName, index, value) => {
-      dispatch(updateFilterQuery(currentQueries, queryIndex, fieldName, index, value));
+    updateFilterQuery: (newQueries) => {
+      dispatch(updateFilterQuery(newQueries));
     },
     updateFilterSelection: (
       selection, 

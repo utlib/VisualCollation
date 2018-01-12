@@ -11,6 +11,9 @@ class GroupsController < ApplicationController
       noOfLeafs = additional_params.to_h[:noOfLeafs]
       conjoin = additional_params.to_h[:conjoin]
       oddMemberLeftOut = additional_params.to_h[:oddMemberLeftOut]
+      groupIDs = additional_params.to_h[:groupIDs]
+      leafIDs = additional_params.to_h[:leafIDs]
+      sideIDs = additional_params.to_h[:sideIDs]
       project_id = group_params.to_h[:project_id]
       order = additional_params.to_h[:order]
       # Validate group parameters
@@ -40,6 +43,7 @@ class GroupsController < ApplicationController
       end
       new_groups = []
       new_group_ids = []
+      groupIDIndex = 0
       parent_group = nil
       if parentGroupID != nil
         parent_group = @project.groups.find(parentGroupID)
@@ -47,6 +51,9 @@ class GroupsController < ApplicationController
       # Create groups
       noOfGroups.times do |i|
         group = Group.new(group_params)
+        if groupIDs
+          group.id = groupIDs[i]
+        end
         if parentGroupID != nil
           group.parentID = parentGroupID
           group.nestLevel = parent_group.nestLevel + 1
@@ -66,14 +73,15 @@ class GroupsController < ApplicationController
       # Add group(s) to global list 
       @project.add_groupIDs(new_group_ids, order.to_i - 1)
       # Add leaves inside each new group
-      new_groups.each do |group|
+      new_groups.each_with_index do |group, index|
         if noOfLeafs
-          addLeavesInside(project_id, group, noOfLeafs, conjoin, oddMemberLeftOut)
+          if (leafIDs and sideIDs)
+            addLeavesInside(project_id, group, noOfLeafs, conjoin, oddMemberLeftOut, leafIDs[index*noOfLeafs..index*noOfLeafs+noOfLeafs-1], sideIDs[index*2*noOfLeafs..index*2*noOfLeafs+noOfLeafs*2-1])
+          else
+            addLeavesInside(project_id, group, noOfLeafs, conjoin, oddMemberLeftOut)
+          end
         end
       end
-      @project = Project.find(project_id)
-      @data = generateResponse()
-      render :'projects/show', status: :ok
     rescue Exception => e
       render json: {error: e.message}, status: :unprocessable_entity
     end
@@ -82,10 +90,7 @@ class GroupsController < ApplicationController
   # PATCH/PUT /groups/1
   def update
     begin
-      if @group.update(group_params)
-        @data = generateResponse()
-        render :'projects/show', status: :ok
-      else
+      if !@group.update(group_params)
         render json: @group.errors, status: :unprocessable_entity
       end
     rescue Exception => e
@@ -115,9 +120,6 @@ class GroupsController < ApplicationController
           return
         end
       end
-      @project = Project.find(@group.project_id)
-      @data = generateResponse()
-      render :'projects/show', status: :ok
     rescue Exception => e
       render json: {error: e.message}, status: :unprocessable_entity
     end
@@ -128,9 +130,6 @@ class GroupsController < ApplicationController
     begin
       @group = Group.find(params[:id])
       @group.destroy
-      @project = Project.find(@group.project_id)
-      @data = generateResponse()
-      render :'projects/show', status: :ok
     rescue Exception => e
       render json: {error: e.message}, status: :unprocessable_entity
     end
@@ -156,9 +155,6 @@ class GroupsController < ApplicationController
           next
         end
       end
-      @project = Project.find(projectID)
-      @data = generateResponse()
-      render :'projects/show', status: :ok
     rescue Exception => e
       render json: {error: e.message}, status: :unprocessable_entity
     end
@@ -185,7 +181,7 @@ class GroupsController < ApplicationController
   end
 
   def additional_params
-    params.require(:additional).permit(:order, :noOfGroups, :memberOrder, :parentGroupID, :noOfLeafs, :conjoin, :oddMemberLeftOut)
+    params.require(:additional).permit(:order, :noOfGroups, :memberOrder, :parentGroupID, :noOfLeafs, :conjoin, :oddMemberLeftOut, :groupIDs=>[], :leafIDs=>[], :sideIDs=>[])
   end
 
   def group_params_batch_update

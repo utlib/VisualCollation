@@ -26,7 +26,7 @@ describe "POST /notes/type", :type => :request do
       end
 
       it 'should return 200' do
-        expect(response).to have_http_status(:ok)
+        expect(response).to have_http_status(:no_content)
       end
 
       it 'should add the type to the project' do

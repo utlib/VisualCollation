@@ -11,7 +11,7 @@ export default class NoteDialog extends React.Component {
       return (this.props.Groups[groupID].notes.includes(this.props.activeNote.id))
     });
     return groupsWithCurrentNote.map((value) => {
-      const label = `Group ${this.props.Groups[value].order}`;
+      const label = `Group ${this.props.groupIDs.indexOf(value)+1}`;
       return {label, value};
     });
   }
@@ -21,7 +21,7 @@ export default class NoteDialog extends React.Component {
       return (this.props.Leafs[leafID].notes.includes(this.props.activeNote.id))
     });
     return leafsWithCurrentNote.map((value)=>{
-      const label = `Leaf ${this.props.Leafs[value].order}`;
+      const label = `Leaf ${this.props.leafIDs.indexOf(value)+1}`;
       return {label, value};
     });
   }
@@ -35,13 +35,13 @@ export default class NoteDialog extends React.Component {
     });
     const sidesWithCurrentNote = [];
     for (let value of rectosWithCurrentNote){
-      const leafOrder = this.props.Leafs[this.props.Rectos[value].parentID].order;
-      const label = `Leaf ${leafOrder}: Side Recto}`;
+      const leafOrder = this.props.leafIDs.indexOf(this.props.Rectos[value].parentID) + 1;
+      const label = `L${leafOrder} Recto (${this.props.Rectos[value].folio_number})`;
       sidesWithCurrentNote.push({label, value})
     }
     for (let value of versosWithCurrentNote){
-      const leafOrder = this.props.Leafs[this.props.Versos[value].parentID].order;
-      const label = `Leaf ${leafOrder}: Side Verso}`;
+      const leafOrder = this.props.leafIDs.indexOf(this.props.Versos[value].parentID) + 1;
+      const label = `L${leafOrder} Verso (${this.props.Versos[value].folio_number})`;
       sidesWithCurrentNote.push({label, value})
     }
     return sidesWithCurrentNote;
@@ -101,6 +101,11 @@ export default class NoteDialog extends React.Component {
           linkedLeaves={this.getLinkedLeaves()}
           linkedSides={this.getLinkedSides()}
           isReadOnly={this.props.isReadOnly}
+          groupIDs={this.props.groupIDs}
+          leafIDs={this.props.leafIDs}
+          rectoIDs={this.props.rectoIDs}
+          versoIDs={this.props.versoIDs}
+          togglePopUp={this.props.togglePopUp}
         />
       </Dialog>
     );

@@ -21,6 +21,10 @@ RSpec.describe Leaf, type: :model do
   before(:each) do
     @project = FactoryGirl.create(:project)
     @leaf = FactoryGirl.create(:leaf, project: @project)
+    @group = FactoryGirl.create(:group, project: @project)
+    @group.add_members([@leaf.id.to_s], 0)
+    @leaf.parentID = @group.id
+    @leaf.save
   end
 
   describe "Initialization" do

@@ -1,10 +1,8 @@
 import React, {Component} from 'react';
-import PropTypes from 'prop-types';
 import TextField from 'material-ui/TextField';
-import SelectField from 'material-ui/SelectField';
-import MenuItem from 'material-ui/MenuItem';
 import RaisedButton from 'material-ui/RaisedButton';
 import Checkbox from 'material-ui/Checkbox';
+import SelectField from '../global/SelectField';
 
 
 /** Create New Note tab in the Note Manager */
@@ -117,15 +115,18 @@ export default class NewNoteForm extends Component {
    * @public
    */
   renderNoteTypes = (name) => {
-    return <MenuItem key={name} value={name} primaryText={name} />;
+    return {value:name, text:name};
   }
 
 
   renderMenuItem = (item, type, index) => {
-    let label = `${type} ${item.order}`;
+    let label = "";
     if (type==="Side") {
-      let sideName = item.order===0 ? "Recto" : "Verso";
+      let sideName = item.charAt(0)==="R" ? "Recto" : "Verso";
       label = `Leaf ${Math.ceil((index-3)/2)}: ${type} ${sideName}`
+    } else{
+      const itemOrder = this.props[`${type.toLowerCase()}IDs`].indexOf(item.id)+1;
+      label = `${type} ${itemOrder}`
     }
     return (
       <div key={item.id} value={item.id} label={label}>
@@ -176,11 +177,12 @@ export default class NewNoteForm extends Component {
           </div>
           <div className="input">
             <SelectField
-              aria-labelledby="newNoteType"
+              label="newNoteType"
+              id="newNoteType"
               value={this.state.type}
-              onChange={(e,i,v)=>this.onChange("type",v)}
+              onChange={(v,i)=>this.onChange("type",v)}
+              data={this.props.noteTypes.map(this.renderNoteTypes)}
             >
-              {this.props.noteTypes.map(this.renderNoteTypes)}
             </SelectField>
           </div>
           <div className="label" id="newNoteDescription">
@@ -206,16 +208,12 @@ export default class NewNoteForm extends Component {
               value={this.state.show}
               checked={this.state.show}
               style={{paddingTop:20}}
-              onCheck={(e,v)=>this.onChange("show",v)}
+              onClick={()=>this.onChange("show",!this.state.show)}
             />
           </div>
           {createButtons}
         </div>
       </div>
     );
-  }
-  static propTypes = {
-    /** Active project ID */
-    projectID: PropTypes.string,
   }
 }

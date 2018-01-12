@@ -94,6 +94,7 @@ RSpec.describe Group, type: :model do
       subleaf = FactoryGirl.create(:leaf, project: @project)
       subleaf_id = subleaf.id
       @group.add_members([subleaf.id.to_s], 0)
+      subleaf.parentID = @group.id.to_s
       subleaf.save
       expect(@group.memberIDs).to include(subleaf.id.to_s)
       

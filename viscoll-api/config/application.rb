@@ -27,8 +27,8 @@ module ViscollApi
     # Skip views, helpers and assets when generating a new resource.
     config.api_only = true
 
-    # Mongo::Logger.logger.level = Logger::FATAL
-    # config.log_level = :warn
+    Mongo::Logger.logger.level = Logger::FATAL
+    config.log_level = :warn
 
     # Rack CORS for handling Cross-Origin Resource Sharing (CORS)
     config.middleware.use Rack::Cors do

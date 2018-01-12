@@ -3,11 +3,16 @@
   display: block;
   top: 55px;
   width: 18%;
-  height: 99%;
+  height: calc(100% - 55px);
   background: $bg_blue;
   opacity: 1;
   @include transition(all, 200ms, ease-in-out);
   overflow-y: auto;
+  z-index: 2200;
+
+  &.lowerZIndex {
+    z-index: inherit;
+  }
 
   &.hidden {
     opacity: 0;
@@ -17,6 +22,7 @@
     margin: 0;
   }
   h1 {
+    text-transform: uppercase;
     color: $white;
     font-size: 1em;
     font-weight: 600;
@@ -31,12 +37,18 @@
     &:nth-child(1) {
       padding-top: 0em;
     }
+    @media screen and (max-width: $xsmall) {
+      font-size: 0.7em;
+    }
   }
   .panel {
     .header {
       padding: 0.5em 1em;
       display: flex;
       justify-content: space-between;
+      @media screen and (max-width: $xsmall) {
+        font-size: 0.85em;
+      }
     }
     .content {
       padding: 1em;
@@ -44,6 +56,9 @@
       &.hidden {
         display: none;
       }
+    }
+    &:last-child {
+      margin-bottom: 50px;
     }
   }
   .selectMode {
@@ -68,9 +83,9 @@
     }
     background: darken($bg_blue, 3%);
   }
-  .manager {
+
+  .navigation {
     text-align: center;
-    padding: 0.5em 0em;
     margin: 0px;
     text-transform: uppercase;
     @include transition(all, 100ms, ease-in-out);
@@ -79,22 +94,43 @@
     background: none;
     color: $white;
     font-size: 1em;
-
     &:hover {
       background: transparentize($teal,0.90);
       font-weight: bold;
     }
-
     &.active {
       background: $teal;
       font-weight: bold;
       color: $black;
     }
   }
+  .manager {
+    @extend .navigation;
+    padding: 0.5em 0em;
+    @media screen and (max-width: $xsmall) {
+      font-size: 0.8em;
+    }
+  }
+  .dashboard {
+    @extend .navigation;
+    text-transform: none;
+    padding: 0.75em 0em;
+    &:hover {
+      background: transparentize($white,0.95);
+    }
+    &.active {
+      background: transparentize($white, 0.9);
+      font-weight: bold;
+      color: $white;
+    }
+    @media screen and (max-width: $xsmall) {
+      font-size: 0.8em;
+    } 
+  }
+  
   .export {
       line-height: 45px;
   }
-
 }
 
 .feedback {

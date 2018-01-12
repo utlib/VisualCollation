@@ -9,81 +9,23 @@ module ControllerHelper
       end
       queries.each_with_index do |query, index| 
         error = {type: "", attribute: "", condition: "", values: "", conjunction: ""}
-        case query["type"]
-        when "group"
-          if !["type", "title"].include?(query["attribute"])
-            error["attribute"] = "valid attributes for group: [type, title]"
-            haveErrors = true
-          end
-          case query["attribute"]
-          when "type"
-            if !["equals", "not equals"].include?(query["condition"])
-              error["condition"] = "valid conditions for group attribute "+query["attribute"]+" : [equals, not equals]"
-              haveErrors = true
-            end
-          when "title"
-            if !["equals", "not equals", "contains", "not contains"].include?(query["condition"])
-              error["condition"] = "valid conditions for group attribute "+query["attribute"]+" : [equals, not equals, contains, not contains]"
-              haveErrors = true
-            end
-          end
-        when "leaf"
-          if !["type", "material", "conjoined_leaf_order", "attached_above", "attached_below", "stub"].include?(query["attribute"])
-            error["attribute"] = "valid attributes for leaf: [type, material, conjoined_leaf_order, attached_above, attached_below, stub]"
-            haveErrors = true
-          end
-          case query["attribute"]
-          when "type", "material", "conjoined_to", "attached_to", "stub"
-            if !["equals", "not equals"].include?(query["condition"])
-              error["condition"] = "valid conditions for leaf attribute "+query["attribute"]+" : [equals, not equals]"
-              haveErrors = true
-            end
-          end
-        when "side"
-          if !["folio_number", "texture", "script_direction", "uri"].include?(query["attribute"])
-            error["attribute"] = "valid attributes for side: [folio_number, texture, script_direction, uri]"
-            haveErrors = true
-          end
-          case query["attribute"]
-          when "texture", "script_direction"
-            if !["equals", "not equals"].include?(query["condition"])
-              error["condition"] = "valid conditions for side attribute "+query["attribute"]+" : [equals, not equals]"
-              haveErrors = true
-            end
-          when "folio_number", "uri"
-            if !["equals", "not equals", "contains", "not contains"].include?(query["condition"])
-              error["condition"] = "valid conditions for side attribute "+query["attribute"]+" : [equals, not equals, contains, not contains]"
-              haveErrors = true
-            end
-          end
-        when "note"
-          if !["title", "type", "description"].include?(query["attribute"])
-            error["attribute"] = "valid attributes for note: [title, type, description]"
-            haveErrors = true
-          end
-          case query["attribute"]
-          when "type"
-            if !["equals", "not equals"].include?(query["condition"])
-              error["condition"] = "valid conditions for note attribute "+query["attribute"]+" : [equals, not equals]"
-              haveErrors = true
-            end
-          when "title", "description"
-            if !["equals", "not equals", "contains", "not contains"].include?(query["condition"])
-              error["condition"] = "valid conditions for note attribute "+query["attribute"]+" : [equals, not equals, contains, not contains]"
-              haveErrors = true
-            end
-          end
-        else
-          error["type"] = "type should be one of: [group, leaf, side, note]"
+        if (qc = query_types['type'][query['type']]).nil?
+          error['type'] = "type should be one of: [#{query_types['type'].keys.join(', ')}]"
+          haveErrors = true
+        elsif (qc = qc[query['attribute']]).nil?
+          error['attribute'] = "valid attributes for #{query['type']}: [#{query_types['type'][query['type']].keys.join(', ')}]"
+          haveErrors = true
+        elsif not qc.include?(query['condition'])
+          error['condition'] = "valid conditions for #{query['type']} attribute #{query['attribute']} : [#{qc.join(', ')}]"
           haveErrors = true
         end
 
-        if queries.length > 1 && index<queries.length-1 && !["AND", "OR"].include?(query["conjunction"])
-          error["conjunction"] = "conjunction should be one of : [AND, OR]"
+        if queries.length > 1 && index<queries.length-1 && !query_types['conjunction'].include?(query["conjunction"])
+          error["conjunction"] = "conjunction should be one of : [#{query_types['conjunction'].join(', ')}]"
           haveErrors = true
         end
 
-        if query["values"] == []
+        if query["values"].blank?
           error["values"] = "query value cannot be empty"
           haveErrors = true
         end
@@ -93,6 +35,40 @@ module ControllerHelper
         end
       end
       return errors
+    end
+    
+    private
+    
+    def query_types
+      {
+        'type' => {
+          'group' => {
+            'type' => ['equals', 'not equals'],
+            'title' => ['equals', 'not equals', 'contains', 'not contains']
+          },
+          'leaf' => {
+            'type' => ['equals', 'not equals'],
+            'material' => ['equals', 'not equals'],
+            'conjoined_to' => ['equals', 'not equals'],
+            'conjoined_leaf_order' => ['equals', 'not equals'], # Legacy attribute
+            'attached_above' => ['equals', 'not equals'],
+            'attached_below' => ['equals', 'not equals'],
+            'stub' => ['equals', 'not equals']
+          },
+          'side' => {
+            'folio_number' => ['equals', 'not equals', 'contains', 'not contains'],
+            'texture' => ['equals', 'not equals'],
+            'script_direction' => ['equals', 'not equals'],
+            'uri' => ['equals', 'not equals', 'contains', 'not contains'],
+          },
+          'note' => {
+            'title' => ['equals', 'not equals', 'contains', 'not contains'],
+            'type' => ['equals', 'not equals'],
+            'description' => ['equals', 'not equals', 'contains', 'not contains']
+          }
+        },
+        'conjunction' => ['AND', 'OR']
+      }
     end
 
   end

@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import PropTypes from 'prop-types';
 import TextField from 'material-ui/TextField';
 import RaisedButton from 'material-ui/RaisedButton';
 import { btnLg } from '../../styles/button';
@@ -70,15 +69,6 @@ class ResetPassword extends Component {
         />
       </form>
     );
-  }
-
-  static propTypes = {
-    /** Callback function to submit password change. */
-    resetPassword: PropTypes.func,
-    /** Reset password token. */
-    reset_password_token: PropTypes.string, 
-    /** Success callback to close this component. */
-    handleResetPasswordSuccess: PropTypes.func,
   }
 }
 

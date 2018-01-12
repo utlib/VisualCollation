@@ -24,11 +24,10 @@ describe "POST /notes", :type => :request do
     context 'and standard notes' do
       before do
         post '/notes', params: @parameters.to_json, headers: {'Authorization' => @authToken, 'CONTENT_TYPE' => 'application/json', 'ACCEPT' => 'application/json'}
-        @body = JSON.parse(response.body)
       end
 
-      it 'returns 200' do
-        expect(response).to have_http_status(:ok)
+      it 'returns 204' do
+        expect(response).to have_http_status(:no_content)
       end
 
       it 'adds a note to the project' do

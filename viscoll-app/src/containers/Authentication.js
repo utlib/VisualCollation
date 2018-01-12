@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import PropTypes from 'prop-types';
 import RaisedButton from 'material-ui/RaisedButton';
 import imgCollation from '../assets/collation.png';
 import imgLogo from '../assets/logo_white.png';
@@ -10,6 +9,7 @@ import ResetPasswordRequest from '../components/authentication/ResetPasswordRequ
 import ResendConfirmation from '../components/authentication/ResendConfirmation';
 import {btnLg} from '../styles/button';
 import { connect } from "react-redux";
+import NetworkErrorScreen from "../components/global/NetworkErrorScreen";
 import { 
   login, 
   register, 
@@ -18,7 +18,7 @@ import {
   resetPassword,
   logout,
   resendConfirmation,
-} from "../actions/userActions";
+} from "../actions/backend/userActions";
 
 
 /** Landing page of the app.  Contain register, login and password reset forms. */
@@ -193,20 +193,11 @@ class Landing extends Component {
             {resetPassword}
             {resendConfirmation}
           </div>
-          </div>
-          <div className="panelBottom"></div>
+        </div>
+        <div className="panelBottom"></div>
+        <NetworkErrorScreen />
       </div>
     );
-  }
-  static propTypes = {
-    /** History object from React Router */
-    history: PropTypes.object,
-    /** Location object from React Router */
-    location: PropTypes.object,
-    /** Match object from React Router */
-    match: PropTypes.object,
-    /** User object from Redux store */
-    user: PropTypes.object,
   }
 }
 

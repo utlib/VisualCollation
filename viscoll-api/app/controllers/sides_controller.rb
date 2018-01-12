@@ -5,10 +5,7 @@ class SidesController < ApplicationController
   # PATCH/PUT /sides/1
   def update
     begin
-      if @side.update(side_params)
-        @data = generateResponse()
-        render :'projects/show', status: :ok
-      else
+      if !@side.update(side_params)
         render json: @side.errors, status: :unprocessable_entity
       end
     rescue Exception => e
@@ -45,13 +42,49 @@ class SidesController < ApplicationController
       end
       allSides.each_with_index do |side_params, index|
         side = sides[index]
+        previousSideImage = side.image.clone
         if !side.update(side_params[:attributes])
           render json: side.errors, status: :unprocessable_entity
           return
+        else
+          # SPEICAL CASE FOR DIY IMAGE MAPPING
+          if side_params[:attributes]["image"]
+            newSideImage = side_params[:attributes]["image"].clone
+            # If an image was linked, check if it was a DIY and link this Side to that Image
+            if newSideImage and !(newSideImage.empty?) and newSideImage["manifestID"]=="DIYImages"
+              imageID = newSideImage["url"].split("/")[-1].split("_", 2)[0]
+              begin
+                imageLinked = Image.find(imageID)
+                !(imageLinked.sideIDs.include?(side.id.to_s)) ? imageLinked.sideIDs.push(side.id.to_s) : nil
+                imageLinked.save
+              rescue Exception => e
+              end
+            end
+            # If an image was linked, check if this side was previously linked to a DIY Image and unlink this Side to that Image
+            if newSideImage and !newSideImage.empty? and !previousSideImage.empty? and previousSideImage["manifestID"]=="DIYImages"
+              imageID = previousSideImage["url"].split("/")[-1].split("_", 2)[0]
+              begin
+                imageUnlikned = Image.find(imageID)
+                if !imageLinked or imageLinked.id.to_s != imageUnlikned.id.to_s
+                  imageUnlikned.sideIDs.include?(side.id.to_s) ? imageUnlikned.sideIDs.delete(side.id.to_s) : nil
+                  imageUnlikned.save
+                end
+              rescue Exception => e
+              end
+            end
+            # If an Image was unlinked, check if it was a DIY and unlink this Side from the Image
+            if newSideImage and newSideImage.empty? and !previousSideImage.empty? and previousSideImage["manifestID"]=="DIYImages"
+              imageID = previousSideImage["url"].split("/")[-1].split("_", 2)[0]
+              begin
+                image = Image.find(imageID)
+                image.sideIDs.include?(side.id.to_s) ? image.sideIDs.delete(side.id.to_s) : nil
+                image.save
+              rescue Exception => e
+              end
+            end
+          end
         end
       end
-      @data = generateResponse()
-      render :'projects/show', status: :ok
     rescue Exception => e
       render json: {error: e.message}, status: :unprocessable_entity
     end

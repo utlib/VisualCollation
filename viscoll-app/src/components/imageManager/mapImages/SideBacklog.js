@@ -26,9 +26,9 @@ export default class SideBacklog extends Component {
     if (this.props.selectedObjects.members.includes(sideID))
       activeStyle = {backgroundColor: "#4ED6CB"}
     return (
-      <div key={side.id} style={{...style, ...activeStyle}} className="draggableItem" onClick={(event)=>this.props.handleObjectClick(this.props.id, sideID, event)}>
+      <div key={side.id} style={{...style, ...activeStyle}} className="moveableItem" onClick={(event)=>this.props.handleObjectClick(this.props.id, sideID, event)}>
         <div className="text">
-          {"Leaf " + side.parentOrder + " " + side.memberType + " ("+folioNumber+")"}
+          {"Leaf " + (this.props.leafIDs.indexOf(side.parentID)+1) + " " + side.memberType + " ("+folioNumber+")"}
         </div>
         {actionButtons}
       </div>

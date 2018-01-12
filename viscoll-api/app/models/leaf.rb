@@ -21,7 +21,7 @@ class Leaf
 
   # Callbacks
   before_create :edit_ID, :create_sides
-  before_destroy :unlink_notes, :destroy_sides
+  before_destroy :unlink_notes, :destroy_sides, :update_parent_group
 
 
   # Remove itself from its parent group
@@ -73,6 +73,14 @@ class Leaf
       belowLeaf = project.leafs.find(parent.memberIDs[memberOrder+1])
       belowLeaf.update(attached_above: self.attached_below)
     end
+  end
+
+  # Update leaf's parent Group's Tacketed & Sewing if it contains this leafID
+  def update_parent_group
+    group = Group.find(self.parentID)
+    group.tacketed.include?(self.id.to_s) ? group.tacketed.delete(self.id.to_s) : nil
+    group.sewing.include?(self.id.to_s) ? group.sewing.delete(self.id.to_s) : nil
+    group.save
   end
 end
 

@@ -1,5 +1,4 @@
 import React from 'react';
-import SelectField from 'material-ui/SelectField';
 import MenuItem from 'material-ui/MenuItem';
 import RaisedButton from 'material-ui/RaisedButton';
 import Checkbox from 'material-ui/Checkbox';
@@ -19,6 +18,9 @@ import IconPencil from 'material-ui/svg-icons/content/create';
 import Avatar from 'material-ui/Avatar';
 import AddNote from './dialog/AddNote';
 import VisualizationDialog from './dialog/VisualizationDialog';
+import SelectField from '../global/SelectField';
+import {btnBase} from '../../styles/button';
+import { checkboxStyle } from '../../styles/checkbox';
 
 export default class GroupInfoBox extends React.Component {
   constructor(props) {
@@ -105,14 +107,13 @@ export default class GroupInfoBox extends React.Component {
     });
   };
 
-
-  toggleCheckbox(target, value) {
+  toggleCheckbox(target) {
     let newToggleState = {};
-    newToggleState["batch_"+target]=value;
+    newToggleState["batch_"+target]=!this.state["batch_"+target];
     this.setState(newToggleState);
   }
 
-  dropDownChange = (event, index, value, attributeName) => {
+  dropDownChange = (value, attributeName) => {
     if (Object.keys(this.props.selectedGroups).length===1) {
       // In single edit - we submit change immediately
       this.singleSubmit(attributeName, value);
@@ -145,7 +146,7 @@ export default class GroupInfoBox extends React.Component {
   textCancel(e, attributeName) {
     let newAttributeState = {};
     newAttributeState[attributeName] = 
-    this.props.project.Groups[this.props.selectedGroups[0]][attributeName];
+    this.props.Groups[this.props.selectedGroups[0]][attributeName];
     let newEditingState = {};
     newEditingState["editing_"+attributeName] = false;
     this.setState({...newAttributeState,...newEditingState});
@@ -245,6 +246,8 @@ export default class GroupInfoBox extends React.Component {
       // Array has one item, which is the endleaf.  Replace endleaf ID
       groupPayload[type] = [value];
     }
+    if (!groupPayload[type][0])
+      groupPayload[type].splice(0, 1)
     this.props.action.updateGroup(targetGroup.id, groupPayload);
   }
 
@@ -287,9 +290,9 @@ export default class GroupInfoBox extends React.Component {
               aria-label={eyeIsChecked?"Hide '" + attributeDict.displayName + "' attribute in collation":"Show '" + attributeDict.displayName + "' attribute in collation"}
               checkedIcon={<Visibility />}
               uncheckedIcon={<VisibilityOff />}
-              onClick={(event,value)=>this.props.action.toggleVisibility("group", attributeDict.name, !this.props.visibleAttributes[attributeDict.name])}
-              style={{display:"inline-block",width:"25px",...eyeStyle}}
-              iconStyle={{marginRight:"10px",...eyeStyle}}
+              onClick={(event)=>this.props.action.toggleVisibility("group", attributeDict.name, !this.props.visibleAttributes[attributeDict.name])}
+              style={{display:this.props.windowWidth<=1024?"none":"inline-block",width:"25px",...eyeStyle}}
+              iconStyle={{...checkboxStyle().iconStyle,...eyeStyle}}
               checked={eyeIsChecked}
               onMouseEnter={()=>{this.setState({["visibility_hover_"+attributeDict.name]:true})}}
               onMouseOut={()=>{this.setState({["visibility_hover_"+attributeDict.name]:false})}}
@@ -305,11 +308,11 @@ export default class GroupInfoBox extends React.Component {
         label = <Checkbox
           aria-label={"Select '" + attributeDict.displayName + "' to batch edit"}
           label={attributeDict.displayName} 
-          onClick={(event,value)=>this.toggleCheckbox(attributeDict.name,value)}
-          labelStyle={!this.state["batch_"+attributeDict.name]?{color:"gray"}:{}}
+          onClick={()=>this.toggleCheckbox(attributeDict.name)}
+          labelStyle={!this.state["batch_"+attributeDict.name]?{color:"gray",fontSize:this.props.windowWidth<=768?"12px":null}:{fontSize:this.props.windowWidth<=768?"12px":null}}
           checked={this.state["batch_"+attributeDict.name]}
           style={{display:"inline-block",width:"25px"}}
-          iconStyle={{marginRight:"10px"}}
+          iconStyle={{...checkboxStyle().iconStyle}}
           tabIndex={this.props.tabIndex}
         />;
       } else {
@@ -321,9 +324,10 @@ export default class GroupInfoBox extends React.Component {
               label={attributeDict.displayName} 
               checkedIcon={<Visibility />}
               uncheckedIcon={<VisibilityOff />}
-              onClick={(event,value)=>this.props.action.toggleVisibility("group", attributeDict.name, !this.props.visibleAttributes[attributeDict.name])}
+              onClick={(event)=>this.props.action.toggleVisibility("group", attributeDict.name, !this.props.visibleAttributes[attributeDict.name])}
               style={{display:"inline-block",width:"25px",...eyeStyle}}
-              iconStyle={{marginRight:"10px", color:"gray",...eyeStyle}}
+              iconStyle={{...checkboxStyle().iconStyle, color:"gray", ...eyeStyle}}
+              labelStyle={{fontSize:this.props.windowWidth<=768?"12px":null}}
               checked={eyeIsChecked}
               onMouseEnter={()=>{this.setState({["visibility_hover_"+attributeDict.name]:true})}}
               onMouseOut={()=>{this.setState({["visibility_hover_"+attributeDict.name]:false})}}
@@ -343,28 +347,26 @@ export default class GroupInfoBox extends React.Component {
         if (attributeDict.options!==undefined) {
           // Drop down menu
           let menuItems = [];
+          let value = "keep";
           attributeDict.options.forEach((option, index)=> {
-            menuItems.push(<MenuItem key={attributeDict.name+option} value={option} primaryText={option} />);
+            menuItems.push({value:option, text: option});
           });
           if (groupAttributes[attributeDict.name]===null) {
-            menuItems.push(<MenuItem key={attributeDict.name+"keep"} value={"keep"} primaryText={"Keep same"} />);
+            menuItems.push({value:"keep", text:"Keep same"});
           }
-          let value = "keep";
-          if (this.state[attributeDict.name]!=="" && isBatch) {
-            value = this.state[attributeDict.name];
-          } else if (groupAttributes[attributeDict.name]!==null) {
+          if (groupAttributes[attributeDict.name]!==null) {
             value = groupAttributes[attributeDict.name];
           }
           input = (<SelectField
-                  aria-label={attributeDict.displayName + " attribute dropdown" }
-                  value={value}
-                  onChange={(e, i, v)=>this.dropDownChange(e,i,v,attributeDict.name)}
-                  fullWidth={true}
-                  disabled={isBatch && !this.state["batch_"+attributeDict.name]}
-                  tabIndex={this.props.tabIndex}
+                    id={"GIB_"+attributeDict.name}
+                    label={attributeDict.displayName + " attribute dropdown" }
+                    onChange={(v)=>this.dropDownChange(v,attributeDict.name)}
+                    disabled={isBatch && !this.state["batch_"+attributeDict.name]}
+                    tabIndex={this.props.tabIndex}
+                    data={menuItems}
+                    value={value}
                   >
-                  {menuItems}
-                </SelectField>
+                  </SelectField>
                 );
         } else {
           // Text box
@@ -376,7 +378,7 @@ export default class GroupInfoBox extends React.Component {
                   aria-label="Submit"
                   primary
                   icon={<IconSubmit />}
-                  style={{minWidth:"60px",marginLeft:"5px"}}
+                  style={{minWidth:this.props.windowWidth<=768?"35px":"60px",marginLeft:"5px"}}
                   onClick={(e)=>this.textSubmit(e,attributeDict.name)}
                   tabIndex={this.props.tabIndex}
                 />
@@ -384,7 +386,7 @@ export default class GroupInfoBox extends React.Component {
                   aria-label="Cancel"
                   secondary
                   icon={<IconClear />}
-                  style={{minWidth:"60px",marginLeft:"5px"}}
+                  style={{minWidth:this.props.windowWidth<=768?"35px":"60px",marginLeft:"5px"}}
                   onClick={(e)=>this.textCancel(e,attributeDict.name)}
                   tabIndex={this.props.tabIndex}
                 />
@@ -407,6 +409,7 @@ export default class GroupInfoBox extends React.Component {
                 onChange={(e,v)=>this.onTextboxChange(v,attributeDict.name)}
                 disabled={isBatch && !this.state["batch_"+attributeDict.name]}
                 tabIndex={this.props.tabIndex}
+                inputStyle={{fontSize:this.props.windowWidth<=1024?"12px":"16px"}}
               />
               {textboxButtons}
             </form>
@@ -414,9 +417,9 @@ export default class GroupInfoBox extends React.Component {
         }
       } else {
         if (!input && this.props.selectedGroups.length>1) {
-          input = <div style={{color:"gray", fontStyle: "italic", fontSize: "0.9em", padding:"10px 0px"}}>Different values</div>;
+          input = <div style={{color:"gray", fontStyle: "italic", fontSize: this.props.windowWidth<=768?"0.7em":"0.9em", padding:"10px 0px"}}>Different values</div>;
         } else {
-          input = <div style={{padding:"10px 0px"}}>{input}</div>;
+          input = <div style={{padding:"10px 0px", fontSize:this.props.windowWidth<=768?"0.7em":null}}>{input}</div>;
         }
       }
       attributeDivs.push(
@@ -461,9 +464,10 @@ export default class GroupInfoBox extends React.Component {
       addBtn = <RaisedButton 
           primary 
           label={this.props.selectedGroups ? "Add" : "Add New Group"} 
-          style={this.props.selectedGroups ? {width:"49%", float:"left", marginRight:"2%"} : {width:"100%", float:"left", marginRight:"2%"}}
           onClick={this.handleAddButtonTouchTap}
           tabIndex={this.props.tabIndex}
+          {...btnBase()}
+          style={this.props.selectedGroups ? {...btnBase().style, width: "48%", float:"left", marginRight:"2%"} : {width:"100%", float:"left", marginRight:"2%"}}
         />
     }
     let deleteBtn = 
@@ -473,6 +477,8 @@ export default class GroupInfoBox extends React.Component {
                   selectedObjects={this.props.selectedGroups}
                   memberType="Group"
                   Groups={this.props.Groups}
+                  groupIDs={this.props.groupIDs}
+                  leafIDs={this.props.leafIDs}
                   tabIndex={this.props.tabIndex}
                   togglePopUp={this.props.togglePopUp}
                 />
@@ -505,10 +511,10 @@ export default class GroupInfoBox extends React.Component {
           tabIndex={this.props.tabIndex}
         >
           <div>
-            <div style={{display:"inline-block"}}>
+            <div style={{display:"inline-block",fontSize:this.props.windowWidth<=768?10:null}}>
               {sewing.length===1? 
-                "Spine to Leaf " + this.props.Leafs[sewing[0]].order :
-                "Leaf " + this.props.Leafs[sewing[0]].order + " to Leaf " + this.props.Leafs[sewing[1]].order
+                  "Spine to Leaf " + (this.props.leafIDs.indexOf(sewing[0])+1) :
+                  "Leaf " + (this.props.leafIDs.indexOf(sewing[0]) + 1) + " to Leaf " + (this.props.leafIDs.indexOf(sewing[1])+1)
               }
             </div>
             <div style={this.props.viewMode==="VISUAL"?{display:"inline-block",margin:0,paddingLeft:8}:{display:"none"}}>
@@ -551,10 +557,10 @@ export default class GroupInfoBox extends React.Component {
           tabIndex={this.props.tabIndex}
         >
           <div>
-            <div style={{display:"inline-block"}}>
+            <div style={{display:"inline-block",fontSize:this.props.windowWidth<=768?10:null}}>
               {tacketed.length===1? 
-                "Spine to Leaf " + this.props.Leafs[tacketed[0]].order :
-                "Leaf " + this.props.Leafs[tacketed[0]].order + " to Leaf " + this.props.Leafs[tacketed[1]].order
+                "Spine to Leaf " + (this.props.leafIDs.indexOf(tacketed[0])+1) :
+                "Leaf " + (this.props.leafIDs.indexOf(tacketed[0])+1) + " to Leaf " + (this.props.leafIDs.indexOf(tacketed[1])+1)
               }
             </div>
             <div style={this.props.viewMode==="VISUAL"?{display:"inline-block",margin:0,paddingLeft:8}:{display:"none"}}>
@@ -584,6 +590,8 @@ export default class GroupInfoBox extends React.Component {
               noteTypes={this.props.noteTypes}
               tabIndex={this.props.tabIndex}
               togglePopUp={this.props.togglePopUp}
+              groupIDs={this.props.groupIDs}
+              leafIDs={this.props.leafIDs}
             /> : ""}
             <h3 key="notesHeading" style={this.props.isReadOnly&&notes.length===0?{display:'none'}:{}}>{this.props.selectedGroups.length>1?"Notes in common" : "Notes"}</h3>
             <div className="notesInfobox" style={notes.length===0?{display:'none'}:{}}>
@@ -597,12 +605,15 @@ export default class GroupInfoBox extends React.Component {
           <div style={{clear:"both"}}></div>
           <div style={this.props.isReadOnly?{display:"none"}:{}}>
             <h3>Actions</h3>
-            {addBtn}
-            {deleteBtn}
+              <div style={{textAlign:"center"}}>
+                {addBtn}
+                {deleteBtn}
+              </div>
           </div>
           <AddGroupDialog
             projectID={this.props.projectID}
             Groups={this.props.Groups}
+            groupIDs={this.props.groupIDs}
             selectedGroups={this.props.selectedGroups}
             action={{addGroups: this.props.action.addGroups}}           
             open={this.state.addGroupDialogOpen}
@@ -611,6 +622,7 @@ export default class GroupInfoBox extends React.Component {
           <AddGroupDialog
             projectID={this.props.projectID}
             Groups={this.props.Groups}
+            groupIDs={this.props.groupIDs}
             selectedGroups={this.props.selectedGroups}
             addLeafs={true}
             action={{addLeafs: this.props.action.addLeafs}}
@@ -622,6 +634,8 @@ export default class GroupInfoBox extends React.Component {
             type={this.state.visualizationDialogActive}
             closeDialog={()=>this.toggleVisualizationDialog("")}
             group={this.props.selectedGroups.length>0? this.props.Groups[this.props.selectedGroups[0]] : null}
+            groupIDs={this.props.groupIDs}
+            leafIDs={this.props.leafIDs}
             tacketed={this.props.Groups[this.props.selectedGroups[0]].tacketed}
             sewing={this.props.Groups[this.props.selectedGroups[0]].sewing}
             Leafs={this.props.Leafs}

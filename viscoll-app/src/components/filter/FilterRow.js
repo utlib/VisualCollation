@@ -1,13 +1,12 @@
 import React, {Component} from 'react';
 import {floatFieldLight} from '../../styles/textfield';
-import SelectField from 'material-ui/SelectField';
 import MenuItem from 'material-ui/MenuItem';
 import TextField from 'material-ui/TextField';
 import IconClear from 'material-ui/svg-icons/content/clear';
 import ContentAdd from 'material-ui/svg-icons/content/add';
 import IconButton from 'material-ui/IconButton';
 import FloatingActionButton from 'material-ui/FloatingActionButton';
-import AutoComplete from 'material-ui/AutoComplete';
+import SelectField from '../global/SelectField';
 
 /** A row of filter query */
 class FilterRow extends Component {
@@ -16,21 +15,21 @@ class FilterRow extends Component {
     if (this.props.type) {
       return this.props.defaultAttributes[this.props.type].map(this.mapAttributeMenuItems);
     } else {
-      return null;
+      return [];
     }
   }
   mapNoteAttributeMenuItems = (noteType, index) => {
-    return <MenuItem key={noteType+index} value={noteType} primaryText={noteType} />
+    return { key:noteType+index, value:noteType, text:noteType }
   }
   mapAttributeMenuItems = (item, index) => {
-    return <MenuItem key={item.name+index} value={item.name} primaryText={item.displayName} />
+    return { key:item.name+index, value:item.name, text:item.displayName}
   }
   renderValueItems = (item, index) => {
     return <MenuItem insetChildren key={item} value={item} primaryText={item} checked={this.props.values && this.props.values.indexOf(item) > -1} />;
   }
 
   mapConditionItems = (item) => {
-    return <MenuItem key={item} value={item} primaryText={item} />
+    return { key:item, value:item, text:item}
   }
 
   filterConditionItems = (item) => {
@@ -53,58 +52,44 @@ class FilterRow extends Component {
     if (this.props.attributeIndex!=="") {
       try {
         if (this.props.defaultAttributes[this.props.type] && this.props.defaultAttributes[this.props.type][this.props.attributeIndex]['options']!==undefined) {
-            input = 
-            (<SelectField
+            input = <SelectField
+              id="valueSelectField"
+              label="Select a value"
               floatingLabelText="Value"
-              value={this.props.values}
-              onChange={(e,i,v)=>this.props.onChange(this.props.queryIndex,"values",e,i,v)}
-              multiple
+              data={this.props.defaultAttributes[this.props.type][this.props.attributeIndex]['options'].map((x)=>{return{text:x,value:x}})}
+              tabIndex={this.props.tabIndex}
               errorText={(this.props.type!==null && this.props.values.length===0)?"Required":""}
-              style={{width:'100%'}}
-              tabIndex={this.props.tabIndex}
-              {...floatFieldLight}
-            >
-              {this.props.defaultAttributes[this.props.type][this.props.attributeIndex]['options'].map(this.renderValueItems)}
-            </SelectField>);
+              onChange={(v,i)=>this.props.onChange(this.props.queryIndex,"values",i,[v])}
+            />
         } 
-        else if (this.props.defaultAttributes[this.props.type] && this.props.defaultAttributes[this.props.type][this.props.attributeIndex]['name']==="conjoined_leaf_order"){
-          const dataSourceConfig = {
-            text: 'textKey',
-            value: 'valueKey',
-          };
+        else if (this.props.defaultAttributes[this.props.type] && this.props.defaultAttributes[this.props.type][this.props.attributeIndex]['name']==="conjoined_to"){
           input = 
-            (<AutoComplete
+          (
+            <SelectField
+              id="conjoinSelectField"
+              label="Select a value"
               floatingLabelText="Value"
-              onUpdateInput={(v,s,p)=>this.props.onChange(this.props.queryIndex, "values", null, null, v, s)}
-              filter={AutoComplete.caseInsensitiveFilter}
-              dataSource={this.props.conjoinedToAutoComplete}
-              dataSourceConfig={dataSourceConfig}
-              listStyle={{ maxHeight: 300, overflow: 'auto' }}
-              openOnFocus={true}
-              style={{width:'100%'}}
+              data={this.props.conjoinedToAutoComplete}
               tabIndex={this.props.tabIndex}
-            />);
+              onChange={(v,i)=>this.props.onChange(this.props.queryIndex,"values",i,[v])}
+            />
+          );
         } 
         else if (this.props.defaultAttributes[this.props.type] && this.props.defaultAttributes[this.props.type][this.props.attributeIndex]['name']==="type"){
-          const dataSourceConfig = {
-            text: 'textKey',
-            value: 'valueKey',
-          };
           let dataSource = this.props.noteTypes.map((noteType) => {
-            return {textKey: noteType, valueKey: noteType}
+            return {text: noteType, value: noteType}
           })
           input = 
-            (<AutoComplete
-              floatingLabelText="Value"
-              onUpdateInput={(v,s,p)=>this.props.onChange(this.props.queryIndex, "values", null, null, v, s)}
-              filter={AutoComplete.caseInsensitiveFilter}
-              dataSource={dataSource}
-              dataSourceConfig={dataSourceConfig}
-              listStyle={{ maxHeight: 300, overflow: 'auto' }}
-              openOnFocus={true}
-              style={{width:'100%'}}
-              tabIndex={this.props.tabIndex}
-            />);
+            (
+              <SelectField
+                id="noteTypeSelectField"
+                label="Select a value"
+                floatingLabelText="Value"
+                data={dataSource}
+                tabIndex={this.props.tabIndex}
+                onChange={(v,i)=>this.props.onChange(this.props.queryIndex,"values",i,[v])}
+              />
+            );
         } 
         else {
           input = 
@@ -126,72 +111,61 @@ class FilterRow extends Component {
       <div className="filterRow">
         <div className="filterField">
           <SelectField
+            id={"filterRowType"+this.props.queryIndex}
             floatingLabelText="Type"
             value={this.props.type}
-            onChange={(e,i,v)=>{let queryIndex = this.props.queryIndex; this.props.onChange(queryIndex,"type",e,i,v);}}
-            style={{width:'100%'}}
+            onChange={(v,i)=>{let queryIndex = this.props.queryIndex; this.props.onChange(queryIndex,"type",i,v);}}
             disabled={this.props.disableNewRow}
             tabIndex={this.props.tabIndex}
             {...floatFieldLight}
-          >
-            <MenuItem value={"leaf"} primaryText="Leaf" />
-            <MenuItem value={"group"} primaryText="Group" />
-            <MenuItem value={"side"} primaryText="Side" />
-            <MenuItem value={"note"} primaryText="Note" />
-          </SelectField>
+            data={[{value:"leaf",text:"Leaf"},{value:"group",text:"Group"},{value:"side",text:"Side"},{value:"note",text:"Note"}]}
+          />
         </div>
-
         <div className="filterField">
           <SelectField
+            id={"filterRowAttribute"+this.props.queryIndex}
             floatingLabelText="Attribute"
             value={this.props.attribute}
-            onChange={(e,i,v)=>{let queryIndex = this.props.queryIndex; this.props.clearFilterRowOnAttribute(queryIndex, v, i); this.props.onChange(this.props.queryIndex,"attribute",e,i,v)}}
-            style={{width:'100%'}}
-            errorText={(this.props.type!==null && this.props.attribute==="")?"Required":""}
-            autoWidth
-            disabled={this.props.disableNewRow}
+            onChange={(v,i)=>{let queryIndex = this.props.queryIndex; this.props.clearFilterRowOnAttribute(queryIndex, v, i); this.props.onChange(this.props.queryIndex,"attribute",i,v)}}
+            errorText={(this.props.type!=="" && this.props.type!==null && this.props.attribute==="")?"Required":""}
+            disabled={this.props.disableNewRow||!this.props.type}
             tabIndex={this.props.tabIndex}
+            data={this.renderAttributeMenuItems()}
             {...floatFieldLight}
           >
-            {this.renderAttributeMenuItems()}
           </SelectField>
         </div>
-
         <div className="filterField">
           <SelectField
+            id={"filterRowCondition"+this.props.queryIndex}
             floatingLabelText="Condition"
             value={this.props.condition}
-            onChange={(e,i,v)=>this.props.onChange(this.props.queryIndex,"condition",e,i,v)}
-            style={{width:'100%'}}
-            errorText={(this.props.type!==null && this.props.condition==="")?"Required":""}
+            onChange={(v,i)=>this.props.onChange(this.props.queryIndex,"condition",i,v)}
+            errorText={(this.props.type!=="" && this.props.type!==null && this.props.condition==="")?"Required":""}
             disabled={this.props.disableNewRow}
             tabIndex={this.props.tabIndex}
+            data={['equals', 'contains', 'not equals', 'not contains'].filter((item)=>this.filterConditionItems(item)).map(this.mapConditionItems)}
             {...floatFieldLight}
           >
-            {['equals', 'contains', 'not equals', 'not contains'].filter((item)=>this.filterConditionItems(item)).map(this.mapConditionItems)}
           </SelectField>
         </div>
-
         <div className="filterField">
           {this.renderValueField()}
         </div>
-
         <div className="filterField">
           <SelectField
+            id={"filterRowConjunction"+this.props.queryIndex}
             floatingLabelText="Conjunction"
             value={this.props.conjunction}
-            onChange={(e,i,v)=>this.props.onChange(this.props.queryIndex,"conjunction",e,i,v)}
-            style={{width:'100%'}}
+            onChange={(v,i)=>this.props.onChange(this.props.queryIndex,"conjunction",i,v)}
             disabled={this.props.lastRow}
             errorText={(!this.props.lastRow && this.props.conjunction==="")?"Required":""}
             tabIndex={this.props.tabIndex}
+            data={[{value:"AND", text:"AND"},{value:"OR", text:"OR"}]}
             {...floatFieldLight}
           >
-            <MenuItem key={"and"} value={"AND"} primaryText={"AND"} />
-            <MenuItem key={"or"} value={"OR"} primaryText={"OR"} />
           </SelectField>
         </div>
-
         <div className="filterField" style={{paddingTop: 20, flexGrow:1}}>
               <IconButton 
                 aria-label="Remove filter query row"

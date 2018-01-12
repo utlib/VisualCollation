@@ -1,5 +1,4 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import logoImg from '../../assets/logo_white.png';
 import CircularProgress from 'material-ui/CircularProgress';
 
@@ -23,9 +22,5 @@ const AppLoadingScreen = (props) => {
   } else {
     return <div></div>
   }
-}
-AppLoadingScreen.propTypes = {
-  /** `true` if loading screen should be shown */
-  loading: PropTypes.bool,
 }
 export default AppLoadingScreen;

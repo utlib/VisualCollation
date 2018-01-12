@@ -7,9 +7,7 @@ import Remove from 'material-ui/svg-icons/content/remove-circle-outline';
 import VirtualList from 'react-tiny-virtual-list';
 
 
-export default class ImageBin extends Component {
-
-
+export default class MapBoard extends Component {
 
 
   renderSideItem = (index) => {
@@ -24,6 +22,7 @@ export default class ImageBin extends Component {
           onClick={()=>this.props.moveItemUpOrDown(sideID, "sideMapBoard", "up")} 
           disabled={index===0}
           tabIndex={this.props.tabIndex}
+          style={this.props.windowWidth<=768?{width:40,height:40}:{}}
         >
           <ArrowUp />
         </IconButton>
@@ -33,7 +32,8 @@ export default class ImageBin extends Component {
           onClick={()=>this.props.moveItemUpOrDown(sideID, "sideMapBoard", "down")} 
           disabled={index===this.props.sideIDs.length-1}
           tabIndex={this.props.tabIndex}
-        >
+          style={this.props.windowWidth<=768?{width:40,height:40}:{}}
+          >
           <ArrowDown />
         </IconButton>
         <IconButton 
@@ -50,9 +50,9 @@ export default class ImageBin extends Component {
     if (this.props.selectedObjects.members.includes(sideID))
       activeStyle = {backgroundColor: "#4ED6CB"}
     return (
-      <div key={side.id} style={{...activeStyle, width: '49%', float: 'left'}} className="draggableItem" onClick={(event)=>this.props.handleObjectClick("sideMapBoard", sideID, event)}>
-        <div className="text"  style={{display: 'inline-block'}} onClick={(event)=> event.stopPropagation()}>
-          {"Leaf " + side.parentOrder + " " + side.memberType + " (" + folioNumber+")"}
+      <div key={side.id} style={{...activeStyle, width: this.props.windowWidth<=1024?'47%':'48.5%', float: 'left'}} className="moveableItem" onClick={(event)=>this.props.handleObjectClick("sideMapBoard", sideID, event)}>
+        <div className="text" style={{display: 'inline-block'}}>
+          {"Leaf " + (this.props.leafIDs.indexOf(side.parentID)+1) + " " + side.memberType + " (" + folioNumber+")"}
         </div>
         {actionButtons}
       </div>
@@ -60,7 +60,7 @@ export default class ImageBin extends Component {
   }
 
   renderGhostSideItem = (index) => {
-    return (<div key={index} style={{width: '49%', float: 'left', backgroundColor: '#eaeaea'}} className="draggableItem"/>);
+    return (<div key={index} style={{width: this.props.windowWidth<=1024?'47%':'48.5%', float: 'left', backgroundColor: '#eaeaea', borderColor:'#eaeaea'}} className="moveableItem"/>);
   }
 
   renderImageItem = (index) => {
@@ -96,18 +96,26 @@ export default class ImageBin extends Component {
       </div>
     );
     let activeStyle = {};
-    if (this.props.selectedObjects.members.find(item => item.label===image.label && item.manifestID===image.manifestID))
+    if (this.props.selectedObjects.members.find(item => item.url===image.url && item.manifestID===image.manifestID))
       activeStyle = {backgroundColor: "#4ED6CB"}
+    let manifestName = this.props.manifests[image.manifestID].name;
+    if (this.props.windowWidth<=768) { 
+      manifestName = manifestName.substring(0,8) + "..."; 
+    } else if (this.props.windowWidth<=1024) { 
+      manifestName = manifestName.substring(0,25) + "..."; 
+    }
     return (
-      <div key={image.label} style={{...activeStyle, width: '49%', float: 'right'}} className="draggableItem" onClick={(event)=>this.props.handleObjectClick("imageMapBoard", image, event)} >
+      <div key={"image"+index} style={{...activeStyle, width: this.props.windowWidth<=1024?'47%':'48.5%', float: 'right'}} className="moveableItem" onClick={(event)=>this.props.handleObjectClick("imageMapBoard", image, event)} >
         <div style={{display:"flex",alignItems:"center"}}>
-          <div className="thumbnail" onClick={(e)=>{e.stopPropagation();this.props.toggleImageModal(true, image.url)}}>
+          <div className="thumbnail" onClick={(e)=>{e.stopPropagation();this.props.toggleImageModal(true, image.url, image.manifestID.includes("DIY"))}}>
             <IconButton aria-label={"View " + image.label + " image"} tooltip="View Image" tabIndex={this.props.tabIndex}>
               <ThumbnailIcon/>
             </IconButton>
           </div>
-          <div onClick={(event)=> event.stopPropagation()}>
+          <div className="text" style={{overflow:"hidden", textOverflow:"ellipsis", maxWidth: this.props.windowWidth*0.37-220}}>
             {image.label}
+            <br />
+            <span>{manifestName}</span>
           </div>
         </div>
         {actionButtons}
@@ -117,13 +125,13 @@ export default class ImageBin extends Component {
 
 
   renderGhostImageItem = (index) => {
-    return (<div key={index} style={{width: '49%', float: 'right', backgroundColor: '#eaeaea'}} className="draggableItem"/>);
+    return (<div key={index} style={{width: this.props.windowWidth<=1024?'47%':'48.5%', float: 'right', backgroundColor: '#eaeaea', borderColor:'#eaeaea'}} className="moveableItem"/>);
   }
 
 
   renderItem = (index, style) => {
     return (
-      <div key={index} style={{...style}}>
+      <div key={"boardSide"+index} style={{...style}}>
         {this.props.sideIDs[index] ? 
           this.renderSideItem(index)
           :

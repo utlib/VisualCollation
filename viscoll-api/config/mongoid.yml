@@ -148,9 +148,7 @@ development:
 test:
   clients:
     default:
-      database: viscoll_api_test
-      hosts:
-        - localhost:27017
+      uri: mongodb://localhost:27017/viscoll_test
       options:
         read:
           mode: :primary

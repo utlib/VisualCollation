@@ -2,11 +2,9 @@ import { initialState } from './initialStates/user';
 
 export default function userReducer(state=initialState, action) {
   try {
-    if (action.error) {
-      if (action.error.status===0) return initialState;
-      action = {type: action.type, payload: action.error.response.data}
-    }
+    if (action.error) action = {type: action.type, payload: action.error.response.data}
   } catch (e) {}
+
   switch(action.type) {
     case "persist/REHYDRATE":
       state = {...state, ...action.payload.user, errors: initialState.errors}
@@ -25,12 +23,15 @@ export default function userReducer(state=initialState, action) {
         }
       break;
     case "LOGIN_FAILED":
+      let errorMessage = "";
+      if (action.payload && action.payload.errors) errorMessage = action.payload.errors.session;
+      if (action.error) errorMessage = [action.error.data];
       state = {
         ...state,
         errors: {
           ...state.errors,
           login: {
-            errorMessage: action.payload.errors.session
+            errorMessage,
           },
         }
       }
@@ -79,7 +80,7 @@ export default function userReducer(state=initialState, action) {
     case "DELETE_PROFILE_FAILED":
       break;
     case "CONFIRM_FAILED":
-      let errorMessage = "Error confirming your account!";
+      errorMessage = "Error confirming your account!";
       if (action.payload.errors.confirmation_token.length>0) {
         errorMessage = "Confirmation token " + action.payload.errors.confirmation_token[0];
       }
@@ -91,6 +92,7 @@ export default function userReducer(state=initialState, action) {
         }
       }
       break;
+
     default:
       break;
   }

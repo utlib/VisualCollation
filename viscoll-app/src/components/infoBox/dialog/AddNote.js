@@ -171,7 +171,7 @@ export default class AddNote extends React.Component {
               value={this.state.show}
               checked={this.state.show}
               style={{paddingTop:20}}
-              onCheck={(e,v)=>this.onChange("show",v)}
+              onClick={()=>this.onChange("show",!this.state.show)}
             />
           </div>
         </div>

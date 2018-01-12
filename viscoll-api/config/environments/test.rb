@@ -40,4 +40,10 @@ Rails.application.configure do
 
   # Raises error for missing translations
   # config.action_view.raise_on_missing_translations = true
+  
+  # Don't show Paperclip logs
+  Paperclip.options[:log] = false
+  
+  # Redirect uploaded files to uploads/test-images
+  Paperclip::Attachment.default_options[:path] = ":rails_root/uploads/test-files/:class/:id_partition/:style.:extension"
 end

@@ -1,8 +1,6 @@
 import React from 'react';
 import AddLeafDialog from '../infoBox/dialog/AddLeafDialog';
 import DeleteConfirmationDialog from '../infoBox/dialog/DeleteConfirmationDialog';
-import SelectField from 'material-ui/SelectField';
-import MenuItem from 'material-ui/MenuItem';
 import RaisedButton from 'material-ui/RaisedButton';
 import Checkbox from 'material-ui/Checkbox';
 import Visibility from 'material-ui/svg-icons/action/visibility';
@@ -12,6 +10,11 @@ import Chip from 'material-ui/Chip';
 import Dialog from 'material-ui/Dialog';
 import AddNote from './dialog/AddNote';
 import ImageViewer from "../global/ImageViewer";
+import SelectField from '../global/SelectField';
+import { getMemberOrder } from '../../helpers/getMemberOrder';
+import { checkboxStyle } from '../../styles/checkbox';
+import { btnBase } from '../../styles/button';
+import FolioNumberDialog from '../infoBox/dialog/FolioNumberDialog';
 
 export default class LeafInfoBox extends React.Component {
 
@@ -20,6 +23,7 @@ export default class LeafInfoBox extends React.Component {
     
     this.state = {
       imageModalOpen: false,
+      folioModalOpen: false,
       isBatch: this.props.selectedLeaves.length>1,
       ...this.emptyAttributeState(),
       ...this.batchAttributeToggleState(),
@@ -50,11 +54,7 @@ export default class LeafInfoBox extends React.Component {
   emptyAttributeState = () => {
     let state = {};
     for (var i in this.props.defaultAttributes) {
-      if (this.props.defaultAttributes[i]["name"]==="attached_to") {
-        state[this.props.defaultAttributes[i]["name"]]=[];
-      } else {
-        state[this.props.defaultAttributes[i]["name"]]="";
-      }
+      state[this.props.defaultAttributes[i]["name"]]="";
     }
     return state;
   }
@@ -78,8 +78,7 @@ export default class LeafInfoBox extends React.Component {
       }
     return false;
   }
-
-  dropDownChange = (event, index, value, attributeName) => {
+  dropDownChange = (value, attributeName) => {
     if (this.props.selectedLeaves.length===1) {
       // In single edit - we submit change immediately
       let attributes = {};
@@ -96,7 +95,8 @@ export default class LeafInfoBox extends React.Component {
     }
   }
 
-  onConjoinChange = (event, index, leaf, newID) => {
+  onConjoinChange = (leaf, newID) => {
+    if (newID==="None") newID = null;
     let request = {conjoined_to: newID };
     this.props.action.updateLeaf(leaf.id, request);
   }
@@ -153,9 +153,9 @@ export default class LeafInfoBox extends React.Component {
   }
 
   // Handle checkbox toggling by updating relevant attribute state
-  toggleCheckbox = (target, value) => {
+  toggleCheckbox = (target) => {
     let newToggleState = {};
-    newToggleState["batch_"+target]=value;
+    newToggleState["batch_"+target]= !this.state["batch_"+target];
     this.setState(newToggleState);
   }
 
@@ -172,6 +172,7 @@ export default class LeafInfoBox extends React.Component {
           onRequestDelete={deleteFn}
           onClick={()=>this.props.openNoteDialog(note)}
           tabIndex={this.props.tabIndex}
+          labelStyle={{fontSize:this.props.windowWidth<=1024?12:null}}
         >
           {note.title}
         </Chip>);
@@ -188,25 +189,37 @@ export default class LeafInfoBox extends React.Component {
     this.setState({imageModalOpen})
     this.props.togglePopUp(imageModalOpen);
   }
+  toggleFolioModal = (folioModalOpen) => {  
+    this.setState({folioModalOpen})
+    this.props.togglePopUp(folioModalOpen);
+  }
 
   render() {
     let leafAttributes = this.getAttributeValues();
     let attributeDivs = [];
     const activeLeaf = this.props.Leafs[this.props.selectedLeaves[0]];
+    const activeLeafOrder = this.props.leafIDs.indexOf(activeLeaf.id)+1;
     const parentGroup = this.props.Groups[activeLeaf.parentID];
     const leafMembersOfCurrentGroup = getLeafsOfGroup(parentGroup, this.props.Leafs);
-    const isFirstLeaf = activeLeaf.memberOrder===1;
+    const isFirstLeaf = getMemberOrder(activeLeaf, this.props.Groups, this.props.groupIDs)===1;
     const isLastLeaf = activeLeaf.id===leafMembersOfCurrentGroup[leafMembersOfCurrentGroup.length-1].id;
     const hasOnlyActiveLeaf = leafMembersOfCurrentGroup.length===2; // 2 because there's none leaf
-
     // Generate drop down for each leaf attribute
     this.props.defaultAttributes.forEach((attributeDict)=> {
-      if (attributeDict.name.includes("attached_to")) {
+      if (attributeDict.name.includes("attached")) {
         if (hasOnlyActiveLeaf || (isFirstLeaf && attributeDict.name.includes("above")) || (isLastLeaf && attributeDict.name.includes("below"))) {
-              return;
-            }
+          return;
+        }
       }
-      let label = <div style={{padding:"10px 0px", color:"rgb(78, 78, 78)"}}>{attributeDict.displayName}</div>;
+      let fontSize = null;
+      if (this.props.windowWidth<=768) {
+        fontSize = "12px";
+      } else if (this.props.windowWidth<=1024 && this.state.isBatch) {
+        fontSize = "13px";
+      } else if (this.props.windowWidth<=1024) {
+        fontSize = "14px";
+      }
+      let label = <div style={{padding:"10px 0px", color:"rgb(78, 78, 78)", fontSize}}>{attributeDict.displayName}</div>;
       // Generate eye toggle checkbox
       let eyeCheckbox = "";
       if (this.props.viewMode==="TABULAR" && this.state.isBatch) {
@@ -216,9 +229,9 @@ export default class LeafInfoBox extends React.Component {
             aria-label={this.props.visibleAttributes[attributeDict.name]?"Hide '" + attributeDict.displayName + "' attribute in collation":"Show '" + attributeDict.displayName + "' attribute in collation"}
             checkedIcon={<Visibility  />}
             uncheckedIcon={<VisibilityOff />}
-            onClick={(event,value)=>this.props.action.toggleVisibility("leaf", attributeDict.name, !this.props.visibleAttributes[attributeDict.name])}
-            style={{display:"inline-block",width:"25px"}}
-            iconStyle={{marginRight:"10px"}}
+            onClick={(event)=>this.props.action.toggleVisibility("leaf", attributeDict.name, !this.props.visibleAttributes[attributeDict.name])}
+            style={this.props.windowWidth<=1024?{display:"none"}:{display:"inline-block",width:"25px"}}
+            iconStyle={{...checkboxStyle().iconStyle}}
             checked={this.props.visibleAttributes[attributeDict.name]}
             onMouseEnter={()=>{this.setState({["visibility_hover_"+attributeDict.name]:true})}}
             onMouseOut={()=>{this.setState({["visibility_hover_"+attributeDict.name]:false})}}
@@ -241,10 +254,11 @@ export default class LeafInfoBox extends React.Component {
             label={attributeDict.displayName} 
             checkedIcon={<Visibility />}
             uncheckedIcon={<VisibilityOff />}
-            onClick={(event,value)=>this.props.action.toggleVisibility("leaf", attributeDict.name, !this.props.visibleAttributes[attributeDict.name])}
+            onClick={(event)=>this.props.action.toggleVisibility("leaf", attributeDict.name, !this.props.visibleAttributes[attributeDict.name])}
             style={{display:"inline-block",width:"25px"}}
             checked={this.props.visibleAttributes[attributeDict.name]}
-            iconStyle={{marginRight:"10px", color:"gray"}}
+            iconStyle={{...checkboxStyle().iconStyle,color:"gray"}}
+            labelStyle={{...checkboxStyle().labelStyle}}
             onMouseEnter={()=>{this.setState({["visibility_hover_"+attributeDict.name]:true})}}
             onMouseOut={()=>{this.setState({["visibility_hover_"+attributeDict.name]:false})}}
             tabIndex={this.props.tabIndex}
@@ -263,47 +277,50 @@ export default class LeafInfoBox extends React.Component {
                   aria-label={"Select '" + attributeDict.displayName + "' to batch edit"}
                   key={"batch_"+attributeDict.displayName}
                   label={attributeDict.displayName} 
-                  onClick={(event,value)=>this.toggleCheckbox(attributeDict.name,value)}
+                  onClick={()=>this.toggleCheckbox(attributeDict.name)}
                   labelStyle={!this.state["batch_"+attributeDict.name]?{color:"gray"}:{}}
                   checked={this.state["batch_"+attributeDict.name]}
                   style={{display:"inline-block",width:"25px"}}
-                  iconStyle={{marginRight:"10px"}}
-                  disabled={(attributeDict.name==="conjoined_leaf_order"||attributeDict.name.includes("attached_to"))}
+                  disabled={(attributeDict.name==="conjoined_to"||attributeDict.name.includes("attached"))}
                   tabIndex={this.props.tabIndex}
+                  {...checkboxStyle()}
                 />;
       }
       let input = leafAttributes[attributeDict.name];
       if (!this.props.isReadOnly) {
-        if (attributeDict.name==="conjoined_leaf_order") {
+        if (attributeDict.name ==="conjoined_to") {
           let menuItems = [];
+          let value=this.state.isBatch?"":"None";
           leafMembersOfCurrentGroup.forEach((member)=> {
-            menuItems.push(
-              <MenuItem 
-                disabled={activeLeaf.order === member.order}
-                key={member.id} 
-                value={member.id} 
-                primaryText={member.order} 
-              />);
+            if (activeLeafOrder!==this.props.leafIDs.indexOf(member.id)+1) {
+              menuItems.push({
+                value: member.id,
+                text: this.props.leafIDs.indexOf(member.id) > -1 ? (this.props.leafIDs.indexOf(member.id)+1).toString() : "None",
+              });
+            }
+            if (member.id === leafAttributes["conjoined_to"]) {
+              value = member.id;
+            }
           });
           input = 
             <SelectField
-              aria-label={attributeDict.displayName + " attribute dropdown" }
-              value={activeLeaf.conjoined_to}
-              onChange={(e, i, v)=>this.onConjoinChange(e,i,activeLeaf,v)}
-              fullWidth={true}
+              id={"LIB_"+attributeDict.name}
+              label={attributeDict.displayName + " attribute dropdown" }
+              onChange={(v)=>this.onConjoinChange(activeLeaf,v)}
               disabled={this.state.isBatch}
               tabIndex={this.props.tabIndex}
+              data={menuItems}
+              value={value}
             >
-              {menuItems}
             </SelectField>
         } else {
           // Populate drop down items
           let menuItems = [];
           attributeDict.options.forEach((option, index)=> {
-            menuItems.push(<MenuItem key={attributeDict.name+option} value={option} primaryText={option} />);
+            menuItems.push({value:option, text:option});
           });
           if (leafAttributes[attributeDict.name]===null) {
-            menuItems.push(<MenuItem key={attributeDict.name+"keep"} value={"keep"} primaryText={"Keep same"} />);
+            menuItems.push({value:"keep", text:"Keep same"});
           }
           let value = "keep";
           if (this.state[attributeDict.name]!=="" && this.state.isBatch) {
@@ -313,19 +330,25 @@ export default class LeafInfoBox extends React.Component {
           }
           input = 
             <SelectField
-              aria-label={attributeDict.displayName + " attribute dropdown" }
+              id={"LIB_"+attributeDict.name}
+              label={attributeDict.displayName + " attribute dropdown" }
               value={value}
-              onChange={(e, i, v)=>this.dropDownChange(e,i,v,attributeDict.name)}
-              fullWidth={true}
+              onChange={(v)=>this.dropDownChange(v,attributeDict.name)}
               disabled={this.state.isBatch && !this.state["batch_"+attributeDict.name]}
               tabIndex={this.props.tabIndex}
+              data={menuItems}
             >
-              {menuItems}
             </SelectField>
         }
       } else if (!input && this.props.selectedLeaves.length>1) {
         // We're in readOnly mode with no common attribute value
-        input = <div style={{color:"gray", fontStyle: "italic", fontSize: "0.9em"}}>Different values</div>;
+        input = <div style={{color:"gray", fontStyle: "italic", fontSize: this.props.windowWidth<=768?"0.7em":"0.9em"}}>Different values</div>;
+      } else if (attributeDict.name==="conjoined_to") {
+        if (leafAttributes[attributeDict.name]) {
+          input = this.props.leafIDs.indexOf(this.props.Leafs[leafAttributes[attributeDict.name]].id) + 1;
+        } else {
+          input = "None";
+        }
       }
       attributeDivs.push(
         <div className="row" key={attributeDict.name}>
@@ -333,7 +356,7 @@ export default class LeafInfoBox extends React.Component {
             {eyeCheckbox}
             {label}
           </div>
-          <div className="input">
+          <div className="input" style={{fontSize:this.props.windowWidth<=768?"0.7em":null}}>
             {input}
           </div>
         </div>
@@ -354,6 +377,9 @@ export default class LeafInfoBox extends React.Component {
       addBtn = <AddLeafDialog
                 action={{addLeafs: this.props.action.addLeafs}}
                 Leafs={this.props.Leafs}
+                leafIDs={this.props.leafIDs}
+                Groups={this.props.Groups}
+                groupIDs={this.props.groupIDs}
                 selectedLeaves={this.props.selectedLeaves}
                 projectID={this.props.projectID}
                 togglePopUp={this.props.togglePopUp}
@@ -368,6 +394,8 @@ export default class LeafInfoBox extends React.Component {
         memberType="Leaf"
         Leafs={this.props.Leafs}
         Groups={this.props.Groups}
+        groupIDs={this.props.groupIDs}
+        leafIDs={this.props.leafIDs}
         togglePopUp={this.props.togglePopUp}
         tabIndex={this.props.tabIndex}
       />
@@ -375,13 +403,24 @@ export default class LeafInfoBox extends React.Component {
 
     let conjoinButton = (
       <RaisedButton 
-        primary fullWidth 
-        onClick={this.props.conjoinLeafs} 
-        label="Conjoin Selected Leaves"
-        style={{marginBottom:10}}
-        tabIndex={this.props.tabIndex}
+        primary 
+        onClick={this.props.autoConjoinLeafs} 
+        label="Conjoin Leaves"
+        {...btnBase()}
+        style={{...btnBase().style,marginBottom:10,width:"100%"}}
+        tabIndex={this.props.tabIndex} 
       />
-    );
+    ); 
+    let generateFolioButton = this.state.isBatch? (
+      <RaisedButton 
+        primary 
+        onClick={()=>this.toggleFolioModal(true)} 
+        label="Generate folio numbers"
+        {...btnBase()}
+        style={{...btnBase().style,marginBottom:10,width:"100%"}}
+        tabIndex={this.props.tabIndex} 
+      />) : "";
+
     if (this.props.selectedLeaves.length<2){
       conjoinButton = "";
     } else {
@@ -402,7 +441,14 @@ export default class LeafInfoBox extends React.Component {
         // replace imageModalContent view OSD component
         const rectoURL = recto.image ? recto.image.url : null;
         const versoURL = verso.image ? verso.image.url : null;
-        imageModalContent = (<ImageViewer rectoURL={rectoURL} versoURL={versoURL} />);
+        const isRectoDIY = recto.image.manifestID? recto.image.manifestID.includes("DIY") : false;
+        const isVersoDIY = verso.image.manifestID? verso.image.manifestID.includes("DIY") : false;
+        imageModalContent = (<ImageViewer 
+          isRectoDIY={isRectoDIY} 
+          isVersoDIY={isVersoDIY} 
+          rectoURL={rectoURL} 
+          versoURL={versoURL} 
+        />);
         if (rectoURL) {
           imageThumbnails.push(
             <button 
@@ -415,8 +461,9 @@ export default class LeafInfoBox extends React.Component {
             >
               <img 
                 alt={recto.folio_number}
-                src={rectoURL+"/full/80,/0/default.jpg"} 
+                src={isRectoDIY? rectoURL : rectoURL+"/full/80,/0/default.jpg"} 
                 style={{cursor: "pointer"}}
+                width={80}
               />
               <br />
               {recto.folio_number}
@@ -435,8 +482,9 @@ export default class LeafInfoBox extends React.Component {
             >
               <img 
                 alt={verso.folio_number}
-                src={versoURL+"/full/80,/0/default.jpg"} 
+                src={isVersoDIY? versoURL : versoURL+"/full/80,/0/default.jpg"} 
                 style={{cursor: "pointer"}}
+                width={80}
               />
               <br />
               {verso.folio_number}
@@ -466,6 +514,8 @@ export default class LeafInfoBox extends React.Component {
               noteTypes={this.props.noteTypes}
               togglePopUp={this.props.togglePopUp}
               tabIndex={this.props.tabIndex}
+              groupIDs={this.props.groupIDs}
+              leafIDs={this.props.leafIDs}
             />}
               <div>
                 <h3 key="notesHeading">
@@ -483,20 +533,27 @@ export default class LeafInfoBox extends React.Component {
             <div>
               <h3>Actions</h3>
               {conjoinButton}
+              {generateFolioButton}
               {addBtn}
               {deleteBtn}
             </div>
           }
 
           <Dialog
-          modal={false}
-          open={this.state.imageModalOpen}
-          onRequestClose={()=>this.toggleImageModal(false)}
-          contentStyle={{background: "none", boxShadow: "inherit"}}
-          bodyStyle={{padding:0}}
-        >
-          {imageModalContent}
-        </Dialog>
+            modal={false}
+            open={this.state.imageModalOpen}
+            onRequestClose={()=>this.toggleImageModal(false)}
+            contentStyle={{background: "none", boxShadow: "inherit"}}
+            bodyStyle={{padding:0}}
+          >
+            {imageModalContent}
+          </Dialog>
+          <FolioNumberDialog
+            defaultFolioNumber={this.props.leafIDs.indexOf(this.props.selectedLeaves[0])+1}
+            folioModalOpen={this.state.folioModalOpen}
+            toggleFolioModal={this.toggleFolioModal}
+            action={{generateFolioNumbers: this.props.action.generateFolioNumbers}}
+          />
       </div>
     );
   }

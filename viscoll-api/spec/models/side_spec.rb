@@ -13,7 +13,8 @@ RSpec.describe Side, type: :model do
   it { is_expected.to have_and_belong_to_many(:notes) }
   
   before :each do
-    @project = FactoryGirl.create(:project)
+    @user = FactoryGirl.create(:user)
+    @project = FactoryGirl.create(:project, user: @user)
     @leaf = FactoryGirl.create(:leaf, project: @project)
     @side = Side.find(id: @leaf.rectoID)
   end
@@ -29,6 +30,14 @@ RSpec.describe Side, type: :model do
       @side.destroy
       expect(note.objects[:Recto]).to be_empty
       expect(note2.objects[:Verso]).to be_empty
+    end
+    
+    it "should unlink attached image" do
+      image = FactoryGirl.create(:pixel, user: @user, filename: 'pixel.png', projectIDs: [@project.id.to_s], sideIDs: [@side.id.to_s])
+      @side.update(image: { url: "http://127.0.0.1:12345/images/#{image.id}_pixel.png", label: 'Pixel', manifestID: 'DIYImages' })
+      @side.destroy
+      image.reload
+      expect(image.sideIDs).to be_empty
     end
   end
 end  

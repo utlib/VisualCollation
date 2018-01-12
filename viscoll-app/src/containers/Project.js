@@ -1,13 +1,14 @@
 import React, {Component} from 'react';
 import { connect } from "react-redux";
-import PropTypes from 'prop-types';
 import CollationManager from './CollationManager'
 import NotesManager from './NotesManager';
 import ImageManager from './ImageManager';
 import LoadingScreen from "../components/global/LoadingScreen";
 import Notification from "../components/global/Notification";
+import ServerErrorScreen from "../components/global/ServerErrorScreen";
+import NetworkErrorScreen from "../components/global/NetworkErrorScreen";
 import Feedback from "./Feedback";
-import { loadProject } from "../actions/editCollation/modificationActions";
+import { loadProject } from "../actions/backend/projectActions";
 
 
 /** Container for 'Manager (Collation or Notes or Image)', `LoadingScreen`, and `Notification`. */
@@ -34,9 +35,9 @@ class Project extends Component {
   }
 
   render() { 
-    const collationManager = (<CollationManager history={this.props.history} togglePopUp={this.togglePopUp} popUpActive={this.state.popUpActive} />);
-    const notesManager = (<NotesManager history={this.props.history} togglePopUp={this.togglePopUp} popUpActive={this.state.popUpActive} />);
-    const imageManager = (<ImageManager history={this.props.history} togglePopUp={this.togglePopUp} popUpActive={this.state.popUpActive} />);
+    const collationManager = (<CollationManager history={this.props.history} togglePopUp={this.togglePopUp} popUpActive={this.state.popUpActive||this.props.loading} />);
+    const notesManager = (<NotesManager history={this.props.history} togglePopUp={this.togglePopUp} popUpActive={this.state.popUpActive||this.props.loading} />);
+    const imageManager = (<ImageManager history={this.props.history} togglePopUp={this.togglePopUp} popUpActive={this.state.popUpActive||this.props.loading} />);
     let manager;
     switch (this.props.managerMode) {
       case "collationManager":
@@ -58,21 +59,10 @@ class Project extends Component {
         <LoadingScreen loading={this.props.loading} />
         <Notification message={this.props.notification} />
         <Feedback togglePopUp={this.togglePopUp} tabIndex={this.state.popUpActive?-1:0} />
+        <ServerErrorScreen />
+        <NetworkErrorScreen />
       </div>
     )
-  }
-
-  static propTypes = {
-    /** History object from React Router */
-    history: PropTypes.object,
-    /** Location object from React Router */
-    location: PropTypes.object,
-    /** User object from Redux store */
-    user: PropTypes.object,
-    /** Boolean if loading screen should appear - from Redux store */
-    loading: PropTypes.bool,
-    /** Notification message from Redux store */
-    notification: PropTypes.string,
   }
 }
 

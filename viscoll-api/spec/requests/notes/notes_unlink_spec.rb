@@ -46,7 +46,7 @@ describe "PUT /notes/id/unlink", :type => :request do
       end
 
       it 'should return 200' do
-        expect(response).to have_http_status(:ok)
+        expect(response).to have_http_status(:no_content)
       end
 
       it 'should remove the note from the target' do
@@ -70,7 +70,7 @@ describe "PUT /notes/id/unlink", :type => :request do
       end
 
       it 'should return 200' do
-        expect(response).to have_http_status(:ok)
+        expect(response).to have_http_status(:no_content)
       end
 
       it 'should remove the note from the target' do
@@ -97,7 +97,7 @@ describe "PUT /notes/id/unlink", :type => :request do
       end
 
       it 'should return 200' do
-        expect(response).to have_http_status(:ok)
+        expect(response).to have_http_status(:no_content)
       end
 
       it 'should remove the note from the target' do

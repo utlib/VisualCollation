@@ -47,6 +47,8 @@ gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]
 
 gem 'mongoid', '~> 6.2'
 gem 'rails_jwt_auth', '~> 0.16.1'
+gem "mongoid-paperclip"
+gem 'rubyzip'
 
 # Use Rack CORS for handling Cross-Origin Resource Sharing (CORS), making cross-origin AJAX possible
 gem 'rack-cors', '~> 0.4.1'

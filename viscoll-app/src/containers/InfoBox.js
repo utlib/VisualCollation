@@ -1,5 +1,4 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import GroupInfoBox from '../components/infoBox/GroupInfoBox';
 import LeafInfoBox from '../components/infoBox/LeafInfoBox';
 import SideInfoBox from '../components/infoBox/SideInfoBox';
@@ -8,32 +7,39 @@ import {Tabs, Tab} from 'material-ui/Tabs';
 import RaisedButton from 'material-ui/RaisedButton';
 import AddGroupDialog from '../components/infoBox/dialog/AddGroupDialog';
 import { connect } from "react-redux";
-import { 
-  addLeafs,
-  updateLeaf, 
-  updateLeafs,
-  conjoinLeafs,
-  deleteLeaf,
-  deleteLeafs,
-  addGroups,
-  updateGroup,
-  updateGroups,
-  deleteGroup,
-  deleteGroups,
-  updateSide, 
-  updateSides,
+import {
+    addLeafs,
+    updateLeaf,
+    updateLeafs,
+    autoConjoinLeafs,
+    deleteLeaf,
+    deleteLeafs,
+    generateFolioNumbers,
+} from '../actions/backend/leafActions';
+import {
+    addGroups,
+    updateGroup,
+    updateGroups,
+    deleteGroup,
+    deleteGroups,
+} from '../actions/backend/groupActions';
+import {
+    updateSide,
+    updateSides,
+} from '../actions/backend/sideActions';
+import {
   addNote,
   linkNote,
-} from '../actions/editCollation/modificationActions';
+} from '../actions/backend/noteActions';
 import {
   toggleVisibility,
-  flashLeaves,
-  flashGroups,
   changeInfoBoxTab,
-  reapplyFilterProject,
-  toggleVisualizationDrawing,
-} from '../actions/editCollation/interactionActions';
 
+  toggleVisualizationDrawing,
+} from '../actions/backend/interactionActions';
+import {
+  reapplyFilterProject,
+} from '../actions/backend/filterActions';
 
 /** Container of the leaf, group and side infoboxes */
 class InfoBox extends React.Component {
@@ -50,7 +56,8 @@ class InfoBox extends React.Component {
    * @public
    */
   toggleAddGroupDialog = (value=false) => {
-    this.setState({ addGroupDialogOpen: value })
+    this.setState({ addGroupDialogOpen: value });
+    this.props.togglePopUp(value);
   }
 
   /**
@@ -58,7 +65,24 @@ class InfoBox extends React.Component {
    * @param {object} data 
    * @public
    */
-  addLeafs = (data) => { this.props.addLeafs(data.leaf, data.additional, this.props.projectID, this.props.filters); }
+  addLeafs = (data) => { 
+    let leafIDs = [];
+    const userID = this.props.user.id;
+    for (let count = 0; count < data.additional.noOfLeafs; count++){
+      const date = Date.now().toString();
+      const IDHash = userID + date + count;
+      leafIDs.push(IDHash.substr(IDHash.length - 24))
+    }
+    let sideIDs = []
+    for (let count = leafIDs.length; count < leafIDs.length+data.additional.noOfLeafs*2; count++) {
+      const date = Date.now().toString();
+      const IDHash = userID + date + count;
+      sideIDs.push(IDHash.substr(IDHash.length - 24));
+    }
+    data.additional["leafIDs"] = leafIDs;
+    data.additional["sideIDs"] = sideIDs;
+    this.props.addLeafs(data.leaf, data.additional, this.props.projectID, this.props.filters); 
+  }
 
   /**
    * Submit update leaf request
@@ -79,8 +103,8 @@ class InfoBox extends React.Component {
    * Submit conjoin leaves request
    * @public
    */
-  conjoinLeafs = () => { 
-    this.props.conjoinLeafs(this.props.selectedObjects.members, this.props.projectID, this.props.filters); }
+  autoConjoinLeafs = () => { 
+    this.props.autoConjoinLeafs(this.props.selectedObjects.members, this.props.projectID, this.props.filters); }
 
   /**
    * Submit delete leaf request
@@ -116,7 +140,31 @@ class InfoBox extends React.Component {
    * @param {object} data
    * @public
    */
-  addGroups = (data) => { this.props.addGroups(data.group, data.additional, this.props.projectID, this.props.filters); }
+  addGroups = (data) => { 
+    const userID = this.props.user.id;
+    let groupIDs = [];
+    for (let count = 0; count < data.additional.noOfGroups; count++) {
+      const date = Date.now().toString();
+      const IDHash = userID + date + count;
+      groupIDs.push(IDHash.substr(IDHash.length - 24))
+    }
+    let leafIDs = [];
+    for (let count = groupIDs.length; count < groupIDs.length+groupIDs.length*data.additional.noOfLeafs; count++) {
+      const date = Date.now().toString();
+      const IDHash = userID + date + count;
+      leafIDs.push(IDHash.substr(IDHash.length - 24))
+    }
+    let sideIDs = []
+    for (let count = groupIDs.length*leafIDs.length; count < groupIDs.length*leafIDs.length+leafIDs.length*2; count++) {
+      const date = Date.now().toString();
+      const IDHash = userID + date + count;
+      sideIDs.push(IDHash.substr(IDHash.length - 24));
+    }
+    data.additional["groupIDs"] = groupIDs;
+    data.additional["leafIDs"] = leafIDs;
+    data.additional["sideIDs"] = sideIDs;
+    this.props.addGroups(data.group, data.additional, this.props.projectID, this.props.filters); 
+  }
 
   /**
    * Submit delete group request
@@ -147,8 +195,6 @@ class InfoBox extends React.Component {
    */
   updateSides = (sides) => { this.props.updateSides(sides, this.props.projectID, this.props.filters); }
 
-
-
   linkNote = (noteID) => {
     let objects = [];
     let type = this.props.selectedObjects.type;
@@ -177,14 +223,33 @@ class InfoBox extends React.Component {
     for (let id of this.props.selectedObjects.members) {
       objects.push({id, type});
     }
+    const userID = this.props.user.id;
+    const date = Date.now().toString();
+    const IDHash = userID + date;
+    const id = IDHash.substr(IDHash.length - 24);
     let note = {
       project_id: this.props.projectID,
+      id: id,
       title: noteTitle,
       type: noteType,
       description: description,
       show: show
     }
     this.props.createAndAttachNote(note, objects, this.props.projectID, this.props.filters);
+  }
+
+  generateFolioNumbers = (startNumber) => {
+    let leafIDs = this.props.collationManager.selectedObjects.members;
+    let rectoIDs = [];
+    let versoIDs = [];
+
+    for (const leafID of leafIDs) {
+      const leaf = this.props.Leafs[leafID];
+      rectoIDs.push(leaf.rectoID);
+      versoIDs.push(leaf.versoID);
+    }
+
+    this.props.generateFolioNumbers(startNumber, rectoIDs, versoIDs);
   }
 
   handleChangeInfoBoxTab = (value, event) => {
@@ -195,16 +260,6 @@ class InfoBox extends React.Component {
       this.props.Rectos, 
       this.props.Versos, 
     )
-  }
-
-  filterActiveSide = (sideOrder) => {
-    let filteredSelectedObjects = {};
-    for (let sideID in this.props.selectedObjects.members) {
-      let side = this.props.selectedObjects.members[sideID];
-      if (side.order===sideOrder)
-        filteredSelectedObjects[sideID] = side;
-    }
-    return filteredSelectedObjects;
   }
 
 
@@ -293,6 +348,10 @@ class InfoBox extends React.Component {
               }} 
             projectID={this.props.projectID}
             Groups={this.props.Groups}
+            groupIDs={this.props.groupIDs}
+            leafIDs={this.props.leafIDs}
+            rectoIDs={this.props.rectoIDs}
+            versoIDs={this.props.versoIDs}
             Leafs={this.props.Leafs}
             Rectos={this.props.Rectos}
             Versos={this.props.Versos}
@@ -309,6 +368,7 @@ class InfoBox extends React.Component {
             isReadOnly={this.props.collationManager.viewMode==="VIEWING"}
             togglePopUp={this.props.togglePopUp}
             tabIndex={this.props.tabIndex}
+            windowWidth={this.props.windowWidth}
             />
         </div>
       );
@@ -324,10 +384,15 @@ class InfoBox extends React.Component {
               addLeafs: this.addLeafs, 
               deleteLeaf: this.deleteLeaf, 
               deleteLeafs: this.deleteLeafs,
+              generateFolioNumbers: this.generateFolioNumbers,
               ...noteActions
             }} 
             projectID={this.props.projectID}
             Groups={this.props.Groups}
+            groupIDs={this.props.groupIDs}
+            leafIDs={this.props.leafIDs}
+            rectoIDs={this.props.rectoIDs}
+            versoIDs={this.props.versoIDs}
             Leafs={this.props.Leafs}
             Rectos={this.props.Rectos}
             Versos={this.props.Versos}
@@ -340,10 +405,11 @@ class InfoBox extends React.Component {
             defaultAttributes={this.props.collationManager.defaultAttributes.leaf}
             visibleAttributes={this.props.collationManager.visibleAttributes.leaf}
             notesManager={this.props.notesManager}
-            conjoinLeafs={this.conjoinLeafs}
+            autoConjoinLeafs={this.autoConjoinLeafs}
             isReadOnly={this.props.collationManager.viewMode==="VIEWING"}
             togglePopUp={this.props.togglePopUp}
             tabIndex={this.props.tabIndex}
+            windowWidth={this.props.windowWidth}
           />
         </div>
       );
@@ -359,6 +425,10 @@ class InfoBox extends React.Component {
               ...noteActions
             }} 
             projectID={this.props.projectID}
+            groupIDs={this.props.groupIDs}
+            leafIDs={this.props.leafIDs}
+            rectoIDs={this.props.rectoIDs}
+            versoIDs={this.props.versoIDs}
             Groups={this.props.Groups}
             Leafs={this.props.Leafs}
             Rectos={this.props.Rectos}
@@ -377,6 +447,7 @@ class InfoBox extends React.Component {
             isReadOnly={this.props.collationManager.viewMode==="VIEWING"}
             togglePopUp={this.props.togglePopUp}
             tabIndex={this.props.tabIndex}
+            windowWidth={this.props.windowWidth}
           />
         </div>
       );
@@ -392,6 +463,10 @@ class InfoBox extends React.Component {
               ...noteActions
             }} 
             projectID={this.props.projectID}
+            groupIDs={this.props.groupIDs}
+            leafIDs={this.props.leafIDs}
+            rectoIDs={this.props.rectoIDs}
+            versoIDs={this.props.versoIDs}
             Groups={this.props.Groups}
             Leafs={this.props.Leafs}
             Rectos={this.props.Rectos}
@@ -410,6 +485,7 @@ class InfoBox extends React.Component {
             isReadOnly={this.props.collationManager.viewMode==="VIEWING"}
             togglePopUp={this.props.togglePopUp}
             tabIndex={this.props.tabIndex}
+            windowWidth={this.props.windowWidth}
           />
         </div>
       );
@@ -417,15 +493,16 @@ class InfoBox extends React.Component {
         return (<div></div>);
     }
   } 
-  static propTypes = {
-    /** Dictionary of actions */
-    projectID: PropTypes.string,
-  }
 }
 const mapStateToProps = (state) => {
   return {
+    user: state.user,
     projectID: state.active.project.id,
     Groups: state.active.project.Groups,
+    groupIDs: state.active.project.groupIDs,
+    leafIDs: state.active.project.leafIDs,
+    rectoIDs: state.active.project.rectoIDs,
+    versoIDs: state.active.project.versoIDs,
     Leafs: state.active.project.Leafs,
     Rectos: state.active.project.Rectos,
     Versos: state.active.project.Versos,
@@ -447,10 +524,6 @@ const mapDispatchToProps = (dispatch) => {
 
     addLeafs: (leaf, additional, projectID, filters) => {
       dispatch(addLeafs(leaf, additional))
-      .then(()=> {
-        dispatch(flashLeaves({order: additional.order, ...additional}));
-        setTimeout(()=>dispatch({type: "UNFLASH"}), 3000);
-      })
       .then(()=>dispatch(reapplyFilterProject(projectID, filters)));
     },
 
@@ -464,8 +537,8 @@ const mapDispatchToProps = (dispatch) => {
       .then(()=>dispatch(reapplyFilterProject(projectID, filters)));
     },
 
-    conjoinLeafs: (leafIDs, projectID, filters) => {
-      dispatch(conjoinLeafs(leafIDs))
+    autoConjoinLeafs: (leafIDs, projectID, filters) => {
+      dispatch(autoConjoinLeafs(leafIDs))
       .then(()=>dispatch(reapplyFilterProject(projectID, filters)));
     },
 
@@ -481,10 +554,6 @@ const mapDispatchToProps = (dispatch) => {
 
     addGroups: (group, additional, projectID, filters) => {
       dispatch(addGroups(group, additional))
-      .then(()=> {
-        dispatch(flashGroups({order: group.order, ...additional}));
-        setTimeout(()=>dispatch({type: "UNFLASH"}), 3000);
-      })
       .then(()=>dispatch(reapplyFilterProject(projectID, filters)));
     },
 
@@ -528,18 +597,13 @@ const mapDispatchToProps = (dispatch) => {
 
     createAndAttachNote: (note, objects, projectID, filters) => {
       dispatch(addNote(note))
-      .then((action)=> {
-        if ((action.type).includes("SUCCESS")){
-          for (let noteID in action.payload.Notes){
-            if (action.payload.Notes[noteID].title===note.title){
-              dispatch(linkNote(noteID, objects));
-              break;
-            }
-          }
-        }
-      })
+      .then(() => dispatch(linkNote(note.id, objects)))
       .then(()=>dispatch(reapplyFilterProject(projectID, filters)));
     },
+
+    generateFolioNumbers: (startNumber, rectoIDs, versoIDs) => {
+      dispatch(generateFolioNumbers(startNumber, rectoIDs, versoIDs));
+    }
   };
 };
 

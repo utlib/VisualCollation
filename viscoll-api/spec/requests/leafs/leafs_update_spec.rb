@@ -33,14 +33,13 @@ describe "PUT /leafs/:id", :type => :request do
     context 'and standard leaf' do
       before do
         put "/leafs/#{@leafs[0].id.to_s}", params: @parameters.to_json, headers: {'Authorization' => @authToken, 'CONTENT_TYPE' => 'application/json', 'ACCEPT' => 'application/json'}
-        @body = JSON.parse(response.body)
         @project.reload
         @group.reload
         @leafs.each { |leaf| leaf.reload }
       end
 
-      it 'returns 200' do
-        expect(response).to have_http_status(:ok)
+      it 'returns 204' do
+        expect(response).to have_http_status(:no_content)
       end
 
       it 'edit and reconjoin the leaf' do

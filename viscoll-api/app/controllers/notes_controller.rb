@@ -22,8 +22,6 @@ class NotesController < ApplicationController
         @note.delete
         return
       end
-      @data = generateResponse()
-      render :'projects/show', status: :ok
     else
       render json: @note.errors, status: :unprocessable_entity
     end
@@ -36,10 +34,7 @@ class NotesController < ApplicationController
       render json: {type: "should be one of " +Project.find(@note.project_id).noteTypes.to_s}, status: :unprocessable_entity
       return
     end
-    if @note.update(note_update_params)
-      @data = generateResponse()
-      render :'projects/show', status: :ok
-    else
+    if !@note.update(note_update_params)
       render json: @note.errors, status: :unprocessable_entity
     end
   end
@@ -47,8 +42,6 @@ class NotesController < ApplicationController
   # DELETE /notes/1
   def destroy
     @note.destroy
-    @data = generateResponse()
-    render :'projects/show', status: :ok
   end
 
   # PUT /notes/1/link
@@ -66,8 +59,7 @@ class NotesController < ApplicationController
           when "Leaf"
             @object = Leaf.find(id)
             authorized = @object.project.user_id == current_user.id
-          when "Side"
-            type = id[0]=="R" ? "Recto" : "Verso"
+          when "Recto", "Verso"
             @object = Side.find(id)
             authorized = @object.project.user_id == current_user.id
           else
@@ -93,8 +85,6 @@ class NotesController < ApplicationController
       render json: {error: e.message}, status: :unprocessable_entity
       return
     end
-    @data = generateResponse()
-    render :'projects/show', status: :ok
   end
 
   # PUT /notes/1/unlink
@@ -136,8 +126,6 @@ class NotesController < ApplicationController
       render json: {error: e.message}, status: :unprocessable_entity
       return
     end
-    @data = generateResponse()
-    render :'projects/show', status: :ok
   end
 
 
@@ -152,8 +140,6 @@ class NotesController < ApplicationController
       @project.noteTypes.push(type)
       @project.save
     end
-    @data = generateResponse()
-    render :'projects/show', status: :ok
   end
 
 
@@ -171,8 +157,6 @@ class NotesController < ApplicationController
         note.save
       end
     end
-    @data = generateResponse()
-    render :'projects/show', status: :ok
   end
 
 
@@ -195,8 +179,6 @@ class NotesController < ApplicationController
         note.save
       end
     end
-    @data = generateResponse()
-    render :'projects/show', status: :ok
   end
 
 
@@ -234,7 +216,7 @@ class NotesController < ApplicationController
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def note_create_params
-      params.require(:note).permit(:project_id, :title, :type, :description, :show)
+      params.require(:note).permit(:project_id, :id, :title, :type, :description, :show)
     end
 
     def note_update_params

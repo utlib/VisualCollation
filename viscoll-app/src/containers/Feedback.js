@@ -5,8 +5,8 @@ import FlatButton from 'material-ui/FlatButton';
 import RaisedButton from 'material-ui/RaisedButton';
 import TextField from 'material-ui/TextField';
 import ClientJS from 'clientjs';
-import { exportProjectBeforeFeedback } from "../actions/projectActions";
-import { sendFeedback } from "../actions/userActions";
+import { exportProjectBeforeFeedback } from "../actions/backend/projectActions";
+import { sendFeedback } from "../actions/backend/userActions";
 
 /** Feedback form that submits a JIRA ticket for each feedback */
 class Feedback extends Component {
@@ -113,7 +113,7 @@ class Feedback extends Component {
 const mapStateToProps = (state) => {
   return {
     userID: state.user.id,
-    projectID: state.active.project.id
+    projectID: state.active.project ? state.active.project.id : null
   };
 };
 

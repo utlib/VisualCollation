@@ -1,5 +1,4 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
 import RaisedButton from 'material-ui/RaisedButton';
@@ -10,6 +9,8 @@ import IconButton from 'material-ui/IconButton';
 import AddCircle from 'material-ui/svg-icons/content/add-circle';
 import RemoveCircle from 'material-ui/svg-icons/content/remove-circle-outline';
 import light from '../../../styles/light';
+import { getMemberOrder } from '../../../helpers/getMemberOrder';
+
 
 /** Dialog to add groups in a collation.  This component is used in the visual and tabular edit modes.  It is mounted by `InfoBox` and `GroupInfoBox` components. */
 export default class AddGroupDialog extends React.Component {
@@ -144,7 +145,7 @@ export default class AddGroupDialog extends React.Component {
    */
   getNextSibling = () => {
     let activeGroup = this.props.Groups[this.props.selectedGroups[0]];
-    for (let groupID of Object.keys(this.props.Groups).slice(activeGroup.order)) {
+    for (let groupID of this.props.groupIDs.slice(this.props.groupIDs.indexOf(activeGroup.id)+1)) {
       const group = this.props.Groups[groupID]
       if (group.nestLevel===activeGroup.nestLevel)
         return group
@@ -158,17 +159,17 @@ export default class AddGroupDialog extends React.Component {
    * @param {array} members array of members 
    * @public
    */
-  findLastChildGroup = (members) => {
+  findLastChildGroup = (memberIDs) => {
     let lastGroup = null;
-    for (let member of members) {
-      if (member.memberType==="Group") {
-        member = this.props.Groups[member.id]
-        if (lastGroup===null || (member.order>lastGroup.order)) {
+    for (let memberID of memberIDs) {
+      if (memberID.charAt(0)==="G") {
+        const member = this.props.Groups[memberID]
+        if (lastGroup===null || (this.props.groupIDs.indexOf(member.id)>this.props.groupIDs.indexOf(lastGroup.id))) {
           lastGroup = member;
         }
-        if (member.members.length>0) {
-          let result = this.findLastChildGroup(member.members);
-          if (result && result.order>lastGroup.order) lastGroup = result;
+        if (member.memberIDs.length>0) {
+          let result = this.findLastChildGroup(member.memberIDs);
+          if (result && this.props.groupIDs.indexOf(result.id) > this.props.groupIDs.indexOf(lastGroup.id)) lastGroup = result;
         }
       }
     }
@@ -210,8 +211,8 @@ export default class AddGroupDialog extends React.Component {
       else {
         // Add group(s)
         const group = this.props.Groups[this.props.selectedGroups[0]];
-        let memberOrder = group.memberOrder;
-        let groupOrder = group.order;
+        let memberOrder = getMemberOrder(group, this.props.Groups, this.props.groupIDs);
+        let groupOrder = this.props.groupIDs.indexOf(group.id)+1;
         if (group.parentID) {
           // If active group is nested, the new group(s) must have the same parent as the active group
           data.additional["parentGroupID"] = group.parentID;
@@ -221,20 +222,20 @@ export default class AddGroupDialog extends React.Component {
           memberOrder += 1;
           let sibling = this.getNextSibling();
           if (sibling) {
-            groupOrder = sibling.order;
+            groupOrder = this.props.groupIDs.indexOf(sibling.id)+1;
           } else {
             // No sibling.. 
             if (!group.parentID) {
               // Active group is a root group with no next sibling
-              groupOrder = Object.keys(this.props.Groups).length+1;
+              groupOrder = this.props.groupIDs.length+1;
             } else {
-              if (group.members.length>0) {
+              if (group.memberIDs.length>0) {
                 // Find the last child (possibly multi-nested) 
-                let lastChild = this.findLastChildGroup(group.members);
+                let lastChild = this.findLastChildGroup(group.memberIDs);
                 if (lastChild===null) {
-                  groupOrder = Object.keys(this.props.Groups).length+1;
+                  groupOrder = this.props.groupIDs.indexOf(group.id) + 2;
                 } else {
-                  groupOrder = lastChild.order + 1;
+                  groupOrder = this.props.groupIDs.indexOf(lastChild.id) + 2;
                 }
               } else {
                 // If no children
@@ -367,7 +368,7 @@ export default class AddGroupDialog extends React.Component {
           <Checkbox
             aria-label="Conjoin leaves"
             checked={this.state.conjoin}
-            onCheck={(e,v)=>this.onToggleCheckbox("conjoin", v)}
+            onClick={()=>this.onToggleCheckbox("conjoin", !this.state.conjoin)}
             />
         </div>
       </div>
@@ -466,7 +467,7 @@ export default class AddGroupDialog extends React.Component {
                                 <Checkbox 
                                   aria-label="Add leaves inside"
                                   checked={this.state.hasLeaves}
-                                  onCheck={(e,v)=>this.onToggleCheckbox("hasLeaves", v)}
+                                  onClick={()=>this.onToggleCheckbox("hasLeaves", !this.state.hasLeaves)}
                                 />
                               </div>
                             </div> : "";
@@ -515,19 +516,5 @@ export default class AddGroupDialog extends React.Component {
         {dialog}
       </div>
     );
-  }
-  static propTypes = {
-    /** Dictionary of actions */
-    action: PropTypes.objectOf(PropTypes.func),
-    /** Dictionary of selected groups where the key is the group ID and value is the group object */
-    selectedGroups: PropTypes.arrayOf(PropTypes.string),
-    /** ID of project that the new groups will be added to */
-    projectID: PropTypes.string,
-    /** `true` to have this component open */
-    open: PropTypes.bool,
-    /** Callback to close this component open */
-    closeDialog: PropTypes.func,
-    /** `true` to show Add Leafs Inside Group instead of Add Groups */
-    addLeafs: PropTypes.bool,
   }
 }

@@ -4,7 +4,7 @@ class Group
 
   # Fields
   field :title, type: String, default: "None"
-  field :type, type: String, default: "None"
+  field :type, type: String, default: "Quire"
   field :tacketed, type: Array, default: []
   field :sewing, type: Array, default: []
   field :nestLevel, type: Integer, default: 1

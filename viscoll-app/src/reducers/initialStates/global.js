@@ -1,6 +1,8 @@
 export const initialState = {
   loading: false, 
-  notification: ""
+  notification: "",
+  serverError: false,
+  unauthorizedError: false,
 };
 
 export default initialState;

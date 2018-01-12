@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import PropTypes from 'prop-types';
 import TextField from 'material-ui/TextField';
 import RaisedButton from 'material-ui/RaisedButton';
 import FlatButton from 'material-ui/FlatButton';
@@ -114,14 +113,6 @@ class Register extends Component {
     } else {
       return registerForm;
     }
-  }
-  static propTypes = {
-    /** User object from the store. */
-    userState: PropTypes.object,
-    /** Dictionary of actions. */
-    action: PropTypes.objectOf(PropTypes.func), 
-    /** Cancel callback to close this component. */
-    tapCancel: PropTypes.func,
   }
 }
 

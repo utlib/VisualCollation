@@ -50,6 +50,7 @@ class FilterController < ApplicationController
     conjunctions = []
     queries.each do |query|
       type = query[:type]
+      old_attribute = nil
       attribute = query[:attribute]
       condition = query[:condition]
       values = query[:values]
@@ -58,160 +59,62 @@ class FilterController < ApplicationController
       leafs = []
       sides = []
       notes = []
+      
+      if attribute == 'conjoined_leaf_order'
+        old_attribute = attribute
+        attribute = 'conjoined_to'
+        values = values.map { |val| val=="None" ? nil : val }
+      end
+      if attribute == 'conjoined_to'
+        values = values.map { |val| val=="None" ? nil : val }
+      end
+
+      query_condition_params = { attribute => { '$in': [] } }
+
+      case condition
+      when 'equals'
+        query_condition_params = { attribute => (values.length > 1) ? { '$in': values } : values[0] }
+      when 'not equals'
+        query_condition_params = { attribute => (values.length > 1) ? { '$nin': values } : { '$ne': values[0] } }
+      when 'contains'
+        query_condition_params = { attribute => (values.length > 1) ? { '$in': values.map { |x| /^#{Regexp.escape(x)}/} } : /#{Regexp.escape(values[0])}/ }
+      when 'not contains'
+        query_condition_params = { attribute => (values.length > 1) ? { '$nin': values.map { |x| /^#{Regexp.escape(x)}/} } : { '$not': /#{Regexp.escape(values[0])}/} }
+      end
+      
       case type
-      when "group"
-        case condition
-        when "equals"
-          if values.length > 1
-            groupQueryResult = @project.groups.only(:id).where("#{attribute}": {"$in": values})
-          else
-            groupQueryResult = @project.groups.only(:id).where("#{attribute}": values[0])
-          end
-        when "not equals"
-          if values.length > 1
-            groupQueryResult = @project.groups.only(:id).where("#{attribute}": {"$nin": values})
-          else
-            groupQueryResult = @project.groups.only(:id).where("#{attribute}": {"$ne": values[0]})
-          end
-        when "contains"
-          if values.length > 1
-            values = values.map {|x| /^#{x}/}
-            groupQueryResult = @project.groups.only(:id).where("#{attribute}": {"$in": values})
-          else
-            groupQueryResult = @project.groups.only(:id).where("#{attribute}": /#{values[0]}/)
-          end
-        when "not contains"
-          if values.length > 1
-            values = values.map {|x| /^#{x}/}
-            groupQueryResult = @project.groups.only(:id).where("#{attribute}": {"$nin": values})
-          else
-            groupQueryResult = @project.groups.only(:id).where("#{attribute}": {"$not": /#{values[0]}/})
-          end
-        end
-        groupQueryResult.each do |leafID|
-          groups.push(leafID.id.to_s)
-        end
-        @objectIDs[:Groups] = @objectIDs[:Groups] + groups
+      when 'group'
+        groupQueryResult = @project.groups.only(:id).where(query_condition_params)
+        groups = groupQueryResult.collect { |gqr| gqr.id.to_s }
+        @objectIDs[:Groups] += groups
         if groups.length > 0
-          @visibleAttributes[:group]["#{attribute}"] = true
+          @visibleAttributes[:group][attribute] = true
         end
-      when "leaf"
-        if attribute == "conjoined_leaf_order"
-          old_attribute = attribute
-          attribute = "conjoined_to"
-        end
-        case condition
-        when "equals"
-          if values.length > 1
-            leafQueryResult = @project.leafs.only(:id).where("#{attribute}": {"$in": values})
-          else
-            leafQueryResult = @project.leafs.only(:id).where("#{attribute}": values[0])
-          end
-        when "not equals"
-          if values.length > 1
-            leafQueryResult = @project.leafs.only(:id).where("#{attribute}": {"$nin": values})
-          else
-            leafQueryResult = @project.leafs.only(:id).where("#{attribute}": {"$ne": values[0]})
-          end
-        when "contains"
-          if values.length > 1
-            values = values.map {|x| /^#{x}/}
-            leafQueryResult = @project.leafs.only(:id).where("#{attribute}": {"$in": values})
-          else
-            leafQueryResult = @project.leafs.only(:id).where("#{attribute}": /#{values[0]}/)
-          end
-        when "not contains"
-          if values.length > 1
-            values = values.map {|x| /^#{x}/}
-            leafQueryResult = @project.leafs.only(:id).where("#{attribute}": {"$nin": values})
-          else
-            leafQueryResult = @project.leafs.only(:id).where("#{attribute}": {"$not": /#{values[0]}/})
-          end
-        end
-        leafQueryResult.each do |leafID|
-          leafs.push(leafID.id.to_s)
-        end
+      when 'leaf'
+        leafQueryResult = @project.leafs.only(:id).where(query_condition_params)
+        leafs = leafQueryResult.collect { |lqr| lqr.id.to_s }
         if leafs.length > 0
           if old_attribute
-            @visibleAttributes[:leaf]["#{old_attribute}"] = true
+            @visibleAttributes[:leaf][old_attribute] = true
           else
-            @visibleAttributes[:leaf]["#{attribute}"] = true
+            @visibleAttributes[:leaf][attribute] = true
           end
         end
-        @objectIDs[:Leafs] = @objectIDs[:Leafs] + leafs
-      when "side"
-        @project.sides.each do |side|
-          sides.push(side.id.to_s)
-        end
-        case condition
-        when "equals"
-          if values.length > 1
-            sideQueryResult = Side.where(id: {"$in": sides}, "#{attribute}": {"$in": values})
-          else
-            sideQueryResult = Side.where(id: {"$in": sides}, "#{attribute}": values[0])
-          end
-        when "not equals"
-          if values.length > 1
-            sideQueryResult = Side.where(id: {"$in": sides}, "#{attribute}": {"$nin": values})
-          else
-            sideQueryResult = Side.where(id: {"$in": sides}, "#{attribute}": {"$ne": values[0]})
-          end
-        when "contains"
-          if values.length > 1
-            values = values.map {|x| /^#{x}/}
-            sideQueryResult = Side.where(id: {"$in": sides}, "#{attribute}": {"$in": values})
-          else
-            sideQueryResult = Side.where(id: {"$in": sides}, "#{attribute}": /#{values[0]}/)
-          end
-        when "not contains"
-          if values.length > 1
-            values = values.map {|x| /^#{x}/}
-            sideQueryResult = Side.where(id: {"$in": sides}, "#{attribute}": {"$nin": values})
-          else
-            sideQueryResult = Side.where(id: {"$in": sides}, "#{attribute}": {"$not": /#{values[0]}/})
-          end
-        end
-        sides = []
+        @objectIDs[:Leafs] += leafs
+      when 'side'
+        sideQueryResult = @project.sides.only(:id).where(query_condition_params)
+        sides = sideQueryResult.collect { |sqr| sqr.id.to_s }
         sideQueryResult.each do |sideID|
           sides.push(sideID.id.to_s)
         end
         if sides.length > 0
-          @visibleAttributes[:side]["#{attribute}"] = true
+          @visibleAttributes[:side][attribute] = true
         end
-        @objectIDs[:Sides] = @objectIDs[:Sides] + sides
-      when "note"
-        case condition
-        when "equals"
-          if values.length > 1
-            noteQueryResult = Note.where("#{attribute}": {"$in": values})
-          else
-            noteQueryResult = Note.where("#{attribute}": values[0])
-          end
-        when "not equals"
-          if values.length > 1
-            noteQueryResult = Note.where("#{attribute}": {"$nin": values})
-          else
-            noteQueryResult = Note.where("#{attribute}": {"$ne": values[0]})
-          end
-        when "contains"
-          if values.length > 1
-            values = values.map {|x| /^#{x}/}
-            noteQueryResult = Note.where("#{attribute}": {"$in": values})
-          else
-            noteQueryResult = Note.where("#{attribute}": /#{values[0]}/)
-          end
-        when "not contains"
-          if values.length > 1
-            values = values.map {|x| /^#{x}/}
-            noteQueryResult = Note.where("#{attribute}": {"$nin": values})
-          else
-            noteQueryResult = Note.where("#{attribute}": {"$not": /#{values[0]}/})
-          end
-        end
-        noteQueryResult.each do |noteID|
-          notes.push(noteID.id.to_s)
-        end
-        @objectIDs[:Notes] = @objectIDs[:Notes] + notes
+        @objectIDs[:Sides] += sides
+      when 'note'
+        noteQueryResult = @project.notes.only(:id).where(query_condition_params)
+        notes = noteQueryResult.collect { |nqr| nqr.id.to_s }
+        @objectIDs[:Notes] += notes
       end
       sets.push(Set.new([*groups, *leafs, *sides, *notes]))
       conjunctions.push(conjunction)

@@ -28,7 +28,7 @@ PaperLeaf.prototype = {
         this.highlight = this.path.clone();
         this.highlight.dashArray = [0, 0];
         this.highlight.segments[this.highlight.segments.length-1].point.x = this.highlight.segments[this.highlight.segments.length-1].point.x + 5;
-        if (this.leaf.conjoined_leaf_order === "Binding" || this.leaf.conjoined_leaf_order === "None") {
+        if (this.leaf.conjoined_to === "None") {
             this.highlight.segments[0].point.x = this.highlight.segments[0].point.x - 5;
         }
         this.highlight.strokeColor = this.strokeColorActive;
@@ -46,7 +46,7 @@ PaperLeaf.prototype = {
         this.filterHighlight = this.path.clone();
         this.filterHighlight.dashArray = [0, 0];
         this.filterHighlight.segments[this.filterHighlight.segments.length-1].point.x = this.filterHighlight.segments[this.filterHighlight.segments.length-1].point.x + 5;
-        if (this.leaf.conjoined_leaf_order === "Binding" || this.leaf.conjoined_leaf_order === "None") {
+        if (this.leaf.conjoined_to === "None") {
             this.filterHighlight.segments[0].point.x = this.filterHighlight.segments[0].point.x - 5;
         }
         this.filterHighlight.strokeColor = this.strokeColorFilter;
@@ -58,8 +58,8 @@ PaperLeaf.prototype = {
         this.showAttributes();
         this.createAttachments();
 
-        const leafNotesToShow = this.leaf.notes.filter((noteID)=>{return this.Notes[noteID].show});
-        const rectoNotesToShow = this.recto.notes.filter((noteID)=>{return this.Notes[noteID].show});
+        const leafNotesToShow = this.leaf.notes.filter((noteID)=>{return this.Notes[noteID].show}).reverse();
+        const rectoNotesToShow = this.recto.notes.filter((noteID)=>{return this.Notes[noteID].show}).reverse();
         const versoNotesToShow = this.verso.notes.filter((noteID)=>{return this.Notes[noteID].show});
 
         let textX = 0;
@@ -87,8 +87,9 @@ PaperLeaf.prototype = {
         // Draw recto note text
         for (let noteIndex = 0; noteIndex < rectoNotesToShow.length; noteIndex++) {
             const note = this.Notes[rectoNotesToShow[noteIndex]];
+            const noteTitle = this.recto.folio_number?  "▼ " + this.recto.folio_number + " : " + note.title.substr(0,numChars) : "▼ R : " + note.title.substr(0,numChars) ;
             let textNote = new paper.PointText({
-                content: "▼ " + this.recto.folio_number + " : " + note.title.substr(0,numChars),
+                content: noteTitle,
                 point: [textX, textY - noteIndex*(this.spacing*0.7) - this.spacing*0.3],
                 fillColor: this.strokeColor,
                 fontSize: fontSize,
@@ -103,7 +104,7 @@ PaperLeaf.prototype = {
             const note = this.Notes[leafNotesToShow[noteIndex]];
             
             let textNote = new paper.PointText({
-                content: "▼ L" + this.leaf.order + " : " + note.title.substr(0,numChars),
+                content: "▼ L" + this.order + " : " + note.title.substr(0,numChars),
                 point: [textX, textY - rectoNotesToShow.length*(this.spacing*0.7) - noteIndex*(this.spacing*0.7) - this.spacing*0.3],
                 fillColor: this.strokeColor,
                 fontSize: fontSize,
@@ -116,8 +117,9 @@ PaperLeaf.prototype = {
         // Draw verso note text
         for (let noteIndex = 0; noteIndex < versoNotesToShow.length; noteIndex++) {
             const note = this.Notes[versoNotesToShow[noteIndex]];
+            const noteTitle = this.verso.folio_number? "▲ " + this.verso.folio_number + " : " + note.title.substr(0,numChars) : "▲ V : " + note.title.substr(0,numChars);
             let textNote = new paper.PointText({
-                content: "▲ " + this.verso.folio_number + " : " + note.title.substr(0,numChars),
+                content: noteTitle,
                 point: [textX, this.y + noteIndex*(this.spacing*0.7) + this.spacing*0.8],
                 fillColor: this.strokeColor,
                 fontSize: fontSize,
@@ -406,7 +408,10 @@ PaperLeaf.prototype = {
         this.showAttributes();
     },
     showAttributes: function() {
+        const rectoFolioNumber = this.recto.folio_number? this.recto.folio_number : " ";
+        const versoFolioNumber = this.verso.folio_number? this.verso.folio_number : " ";
         if (this.visibleAttributes.side.folio_number && this.visibleAttributes.side.texture) {
+            
             if (this.leaf.stub === "None") {
                 // Reduce leaf width so we can fit attribute text
                 this.path.segments[this.path.segments.length-1].point.x = this.width-this.spacing*2;
@@ -414,8 +419,8 @@ PaperLeaf.prototype = {
                 this.filterHighlight.segments[this.filterHighlight.segments.length-1].point.x = this.width-this.spacing*1.8;
             }
             this.textLeafOrder.set({point: [this.width-this.spacing*1.8, this.textLeafOrder.point.y]});
-            this.textRecto.set({point:[this.textLeafOrder.bounds.right+this.spacing*0.2, this.textRecto.point.y], content: this.recto.folio_number + "   " + this.recto.texture});
-            this.textVerso.set({point:[this.textLeafOrder.bounds.right+this.spacing*0.2, this.textVerso.point.y], content: this.verso.folio_number + "   " + this.verso.texture});
+            this.textRecto.set({point:[this.textLeafOrder.bounds.right+this.spacing*0.2, this.textRecto.point.y], content: rectoFolioNumber + "   " + this.recto.texture});
+            this.textVerso.set({point:[this.textLeafOrder.bounds.right+this.spacing*0.2, this.textVerso.point.y], content: versoFolioNumber + "   " + this.verso.texture});
         } else if (this.visibleAttributes.side.folio_number) {
             if (this.leaf.stub === "None") {
                 // Reduce leaf width so we can fit folio number text
@@ -425,8 +430,8 @@ PaperLeaf.prototype = {
             }
             // Adjust text 
             this.textLeafOrder.set({point: [this.width-this.spacing*0.80, this.textLeafOrder.point.y]});
-            this.textRecto.set({point:[this.textLeafOrder.bounds.right+this.spacing*0.2, this.textRecto.point.y], content: this.recto.folio_number});
-            this.textVerso.set({point:[this.textLeafOrder.bounds.right+this.spacing*0.2, this.textVerso.point.y], content: this.verso.folio_number});
+            this.textRecto.set({point:[this.textLeafOrder.bounds.right+this.spacing*0.2, this.textRecto.point.y], content: rectoFolioNumber});
+            this.textVerso.set({point:[this.textLeafOrder.bounds.right+this.spacing*0.2, this.textVerso.point.y], content: versoFolioNumber});
         } else if (this.visibleAttributes.side.texture) {
             if (this.leaf.stub === "None") {
                 // Reduce leaf width so we can fit texture text
@@ -456,12 +461,13 @@ PaperLeaf.prototype = {
 function PaperLeaf(args) {
     this.manager = args.manager;
     this.Notes = args.Notes;
+    this.leafIDs = args.leafIDs;
     this.leaf = args.leaf;
     this.recto = args.recto;
     this.verso = args.verso;
-    this.order = this.leaf.order;
-    this.parentOrder = args.Groups[this.leaf.parentID].order;
-    this.conjoined_to = this.leaf.conjoined_leaf_order;
+    this.order = args.leafIDs.indexOf(args.leaf.id) + 1;
+    this.parentOrder = args.groupIDs.indexOf(this.leaf.parentID)+1;
+    this.conjoined_to = this.leaf.conjoined_to===null ? "None" :  this.leafIDs.indexOf(this.leaf.conjoined_to)+1;
     this.indent = null;
     this.origin = args.origin;
     this.viewingMode = args.viewingMode;

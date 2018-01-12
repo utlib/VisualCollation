@@ -22,7 +22,7 @@ class NotesFilter extends Component {
             id="searchNoteField"
             hintText="Search notes ..."
             onChange={(e,value)=>{this.setState({value});this.props.onValueChange(e,value)}}
-            style={{marginLeft:10,marginRight:10}}
+            style={{marginLeft:10,marginRight:10, width:200}}
             value={this.state.value}
             {...floatFieldLight}
             tabIndex={this.props.tabIndex}
@@ -35,7 +35,7 @@ class NotesFilter extends Component {
             iconStyle={{marginRight: 0}} 
             style={{width: 60, paddingRight: 10, display: 'inline-flex', fontSize:14}}
             checked={this.props.filterTypes["title"]}
-            onCheck={(e, checked)=>this.props.onTypeChange("title", checked)}
+            onClick={()=>this.props.onTypeChange("title", !this.props.filterTypes["title"])}
             tabIndex={this.props.tabIndex}
           />
           <Checkbox 
@@ -44,7 +44,7 @@ class NotesFilter extends Component {
             iconStyle={{marginRight: 0}} 
             style={{width: 55, paddingRight: 15, display: 'inline-flex', fontSize:14}}
             checked={this.props.filterTypes["type"]}
-            onCheck={(e, checked)=>this.props.onTypeChange("type", checked)}
+            onClick={()=>this.props.onTypeChange("type", !this.props.filterTypes["type"])}
             tabIndex={this.props.tabIndex}
           />
           <Checkbox 
@@ -53,7 +53,7 @@ class NotesFilter extends Component {
             iconStyle={{marginRight: 0}} 
             style={{width: 50, paddingRight: 15, display: 'inline-flex', fontSize:14}}
             checked={this.props.filterTypes["description"]}
-            onCheck={(e, checked)=>this.props.onTypeChange("description", checked)}
+            onClick={()=>this.props.onTypeChange("description", !this.props.filterTypes["description"])}
             tabIndex={this.props.tabIndex}
           />
         </div>

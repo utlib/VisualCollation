@@ -1,11 +1,10 @@
 import React, {Component} from 'react';
-import PropTypes from 'prop-types';
 import Drawer from 'material-ui/Drawer';
 import RaisedButton from 'material-ui/RaisedButton';
 import EditNoteForm from "./EditNoteForm";
 import NewNoteForm from "./NewNoteForm";
 import Add from "material-ui/svg-icons/content/add"
-import {btnGreen,btnMd} from "../../styles/button";
+import {btnMd,btnBase} from "../../styles/button";
 
 /** Create New Note tab in the Note Manager */
 export default class ManageNotes extends Component {
@@ -47,7 +46,7 @@ export default class ManageNotes extends Component {
         style={{width:"90%"}}
         {...btnMd}
         label={note.title.length>18? note.title.substring(0,18) + "...": note.title}
-        labelStyle={{fontSize:15}}    
+        labelStyle={{...btnBase().labelStyle}}
         backgroundColor={this.state.activeNote && this.state.activeNote.id===noteID? "#4ED6CB": "#F2F2F2" }
         tabIndex={this.props.tabIndex}
       />
@@ -92,7 +91,7 @@ export default class ManageNotes extends Component {
       return (this.props.Groups[groupID].notes.includes(this.state.activeNote.id))
     });
     return groupsWithCurrentNote.map((value) => {
-      const label = `Group ${this.props.Groups[value].order}`;
+      const label = `Group ${this.props.groupIDs.indexOf(value)+1}`;
       return {label, value};
     });
   }
@@ -102,7 +101,7 @@ export default class ManageNotes extends Component {
       return (this.props.Leafs[leafID].notes.includes(this.state.activeNote.id))
     });
     return leafsWithCurrentNote.map((value)=>{
-      const label = `Leaf ${this.props.Leafs[value].order}`;
+      const label = `Leaf ${this.props.leafIDs.indexOf(value)+1}`;
       return {label, value};
     });
   }
@@ -116,13 +115,13 @@ export default class ManageNotes extends Component {
     });
     const sidesWithCurrentNote = [];
     for (let value of rectosWithCurrentNote){
-      const leafOrder = this.props.Leafs[this.props.Rectos[value].parentID].order;
-      const label = `Leaf ${leafOrder}: Side Recto}`;
+      const leafOrder = this.props.leafIDs.indexOf(this.props.Rectos[value].parentID) + 1;
+      const label = `L${leafOrder} Recto (${this.props.Rectos[value].folio_number})`;
       sidesWithCurrentNote.push({label, value})
     }
     for (let value of versosWithCurrentNote){
-      const leafOrder = this.props.Leafs[this.props.Versos[value].parentID].order;
-      const label = `Leaf ${leafOrder}: Side Verso}`;
+      const leafOrder = this.props.leafIDs.indexOf(this.props.Versos[value].parentID) + 1;
+      const label = `L${leafOrder} Verso (${this.props.Versos[value].folio_number})`;
       sidesWithCurrentNote.push({label, value})
     }
     return sidesWithCurrentNote;
@@ -151,6 +150,10 @@ export default class ManageNotes extends Component {
           projectID={this.props.projectID} 
           action={{ addNote: this.props.action.addNote }} 
           noteTypes={this.props.noteTypes}
+          groupIDs={this.props.groupIDs}
+          leafIDs={this.props.leafIDs}
+          rectoIDs={this.props.rectoIDs}
+          versoIDs={this.props.versoIDs}
         />
       );
     } else {
@@ -172,6 +175,10 @@ export default class ManageNotes extends Component {
           Leafs={this.props.Leafs}
           Rectos={this.props.Rectos}
           Versos={this.props.Versos}
+          groupIDs={this.props.groupIDs}
+          leafIDs={this.props.leafIDs}
+          rectoIDs={this.props.rectoIDs}
+          versoIDs={this.props.versoIDs}
           Sides={this.getRectosAndVersos()}
           linkedGroups={this.getLinkedGroups()}
           linkedLeaves={this.getLinkedLeaves()}
@@ -188,7 +195,7 @@ export default class ManageNotes extends Component {
       <div className="browse">
         <Drawer 
           open
-          containerStyle={{top:"56px",left:"18%", height: "93%",background:"#e5e5e5",boxShadow:"none"}}
+          containerStyle={{top:"56px",left:"18%",width:Math.min(250,this.props.windowWidth*0.25), height: window.innerHeight-56,background:"#e5e5e5",boxShadow:"none"}}
           className="notesList"
         >
           <div role="region" aria-label="browse note titles">
@@ -199,7 +206,7 @@ export default class ManageNotes extends Component {
             style={{width:"90%"}}
             {...btnMd}
             label="Create New Note"
-            labelStyle={{fontSize:15}}
+            labelStyle={{...btnBase().labelStyle}}
             icon={<Add />}
             labelColor={"#ffffff"}
             backgroundColor={"#566476"}
@@ -209,14 +216,10 @@ export default class ManageNotes extends Component {
           {Object.keys(this.props.Notes).map(this.renderList)}
           </div>
         </Drawer>
-        <div className="details" role="region" aria-label="note details">
+        <div className="details" role="region" aria-label="note details" style={{left:Math.min(250, this.props.windowWidth*0.25)}}>
           {noteForm}
         </div>
       </div>
     );
-  }
-  static propTypes = {
-    /** Active project ID */
-    projectID: PropTypes.string
   }
 }
