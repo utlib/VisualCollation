@@ -120,7 +120,7 @@ node('harmonic-st-patrick') {
         nodejs('node8.2.1') {
           dir ('viscoll-app') {
             sh 'rm package-lock.json'
-            sh 'npm install --only=prod'
+            sh 'npm install'
             sh 'npm run build'
             // sh 'npm run styleguide:build'
           }
