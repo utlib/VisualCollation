@@ -1,6 +1,4 @@
 import React from 'react';
-import SelectField from 'material-ui/SelectField';
-import MenuItem from 'material-ui/MenuItem';
 import RaisedButton from 'material-ui/RaisedButton';
 import Checkbox from 'material-ui/Checkbox';
 import TextField from 'material-ui/TextField';
@@ -12,7 +10,8 @@ import Chip from 'material-ui/Chip';
 import AddNote from './dialog/AddNote';
 import Dialog from 'material-ui/Dialog';
 import ImageViewer from "../global/ImageViewer";
-
+import SelectField from '../global/SelectField';
+import { checkboxStyle } from '../../styles/checkbox';
 
 export default class SideInfoBox extends React.Component {
   constructor(props) {
@@ -75,7 +74,7 @@ export default class SideInfoBox extends React.Component {
   }
 
 
-  dropDownChange = (event, index, value, attributeName) => {
+  dropDownChange = (value, attributeName) => {
     if (!this.state.isBatch) {
       // In single edit - we submit change immediately
       this.singleSubmit(attributeName, value);
@@ -127,9 +126,9 @@ export default class SideInfoBox extends React.Component {
   }
 
   // Handle checkbox toggling by updating relevant attribute state
-  toggleCheckbox = (target, value) => {
+  toggleCheckbox = (target) => {
     let newToggleState = {};
-    newToggleState["batch_"+target]=value;
+    newToggleState["batch_"+target]=!this.state["batch_"+target];
     this.setState(newToggleState);
   }
 
@@ -162,13 +161,21 @@ export default class SideInfoBox extends React.Component {
     for (var i in this.props.defaultAttributes) {
       let attributeName = this.props.defaultAttributes[i]['name'];
       for (let sideID of selectedSides) {
-        let side = this.props.Sides[sideID];
+        const side = this.props.Sides[sideID];
         if (sideAttributes[attributeName]===undefined) {
           sideAttributes[attributeName] = side[attributeName];
         } else if (sideAttributes[attributeName]!==side[attributeName]) {
           sideAttributes[attributeName] = null;
           break;
         }
+      }
+    }
+    for (let sideID of selectedSides) {
+      const side = this.props.Sides[sideID];
+      if (sideAttributes["generated_folio_number"]===undefined) {
+        sideAttributes["generated_folio_number"]=side.generated_folio_number;
+      } else {
+        sideAttributes["generated_folio_number"]=null;
       }
     }
     return sideAttributes;
@@ -229,9 +236,9 @@ export default class SideInfoBox extends React.Component {
               aria-label={this.props.visibleAttributes[attributeDict.name]?"Hide '" + attributeDict.displayName + "' attribute in collation":"Show '" + attributeDict.displayName + "' attribute in collation"}
               checkedIcon={<Visibility />}
               uncheckedIcon={<VisibilityOff />}
-              onClick={(event,value)=>this.props.action.toggleVisibility("side", attributeDict.name, !this.props.visibleAttributes[attributeDict.name])}
-              style={{display:"inline-block",width:"25px",...eyeStyle}}
-              iconStyle={{marginRight:"10px",...eyeStyle}}
+              onClick={()=>this.props.action.toggleVisibility("side", attributeDict.name, !this.props.visibleAttributes[attributeDict.name])}
+              style={this.props.windowWidth<=1024?{display:"none"}:{display:"inline-block",width:"25px",...eyeStyle}}
+              iconStyle={{...checkboxStyle().iconStyle,...eyeStyle}}
               checked={eyeIsChecked}
               onMouseEnter={()=>{this.setState({["visibility_hover_"+attributeDict.name]:true})}}
               onMouseOut={()=>{this.setState({["visibility_hover_"+attributeDict.name]:false})}}
@@ -247,11 +254,11 @@ export default class SideInfoBox extends React.Component {
         label = <Checkbox
           aria-label={"Select '" + attributeDict.displayName + "' to batch edit"}
           label={attributeDict.displayName} 
-          onClick={(event,value)=>this.toggleCheckbox(attributeDict.name,value)}
-          labelStyle={!this.state["batch_"+attributeDict.name]?{color:"gray"}:{}}
+          onClick={()=>this.toggleCheckbox(attributeDict.name)}
+          labelStyle={!this.state["batch_"+attributeDict.name]?{color:"gray",...checkboxStyle().labelStyle}:{...checkboxStyle().labelStyle}}
+          iconStyle={{...checkboxStyle().iconStyle}}
           checked={this.state["batch_"+attributeDict.name]}
           style={{display:"inline-block",width:"25px"}}
-          iconStyle={{marginRight:"10px"}}
           disabled={this.state.isBatch && (attributeDict.name==="folio_number"||attributeDict.name==="uri")}
           tabIndex={this.props.tabIndex}
         />;
@@ -264,13 +271,13 @@ export default class SideInfoBox extends React.Component {
               label={attributeDict.displayName} 
               checkedIcon={<Visibility />}
               uncheckedIcon={<VisibilityOff />}
-              onClick={(event,value)=>this.props.action.toggleVisibility("side", attributeDict.name, !this.props.visibleAttributes[attributeDict.name])}
+              onClick={()=>this.props.action.toggleVisibility("side", attributeDict.name, !this.props.visibleAttributes[attributeDict.name])}
               style={{display:"inline-block",width:"25px",...eyeStyle}}
-              iconStyle={{marginRight:"10px", color:"gray",...eyeStyle}}
               checked={eyeIsChecked}
               onMouseEnter={()=>{this.setState({["visibility_hover_"+attributeDict.name]:true})}}
               onMouseOut={()=>{this.setState({["visibility_hover_"+attributeDict.name]:false})}}
               tabIndex={this.props.tabIndex}
+              {...checkboxStyle()}
             />
             <div className={this.state["visibility_hover_"+attributeDict.name]?"text active":"text"} style={Object.keys(eyeStyle).length>0?{display:"none"}:{}}>
               {eyeIsChecked?
@@ -288,26 +295,26 @@ export default class SideInfoBox extends React.Component {
           let menuItems = [];
           for (var j in attributeDict.options) {
             let option = attributeDict.options[j];
-            menuItems.push(<MenuItem key={attributeDict.name+option+this.props.sideIndex} value={option} primaryText={option} />);
+            menuItems.push({value:option, text:option});
           }
           if (sideAttributes[attributeDict.name]===null) {
-            menuItems.push(<MenuItem key={attributeDict.name+this.props.sideIndex+"keep"} value={"keep"} primaryText={"Keep same"} />);
+            menuItems.push({value:"keep", text:"Keep same"});
           }
-          let value = "keep";
+          let value = this.state.isBatch?"keep":"";
           if (this.state[attributeDict.name]!=="" && this.state.isBatch) {
             value = this.state[attributeDict.name];
           } else if (sideAttributes[attributeDict.name]!==null) {
             value = sideAttributes[attributeDict.name];
           }
           input = (<SelectField
-                  aria-label={attributeDict.displayName + " attribute dropdown" }
+                  id={"SIB_" + attributeDict.name}
+                  label={attributeDict.displayName + " attribute dropdown" }
                   value={value}
-                  onChange={(e, i, v)=>this.dropDownChange(e,i,v,attributeDict.name)}
-                  fullWidth={true}
+                  onChange={(v)=>this.dropDownChange(v,attributeDict.name)}
                   disabled={this.state.isBatch && !this.state["batch_"+attributeDict.name]}
                   tabIndex={this.props.tabIndex}
+                  data={menuItems}
                   >
-                  {menuItems}
                 </SelectField>
                 );
         } else {
@@ -320,7 +327,7 @@ export default class SideInfoBox extends React.Component {
                   aria-label="Submit"
                   primary
                   icon={<IconSubmit />}
-                  style={{minWidth:"60px",marginLeft:"5px"}}
+                  style={{minWidth:this.props.windowWidth<=1024?"35px":"60px",marginLeft:"5px"}}
                   onClick={(e)=>this.textSubmit(e,attributeDict.name)}
                   tabIndex={this.props.tabIndex}
                 />
@@ -328,7 +335,7 @@ export default class SideInfoBox extends React.Component {
                   aria-label="Cancel"
                   secondary
                   icon={<IconClear />}
-                  style={{minWidth:"60px",marginLeft:"5px"}}
+                  style={{minWidth:this.props.windowWidth<=1024?"35px":"60px",marginLeft:"5px"}}
                   onClick={(e)=>this.textCancel(e,attributeDict.name)}
                   tabIndex={this.props.tabIndex}
                 />
@@ -338,8 +345,10 @@ export default class SideInfoBox extends React.Component {
           let value = "Keep same";
           if (this.state["editing_"+attributeDict.name]) {
             value = this.state[attributeDict.name];
-          } else if (sideAttributes[attributeDict.name]!==null) {
+          } else if (sideAttributes[attributeDict.name]!==null && sideAttributes[attributeDict.name]!=="") {
             value = sideAttributes[attributeDict.name];
+          } else if (attributeDict.name==="folio_number" && sideAttributes["generated_folio_number"]!==null) {
+            value = sideAttributes["generated_folio_number"];
           }
           input = (<div>
             <form onSubmit={(e)=>this.textSubmit(e,attributeDict.name)}>
@@ -351,6 +360,7 @@ export default class SideInfoBox extends React.Component {
                 onChange={(e,v)=>this.onTextboxChange(v,attributeDict.name)}
                 disabled={this.state.isBatch && !this.state["batch_"+attributeDict.name]}
                 tabIndex={this.props.tabIndex}
+                inputStyle={{fontSize:this.props.windowWidth<=768?"12px":"16px"}}
               />
               {textboxButtons}
             </form>
@@ -359,12 +369,11 @@ export default class SideInfoBox extends React.Component {
       } else {
         // We're in readOnly mode with no common attribute value
         if (!input && this.props.selectedSides.length>1) {
-          input = <div style={{color:"gray", fontStyle: "italic", fontSize: "0.9em", padding:"15px 0px"}}>Different values</div>;
+          input = <div style={{color:"gray", fontStyle: "italic", fontSize: this.props.windowWidth<=768?"0.7em":"0.9em", padding:"15px 0px"}}>Different values</div>;
         } else {
-          input = <div style={{padding:"15px 0px"}}>{input}</div>
+          input = <div style={{padding:"15px 0px", fontSize:this.props.windowWidth<=768?"0.7em":null}}>{input}</div>
         }
       }
-
       attributeDivs.push(
         <div className="row" key={attributeDict.name}>
           <div className="label">
@@ -393,6 +402,8 @@ export default class SideInfoBox extends React.Component {
             noteTypes={this.props.noteTypes}
             togglePopUp={this.props.togglePopUp}
             tabIndex={this.props.tabIndex}
+            groupIDs={this.props.groupIDs}
+            leafIDs={this.props.leafIDs}
           />}
           <h3>{Object.keys(this.props.selectedSides).length>1?"Notes in common" : "Notes"}</h3>
           <div className="notesInfobox">
@@ -421,7 +432,9 @@ export default class SideInfoBox extends React.Component {
         // replace imageModalContent view OSD component
         const rectoURL = side.memberType==="Recto" ? side.image.url : null;
         const versoURL = side.memberType==="Verso" ? side.image.url : null;
-        imageModalContent = (<ImageViewer rectoURL={rectoURL} versoURL={versoURL} />);
+        const isRectoDIY = side.image.manifestID && side.image.manifestID.includes("DIY");
+        const isVersoDIY = side.image.manifestID && side.image.manifestID.includes("DIY");
+        imageModalContent = (<ImageViewer isRectoDIY={isRectoDIY} isVersoDIY={isVersoDIY} rectoURL={rectoURL} versoURL={versoURL} />);
         if (side.image.url){
           imageThumbnail.push(
             <button
@@ -434,8 +447,9 @@ export default class SideInfoBox extends React.Component {
             >
               <img 
                 alt={side.folio_number}
-                src={side.image.url+"/full/80,/0/default.jpg"} 
+                src={side.image.manifestID.includes("DIY")? side.image.url : side.image.url+"/full/80,/0/default.jpg"} 
                 style={{cursor: "pointer"}}
+                width={80}
               /> 
             </button>
           )

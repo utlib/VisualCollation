@@ -11,9 +11,9 @@ export default class ImportProject extends React.Component {
     this.state = {
       importData: "",
       importFormat: "json",
+      imageData:"",
     }
   }
-
 
   isDisabled = () => {
     if (this.state.importData)
@@ -25,7 +25,7 @@ export default class ImportProject extends React.Component {
   submit = (event) => {
     if (event) event.preventDefault();
     if (!this.isDisabled()) {
-      this.props.importProject({importData: this.state.importData, importFormat: this.state.importFormat});
+      this.props.importProject({importData: this.state.importData, importFormat: this.state.importFormat, imageData: this.state.imageData});
     } 
   }
 
@@ -34,12 +34,11 @@ export default class ImportProject extends React.Component {
   }
 
   componentWillReceiveProps = (nextProps) => {
-    if (nextProps.importStatus==="SUCCESS"){
+    if (nextProps.importStatus==="SUCCESS") {
       nextProps.reset();
       nextProps.close();
     }
   }
-
 
   checkIfFileTypeIsInvalid = (file) => {
     const allowedFileTypes = ["json", "xml"];
@@ -55,26 +54,28 @@ export default class ImportProject extends React.Component {
     reader.onloadend = ()=>this.setState({importData: reader.result, importFormat})
   }
 
+  handleImageFile = (files) => {
+    let file = files[0];
+    let reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onloadend = ()=> {this.setState({imageData: reader.result})}
+  }
+
   render() {
+    let xmlMessage = "";
+    if (this.state.importFormat==="xml")
+      xmlMessage = <p><strong>Note</strong>: If the XML file was not originally created by this application, 
+      some attributes and mappings may not be successfully imported. 
+      However, the collation structure will always be importable from any XML file that follows the VisColl schema.</p>
     return (
       <div>
         <div style={{textAlign:"center"}}>
           <h1>Import</h1>
         </div>
-        <p>Please paste the content of your exported collation data in the textbox below, or upload a file to import.</p>
+        <h2>Import collation</h2>
+        <p>Upload your exported collation file or directly paste the content of the file in the textbox below.</p>
         <form onSubmit={this.submit}>
-          <textarea
-            aria-label="Paste import data here"
-            aria-errormessage="errorMsg"
-            aria-invalid={this.props.importStatus!==undefined}
-            name="importData"
-            value={this.state.importData}
-            rows={7}
-            onChange={(e)=>this.onChange(e.target.value, "importData")}
-          />
-          <br/>
-          <h2>Import from file:</h2>
-          <div className="section">
+          <div className="section" style={{paddingBottom:"1em"}}>
             <input 
               type="file" 
               accept=".json, .xml"
@@ -84,7 +85,18 @@ export default class ImportProject extends React.Component {
               onClick={(event)=>event.target.value=null}
             />
           </div>
-          <h2>Import format:</h2>
+          <div className="section">
+            <textarea
+              aria-label="Paste import data here"
+              aria-invalid={this.props.importStatus!==undefined}
+              name="importData"
+              value={this.state.importData}
+              rows={5}
+              onChange={(e)=>this.onChange(e.target.value, "importData")}
+            />
+          </div>
+          <br/>
+          <h3>Import format:</h3>
           <div className="section" role="radiogroup">
             <RadioButtonGroup 
               name="exportType" 
@@ -110,12 +122,26 @@ export default class ImportProject extends React.Component {
                   style={{display: 'inline-block', width: '125px'}}
                 />
             </RadioButtonGroup>
+            {xmlMessage}
+          </div>
+          <h2>Import images</h2>
+          <p>If you have images in your collation, upload the zipped file.</p>
+          <div className="section" style={{paddingBottom:"1em"}}>
+            <input 
+              type="file" 
+              accept=".zip,application/octet-stream,application/zip,application/x-zip,application/x-zip-compressed"
+              name="imageZipUpload" 
+              aria-label="Upload zipped images" 
+              onChange={(event)=>this.handleImageFile(event.target.files)}
+              onClick={(event)=>event.target.value=null}
+            />
           </div>
           <br/>
           {this.props.importStatus!==undefined? 
             <p id="errorMsg" style={{fontWeight:"heavy", color: "red"}}>{this.props.importStatus}</p>
             : ""            
           }
+          
           <div style={{textAlign:"center",paddingTop:30}}>
             <FlatButton 
               label="Back" 

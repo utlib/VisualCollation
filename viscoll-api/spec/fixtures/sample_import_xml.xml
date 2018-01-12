@@ -1,0 +1,154 @@
+<?xml version="1.0"?>
+<viscoll xmlns="http://schoenberginstitute.org/schema/collation">
+  <taxonomy xml:id="manuscript_preferences">
+    <label>Manuscript preferences</label>
+    <term xml:id="manuscript_preferences_ravenna_384_2339_showTips">true</term>
+  </taxonomy>
+  <taxonomy xml:id="manifests">
+    <label>List of Manifests</label>
+    <term xml:id="manifest_12341234">https://digital.library.villanova.edu/Item/vudl:99213/Manifest</term>
+  </taxonomy>
+  <taxonomy xml:id="group_title">
+    <label>List of values for Group title</label>
+    <term xml:id="group_title_quire_1">Quire 1</term>
+    <term xml:id="group_title_quire_2">Quire 2</term>
+  </taxonomy>
+  <taxonomy xml:id="group_type">
+    <label>List of values for Group type</label>
+    <term xml:id="group_type_quire">Quire</term>
+  </taxonomy>
+  <taxonomy xml:id="group_members">
+    <label>List of values for each Group's members</label>
+    <term xml:id="group_members_ravenna_384_2339-q-1">#ravenna_384_2339-1-1 #ravenna_384_2339-1-2 #ravenna_384_2339-q-1-2 #ravenna_384_2339-1-3 #ravenna_384_2339-1-4</term>
+    <term xml:id="group_members_ravenna_384_2339-q-1-2">#ravenna_384_2339-1-2-3 #ravenna_384_2339-1-2-4</term>
+  </taxonomy>
+  <taxonomy xml:id="leaf_material">
+    <label>List of values for Leaf material</label>
+    <term xml:id="leaf_material_paper">Paper</term>
+  </taxonomy>
+  <taxonomy xml:id="leaf_attachment_method">
+    <label>List of Attachment Methods</label>
+    <term xml:id="Glued_Above_Partial">Glued (Partial)</term>
+    <term xml:id="Glued_Above_Complete">Glued (Complete)</term>
+    <term xml:id="Glued_Above_Drumming">Glued (Drumming)</term>
+    <term xml:id="Glued_Above_Other">Glued (Other)</term>
+    <term xml:id="Glued_Below_Partial">Glued (Partial)</term>
+    <term xml:id="Glued_Below_Complete">Glued (Complete)</term>
+    <term xml:id="Glued_Below_Drumming">Glued (Drumming)</term>
+    <term xml:id="Glued_Below_Other">Glued (Other)</term>
+  </taxonomy>
+  <taxonomy xml:id="side_texture">
+    <label>List of values for Side texture</label>
+    <term xml:id="side_texture_hair">Hair</term>
+    <term xml:id="side_texture_flesh">Flesh</term>
+  </taxonomy>
+  <taxonomy xml:id="note_title">
+    <label>List of values for Note Titles</label>
+    <term xml:id="note_title_test_note">Test Note</term>
+  </taxonomy>
+  <taxonomy xml:id="note_show">
+    <label>Whether to show Note in Visualizations</label>
+    <term xml:id="note_show">true</term>
+  </taxonomy>
+  <manuscript>
+    <title>Sample project</title>
+    <shelfmark>Ravenna 384.2339</shelfmark>
+    <date>18th century</date>
+    <direction val="l-r"/>
+    <quires>
+      <quire xml:id="ravenna_384_2339-q-1" n="1" certainty="1">1</quire>
+      <quire xml:id="ravenna_384_2339-q-1-2" n="2" certainty="1" parent="ravenna_384_2339-q-1">2</quire>
+    </quires>
+    <leaf xml:id="ravenna_384_2339-1-1">
+      <folioNumber val="1" certainty="1">1</folioNumber>
+      <mode val="original" certainty="1"/>
+      <q position="1" leafno="1" certainty="1" target="#ravenna_384_2339-q-1" n="1"/>
+      <single val="yes"/>
+    </leaf>
+    <leaf xml:id="ravenna_384_2339-1-2">
+      <folioNumber val="2" certainty="1">2</folioNumber>
+      <mode val="original" certainty="1"/>
+      <q position="2" leafno="2" certainty="1" target="#ravenna_384_2339-q-1" n="1"/>
+      <single val="yes"/>
+    </leaf>
+    <leaf xml:id="ravenna_384_2339-1-2-3">
+      <folioNumber val="3" certainty="1">3</folioNumber>
+      <mode val="original" certainty="1"/>
+      <q position="1" leafno="3" certainty="1" target="#ravenna_384_2339-q-1-2" n="2">
+        <conjoin certainty="1" target="#ravenna_384_2339-1-2-4"/>
+      </q>
+    </leaf>
+    <leaf xml:id="ravenna_384_2339-1-2-4">
+      <folioNumber val="4" certainty="1">4</folioNumber>
+      <mode val="original" certainty="1"/>
+      <q position="2" leafno="4" certainty="1" target="#ravenna_384_2339-q-1-2" n="2">
+        <conjoin certainty="1" target="#ravenna_384_2339-1-2-3"/>
+      </q>
+    </leaf>
+    <leaf xml:id="ravenna_384_2339-1-3">
+      <folioNumber val="5" certainty="1">5</folioNumber>
+      <mode val="original" certainty="1"/>
+      <q position="4" leafno="3" certainty="1" target="#ravenna_384_2339-q-1" n="1"/>
+      <single val="yes"/>
+    </leaf>
+    <leaf xml:id="ravenna_384_2339-1-4">
+      <folioNumber val="6" certainty="1">6</folioNumber>
+      <mode/>
+      <q position="5" leafno="4" certainty="1" target="#ravenna_384_2339-q-1" n="1"/>
+      <single val="yes"/>
+    </leaf>
+  </manuscript>
+  <notes>
+    <note xml:id="ravenna_384_2339-n-1" type="Ink">This is a test</note>
+  </notes>
+  <mapping>
+    <map target="#ravenna_384_2339-q-1">
+      <term target="#note_title_test_note #group_title_quire_1 #group_type_quire #group_members_ravenna_384_2339-q-1"/>
+    </map>
+    <map target="#ravenna_384_2339-q-1-2">
+      <term target=" #group_title_quire_2 #group_type_quire #group_members_ravenna_384_2339-q-1-2"/>
+    </map>
+    <map target="#ravenna_384_2339-1-3">
+      <term target="#note_title_test_note"/>
+    </map>
+    <map side="recto" target="#ravenna_384_2339-1-1">
+      <term target="#side_texture_hair"/>
+    </map>
+    <map side="recto" target="#ravenna_384_2339-1-2">
+      <term target="#side_texture_hair"/>
+    </map>
+    <map side="recto" target="#ravenna_384_2339-1-2-3">
+      <term target="#side_texture_hair"/>
+    </map>
+    <map side="recto" target="#ravenna_384_2339-1-2-4">
+      <term target="#side_texture_hair"/>
+    </map>
+    <map side="recto" target="#ravenna_384_2339-1-3">
+      <term target="#note_title_test_note #side_texture_hair"/>
+    </map>
+    <map side="recto" target="#ravenna_384_2339-1-4">
+      <term target="#side_texture_hair"/>
+    </map>
+    <map side="verso" target="#ravenna_384_2339-1-1">
+      <term target="#side_texture_flesh"/>
+    </map>
+    <map side="verso" target="#ravenna_384_2339-1-2">
+      <term target="#side_texture_flesh"/>
+    </map>
+    <map side="verso" target="#ravenna_384_2339-1-2-3">
+      <term target="#side_texture_flesh"/>
+    </map>
+    <map side="verso" target="#ravenna_384_2339-1-2-4">
+      <term target="#side_texture_flesh"/>
+    </map>
+    <map side="verso" target="#ravenna_384_2339-1-3">
+      <term target="#note_title_test_note #side_texture_flesh"/>
+    </map>
+    <map side="verso" target="#ravenna_384_2339-1-4">
+      <term target="#side_texture_flesh"/>
+    </map>
+    <map target="#ravenna_384_2339-n-1">
+      <term target="#note_title_test_note #note_show"/>
+    </map>
+  </mapping>
+</viscoll>

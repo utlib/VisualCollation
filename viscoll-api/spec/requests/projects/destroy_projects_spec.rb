@@ -13,12 +13,15 @@ describe "DELETE /projects/id", :type => :request do
     @project1 = FactoryGirl.create(:project, {:user => @user})
     @project2 = FactoryGirl.create(:project, {:user => @user})
     @project3 = FactoryGirl.create(:project, {:user => @user2})
+    @deleteParameters = {
+      deleteUnlinkedImages: false,
+    }
   end
 
   context 'with correct authorization' do
     context 'and standard params' do
       before do
-        delete '/projects/'+@project1.id, params: '', headers: {'Authorization' => @authToken, 'CONTENT_TYPE' => 'application/json', 'ACCEPT' => 'application/json'}
+        delete '/projects/'+@project1.id, params: @deleteParameters.to_json, headers: {'Authorization' => @authToken, 'CONTENT_TYPE' => 'application/json', 'ACCEPT' => 'application/json'}
         @body = JSON.parse(response.body)
       end
 
@@ -27,8 +30,8 @@ describe "DELETE /projects/id", :type => :request do
       end
 
       it 'returns the remaining project' do
-        expect(@body.length).to equal 1
-        expect(@body[0]['id']).to eq @project2.id.to_str
+        expect(@body["projects"].length).to equal 1
+        expect(@body["projects"][0]['id']).to eq @project2.id.to_str
       end
 
       it 'leaves only the undeleted projects' do
@@ -40,7 +43,7 @@ describe "DELETE /projects/id", :type => :request do
 
     context 'and inexistent project' do
       before do
-        delete '/projects/NONEXISTENT', params: '', headers: {'Authorization' => @authToken, 'CONTENT_TYPE' => 'application/json', 'ACCEPT' => 'application/json'}
+        delete '/projects/NONEXISTENT', params: @deleteParameters.to_json, headers: {'Authorization' => @authToken, 'CONTENT_TYPE' => 'application/json', 'ACCEPT' => 'application/json'}
         @body = JSON.parse(response.body)
       end
 
@@ -57,7 +60,7 @@ describe "DELETE /projects/id", :type => :request do
 
     context "and somebody else's project" do
       before do
-        delete '/projects/'+@project3.id, params: '', headers: {'Authorization' => @authToken, 'CONTENT_TYPE' => 'application/json', 'ACCEPT' => 'application/json'}
+        delete '/projects/'+@project3.id, params: @deleteParameters.to_json, headers: {'Authorization' => @authToken, 'CONTENT_TYPE' => 'application/json', 'ACCEPT' => 'application/json'}
       end
 
       it 'returns 401' do
@@ -74,7 +77,7 @@ describe "DELETE /projects/id", :type => :request do
     context 'and a failed delete' do
       before do
         allow_any_instance_of(Project).to receive(:destroy).and_raise("Exception")
-        delete '/projects/'+@project1.id, params: '', headers: {'Authorization' => @authToken, 'CONTENT_TYPE' => 'application/json', 'ACCEPT' => 'application/json'}
+        delete '/projects/'+@project1.id, params: @deleteParameters.to_json, headers: {'Authorization' => @authToken, 'CONTENT_TYPE' => 'application/json', 'ACCEPT' => 'application/json'}
         @body = JSON.parse(response.body)
       end
 
@@ -90,7 +93,7 @@ describe "DELETE /projects/id", :type => :request do
 
   context 'with corrupted authorization' do
     before do
-      delete '/projects/'+@project1.id, params: '', headers: {'Authorization' => @authToken+'asdf', 'CONTENT_TYPE' => 'application/json', 'ACCEPT' => 'application/json'}
+      delete '/projects/'+@project1.id, params: @deleteParameters.to_json, headers: {'Authorization' => @authToken+'asdf', 'CONTENT_TYPE' => 'application/json', 'ACCEPT' => 'application/json'}
       @body = JSON.parse(response.body)
     end
 
@@ -105,7 +108,7 @@ describe "DELETE /projects/id", :type => :request do
 
   context 'with empty authorization' do
     before do
-      delete '/projects/'+@project1.id, params: '', headers: {'Authorization' => ""}
+      delete '/projects/'+@project1.id, params: @deleteParameters.to_json, headers: {'Authorization' => ""}
     end
 
     it 'returns an bad request error' do
@@ -119,7 +122,7 @@ describe "DELETE /projects/id", :type => :request do
 
   context 'invalid authorization' do
     before do
-      delete '/projects/'+@project1.id, params: '', headers: {'Authorization' => "123456789"}
+      delete '/projects/'+@project1.id, params: @deleteParameters.to_json, headers: {'Authorization' => "123456789"}
     end
 
     it 'returns an bad request error' do

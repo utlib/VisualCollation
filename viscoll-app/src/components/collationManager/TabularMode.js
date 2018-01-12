@@ -39,6 +39,7 @@ export default class TabularMode extends React.Component {
           <Group  
             key={group.id}
             activeGroup={group}
+            activeGroupOrder={this.props.project.groupIDs.indexOf(group.id)+1}
             project={this.props.project}
             collationManager={this.props.collationManager}
             handleObjectClick={this.props.handleObjectClick}
@@ -48,6 +49,7 @@ export default class TabularMode extends React.Component {
             focusLeafID={this.state.focusLeafID}
             handleObjectPress={this.props.handleObjectPress}
             tabIndex={this.props.tabIndex}
+            leafIDs={this.props.leafIDs}
           />
         );
     }

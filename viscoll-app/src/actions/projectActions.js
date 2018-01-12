@@ -59,7 +59,10 @@ export function loadProjects() {
 }
 
 
-
+/**
+ * 
+ * @param {object} data {importData:"", importFormat:"", imageData:""}
+ */
 export function importProject(data) {
   return { 
     types: ['SHOW_LOADING','IMPORT_PROJECT_SUCCESS','IMPORT_PROJECT_FAILED'],
@@ -68,7 +71,7 @@ export function importProject(data) {
         url: `/projects/import`,
         method: 'put',
         data: data,
-        successMessage: "Successfully imported the project" ,
+        successMessage: "Successfully imported the project",
         errorMessage: "Ooops! Something went wrong"
       }
     }
@@ -76,36 +79,19 @@ export function importProject(data) {
 }
 
 
-export function cloneProjectExport(projectID) {
+export function cloneProject(projectID) {
   return { 
-    types: ['NO_LOADING','CLONE_PROJECT_EXPORT_SUCCESS','CLONE_PROJECT_EXPORT_FAILED'],
+    types: ['SHOW_LOADING','CLONE_PROJECT_SUCCESS','CLONE_PROJECT_FAILED'],
     payload: {
       request : {
-        url: `/projects/${projectID}/export/json`,
+        url: `/projects/${projectID}/clone`,
         method: 'get',
-        successMessage: "" ,
-        errorMessage: "Ooops! Something went wrong"
-      }
-    }
-  };
-}
-
-
-export function cloneProjectImport(data) {
-  return { 
-    types: ['SHOW_LOADING','CLONE_PROJECT_IMPORT_SUCCESS','CLONE_PROJECT_IMPORT_FAILED'],
-    payload: {
-      request : {
-        url: `/projects/import`,
-        method: 'put',
-        data: data,
         successMessage: "Successfully cloned the project" ,
         errorMessage: "Ooops! Something went wrong"
       }
     }
   };
 }
-
 
 
 export function exportProject(projectID, format) {
@@ -185,7 +171,21 @@ export function deleteManifest(projectID, manifest) {
   };  
 }
 
-
 export function cancelCreateManifest(){
   return {type: "CANCEL_CREATE_MANIFEST"}
+}
+
+
+export function cloneProjectImagesMapping(projectID) {
+  return { 
+    types: ['NO_LOADING','CLONE_PROJECT_MAPPING_SUCCESS','CLONE_PROJECT_MAPPING_FAILED'],
+    payload: {
+      request : {
+        url: `/projects/${projectID}/cloneImageMapping`,
+        method: 'get',
+        successMessage: "" ,
+        errorMessage: "Ooops! Something went wrong"
+      }
+    }
+  };
 }

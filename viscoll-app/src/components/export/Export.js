@@ -3,26 +3,34 @@ import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
 import fileDownload from 'js-file-download';
 import copy from 'copy-to-clipboard';
-
+import IconCopy from 'material-ui/svg-icons/content/content-copy';
+import IconDownload from 'material-ui/svg-icons/file/file-download';
+import IconButton from 'material-ui/IconButton';
+import ImageViewer from "../global/ImageViewer";
 
 
 const Export = (props) => {
 
   const filename = props.projectTitle.replace(/\s/g, "_");
 
-  let actions = [
+  const actions = [
     <FlatButton
-      label="Download"
-      secondary={true}
-      onClick={()=>fileDownload(props.exportedData, `${filename}.${props.exportedType}`)}
+      label={"Download image"}
+      icon={<IconDownload />}
+      style={props.exportedType==="png"?{marginRight:10}:{display:"none"}}
+      onClick={()=>props.downloadImage()}
     />,
     <FlatButton
-      label="Copy To Clipboard"
-      secondary={true}
-      onClick={()=>{
-        copy(props.exportedData);
-        props.showCopyToClipboardNotification();
-      }}
+      label={"Download " + props.exportedType + " + images"}
+      icon={<IconDownload />}
+      style={props.exportedImages&&props.exportedType!=="png"?{marginRight:10}:{display:"none"}}
+      onClick={()=>{window.location=props.exportedImages;fileDownload(props.exportedData, `${filename}.${props.exportedType}`)}}
+    />,
+    <FlatButton
+      label={"Download " + props.exportedType}
+      icon={<IconDownload />}
+      style={props.exportedImages||props.exportedType==="png"?{display:"none"}:{marginRight:10}}
+      onClick={()=>fileDownload(props.exportedData, `${filename}.${props.exportedType}`)}
     />,
     <FlatButton
       label="Close"
@@ -32,15 +40,31 @@ const Export = (props) => {
     />,
   ];
 
-  let verticalOverflow;
-  if (props.exportedType==="formula"){
-    actions.shift();
-    verticalOverflow = "hidden";
-  }
-  let message = "This JSON export contains the complete collation with all of its data";
-  if (props.exportedType==="xml") {
-    message = "This XML export does not fully export all the collation data";
-  }
+  const exportedData = props.exportedType!=="png"? 
+    <div style={{maxHeight: 500, overflow: "scroll", background:"#f5f5f5"}}>
+      <IconButton 
+        style={{position:"fixed", right:"40px"}} 
+        tooltip="Copy to clipboard"
+        onClick={()=>{
+          copy(props.exportedData);
+          props.showCopyToClipboardNotification();
+        }}
+      >
+        <IconCopy />
+      </IconButton>
+      <pre>
+        {props.exportedData}
+      </pre>
+    </div>
+    :
+    <div>
+      <ImageViewer
+        isRectoDIY={true}
+        rectoURL={document.getElementById("myCanvas").toDataURL()}
+        backgroundColor="#F2F2F2"
+      />
+    </div>
+    ;
 
   return (
     <Dialog
@@ -51,12 +75,7 @@ const Export = (props) => {
       onRequestClose={()=>props.handleExportToggle(false)}
       contentStyle={{maxWidth: 1000}}
     >
-      <strong>{message}</strong>
-      <div style={{marginTop: 20, maxHeight: 500, overflow: "scroll", overflowY: verticalOverflow, background:"#f5f5f5"}}>
-        <pre>
-          {props.exportedData}
-        </pre>
-      </div>
+      {exportedData}
     </Dialog>
   );
 }

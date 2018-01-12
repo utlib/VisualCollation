@@ -57,12 +57,49 @@ describe "PUT /leafs/conjoin", :type => :request do
       end
 
       it 'updates the affected leafs' do
-        pending 'BUG: Should conjoin first-fifth, second-fourth and leave the third alone'
         expect(@leafs[0].conjoined_to).to eq @leafs[4].id.to_s
         expect(@leafs[1].conjoined_to).to eq @leafs[3].id.to_s
         expect(@leafs[2].conjoined_to).to be_blank
         expect(@leafs[3].conjoined_to).to eq @leafs[1].id.to_s
         expect(@leafs[4].conjoined_to).to eq @leafs[0].id.to_s
+      end
+    end
+    
+    context 'and valid odd subleaves within even conjoined quire' do
+      before do
+        @project = FactoryGirl.create(:codex_project, user: @user, quire_structure: [[1,8]])
+        @leafs = @project.leafs
+        @parameters[:leafs] = @leafs[0..4].collect { |leaf| leaf.id.to_s }
+        put '/leafs/conjoin', params: @parameters.to_json, headers: {'Authorization' => @authToken, 'CONTENT_TYPE' => 'application/json', 'ACCEPT' => 'application/json'}
+        @body = JSON.parse(response.body)
+        @project.reload
+        @leafs.each { |leaf| leaf.reload }
+      end
+      
+      it 'returns 200' do
+        expect(response).to have_http_status(:ok)
+      end
+      
+      it 'updates the affected leafs' do
+        expect(@leafs[0].conjoined_to).to eq @leafs[4].id.to_s
+        expect(@leafs[1].conjoined_to).to eq @leafs[3].id.to_s
+        expect(@leafs[2].conjoined_to).to be_blank
+        expect(@leafs[3].conjoined_to).to eq @leafs[1].id.to_s
+        expect(@leafs[4].conjoined_to).to eq @leafs[0].id.to_s
+        expect(@leafs[5].conjoined_to).to be_blank
+        expect(@leafs[6].conjoined_to).to be_blank
+        expect(@leafs[7].conjoined_to).to be_blank
+      end
+      
+      it 'appears in the echoed result' do
+        expect(@body['Leafs']["#{@leafs[0].id}"]['conjoined_to']).to eq @leafs[4].id.to_s
+        expect(@body['Leafs']["#{@leafs[1].id}"]['conjoined_to']).to eq @leafs[3].id.to_s
+        expect(@body['Leafs']["#{@leafs[2].id}"]['conjoined_to']).to be_blank
+        expect(@body['Leafs']["#{@leafs[3].id}"]['conjoined_to']).to eq @leafs[1].id.to_s
+        expect(@body['Leafs']["#{@leafs[4].id}"]['conjoined_to']).to eq @leafs[0].id.to_s
+        expect(@body['Leafs']["#{@leafs[5].id}"]['conjoined_to']).to be_blank
+        expect(@body['Leafs']["#{@leafs[6].id}"]['conjoined_to']).to be_blank
+        expect(@body['Leafs']["#{@leafs[7].id}"]['conjoined_to']).to be_blank
       end
     end
     

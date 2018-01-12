@@ -15,8 +15,16 @@ export default class ImageViewer extends React.Component {
 
   componentDidMount() {
     var tilesSources = [];
-    if (this.props.rectoURL) tilesSources.push(this.props.rectoURL + "/info.json");
-    if (this.props.versoURL) tilesSources.push(this.props.versoURL + "/info.json");
+    if (this.props.rectoURL && !this.props.isRectoDIY) {
+      tilesSources.push(this.props.rectoURL + "/info.json");
+    } else if (this.props.rectoURL && this.props.isRectoDIY) {
+      tilesSources.push({type: "image", url: this.props.rectoURL});
+    }
+    if (this.props.versoURL && !this.props.isVersoDIY) {
+      tilesSources.push(this.props.versoURL + "/info.json");
+    } else if (this.props.versoURL && this.props.isVersoDIY) {
+      tilesSources.push({type: "image", url: this.props.versoURL});
+    }
     if (!this.props.rectoURL && !this.props.versoURL) tilesSources = [{type: "image", url: BlankPage}];
     this.setState({
       osd: OpenSeadragon({
@@ -68,21 +76,29 @@ export default class ImageViewer extends React.Component {
   }
 
   componentWillUpdate(nextProps) {
-    this.addTiles(nextProps.rectoURL, nextProps.versoURL);
+    this.addTiles(nextProps.isRectoDIY, nextProps.isVersoDIY, nextProps.rectoURL, nextProps.versoURL);
   }
 
-  addTiles(r, v) {
+  addTiles(rDIY, vDIY, r, v) {
     if (this.state.osd) {
       var tilesSources = [];
-      if (r) tilesSources.push(r + "/info.json");
-      if (v) tilesSources.push(v + "/info.json");
+      if (r && !rDIY) {
+        tilesSources.push(r + "/info.json");
+      } else if (r && rDIY) {
+        tilesSources.push({type: "image", url: r});
+      }
+      if (v && !vDIY) {
+        tilesSources.push(v + "/info.json");
+      } else if (v && vDIY) {
+        tilesSources.push({type: "image", url: v});
+      }
       if (!r && !v) tilesSources = [{type: "image", url: BlankPage}];
       this.state.osd.open(tilesSources);
     }
   }
 
   render() {
-    let style = {width: "100%", height: "500px", background: "black"};
+    let style = {width: "100%", height: "500px", background: this.props.backgroundColor? this.props.backgroundColor:"black"};
     if (this.props.fixed) style = {position: "fixed", width:"42.5%",height:"82%", left: "30%", background: 'black', padding: 5};
     return (
       <div id={this.state.suffixedID} className="openseadragon" style={style}>

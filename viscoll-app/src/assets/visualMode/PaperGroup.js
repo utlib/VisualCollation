@@ -30,13 +30,13 @@ PaperGroup.prototype = {
     if (this.group.nestLevel%2===0) {
       this.path.fillColor.brightness -= 0.05;
     }
-    this.path.name = "group " + this.group.order;
+    this.path.name = "group " + this.groupOrder;
 
     // Create highlight path from rectangle
     this.highlight = new paper.Path.Rectangle(highlightRectangle);
     this.highlight.fillColor = new paper.Color(112/255.0, 229/255.0, 220/255.0, 1);
     this.highlight.opacity = 0;
-    this.highlight.name = "group " + this.group.order + " highlight";
+    this.highlight.name = "group " + this.groupOrder + " highlight";
     this.highlight.insertBelow(this.path);
 
     this.filterHighlight = new paper.Path.Rectangle(highlightRectangle);
@@ -83,7 +83,7 @@ PaperGroup.prototype = {
   },
   setVisibility: function(visibleAttributes) {
     this.visibleAttributes = visibleAttributes;
-    let groupText = this.group.type + " " + this.group.order;
+    let groupText = this.group.type + " " + this.groupOrder;
     if (this.visibleAttributes.title) groupText = groupText + ": " + this.group.title;
     this.text.set({
       content: groupText,
@@ -94,6 +94,7 @@ PaperGroup.prototype = {
 function PaperGroup(args) {
   this.manager = args.manager;
   this.group = args.group;
+  this.groupOrder = args.groupIDs.indexOf(args.group.id)+1
   this.y = args.y;
   this.x = args.x;
   this.width = args.width;

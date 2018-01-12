@@ -23,6 +23,8 @@ import {
 } from "../actions/editCollation/modificationActions";
 import { sendFeedback } from "../actions/userActions";
 
+
+
 class NotesManager extends Component {
 
   constructor(props) {
@@ -34,12 +36,25 @@ class NotesManager extends Component {
         title: true,
         type: true,
         description: true,
-      }
+      },
+      windowWidth: window.innerWidth,
     };
+  }
+
+  componentDidMount() {
+    window.addEventListener('resize', this.resizeHandler);
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener("resize", this.resizeHandler);
   }
 
   componentWillReceiveProps(nextProps) {
     this.setState({Notes: nextProps.Notes}, ()=>this.applyFilter())
+  }
+
+  resizeHandler = () => {
+    this.setState({windowWidth:window.innerWidth});
   }
 
   applyFilter = () => {
@@ -52,6 +67,14 @@ class NotesManager extends Component {
 
   onTypeChange = (type, checked) => {
     this.setState({filterTypes: {...this.state.filterTypes, [type]: checked}}, () => this.applyFilter())
+  }
+
+  handleAddNote = (note) => {
+    const userID = this.props.user.id;
+    const date = Date.now().toString();
+    const IDHash = userID + date;
+    note["id"] = IDHash.substr(IDHash.length - 24);
+    this.props.addNote(note)
   }
 
 
@@ -115,7 +138,7 @@ class NotesManager extends Component {
       content = <ManageNotes 
                   action={{ 
                     updateNote: this.updateNote, 
-                    addNote: this.props.addNote, 
+                    addNote: this.handleAddNote, 
                     deleteNote: this.props.deleteNote, 
                     linkNote: this.linkNote, 
                     unlinkNote: this.unlinkNote, 
@@ -129,8 +152,13 @@ class NotesManager extends Component {
                   Leafs={this.props.Leafs}
                   Rectos={this.props.Rectos}
                   Versos={this.props.Versos}
+                  groupIDs={this.props.groupIDs}
+                  leafIDs={this.props.leafIDs}
+                  rectoIDs={this.props.rectoIDs}
+                  versoIDs={this.props.versoIDs}
                   togglePopUp={this.props.togglePopUp} 
                   tabIndex={this.props.popUpActive?-1:0}
+                  windowWidth={this.state.windowWidth}
                 />
     } else if (this.props.activeTab==="TYPES") {
       content = <NoteType 
@@ -146,8 +174,11 @@ class NotesManager extends Component {
                 />
     }
 
+    let sidebarClasses = "sidebar";
+    if (this.props.popUpActive) sidebarClasses += " lowerZIndex";
+
     const sidebar = (
-      <div className="sidebar" role="region" aria-label="sidebar">
+      <div className={sidebarClasses} role="region" aria-label="sidebar">
         <hr />  
         <Panel title="Managers" defaultOpen={true} noPadding={true} tabIndex={this.props.popUpActive?-1:0}>
           <button
@@ -166,6 +197,14 @@ class NotesManager extends Component {
           >
             Notes
           </button>
+          <button
+            className={ this.props.managerMode==="imageManager" ? "manager active" : "manager" }        
+            onClick={() => this.props.changeManagerMode("imageManager")} 
+            tabIndex={this.props.popUpActive?-1:0}
+            aria-label="Image Manager"
+          >
+            Images
+          </button>
         </Panel>
       </div>
     );
@@ -180,14 +219,16 @@ class NotesManager extends Component {
           filterTypes={this.state.filterTypes}
           history={this.props.history}
           tabIndex={this.props.popUpActive?-1:0}
+          popUpActive={this.props.popUpActive}
+          windowWidth={this.state.windowWidth}
         >
           <Tabs 
             tabItemContainerStyle={{backgroundColor: '#ffffff'}}
             value={this.props.activeTab} 
             onChange={(v)=>this.props.changeNotesTab(v)}
           >
-            <Tab label="Manage notes" value="MANAGE" buttonStyle={topbarStyle.tab} tabIndex={this.props.popUpActive?-1:0} />
-            <Tab label="Edit note types" value="TYPES" buttonStyle={topbarStyle.tab} tabIndex={this.props.popUpActive?-1:0} />
+            <Tab label="Manage notes" value="MANAGE" buttonStyle={topbarStyle().tab} tabIndex={this.props.popUpActive?-1:0} />
+            <Tab label="Edit note types" value="TYPES" buttonStyle={topbarStyle().tab} tabIndex={this.props.popUpActive?-1:0} />
           </Tabs>
         </TopBar>
         {sidebar}
@@ -208,6 +249,10 @@ const mapStateToProps = (state) => {
   return {
     user: state.user,
     projectID: state.active.project.id,
+    groupIDs: state.active.project.groupIDs,
+    leafIDs: state.active.project.leafIDs,
+    rectoIDs: state.active.project.rectoIDs,
+    versoIDs: state.active.project.versoIDs,
     Groups: state.active.project.Groups,
     Leafs: state.active.project.Leafs,
     Rectos: state.active.project.Rectos,
@@ -252,16 +297,10 @@ const mapDispatchToProps = (dispatch) => {
       dispatch(unlinkNote(noteID, object))
     },
     linkAndUnlinkNotes: (noteID, linkObjects, unlinkObjects, props) => {
-      if (linkObjects.length > 0 && unlinkObjects.length > 0){
-        dispatch(linkNote(noteID, linkObjects))
-        .then((action) => {
-          dispatch(unlinkNote(noteID, unlinkObjects))
-        })
-      }
-      else if (linkObjects.length > 0) {
+      if (linkObjects.length > 0) {
         dispatch(linkNote(noteID, linkObjects))
       }
-      else if (unlinkObjects.length > 0) {
+      if (unlinkObjects.length > 0) {
         dispatch(unlinkNote(noteID, unlinkObjects))
       }
     },

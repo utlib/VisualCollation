@@ -12,16 +12,21 @@
     }
   }
   .manageManifests {
-    padding: 0em 2em;
+    padding: 1em 2em 0em 2em;
+    h2 {
+      font-size: 1.1em;
+      padding: 0em 0em 0em 0em;
+      margin:0em;
+      color: $black;
+    }
     .manifestCard {
       display: flex;
       justify-content: space-between;
       flex-wrap: wrap;
       padding: 1.5em 1.5em 1em 1.5em;
-      font-size: 1.1em;
-      font-weight: 500;
+      
       span {
-        font-size: 0.8em;
+        font-size: 1em;
         font-weight: normal;
         color: transparentize($black, 0.2);
       }
@@ -32,9 +37,27 @@
         text-align: right;
       }
     }
+    .addImages {
+      display: flex;
+      &>div {
+        width: 50%;
+        // border: 1px solid transparentize($dark_gray, 0.8);
+        padding: 1.5em 1.5em 1em 1.5em;
+        background: $white;
+        @include box-shadow(0px 2px 10px 0px rgba(0,0,0,0.1));
+        
+
+        &:first-child {
+          margin-right: 0.5em;
+        }
+        &:nth-child(2) {
+          margin-left: 0.5em;
+        }
+      }
+    }
   }
   .imageMapper {
-    .draggableItem {
+    .moveableItem {
       height: 50px;
       background: $white;
       border-width: 0px 1px 0px 1px;
@@ -50,9 +73,11 @@
       .text {
         color: $black;
         padding-left: 0.5em;
+        @media screen and (max-width: $xsmall) {
+          font-size: 0.9em;
+        }
         &>span {
           font-size: 0.8em;
-          color: transparentize($black, 0.3);
         }
       }
       .thumbnail {
@@ -72,6 +97,9 @@
       background: $white;
       margin: 0.5em 1em;
       padding: 0.2em 0em;
+      @media screen and (max-width: $small) {
+        margin: 0.5em 0em;
+      }
     }
 
     .panelBar {
@@ -159,7 +187,7 @@
           justify-content: space-evenly;
           border-bottom: 2px solid $gray;
           background: $white;
-          
+          width: 100%;
           .title {
             width:70px;
             padding-top: 10px;

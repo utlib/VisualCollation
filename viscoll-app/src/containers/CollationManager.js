@@ -32,10 +32,10 @@ import {
   linkNote,
   unlinkNote,
 } from "../actions/editCollation/modificationActions";
-import { exportProject, updateProject } from "../actions/projectActions";
+import { exportProject, updateProject } from "../actions/dashboardActions";
 import fileDownload from 'js-file-download';
 import NoteDialog from '../components/collationManager/dialog/NoteDialog';
-
+import {radioBtnDark} from "../styles/button";
 
 /** Container for `TabularMode`, `VisualMode`, `InfoBox`, `TopBar`, `LoadingScreen`, and `Notification`. This container has the project sidebar embedded directly.  */
 class CollationManager extends Component {
@@ -43,6 +43,7 @@ class CollationManager extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      windowWidth: window.innerWidth,
       contentStyle: {  
         transition: 'top 450ms cubic-bezier(0.23, 1, 0.32, 1)',
         top: 60,
@@ -70,6 +71,7 @@ class CollationManager extends Component {
   // }
 
   componentDidMount() {
+    window.addEventListener('resize', this.resizeHandler);
     if (this.props.filterPanelOpen){
       let filterContainer = document.getElementById('filterContainer');
       if (filterContainer) {
@@ -77,6 +79,10 @@ class CollationManager extends Component {
         this.filterHeightChange(filterPanelHeight);
       }
     }
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener("resize", this.resizeHandler);
   }
 
   componentWillReceiveProps(nextProps) {
@@ -101,6 +107,10 @@ class CollationManager extends Component {
         this.setState({activeNote: nextProps.project.Notes[noteID]});
       }
     });
+  }
+
+  resizeHandler = () => {
+    this.setState({windowWidth:window.innerWidth});
   }
 
   /**
@@ -132,10 +142,10 @@ class CollationManager extends Component {
       this.props.selectedObjects, 
       object, 
       event,
-      this.props.project.Groups,
-      this.props.project.Leafs,
-      this.props.project.Rectos,
-      this.props.project.Versos,
+      this.props.project.groupIDs,
+      this.props.project.leafIDs,
+      this.props.project.rectoIDs,
+      this.props.project.versoIDs,
     );
   }
   /**
@@ -199,9 +209,10 @@ class CollationManager extends Component {
 
   handleExportToggle = (open, type, label) => {
     this.setState({export: {open, type, label}}, ()=>{
-      if (this.state.export.open)
+      if (this.state.export.open && type!=="png")
         this.props.exportProject(this.props.project.id, type);
     });
+    this.props.togglePopUp(open);
   };
 
 
@@ -222,12 +233,10 @@ class CollationManager extends Component {
   }
 
   closeNoteDialog = () => {
-    this.setState({activeNote: null});
-    this.props.togglePopUp(false);
+    this.setState({activeNote: null}, ()=>this.props.togglePopUp(false));
   }
   openNoteDialog = (note) => {
-    this.setState({activeNote: note});
-    this.props.togglePopUp(true);
+    this.setState({activeNote: note},()=>this.props.togglePopUp(true));
   }
 
   /**
@@ -299,15 +308,17 @@ class CollationManager extends Component {
         toggleImageViewer={this.toggleImageViewer}
         tabIndex={this.props.popUpActive?-1:0}
         togglePopUp={this.props.togglePopUp}
+        popUpActive={this.props.popUpActive}
+        windowWidth={this.state.windowWidth}
       >
         <Tabs 
           tabItemContainerStyle={{backgroundColor: '#ffffff'}}
           value={this.props.collationManager.viewMode} 
           onChange={this.handleViewModeChange}
         >
-          <Tab label="Visual Mode" value="VISUAL" buttonStyle={topbarStyle.tab} tabIndex={this.props.popUpActive?-1:0} />
-          <Tab label="Tabular Mode" value="TABULAR" buttonStyle={topbarStyle.tab} tabIndex={this.props.popUpActive?-1:0} />
-          <Tab label="Viewing Mode" value="VIEWING" buttonStyle={topbarStyle.tab} tabIndex={this.props.popUpActive?-1:0} />
+          <Tab label="Visual Mode" value="VISUAL" buttonStyle={topbarStyle().tab} tabIndex={this.props.popUpActive?-1:0} />
+          <Tab label="Tabular Mode" value="TABULAR" buttonStyle={topbarStyle().tab} tabIndex={this.props.popUpActive?-1:0} />
+          <Tab label="Viewing Mode" value="VIEWING" buttonStyle={topbarStyle().tab} tabIndex={this.props.popUpActive?-1:0} />
         </Tabs>
       </TopBar>
     );
@@ -347,10 +358,9 @@ class CollationManager extends Component {
           value="Groups"
           aria-label="Select All Groups"
           label="Select All Groups"
-          labelStyle={{color:"#ffffff",fontSize:"0.9em"}}
-          iconStyle={{fill:"#4ED6CB"}}
           selected={true}
           tabIndex={this.props.popUpActive?-1:0}
+          {...radioBtnDark()}
         />
         <RadioButton
           value="Leafs"
@@ -359,6 +369,7 @@ class CollationManager extends Component {
           labelStyle={{color:"#ffffff",fontSize:"0.9em"}}
           iconStyle={{fill:"#4ED6CB"}}
           tabIndex={this.props.popUpActive?-1:0}
+          {...radioBtnDark()}
         />
         <RadioButton
           value="Rectos"
@@ -367,15 +378,17 @@ class CollationManager extends Component {
           labelStyle={{color:"#ffffff",fontSize:"0.9em"}}
           iconStyle={{fill:"#4ED6CB"}}
           tabIndex={this.props.popUpActive?-1:0}
+          {...radioBtnDark()}
         />
-      <RadioButton
-        value="Versos"
-        aria-label="Select All Versos"
-        label="Select All Versos"
-        labelStyle={{color:"#ffffff",fontSize:"0.9em"}}
-        iconStyle={{fill:"#4ED6CB"}}
-        tabIndex={this.props.popUpActive?-1:0}
-      />
+        <RadioButton
+          value="Versos"
+          aria-label="Select All Versos"
+          label="Select All Versos"
+          labelStyle={{color:"#ffffff",fontSize:"0.9em"}}
+          iconStyle={{fill:"#4ED6CB"}}
+          tabIndex={this.props.popUpActive?-1:0}
+          {...radioBtnDark()}
+        />
     </RadioButtonGroup>
     );
 
@@ -385,14 +398,20 @@ class CollationManager extends Component {
         exportOpen={this.state.export.open}
         handleExportToggle={this.handleExportToggle}
         exportedData={this.props.exportedData}
+        exportedImages={this.props.exportedImages}
         exportedType={this.state.export.type}
         projectTitle={this.props.project.title}
         showCopyToClipboardNotification={this.showCopyToClipboardNotification}
+        downloadImage={this.handleDownloadCollationDiagram}
       />
     );
 
+    let sidebarClasses = "sidebar";
+    if (!this.state.leftSideBarOpen) sidebarClasses += " hidden";
+    if (this.props.popUpActive) sidebarClasses += " lowerZIndex";
+
     const sidebar = (
-      <div role="region" aria-label="sidebar" className={this.state.leftSideBarOpen?"sidebar":"sidebar hidden"}>
+      <div role="region" aria-label="sidebar" className={sidebarClasses}>
         <hr />
         {tipsDiv}
         { this.props.collationManager.viewMode !== "VIEWING"?
@@ -413,6 +432,14 @@ class CollationManager extends Component {
             >
               Notes
             </button>
+            <button
+              className={ this.props.managerMode==="imageManager" ? "manager active" : "manager" }        
+              onClick={() => this.props.changeManagerMode("imageManager")} 
+              tabIndex={this.props.popUpActive?-1:0}
+              aria-label="Image Manager"
+            >
+              Images
+            </button>
           </Panel> : "" }
         <Panel title="Selector" defaultOpen={true} tabIndex={this.props.popUpActive?-1:0}>
           {selectionRadioGroup}
@@ -424,6 +451,7 @@ class CollationManager extends Component {
             fullWidth
             style={this.state.selectAll===""?{display:"none"}:{}}
             tabIndex={this.props.popUpActive?-1:0}
+            labelStyle={this.state.windowWidth<=768?{fontSize:"0.75em",padding:2}:{}}
           />
         </Panel>
         <Panel title="Export" defaultOpen={false} tabIndex={this.props.popUpActive?-1:0}>
@@ -432,32 +460,34 @@ class CollationManager extends Component {
             <FlatButton 
               label="JSON" 
               aria-label="Export to JSON"
-              labelStyle={{color:"#ffffff"}}
+              labelStyle={this.props.project.leafIDs.length===0?{color:"#a5a5a5", cursor:"not-allowed", fontSize:this.state.windowWidth<=768?"0.75em":null}:{color:"#ffffff",fontSize:this.state.windowWidth<=768?"0.75em":null}}
               backgroundColor="rgba(255, 255, 255, 0.05)"
               style={{width: "100%"}}
               onClick={()=>this.handleExportToggle(true, "json", "JSON")}
               tabIndex={this.props.popUpActive?-1:0}
+              disabled={this.props.project.leafIDs.length===0}
             />
             <FlatButton 
               label="VisColl XML" 
               aria-label="Export to VisColl XML"
-              labelStyle={{color:"#ffffff"}}
+              labelStyle={this.props.project.leafIDs.length===0?{color:"#a5a5a5", cursor:"not-allowed", fontSize:this.state.windowWidth<=768?"0.75em":null}:{color:"#ffffff",fontSize:this.state.windowWidth<=768?"0.75em":null}}
               backgroundColor="rgba(255, 255, 255, 0.05)"
               style={{width: "100%"}}
               onClick={()=>this.handleExportToggle(true, "xml", "XML")}
               tabIndex={this.props.popUpActive?-1:0}
+              disabled={this.props.project.leafIDs.length===0}
             />
           </div>
           <h2>Export Collation Diagram</h2>
           <div className="export">
             <FlatButton 
-              label={this.props.collationManager.viewMode!=="VISUAL"? "Only available in visual mode" : "PNG" } 
-              aria-label={this.props.collationManager.viewMode!=="VISUAL"? "Export to PNG only available in visual mode" : "Export to PNG" } 
-              labelStyle={this.props.collationManager.viewMode!=="VISUAL"?{color:"#a5a5a5", fontSize:11, cursor:"not-allowed"} : {color:"#ffffff"}}
+              label={this.props.collationManager.viewMode==="TABULAR"? "Available in visual/viewing mode" : "PNG" } 
+              aria-label={this.props.collationManager.viewMode==="TABULAR"? "Export to PNG only available in visual and viewing modes" : "Export to PNG" } 
+              labelStyle={this.props.collationManager.viewMode==="TABULAR"||this.props.project.leafIDs.length===0?{color:"#a5a5a5", cursor:"not-allowed",fontSize:this.state.windowWidth<=768?"0.75em":null} : {color:"#ffffff",fontSize:this.state.windowWidth<=768?"0.75em":null}}
               backgroundColor="rgba(255, 255, 255, 0.05)"
               style={{width: "100%"}}
-              onClick={this.handleDownloadCollationDiagram}
-              disabled={this.props.collationManager.viewMode!=="VISUAL"}
+              onClick={()=>{this.handleExportToggle(true, "png", "PNG")}}
+              disabled={this.props.collationManager.viewMode==="TABULAR"||this.props.project.leafIDs.length===0}
               tabIndex={this.props.popUpActive?-1:0}
             />
           </div>
@@ -480,6 +510,7 @@ class CollationManager extends Component {
             action={{linkNote: this.props.linkNote, unlinkNote: this.props.unlinkNote}}
             togglePopUp={this.props.togglePopUp}
             tabIndex={this.props.popUpActive?-1:0}
+            windowWidth={this.state.windowWidth}
           />
         </div>
       )
@@ -497,6 +528,8 @@ class CollationManager extends Component {
                   handleObjectPress={this.handleObjectPress}
                   popUpActive={this.props.popUpActive}
                   tabIndex={this.props.popUpActive?-1:0}
+                  groupIDs={this.props.groupIDs}
+                  leafIDs={this.props.leafIDs}
                 />
             </div>
             {infobox}
@@ -562,6 +595,7 @@ class CollationManager extends Component {
           filterHeightChange={this.filterHeightChange}
           fullWidth={this.props.collationManager.viewMode==="VIEWING" && this.state.imageViewerEnabled}
           tabIndex={this.props.popUpActive||!this.props.filterPanelOpen?-1:0}
+          leafIDs={this.props.project.leafIDs}
         />
         {workspace}
         <NoteDialog
@@ -580,9 +614,13 @@ class CollationManager extends Component {
           noteTypes={this.props.project.noteTypes}
           Notes={this.props.project.Notes}
           Groups={this.props.project.Groups}
+          groupIDs={this.props.project.groupIDs}
           Leafs={this.props.project.Leafs}
+          leafIDs={this.props.project.leafIDs}
           Rectos={this.props.project.Rectos}
+          rectoIDs={this.props.project.rectoIDs}
           Versos={this.props.project.Versos}
+          versoIDs={this.props.project.versoIDs}
           isReadOnly={this.props.collationManager.viewMode==="VIEWING"}
         />
       </div>
@@ -622,6 +660,9 @@ const mapStateToProps = (state) => {
     collationManager: state.active.collationManager,
     loading: state.global.loading,
     exportedData: state.active.exportedData,
+    exportedImages: state.active.exportedImages,
+    groupIDs: state.active.project.groupIDs,
+    leafIDs: state.active.project.leafIDs,
   };
 };
 
@@ -640,7 +681,7 @@ const mapDispatchToProps = (dispatch) => {
     },
 
     handleObjectClick: (selectedObjects, object, event, Groups, Leafs, Rectos, Versos) => {
-      dispatch(handleObjectClick(selectedObjects, object, event, {Groups, Leafs, Rectos, Versos}));
+      dispatch(handleObjectClick(selectedObjects, object, event, { Groups, Leafs, Rectos, Versos}));
     },
 
     changeManagerMode: (managerMode) => {

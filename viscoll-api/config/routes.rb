@@ -13,13 +13,22 @@ Rails.application.routes.draw do
   post '/feedback', to: 'feedback#create', defaults: {format: :json}
 
   # PROJECT ENDPOINTS 
-  put '/projects/:id/filter', to: 'filter#show', defaults: {format: :json}, only: [:show]
-  get '/projects/:id/export/:format', to: 'export#show', defaults: {format: :json}, only: [:show]
-  put '/projects/import', to: 'import#index', defaults: {format: :json}, only: [:index]
-  post '/projects/:id/manifests', to: 'projects#createManifest', defaults: {format: :json}, only: [:create]
-  put '/projects/:id/manifests', to: 'projects#updateManifest', defaults: {format: :json}, only: [:update]
-  delete '/projects/:id/manifests', to: 'projects#deleteManifest', defaults: {format: :json}, only: [:destroy]
+  put '/projects/:id/filter', to: 'filter#show', defaults: {format: :json}
+  get '/projects/:id/export/:format', to: 'export#show', defaults: {format: :json}
+  get '/projects/:id/clone', to: 'projects#clone', defaults: {format: :json}
+  put '/projects/import', to: 'import#index', defaults: {format: :json}
+  post '/projects/:id/manifests', to: 'projects#createManifest', defaults: {format: :json}
+  put '/projects/:id/manifests', to: 'projects#updateManifest', defaults: {format: :json}
+  delete '/projects/:id/manifests', to: 'projects#deleteManifest', defaults: {format: :json}
   resources :projects, defaults: {format: :json}, only: [:index, :show, :update, :destroy, :create]
+
+  # DIY IMAGE ENDPOINTS 
+  post '/images', to: 'images#uploadImages', defaults: {format: :json}
+  put '/images/link', to: 'images#link', defaults: {format: :json}
+  put '/images/unlink', to: 'images#unlink', defaults: {format: :json}
+  get '/images/:imageID_filename', to: 'images#show', defaults: {format: :json}
+  get '/images/zip/:id', to: 'images#getZipImages', defaults: {format: :json}
+  delete '/images', to: 'images#destroy', defaults: {format: :json}
 
   # GROUP ENDPOINTS 
   resources :groups, defaults: {format: :json}, only: [:update, :destroy, :create]

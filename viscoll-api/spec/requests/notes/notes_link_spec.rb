@@ -88,7 +88,7 @@ describe "PUT /notes/id/link", :type => :request do
           objects: [
             {
               id: @side.id.to_str,
-              type: "Side"
+              type: "Recto"
             }
           ]
         }
@@ -166,7 +166,7 @@ describe "PUT /notes/id/link", :type => :request do
             objects: [
               {
                 id: @side2.id.to_str,
-                type: "Side"
+                type: "Recto"
               }
             ]
           }

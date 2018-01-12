@@ -8,6 +8,7 @@ import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
 import IconSubmit from 'material-ui/svg-icons/action/done';
 import IconClear from 'material-ui/svg-icons/content/clear';
+import Checkbox from 'material-ui/Checkbox';
 
 /**
  * Form to edit project information on the project panel in the dashboard
@@ -19,6 +20,7 @@ class EditProjectForm extends React.Component {
     this.state = {
       unsavedDialog: false,
       deleteDialog: false,
+      deleteUnlinkedImages: false,
       editing: {
         title: false,
         shelfmark: false,
@@ -68,7 +70,6 @@ class EditProjectForm extends React.Component {
         },
         selectedProject: nextProps.selectedProject,
         allProjects: nextProps.allProjects,
-        selectedProjectIndex: nextProps.selectedProjectIndex,
       })
     }
   }
@@ -81,7 +82,8 @@ class EditProjectForm extends React.Component {
   checkValidationError = (type) => {
     const errors = {title:"", shelfmark:"", date:""};
     const allProjectsExceptCurrent = [...this.state.allProjects];
-    allProjectsExceptCurrent.splice(this.state.selectedProjectIndex, 1);
+    const selectedProjectIndex = this.state.allProjects.findIndex((project)=>project.id===this.props.selectedProject.id);
+    allProjectsExceptCurrent.splice(selectedProjectIndex, 1);
     allProjectsExceptCurrent.forEach(project => {
       if (type==="title"){
         if (project.title === this.state.title)
@@ -129,6 +131,7 @@ class EditProjectForm extends React.Component {
    * @public
    */
   handleDeleteDialogToggle = (deleteDialog=false) => {
+    this.props.togglePopUp(deleteDialog);
     this.setState({ deleteDialog });
   };
 
@@ -172,11 +175,7 @@ class EditProjectForm extends React.Component {
     this.props.closeProjectPanel();
     this.setState({deleteDialog: false});
     const projectID = this.props.selectedProject.id;
-    const user = {
-      id: this.props.user.id,
-      token: this.props.user.token
-    };
-    this.props.deleteProject(projectID, user);
+    this.props.deleteProject(projectID, this.state.deleteUnlinkedImages);
   };
 
   /**
@@ -335,7 +334,7 @@ class EditProjectForm extends React.Component {
       />,
     ];
 
-
+    
     return (
       <div style={{padding: 5 }} role="region" aria-label="Info panel of selected project" >
 
@@ -374,7 +373,13 @@ class EditProjectForm extends React.Component {
           modal={false}
           open={this.state.deleteDialog}
           onRequestClose={this.handleDeleteDialogToggle}
+        >
+        <Checkbox
+          label="Delete images in this project that are not used elsewhere"
+          checked={this.state.deleteUnlinkedImages}
+          onCheck={()=>this.setState({deleteUnlinkedImages: !this.state.deleteUnlinkedImages})}
         />
+        </Dialog>
   
         <Dialog
           title="It looks like you have been editing something. If you leave before saving, your changes will be lost."
@@ -397,8 +402,6 @@ class EditProjectForm extends React.Component {
       id: PropTypes.string, 
       title: PropTypes.string,
     }), 
-    /** Index of the selected project in the list of projects belonging to the user. */
-    selectedProjectIndex: PropTypes.number,
     /** Callback to close the project panel. */
     closeProjectPanel: PropTypes.func,
     /** Callback to update a project. */

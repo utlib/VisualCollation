@@ -13,6 +13,12 @@
 
   .inner {
     padding: 10px 20px 15px 20px;
+    @media screen and (max-width: $small) {
+      padding: 5px 15px 7px 15px;
+    }
+    @media screen and (max-width: $xsmall) {
+      padding: 5px 10px 7px 10px;
+    }
 
     .row {
       display: flex;
@@ -25,7 +31,22 @@
     }
     .input {
       width: 55%;
+      @media screen and (max-width: $xsmall) {
+        width: 50%;
+      }
     }
+  }
+  button.image {
+    border: 0;
+    background: none;
+    padding: 0;
+    margin: 0;
+    font-size: 1em;
+    & + button {
+      margin-left: 0.5em;
+    }
+    overflow: none;
+    max-width: 40%;
   }
   button.image {
     border: 0;

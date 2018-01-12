@@ -24,9 +24,9 @@ describe "GET /projects", :type => :request do
       end
 
       it "contains the user's own projects only" do
-        expect(@body.length).to eq 2
-        expect(@body[0]['id']).to eq @project2.id.to_str
-        expect(@body[1]['id']).to eq @project1.id.to_str
+        expect(@body["projects"].length).to eq 2
+        expect(@body["projects"][0]['id']).to eq @project2.id.to_str
+        expect(@body["projects"][1]['id']).to eq @project1.id.to_str
       end
     end
   end

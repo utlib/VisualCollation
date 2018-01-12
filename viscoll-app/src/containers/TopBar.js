@@ -12,6 +12,7 @@ import NotesFilter from "../components/notesManager/NotesFilter";
 import FilterIcon from 'material-ui/svg-icons/content/filter-list';
 import Image from 'material-ui/svg-icons/image/image';
 import imgLogo from '../assets/logo_white.svg';
+import {btnBase} from "../styles/button";
 
 import { connect } from "react-redux";
 import { 
@@ -72,7 +73,11 @@ class TopBar extends Component {
    * @public
    */
   goHome = () => {
-    this.props.history.push('/dashboard');
+    if (this.props.history.location.pathname.includes("dashboard")) {
+      this.props.goToDashboardProjectList();
+    } else {
+      this.props.history.push('/dashboard');
+    }
   }
 
   render() {
@@ -102,8 +107,22 @@ class TopBar extends Component {
       );
     }
 
+    let topbarClasses = "topbar";
+    if (this.props.popUpActive) topbarClasses += " lowerZIndex"
+    let imageViewerTitle="";
+    if (this.props.windowWidth>768 && this.props.imageViewerEnabled) {
+      imageViewerTitle = "Hide image viewer";
+    } else if (this.props.windowWidth>768) {
+      imageViewerTitle = "Image viewer";
+    }
+    let filterTitle="";
+    if (this.props.windowWidth>768 && this.props.filterOpen) {
+      filterTitle = "Hide filter";
+    } else if (this.props.windowWidth>768) {
+      filterTitle = "Filter";
+    }
     return (
-      <div role="region" aria-label="toolbar" className="topbar" style={this.props.viewMode==="VIEWING"?{left:0, width:"100%"}:{}}>
+      <div role="region" aria-label="toolbar" className={topbarClasses} style={this.props.viewMode==="VIEWING"?{left:0, width:"100%"}:{}}>
         <button 
           className="logo" 
           style={{cursor:"pointer", border:0}} 
@@ -121,10 +140,11 @@ class TopBar extends Component {
             {this.props.showImageViewerButton ? 
               <FlatButton
                 primary
-                label={this.props.imageViewerEnabled? "Hide image viewer" : "Image viewer"}
+                label={imageViewerTitle}
                 onClick={() => this.props.toggleImageViewer()}
                 icon={<Image style={{height:20}}/>}
-                style={{marginRight: 5}}
+                labelStyle={{...btnBase().labelStyle, padding:this.props.windowWidth<=1024?"0px 10px 0px 0px":10}}
+                style={{...btnBase().style, marginRight: 5, }}
                 tabIndex={this.props.tabIndex}
               />
               : null
@@ -133,10 +153,11 @@ class TopBar extends Component {
                 <FlatButton 
                   primary={true} 
                   onClick={(e)=>{e.preventDefault();this.props.toggleFilterDrawer()}}
-                  label={this.props.filterOpen? "Hide filter" : "Filter"}
+                  label={filterTitle}
                   icon={<FilterIcon style={{height:15}}/>}
-                  style={{marginLeft:0}}
                   tabIndex={this.props.tabIndex}
+                  labelStyle={{...btnBase().labelStyle, padding:this.props.windowWidth<=1024?"0px 10px 0px 0px":10}}
+                  style={{...btnBase().style, marginLeft:0}}
                   />
               : null
             }

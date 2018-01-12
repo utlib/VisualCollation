@@ -6,6 +6,9 @@ import NotesManager from './NotesManager';
 import ImageManager from './ImageManager';
 import LoadingScreen from "../components/global/LoadingScreen";
 import Notification from "../components/global/Notification";
+import ServerErrorScreen from "../components/global/ServerErrorScreen";
+import UnauthorizedErrorScreen from "../components/global/UnauthorizedErrorScreen";
+import NetworkErrorScreen from "../components/global/NetworkErrorScreen";
 import Feedback from "./Feedback";
 import { loadProject } from "../actions/editCollation/modificationActions";
 
@@ -34,9 +37,9 @@ class Project extends Component {
   }
 
   render() { 
-    const collationManager = (<CollationManager history={this.props.history} togglePopUp={this.togglePopUp} popUpActive={this.state.popUpActive} />);
-    const notesManager = (<NotesManager history={this.props.history} togglePopUp={this.togglePopUp} popUpActive={this.state.popUpActive} />);
-    const imageManager = (<ImageManager history={this.props.history} togglePopUp={this.togglePopUp} popUpActive={this.state.popUpActive} />);
+    const collationManager = (<CollationManager history={this.props.history} togglePopUp={this.togglePopUp} popUpActive={this.state.popUpActive||this.props.loading} />);
+    const notesManager = (<NotesManager history={this.props.history} togglePopUp={this.togglePopUp} popUpActive={this.state.popUpActive||this.props.loading} />);
+    const imageManager = (<ImageManager history={this.props.history} togglePopUp={this.togglePopUp} popUpActive={this.state.popUpActive||this.props.loading} />);
     let manager;
     switch (this.props.managerMode) {
       case "collationManager":
@@ -58,6 +61,9 @@ class Project extends Component {
         <LoadingScreen loading={this.props.loading} />
         <Notification message={this.props.notification} />
         <Feedback togglePopUp={this.togglePopUp} tabIndex={this.state.popUpActive?-1:0} />
+        <ServerErrorScreen />
+        <UnauthorizedErrorScreen />
+        <NetworkErrorScreen />
       </div>
     )
   }

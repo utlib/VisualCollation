@@ -60,4 +60,19 @@ RSpec.describe Project, type: :model do
       expect(@project.groupIDs).to eq ['abcd', 'ijkl']
     end
   end
+  
+  describe "Image unlinking hook" do
+    before do
+      @project1 = FactoryGirl.create(:codex_project, user: @user, quire_structure: [[1,2]])
+      @project2 = FactoryGirl.create(:codex_project, user: @user, quire_structure: [[1,2]])
+      @image = FactoryGirl.create(:pixel, user: @user, projectIDs: [@project1.id.to_s, @project2.id.to_s], sideIDs: [@project1.sides[0].id.to_s, @project2.sides[0].id.to_s])
+    end
+    
+    it 'should unhook from deleted project and sides' do
+      @project2.destroy!
+      @image.reload
+      expect(@image.projectIDs).to eq [@project1.id.to_s]
+      expect(@image.sideIDs).to eq [@project1.sides[0].id.to_s]
+    end
+  end
 end

@@ -14,12 +14,12 @@ export function loadProject(projectID, showLoading='SHOW_LOADING') {
 
 export function addLeafs(leaf, additional) {
   return { 
-    types: ['SHOW_LOADING','ADD_LEAF(S)_SUCCESS','ADD_LEAF(S)_FAILED'],
+    types: ['CREATE_LEAVES_FRONTEND','CREATE_LEAVES_SUCCESS_BACKEND','CREATE_LEAVES_FAILED_BACKEND'],
     payload: {
       request : {
         url: `/leafs`,
         method: 'post',
-        data: {leaf, additional},
+        data: { leaf, additional },
         successMessage: "Successfully added the leaf(s)" ,
         errorMessage: "Ooops! Something went wrong"
       }
@@ -29,7 +29,7 @@ export function addLeafs(leaf, additional) {
 
 export function updateLeaf(leafID, leaf) {
   return { 
-    types: ['NO_LOADING','UPDATE_LEAF_SUCCESS','UPDATE_LEAF_FAILED'],
+    types: ['UPDATE_LEAF_FRONTEND','UPDATE_LEAF_SUCCESS_BACKEND','UPDATE_LEAF_FAILED_BACKEND'],
     payload: {
       request : {
         url: `/leafs/${leafID}`,
@@ -44,7 +44,7 @@ export function updateLeaf(leafID, leaf) {
 
 export function updateLeafs(leafs, project_id) {
   return { 
-    types: ['NO_LOADING','UPDATE_LEAFS_SUCCESS','UPDATE_LEAFS_FAILED'],
+    types: ['UPDATE_LEAVES_FRONTEND','UPDATE_LEAVES_SUCCESS_BACKEND','UPDATE_LEAVES_FAILED_BACKEND'],
     payload: {
       request : {
         url: `/leafs`,
@@ -57,9 +57,18 @@ export function updateLeafs(leafs, project_id) {
   };
 }
 
-export function conjoinLeafs(leafs) {
+
+/**
+leafs: [
+  "59ea025c3b0eb7168e9591de",
+  "59ea025c3b0eb7168e9591de",
+  "59ea025c3b0eb7168e9591de",
+  "59ea025c3b0eb7168e9591de"
+]
+*/
+export function autoConjoinLeafs(leafs) {
   return { 
-    types: ['NO_LOADING','UPDATE_LEAFS_SUCCESS','UPDATE_LEAFS_FAILED'],
+    types: ['AUTOCONJOIN_LEAFS_FRONTEND','AUTOCONJOIN_LEAFS_SUCCESS_BACKEND','AUTOCONJOIN_LEAFS_FAILED_BACKEND'],
     payload: {
       request : {
         url: `/leafs/conjoin`,
@@ -72,9 +81,11 @@ export function conjoinLeafs(leafs) {
   };
 }
 
+
+
 export function deleteLeaf(leafID) {
   return { 
-    types: ['SHOW_LOADING','DELETE_LEAF_SUCCESS','DELETE_LEAF_FAILED'],
+    types: ['DELETE_LEAF_FRONTEND','DELETE_LEAF_SUCCESS_BACKEND','DELETE_LEAF_FAILED_BACKEND'],
     payload: {
       request : {
         url: `/leafs/${leafID}`,
@@ -88,7 +99,7 @@ export function deleteLeaf(leafID) {
 
 export function deleteLeafs(leafs) {
   return { 
-    types: ['SHOW_LOADING','DELETE_LEAFS_SUCCESS','DELETE_LEAFS_FAILED'],
+    types: ['DELETE_LEAVES_FRONTEND','DELETE_LEAFS_SUCCESS_BACKEND','DELETE_LEAFS_FAILED_BACKEND'],
     payload: {
       request : {
         url: `/leafs`,
@@ -103,7 +114,7 @@ export function deleteLeafs(leafs) {
 
 export function addGroups(group, additional) {
   return { 
-    types: ['SHOW_LOADING','ADD_GROUP(S)_SUCCESS','ADD_GROUP(S)_FAILED'],
+    types: ['CREATE_GROUPS_FRONTEND','CREATE_GROUPS_SUCCESS_BACKEND','CREATE_GROUPS_FAILED_BACKEND'],
     payload: {
       request : {
         url: `/groups`,
@@ -118,7 +129,7 @@ export function addGroups(group, additional) {
 
 export function updateGroup(groupID, group) {
   return { 
-    types: ['NO_LOADING','UPDATE_GROUP_SUCCESS','UPDATE_GROUP_FAILED'],
+    types: ['UPDATE_GROUP_FRONTEND','UPDATE_GROUP_SUCCESS_BACKEND','UPDATE_GROUP_FAILED_BACKEND'],
     payload: {
       request : {
         url: `/groups/${groupID}`,
@@ -133,7 +144,7 @@ export function updateGroup(groupID, group) {
 
 export function updateGroups(groups) {
   return { 
-    types: ['NO_LOADING','UPDATE_GROUPS_SUCCESS','UPDATE_GROUPS_FAILED'],
+    types: ['UPDATE_GROUPS_FRONTEND','UPDATE_GROUPS_SUCCESS_BACKEND','UPDATE_GROUPS_FAILED_BACKEND'],
     payload: {
       request : {
         url: `/groups`,
@@ -148,7 +159,7 @@ export function updateGroups(groups) {
 
 export function deleteGroup(groupID) {
   return { 
-    types: ['SHOW_LOADING','DELETE_GROUP_SUCCESS','DELETE_GROUP_FAILED'],
+    types: ['DELETE_GROUP_FRONTEND','DELETE_GROUP_SUCCESS_BACKEND','DELETE_GROUP_FAILED_BACKEND'],
     payload: {
       request : {
         url: `/groups/${groupID}`,
@@ -162,7 +173,7 @@ export function deleteGroup(groupID) {
 
 export function deleteGroups(groups, projectID) {
   return { 
-    types: ['SHOW_LOADING','DELETE_GROUPS_SUCCESS','DELETE_GROUPS_FAILED'],
+    types: ['DELETE_GROUPS_FRONTEND','DELETE_GROUPS_SUCCESS_BACKEND','DELETE_GROUPS_FAILED_BACKEND'],
     payload: {
       request : {
         url: `/groups`,
@@ -177,7 +188,7 @@ export function deleteGroups(groups, projectID) {
 
 export function updateSide(sideID, side) {
   return { 
-    types: ['NO_LOADING','UPDATE_SIDE_SUCCESS','UPDATE_SIDE_FAILED'],
+    types: ['UPDATE_SIDE_FRONTEND','UPDATE_SIDE_SUCCESS_BACKEND','UPDATE_SIDE_FAILED_BACKEND'],
     payload: {
       request : {
         url: `/sides/${sideID}`,
@@ -192,7 +203,7 @@ export function updateSide(sideID, side) {
 
 export function updateSides(sides) {
   return { 
-    types: ['NO_LOADING','UPDATE_SIDES_SUCCESS','UPDATE_SIDES_FAILED'],
+    types: ['UPDATE_SIDES_FRONTEND','UPDATE_SIDES_SUCCESS_BACKEND','UPDATE_SIDES_FAILED_BACKEND'],
     payload: {
       request : {
         url: `/sides`,
@@ -209,13 +220,15 @@ export function addNote(note) {
   /**
   note: {
     "project_id": "5951303fc9bf3c7b9a573a3f",
+    "id": "595130sadsadsa9bf3c7b9a573a3f"
     "title": "some title for note",
     "type": "Ink",
-    "description": "blue ink"
+    "description": "blue ink",
+    "show": "true"
   }
   */
   return { 
-    types: ['SHOW_LOADING','CREATE_NOTE_SUCCESS','CREATE_NOTE_FAILED'],
+    types: ['CREATE_NOTE_FRONTEND','CREATE_NOTE_SUCCESS_BACKEND','CREATE_NOTE_FAILED_BACKEND'],
     payload: {
       request : {
         url: `/notes`,
@@ -237,7 +250,7 @@ export function updateNote(noteID, note) {
   }
   */
   return { 
-    types: ['SHOW_LOADING','UPDATE_NOTE_SUCCESS','UPDATE_NOTE_FAILED'],
+    types: ['UPDATE_NOTE_FRONTEND','UPDATE_NOTE_SUCCESS_BACKEND','UPDATE_NOTE_FAILED_BACKEND'],
     payload: {
       request : {
         url: `/notes/${noteID}`,
@@ -251,23 +264,10 @@ export function updateNote(noteID, note) {
 }
 
 
-export function getNotes(projectID) {
-  return { 
-    types: ['NO_LOADING','LOAD_NOTES_SUCCESS','LOAD_NOTES_FAILED'],
-    payload: {
-      request : {
-        url: `/projects/${projectID}/notes`,
-        method: 'get',
-        successMessage: "Successfully loaded the notes" ,
-        errorMessage: "Ooops! Something went wrong"
-      }
-    }
-  };
-}
 
 export function deleteNote(noteID) {
   return { 
-    types: ['SHOW_LOADING','DELETE_NOTE_SUCCESS','DELETE_NOTE_FAILED'],
+    types: ['DELETE_NOTE_FRONTEND','DELETE_NOTE_SUCCESS_BACKEND','DELETE_NOTE_FAILED_BACKEND'],
     payload: {
       request : {
         url: `/notes/${noteID}`,
@@ -290,7 +290,7 @@ export function linkNote(noteID, objects) {
    ]
   */
   return { 
-    types: ['NO_LOADING','LINK_NOTE_SUCCESS','LINK_NOTE_FAILED'],
+    types: ['LINK_NOTE_FRONTEND','LINK_NOTE_SUCCESS_BACKEND','LINK_NOTE_FAILED_BACKEND'],
     payload: {
       request : {
         url: `/notes/${noteID}/link`,
@@ -313,7 +313,7 @@ export function unlinkNote(noteID, objects) {
    ]
   */
   return { 
-    types: ['NO_LOADING','UNLINK_NOTE_SUCCESS','UNLINK_NOTE_FAILED'],
+    types: ['UNLINK_NOTE_FRONTEND','UNLINK_NOTE_SUCCESS_BACKEND','UNLINK_NOTE_FAILED_BACKEND'],
     payload: {
       request : {
         url: `/notes/${noteID}/unlink`,
@@ -335,7 +335,7 @@ export function createNoteType(noteType) {
   }
   */
   return { 
-    types: ['NO_LOADING','CREATE_NOTETYPE_SUCCESS','CREATE_NOTETYPE_FAILED'],
+    types: ['CREATE_NOTETYPE_FRONTEND','CREATE_NOTETYPE_SUCCESS_BACKEND','CREATE_NOTETYPE_FAILED_BACKEND'],
     payload: {
       request : {
         url: `/notes/type`,
@@ -358,7 +358,7 @@ export function updateNoteType(noteType) {
   }
   */
   return { 
-    types: ['NO_LOADING','UPDATE_NOTETYPE_SUCCESS','UPDATE_NOTETYPE_FAILED'],
+    types: ['UPDATE_NOTETYPE_FRONTEND','UPDATE_NOTETYPE_SUCCESS_BACKEND','UPDATE_NOTETYPE_FAILED_BACKEND'],
     payload: {
       request : {
         url: `/notes/type`,
@@ -380,7 +380,7 @@ export function deleteNoteType(noteType) {
   }
   */
   return { 
-    types: ['NO_LOADING','DELETE_NOTETYPE_SUCCESS','DELETE_NOTETYPE_FAILED'],
+    types: ['DELETE_NOTETYPE_FRONTEND','DELETE_NOTETYPE_SUCCESS_BACKEND','DELETE_NOTETYPE_FAILED_BACKEND'],
     payload: {
       request : {
         url: `/notes/type`,
@@ -397,7 +397,7 @@ export function deleteNoteType(noteType) {
 export function mapSidesToImages(sideMappings) {
   // sideMappings = [{id: 112, image: {}}, ...]
   return { 
-    types: ['SHOW_LOADING','MAP_SIDES_SUCCESS','MAP_SIDES_FAILED'],
+    types: ['MAP_SIDES_FRONTEND','MAP_SIDES_SUCCESS_BACKEND','MAP_SIDES_FAILED_BACKEND'],
     payload: {
       request : {
         url: `/sides`,

@@ -6,7 +6,8 @@ class User
   include RailsJwtAuth::Trackable
   
   field :name, type: String, default: ""
-  
+
+  has_many :images, dependent: :destroy
   has_many :projects, dependent: :destroy
 
 end

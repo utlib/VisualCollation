@@ -74,6 +74,9 @@
   font-weight: 500;
   padding-left: 20px;
   min-height: 45px;
+  @media screen and (max-width:$xsmall) {
+    font-size: 0.9em;
+  }
 }
 .itemAttributes {
   flex-grow: 4;
@@ -90,12 +93,18 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  @media screen and (max-width:$xsmall) {
+    font-size: 0.9em;
+  }
 
   span {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
     font-size: 11px;
+    @media screen and (max-width: $xsmall) {
+      font-size: 10px;
+    }
   }
 
   span:nth-child(1) {

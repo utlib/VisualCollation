@@ -7,6 +7,7 @@ const Notification = (props) => {
       <Snackbar
         open={props.message ? true : false}
         message={props.message}
+        autoHideDuration={4000}
         bodyStyle={props.message.includes("oops")? {background: '#CE5656'} : {background: '#34A251'}}
       />
     );

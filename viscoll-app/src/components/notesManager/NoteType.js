@@ -145,7 +145,7 @@ export default class NoteType extends Component {
             disabled={!this.isValid(this.state.types[index])}
           />
           <RaisedButton
-            aria-label="Submit"
+            aria-label="Cancel"
             secondary
             icon={<IconClear />}
             style={{minWidth:"60px",marginLeft:"5px"}}
@@ -168,7 +168,7 @@ export default class NoteType extends Component {
             value={this.state.types[index]}
             onChange={(e,v)=>this.onChange(v,index)}
             errorText={this.state.errorTypes[index]}
-            aria-invalid={this.state.errorTypes[index].length>0}
+            aria-invalid={this.state.errorTypes[index]!==undefined && this.state.errorTypes[index].length>0}
             style={{width:"75%"}}
             tabIndex={this.props.tabIndex}
           />

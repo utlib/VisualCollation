@@ -57,3 +57,7 @@ coverage
 jest_0
 test.log
 *.xml
+!/viscoll-api/spec/fixtures/*.xml
+
+# DIY images
+viscoll-api/uploads/*

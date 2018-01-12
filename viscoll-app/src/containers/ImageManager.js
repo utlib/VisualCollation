@@ -12,14 +12,21 @@ import {
   createManifest,
   updateManifest,
   deleteManifest,
-  cancelCreateManifest
-} from "../actions/projectActions";
+  cancelCreateManifest,
+} from "../actions/dashboardActions";
 import { mapSidesToImages } from "../actions/editCollation/modificationActions";
-import { sendFeedback } from "../actions/userActions";
+import { 
+  sendFeedback,
+  uploadImages,
+  linkImages,
+  unlinkImages,
+  deleteImages,
+} from "../actions/userActions";
 import ManageManifests from '../components/imageManager/ManageManifests';
 import MapImages from '../components/imageManager/MapImages';
 import {RadioButton, RadioButtonGroup} from 'material-ui/RadioButton';
 import FlatButton from 'material-ui/FlatButton';
+import {radioBtnDark} from "../styles/button";
 
 
 class ImageManager extends Component {
@@ -27,8 +34,21 @@ class ImageManager extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      selectAll: ""
+      selectAll: "",
+      windowWidth: window.innerWidth,
     };
+  }
+
+  componentDidMount() {
+    window.addEventListener('resize', this.resizeHandler);
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener("resize", this.resizeHandler);
+  }
+
+  resizeHandler = () => {
+    this.setState({windowWidth:window.innerWidth});
   }
 
   createManifest = (manifest) => {
@@ -43,8 +63,25 @@ class ImageManager extends Component {
     this.props.deleteManifest(this.props.projectID, manifest)
   }
 
+  linkImages = (imageIDs) => {
+    this.props.linkImages([this.props.projectID], imageIDs, this.props.manifests["DIYImages"], this.props.images);
+  }
+
+  unlinkImages = (imageIDs) => {
+    this.props.unlinkImages([this.props.projectID], imageIDs, this.props.manifests["DIYImages"]);
+  }
+
+  uploadImages = (images) => {
+    this.props.uploadImages(images, this.props.projectID);
+  }
+
   handleSelection = (selectAll) => {
     this.setState({ selectAll })
+  }
+
+
+  deleteImages = (imageIDs) => {
+    this.props.deleteImages(imageIDs, this.props.manifests["DIYImages"]);
   }
 
   render() {
@@ -52,12 +89,20 @@ class ImageManager extends Component {
     if (this.props.activeTab==="MANAGE") {
       content = (
         <ManageManifests 
+          projectID={this.props.projectID}
           manifests={this.props.manifests} 
-          createManifest={this.createManifest}
-          updateManifest={this.updateManifest}
-          deleteManifest={this.deleteManifest}
+          action={{
+            createManifest:this.createManifest,
+            updateManifest:this.updateManifest,
+            deleteManifest:this.deleteManifest,
+            cancelCreateManifest:this.props.cancelCreateManifest,
+            linkImages: this.linkImages,
+            unlinkImages:this.unlinkImages,
+            deleteImages:this.deleteImages,
+            uploadImages: this.uploadImages,
+          }}
           createManifestError={this.props.createManifestError}
-          cancelCreateManifest={this.props.cancelCreateManifest}
+          images={this.props.images}
           tabIndex={this.props.popUpActive?-1:0}
           togglePopUp={this.props.togglePopUp}
         />
@@ -75,6 +120,8 @@ class ImageManager extends Component {
           selectAll={this.state.selectAll} 
           mapSidesToImages={this.props.mapSidesToImages}
           tabIndex={this.props.popUpActive?-1:0}
+          togglePopUp={this.props.togglePopUp}
+          windowWidth={this.state.windowWidth}
         />
       )
     }
@@ -93,6 +140,7 @@ class ImageManager extends Component {
           labelStyle={{color:"#ffffff",fontSize:"0.9em"}}
           iconStyle={{fill:"#4ED6CB"}}
           tabIndex={this.props.popUpActive?-1:0}
+          {...radioBtnDark()}
         />
         <RadioButton
           value="imageMapBoard"
@@ -101,6 +149,7 @@ class ImageManager extends Component {
           labelStyle={{color:"#ffffff",fontSize:"0.9em"}}
           iconStyle={{fill:"#4ED6CB"}}
           tabIndex={this.props.popUpActive?-1:0}
+          {...radioBtnDark()}
         />
         <RadioButton
           value="sideBacklog"
@@ -109,6 +158,7 @@ class ImageManager extends Component {
           labelStyle={{color:"#ffffff",fontSize:"0.9em"}}
           iconStyle={{fill:"#4ED6CB"}}
           tabIndex={this.props.popUpActive?-1:0}
+          {...radioBtnDark()}
         />
         <RadioButton
           value="imageBacklog"
@@ -117,13 +167,16 @@ class ImageManager extends Component {
           labelStyle={{color:"#ffffff",fontSize:"0.9em"}}
           iconStyle={{fill:"#4ED6CB"}}
           tabIndex={this.props.popUpActive?-1:0}
+          {...radioBtnDark()}
         />
       </RadioButtonGroup>
     );
 
+    let sidebarClasses = "sidebar";
+    if (this.props.popUpActive) sidebarClasses += " lowerZIndex";
 
     const sidebar = (
-      <div className={"sidebar"} role="region" aria-label="sidebar">
+      <div className={sidebarClasses} role="region" aria-label="sidebar">
         <hr />  
         <Panel title="Managers" defaultOpen={true} noPadding={true} tabIndex={this.props.popUpActive?-1:0}>
           <button
@@ -177,14 +230,16 @@ class ImageManager extends Component {
             onTypeChange={this.onTypeChange}
             togglePopUp={this.props.togglePopUp}
             tabIndex={this.props.popUpActive?-1:0}
+            popUpActive={this.props.popUpActive}
+            windowWidth={this.state.windowWidth}
           >
             <Tabs 
               tabItemContainerStyle={{backgroundColor: '#ffffff'}}
               value={this.props.activeTab} 
               onChange={(v)=>this.props.changeImageTab(v)}
             >
-              <Tab label="Manage images" value="MANAGE" buttonStyle={topbarStyle.tab} tabIndex={this.props.popUpActive?-1:0}/>
-              <Tab label="Map images" value="MAP" buttonStyle={topbarStyle.tab} tabIndex={this.props.popUpActive?-1:0}/>
+              <Tab label="Manage images" value="MANAGE" buttonStyle={topbarStyle().tab} tabIndex={this.props.popUpActive?-1:0}/>
+              <Tab label="Map images" value="MAP" buttonStyle={topbarStyle().tab} tabIndex={this.props.popUpActive?-1:0}/>
             </Tabs>
           </TopBar>
           {sidebar}
@@ -209,7 +264,8 @@ const mapStateToProps = (state) => {
     versoIDs: state.active.project.versoIDs,
     activeTab: state.active.imageManager.activeTab,
     managerMode: state.active.managerMode,
-    createManifestError: state.active.imageManager.manageSources.error
+    createManifestError: state.active.imageManager.manageSources.error,
+    images: state.dashboard.images,
   };
 };
 const mapDispatchToProps = (dispatch) => {
@@ -238,6 +294,18 @@ const mapDispatchToProps = (dispatch) => {
     mapSidesToImages: (sideMappings) => {
       dispatch(mapSidesToImages(sideMappings))
     },
+    linkImages: (projectIDs, imageIDs, manifest, allImages) => {
+      dispatch(linkImages(projectIDs, imageIDs));
+    },
+    unlinkImages: (projectIDs, imageIDs, manifest) => {
+      dispatch(unlinkImages(projectIDs, imageIDs));
+    },
+    deleteImages: (imageIDs, manifest) => {
+      dispatch(deleteImages(imageIDs));
+    },
+    uploadImages: (images, projectID) => {
+      dispatch(uploadImages(images, projectID));
+    }
   };
 };
 export default connect(mapStateToProps, mapDispatchToProps)(ImageManager);

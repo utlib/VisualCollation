@@ -10,6 +10,7 @@ import ResetPasswordRequest from '../components/authentication/ResetPasswordRequ
 import ResendConfirmation from '../components/authentication/ResendConfirmation';
 import {btnLg} from '../styles/button';
 import { connect } from "react-redux";
+import NetworkErrorScreen from "../components/global/NetworkErrorScreen";
 import { 
   login, 
   register, 
@@ -193,8 +194,9 @@ class Landing extends Component {
             {resetPassword}
             {resendConfirmation}
           </div>
-          </div>
-          <div className="panelBottom"></div>
+        </div>
+        <div className="panelBottom"></div>
+        <NetworkErrorScreen />
       </div>
     );
   }

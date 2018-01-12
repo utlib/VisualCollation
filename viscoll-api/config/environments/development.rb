@@ -44,4 +44,9 @@ Rails.application.configure do
   # Use an evented file watcher to asynchronously detect changes in source code,
   # routes, locales, etc. This feature depends on the listen gem.
   config.file_watcher = ActiveSupport::EventedFileUpdateChecker
+
+  # Configure Paperclip to access ImageMagic directory
+  Paperclip.options[:command_path] = "/usr/bin/"
+  # Redirect uploaded files to uploads
+  Paperclip::Attachment.default_options[:path] = ":rails_root/uploads/:class/:userID/:basename.:extension"
 end

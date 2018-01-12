@@ -2,11 +2,9 @@ import { initialState } from './initialStates/user';
 
 export default function userReducer(state=initialState, action) {
   try {
-    if (action.error) {
-      if (action.error.status===0) return initialState;
-      action = {type: action.type, payload: action.error.response.data}
-    }
+    if (action.error) action = {type: action.type, payload: action.error.response.data}
   } catch (e) {}
+
   switch(action.type) {
     case "persist/REHYDRATE":
       state = {...state, ...action.payload.user, errors: initialState.errors}
@@ -91,6 +89,7 @@ export default function userReducer(state=initialState, action) {
         }
       }
       break;
+
     default:
       break;
   }

@@ -47,7 +47,7 @@ describe "POST /projects", :type => :request do
       end
 
       it 'returns a new project' do
-        expect(Project.find(id: @body[0]['id'])).not_to be nil
+        expect(Project.find(id: @body["projects"][0]['id'])).not_to be nil
       end
     end
 
@@ -63,7 +63,7 @@ describe "POST /projects", :type => :request do
       end
 
       it 'returns a new project' do
-        expect(Project.find(id: @body[0]['id'])).not_to be nil
+        expect(Project.find(id: @body["projects"][0]['id'])).not_to be nil
       end
     end
 

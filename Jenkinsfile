@@ -104,17 +104,13 @@ def populateGlobalVariables = {
 }
 
 
-node {
+node('harmonic-st-patrick') {
   try {
     
     stage ('Prepare') {
       try {
         deleteDir()
         git branch: '${gitlabSourceBranch}', credentialsId: '5f7103af-b0cf-499a-ba32-321a942e77db', url: '${gitlabSourceRepoURL}'
-        timeout(1) {
-          sh 'mkdir -p ./data/db'
-          sh '/var/lib/jenkins/tools/org.jenkinsci.plugins.mongodb.MongoDBInstallation/mongoDB/bin/mongod --logpath ./mongodb.log --dbpath ./data/db &' 
-        }
       }
       catch (e) { if (!errorOccurred) {errorOccurred = e} }
     }
@@ -125,7 +121,7 @@ node {
           dir ('viscoll-app') {
             sh 'npm i'
             sh 'npm run build'
-            sh 'npm run styleguide:build'
+            // sh 'npm run styleguide:build'
           }
         }
       }
@@ -141,9 +137,9 @@ node {
         sh 'cp viscoll-api/* ./RAILS/ -f -r'
         echo "copying contents of react build directory into REACT directory"
         sh 'cp viscoll-app/build/* ./REACT/ -f -r'
-        echo "copying react documentation folder into REACT /docs directory"
-        sh 'mkdir -p REACT/docs'
-        sh 'cp viscoll-app/styleguide/* REACT/docs/ -f -r'
+        // echo "copying react documentation folder into REACT /docs directory"
+        // sh 'mkdir -p REACT/docs'
+        // sh 'cp viscoll-app/styleguide/* REACT/docs/ -f -r'
         echo "copying node modules folder into REACT directory"
         sh 'cp viscoll-app/node_modules ./REACT/node_modules -f -r'
         sh 'mkdir -p test_report'
@@ -152,12 +148,14 @@ node {
           sh 'sed -i "24 s/dummy/viscoll/" RAILS/config/initializers/rails_jwt_auth.rb'
           sh 'sed -i "30 s/dummy/viscoll/" RAILS/config/initializers/rails_jwt_auth.rb'
           sh 'sed -i "18 s/dummy/viscoll/" RAILS/app/mailers/mailer.rb'
+          sh 'sed -i "4 s/dummy/viscoll/" RAILS/app/controllers/application_controller.rb'
         }
         if (isUsabilityBranch()){
           sh 'sed -i "21 s/dummy/utlviscoll/" RAILS/config/initializers/rails_jwt_auth.rb'
           sh 'sed -i "24 s/dummy/utlviscoll/" RAILS/config/initializers/rails_jwt_auth.rb'
           sh 'sed -i "30 s/dummy/utlviscoll/" RAILS/config/initializers/rails_jwt_auth.rb'
           sh 'sed -i "18 s/dummy/utlviscoll/" RAILS/app/mailers/mailer.rb'
+          sh 'sed -i "4 s/dummy/utlviscoll/" RAILS/app/controllers/application_controller.rb'
         }
       }
       catch (e) { if (!errorOccurred) {errorOccurred = e} }
@@ -172,6 +170,10 @@ node {
             "RBENV_SHELL=sh"
           ]) 
           {
+            withCredentials([usernamePassword(credentialsId: 'cViscollTest', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
+              mongo_URI = "mongodb://$USERNAME:$PASSWORD@mongodb-dev1.vmdata.utl/viscoll_test?replicaSet=mongodb-dev"
+              sh "sed -i \"151 s#mongodb://localhost:27017/viscoll_test#${mongo_URI}#\" config/mongoid.yml"
+            }
             sh 'bundle i'
             sh 'rspec --format RspecJunitFormatter --out rspec_test_results.xml'    
           }
@@ -289,7 +291,7 @@ node {
       def failedTestsString = getFailedTests()
       notifySlack("", slackNotificationChannel, [
         [
-          title: "${jobName}, build #${env.BUILD_NUMBER} :sob: :scream: :tired_face: :facepalm: :-1:",
+          title: "${jobName}, build #${env.BUILD_NUMBER} :sob: :-1: :slam: :facepalm: :sad_panda: :rip: :dontpanic: :rage4:",
           title_link: "${env.BUILD_URL}",
           color: "${buildColor}",
           text: "${buildStatus}\n${author}",
@@ -334,7 +336,7 @@ node {
       }
       notifySlack("", slackNotificationChannel, [
         [
-          title: "${jobName}, build #${env.BUILD_NUMBER} :sunglasses: :clap: :heart_eyes: :100: :success:",
+          title: "${jobName}, build #${env.BUILD_NUMBER} :yay: :yay2: :thumbsup_all: :coolbeans: :success: :snoopy: :mario:",
           title_link: "${env.BUILD_URL}",
           color: "${buildColor}",
           text: "${buildStatus}\n${author}",
@@ -385,7 +387,7 @@ node {
     }
     notifySlack("", slackNotificationChannel, [
       [
-        title: "${env.JOB_NAME}, build #${env.BUILD_NUMBER} :sob: :scream: :tired_face: :facepalm: :-1:",
+        title: "${env.JOB_NAME}, build #${env.BUILD_NUMBER} :sob: :-1: :slam: :facepalm: :sad_panda: :rip: :dontpanic: :rage4:",
         title_link: "${env.BUILD_URL}",
         color: "${buildColor}",
         text: "${buildStatus}\n${author}",

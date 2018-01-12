@@ -75,6 +75,28 @@ RSpec.describe ControllerHelper::LeafsHelper, type: :helper do
         expect(@leaves[4].conjoined_to).to eq @leaves[0].id.to_s
       end
     end
+    
+    describe 'reconjoin odd subleaves' do
+      before do
+        @project = FactoryGirl.create(:codex_project, quire_structure: [[1,8]])
+        @leaves = @project.leafs
+      end
+      
+      it 'reconfigures leaves properly when conjoining first 5' do
+        expect(@leaves[2].conjoined_to).to eq @leaves[5].id.to_s
+        autoConjoinLeaves(@leaves[0..4], 3)
+        @project.reload
+        @leaves = @project.leafs
+        expect(@leaves[0].conjoined_to).to eq @leaves[4].id.to_s
+        expect(@leaves[1].conjoined_to).to eq @leaves[3].id.to_s
+        expect(@leaves[2].conjoined_to).to be_blank
+        expect(@leaves[3].conjoined_to).to eq @leaves[1].id.to_s
+        expect(@leaves[4].conjoined_to).to eq @leaves[0].id.to_s
+        expect(@leaves[5].conjoined_to).to be_blank
+        expect(@leaves[6].conjoined_to).to be_blank
+        expect(@leaves[7].conjoined_to).to be_blank
+      end
+    end
   end
   
   describe 'update_attached_to' do

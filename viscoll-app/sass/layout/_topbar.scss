@@ -2,8 +2,12 @@
   position: fixed;
   left:0px;
   width: 100%;
-  z-index: 100;
+  z-index: 2200;
   @include box-shadow(0px 1px 2px 1px rgba(0,0,0,0.05));
+
+  &.lowerZIndex {
+    z-index: 1500;
+  }
 
   .logo {
     float:left;
@@ -20,6 +24,9 @@
       left: 50%;
       -ms-transform: translate(-50%, -50%);
       transform: translate(-50%, -50%);  
+      @media screen and (max-width: $xsmall) {
+        width: 85%;
+      } 
     }
   }
 }

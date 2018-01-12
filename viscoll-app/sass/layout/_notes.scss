@@ -16,8 +16,7 @@
     }
     .details {
       position: relative;
-      left: 256px;
-      width: 65%;
+      width: 63%;
     }
   }
   .noteType {
@@ -73,9 +72,16 @@
   .label {
     padding-top:1em;
     width: 20%;
+    @media screen and (max-width: $xsmall) {
+      font-size: 0.8em;
+    }
   }
   .input {
     width: 80%;
+    @media screen and (max-width: $xsmall) {
+      padding-left: 5%;
+      width: 75%;
+    }
     .textOnly {
       margin-top: 1em;
       color: $black;

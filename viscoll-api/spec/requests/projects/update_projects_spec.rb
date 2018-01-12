@@ -47,7 +47,7 @@ describe "PUT /projects/id", :type => :request do
       end
 
       it 'returns the changed project' do
-        expect(@body[0]['id']).to eq @project1.id.to_str
+        expect(@body["projects"][0]['id']).to eq @project1.id.to_str
       end
 
       it 'changes the right project' do

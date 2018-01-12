@@ -9,9 +9,10 @@ const LoadingScreen = (props) => {
   return (
     <Dialog
       open={props.loading}
-      contentStyle={{width: 250, padding: 0}}
-      bodyStyle={{padding: 0}}
+      contentStyle={{width: 250, padding: 0, zIndex: 2500}}
+      bodyStyle={{padding: 0, zIndex: 2500}}
       paperProps={{style:{borderRadius:"100%"}}}
+      style={{zIndex: 2500}}
     >
       {logo}
     </Dialog>

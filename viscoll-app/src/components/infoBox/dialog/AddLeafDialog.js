@@ -10,6 +10,8 @@ import IconButton from 'material-ui/IconButton';
 import AddCircle from 'material-ui/svg-icons/content/add-circle';
 import RemoveCircle from 'material-ui/svg-icons/content/remove-circle-outline';
 import light from '../../../styles/light';
+import { getMemberOrder } from '../../../helpers/getMemberOrder';
+import { btnBase } from '../../../styles/button';
 
 /** Dialog to add leaves in a collation.  This component is used in the visual and tabular edit modes. */
 export default class AddLeafDialog extends React.Component {
@@ -122,11 +124,10 @@ export default class AddLeafDialog extends React.Component {
   /**
    * Toggle conjoin checkbox
    * 
-   * @param {boolean} value 
    * @public
    */
-  onToggleConjoin = (value) => {
-    this.setState({conjoin: value});
+  onToggleConjoin = () => {
+    this.setState({conjoin: !this.state.conjoin});
   }
 
   /**
@@ -162,12 +163,12 @@ export default class AddLeafDialog extends React.Component {
     if (this.state.conjoin && this.state.numberOfLeaves>1 && !(this.state.numberOfLeaves%2===0)) {
       data["additional"]["oddMemberLeftOut"] = this.state.oddLeaf;
     }    
-    let memberOrder = leaf.memberOrder;
+    let memberOrder = getMemberOrder(leaf, this.props.Groups, this.props.groupIDs);
     if (this.state.location==="below") {
       memberOrder += 1;
-      data["additional"]["order"] = leaf.order + 1;
+      data["additional"]["order"] = this.props.leafIDs.indexOf(leaf.id) + 2;
     } else {
-      data["additional"]["order"] = leaf.order;
+      data["additional"]["order"] = this.props.leafIDs.indexOf(leaf.id) + 1;
     }
 
     data["additional"]["memberOrder"] = memberOrder;
@@ -200,6 +201,7 @@ export default class AddLeafDialog extends React.Component {
 
   render() {
     const activeLeaf = this.props.Leafs[this.props.selectedLeaves[0]];
+    const activeLeafOrder = this.props.leafIDs.indexOf(activeLeaf.id)+1
     let defaultAddLocation = "";
 
     const actions = [
@@ -271,7 +273,7 @@ export default class AddLeafDialog extends React.Component {
         <div className="input">
           <Checkbox
             aria-label="Conjoin leaves"
-            onCheck={(e,v)=>this.onToggleConjoin(v)}
+            onClick={()=>this.onToggleConjoin()}
             checked={this.state.conjoin && this.state.numberOfLeaves>1}
             style={{verticalAlign:"bottom"}}
           />
@@ -316,10 +318,10 @@ export default class AddLeafDialog extends React.Component {
       <div className="tooltip addDialog">
         <div style={{marginLeft: '40px'}} onMouseEnter={()=>{this.setState({disabledAbove:true})}}
             onMouseOut={()=>{this.setState({disabledAbove:false})}}>
-            above leaf {activeLeaf.order}
+            above leaf {activeLeafOrder}
         </div>
         <div className={this.state.disabledAbove===true?"text active":"text"}>
-          Cannot insert a new leaf above leaf {activeLeaf.order} because leaf {activeLeaf.order} attached to leaf {activeLeaf.order-1}
+          Cannot insert a new leaf above leaf {activeLeafOrder} because leaf {activeLeafOrder} attached to leaf {activeLeafOrder-1}
         </div>
       </div>
       : ""
@@ -328,10 +330,10 @@ export default class AddLeafDialog extends React.Component {
       <div className="tooltip addDialog">
         <div style={{marginLeft: '40px'}} onMouseEnter={()=>{this.setState({disabledBelow:true})}}
         onMouseOut={()=>{this.setState({disabledBelow:false})}}>
-         below leaf {activeLeaf.order}
+         below leaf {activeLeafOrder}
         </div>
         <div className={this.state.disabledBelow===true?"text active":"text"}>
-          Cannot insert a new leaf below leaf {activeLeaf.order} because leaf {activeLeaf.order} is attached to leaf {activeLeaf.order+1}
+          Cannot insert a new leaf below leaf {activeLeafOrder} because leaf {activeLeafOrder} is attached to leaf {activeLeafOrder+1}
         </div>
       </div>
       : ""
@@ -349,13 +351,13 @@ export default class AddLeafDialog extends React.Component {
           <RadioButton
             aria-label="Add new leaf above selected item"
             value="above"
-            label={"above leaf " + activeLeaf.order}
+            label={"above leaf " + activeLeafOrder}
             style={(activeLeaf.attached_above!=="None")? {display:"none"}: styles.radioButton}
           /> 
           <RadioButton
             aria-label="Add new leaf below selected item"
             value="below"
-            label= {"below leaf " + activeLeaf.order}
+            label= {"below leaf " + activeLeafOrder}
             style={(activeLeaf.attached_below!=="None")? {display:"none"}: styles.radioButton}
           />
         </RadioButtonGroup>
@@ -387,8 +389,9 @@ export default class AddLeafDialog extends React.Component {
           primary 
           label="Add" 
           onClick={this.handleOpen} 
-          style={{width:"49%",float:"left",marginRight:"2%"}}
           tabIndex={this.props.tabIndex}
+          {...btnBase()}
+          style={{...btnBase().style, width:"49%",float:"left",marginRight:"2%"}}
         />
         {dialog}
       </div>

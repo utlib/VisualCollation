@@ -12,9 +12,9 @@ import {
   TableRowColumn,
 } from 'material-ui/Table';
 import IconClear from 'material-ui/svg-icons/content/clear';
+import IconHelp from 'material-ui/svg-icons/action/help';
 import IconButton from 'material-ui/IconButton';
-import SelectField from 'material-ui/SelectField';
-import MenuItem from 'material-ui/MenuItem';
+import SelectField from '../global/SelectField';
 
 const ProjectStructure = (props) => {
 
@@ -26,19 +26,20 @@ const ProjectStructure = (props) => {
    */
   let menuItems = (selectedValue, unconjoinLeafsList, isDisabled) => {
     if (isDisabled) {
-      return (<MenuItem
-        key={selectedValue+"blank"}
-        value={0}
-        primaryText={""}
-      />)
+      return ([{
+        key: selectedValue+"blank",
+        value: 0,
+        text: "",
+      }])
     }
-    return unconjoinLeafsList.map((val) => (
-      <MenuItem
-        key={val}
-        value={val+1}
-        primaryText={"Leaf "+(val+1)}
-      />
-    ));
+    return unconjoinLeafsList.map((val) => { 
+        return {
+          key:val,
+          value:val+1,
+          text:"Leaf "+(val+1),
+        }
+      }
+    );
   }
 
   const collationGroupsRows = [];
@@ -62,7 +63,7 @@ const ProjectStructure = (props) => {
         <TableRowColumn aria-label="Conjoined?" style={{paddingTop:"0.75em", textAlign: "center"}}>
           <Checkbox 
             aria-label="Conjoin leaves in quire"
-            onCheck={() => props.handleToggleConjoin(group)}
+            onClick={() => props.handleToggleConjoin(group)}
             checked={group.conjoin}
             disabled={group.leaves<=1}
             style={{marginLeft:8}}
@@ -70,15 +71,14 @@ const ProjectStructure = (props) => {
         </TableRowColumn>
         <TableRowColumn aria-label="Leaf to leave out if quire is conjoined" style={{paddingTop:"1em", paddingLeft:0, paddingRight:0}}>
           <SelectField
-            aria-label="Leaf number"
+            id={"unconjoinField"+group.number}
+            label={"Leaf number to unconjoin in group " + group.number }
+            onChange={(value)=>{props.onInputChangeCollationGroupsRows(null, group, "oddLeaf", value)}}
+            data={menuItems(group.oddLeaf, unconjoinLeafsList, (!group.conjoin || group.leaves%2 === 0))}
             value={group.oddLeaf}
-            maxHeight={200}
-            width={50}
-            onChange={(e, index, value)=>{props.onInputChangeCollationGroupsRows(e, group, "oddLeaf", value)}} 
             disabled={(!group.conjoin || group.leaves%2 === 0)}
-            fullWidth
+            maxHeight={200}
           >
-            {menuItems(group.oddLeaf, unconjoinLeafsList, (!group.conjoin || group.leaves%2 === 0))}
           </SelectField>
         </TableRowColumn>
         <TableRowColumn aria-label="Remove row" style={{textAlign: "center"}}>
@@ -95,12 +95,17 @@ const ProjectStructure = (props) => {
 
     return (
       <div style={{width:"100%", margin: "auto", textAlign: "center"}}>
+        <div style={{position:"absolute", right:5, top:5}}>  
+          <IconButton tooltip="More info coming soon">
+            <IconHelp color={"#727272"} />
+          </IconButton>
+        </div>
         <h1>Structure</h1>
         <p style={{paddingTop: 20}}>
           Pre-populate your collation with quires and leaves by using the formula below.  
           Generate the items by clicking the "Add" button.  You can add multiple times.
         </p>
-        <div style={{width: "100%", margin: "auto", display: "flex", justifyContent:"space-evenly", alignItems: "center", padding:"1em 0em", background:"#f3f3f3"}}>
+        <div style={{width: "100%", margin: "auto", display: "flex", justifyContent:"space-evenly", alignItems: "center", padding:"1em 0em", background:"#f8f8f8", border:"solid 1px #e2e2e2"}}>
           <label id="numQuires" style={{color:"#4e4e4e"}}>
             # of Quires 
           </label>
@@ -134,7 +139,7 @@ const ProjectStructure = (props) => {
               label="Conjoin"
               aria-label="Conjoin leaves in quire"
               checked={props.conjoined}
-              onCheck={()=>props.set("conjoined", !props.conjoined)}
+              onClick={()=>props.set("conjoined", !props.conjoined)}
             />
           </div>
           <div>

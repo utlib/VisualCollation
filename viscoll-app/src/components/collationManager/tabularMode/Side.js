@@ -19,16 +19,26 @@ const Side = (props) => {
   let sideAttributes = [];
 
   for (let attribute of defaultAttributes.side) {
-    let attributeName = attribute.name;
-    if (visibleAttributes.side[attributeName]) {
-      sideAttributes.push(
-        <div 
-          className={isActive?"attribute active":"attribute"} 
-          key={activeSide.id+attributeName}
-        >
-          <span>{attribute.displayName}:</span> {activeSide[attributeName]}
-        </div>
-      );
+    if (visibleAttributes.side[attribute.name]) {
+      if (attribute.name==="folio_number" && (activeSide[attribute.name]===null || activeSide[attribute.name]==="")) {
+        sideAttributes.push(
+          <div 
+            className={isActive?"attribute active":"attribute"} 
+            key={activeSide.id+attribute.name}
+          >
+            <span>{attribute.displayName}:</span> {activeSide["generated_folio_number"]}
+          </div>
+        );
+      } else {
+        sideAttributes.push(
+          <div 
+            className={isActive?"attribute active":"attribute"} 
+            key={activeSide.id+attribute.name}
+          >
+            <span>{attribute.displayName}:</span> {activeSide[attribute.name]}
+          </div>
+        );
+      }
     } 
   }
 
@@ -60,7 +70,7 @@ const Side = (props) => {
     >
       {activeSideName.charAt(0)}
       <input 
-        aria-label={"Leaf " + activeSide.parentOrder + " " + activeSide.memberType + " " + activeSide.folio_number}
+        aria-label={"Leaf " + props.activeSideParentOrder + " " + activeSide.memberType + " " + activeSide.folio_number}
         name={"tabular"} 
         type="radio"
         onKeyPress={(e)=>{if(e.key===" "){props.handleObjectPress(activeSide, e)}}}
@@ -82,7 +92,7 @@ const Side = (props) => {
         <div className="name">
           {activeSideName}
           <input 
-            aria-label={"Leaf " + activeSide.parenOrder + " " + activeSide.memberType + " " + activeSide.folio_number}
+            aria-label={"Leaf " + props.activeSideParentOrder + " " + activeSide.memberType + " " + activeSide.folio_number}
             name={"tabular"} 
             type="radio"
             onKeyPress={(e)=>{if(e.key===" "){props.handleObjectPress(activeSide, e)}}}

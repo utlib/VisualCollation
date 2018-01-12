@@ -21,18 +21,20 @@ export default class ImageBacklog extends Component {
       </div>
     );
     let activeStyle = {};
-    if (this.props.selectedObjects.members.find(item => item.label===image.label && item.manifestID===image.manifestID))
+    if (this.props.selectedObjects.members.find(item => item.url===image.url && item.manifestID===image.manifestID))
       activeStyle = {backgroundColor: "#4ED6CB"}
     return (
-      <div key={index} style={{...style, ...activeStyle}} className="draggableItem" onClick={(event)=>this.props.handleObjectClick(this.props.id, image, event)} >
+      <div key={index} style={{...style, ...activeStyle}} className="moveableItem" onClick={(event)=>this.props.handleObjectClick(this.props.id, image, event)} >
         <div style={{display: 'flex',alignItems:"center"}}>
-          <div className="thumbnail" onClick={(e)=>{e.stopPropagation();this.props.toggleImageModal(true, image.url)}}>
+          <div className="thumbnail" onClick={(e)=>{e.stopPropagation();this.props.toggleImageModal(true, image.url, image.manifestID.includes("DIY"))}}>
             <IconButton aria-label={"View " + image.label + " image"} tooltip="View Image" tabIndex={this.props.tabIndex}>
               <ThumbnailIcon/>
             </IconButton>
           </div>
-          <div >
+          <div className="text" style={{overflow:"hidden", textOverflow:"ellipsis", maxWidth:this.props.windowWidth*0.37-120}}>
             {image.label}
+            <br />
+            <span>{this.props.activeManifest.name}</span>
           </div>
         </div>
         {actionButtons}

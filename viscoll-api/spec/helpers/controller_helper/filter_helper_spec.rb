@@ -73,11 +73,11 @@ RSpec.describe ControllerHelper::FilterHelper, type: :helper do
       result = runValidations([
         { 'type' => 'leaf', 'attribute' => 'waahoo', 'condition' => 'equals', 'values' => ['3'] }
       ])
-      expect(result).to include a_hash_including('attribute' => 'valid attributes for leaf: [type, material, conjoined_leaf_order, attached_above, attached_below, stub]')
+      expect(result).to include a_hash_including('attribute' => 'valid attributes for leaf: [type, material, conjoined_to, conjoined_leaf_order, attached_above, attached_below, stub]')
     end
     
     it 'should accept valid parameters for conditions' do
-      ['type', 'material', 'conjoined_to', 'attached_to', 'stub'].each do |attribute|
+      ['type', 'material', 'conjoined_to', 'conjoined_leaf_order', 'attached_above', 'attached_below', 'stub'].each do |attribute|
         result = runValidations([
           { 'type' => 'leaf', 'attribute' => attribute, 'condition' => 'eq', 'values' => ['Some Value'] }
         ])

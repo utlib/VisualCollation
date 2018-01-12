@@ -1,9 +1,11 @@
-export function getLeafsOfGroup(group, Leafs){
+export function getLeafsOfGroup(group, Leafs, includeNone=true){
   let leafMembersOfCurrentGroup = [];
-  leafMembersOfCurrentGroup.push({
-    order: "None",
-    id: null
-  })
+  if (includeNone) {
+    leafMembersOfCurrentGroup.push({
+      order: "None",
+      id: "None",
+    })
+  }
   for (let memberID of group.memberIDs) {
     if (memberID.charAt(0)==="L") leafMembersOfCurrentGroup.push(Leafs[memberID]);
   }

@@ -37,14 +37,25 @@ const Leaf = (props) => {
     if (visibleAttributes.leaf[attributeName]) {
       let divStyle = "attribute ";
       if (isActive) divStyle += "active ";
+      if (attributeName==="conjoined_to"){
         leafAttributes.push(
-          <div className={divStyle} key={"infoLeaf"+leafAttribute.displayName}>
+          <div className={divStyle} key={"infoLeaf" + leafAttribute.displayName}>
             <div>
-            <span>{leafAttribute.displayName}</span>
-            {activeLeaf[attributeName]}
+              <span>{leafAttribute.displayName}</span>
+              {props.leafIDs.indexOf(activeLeaf[attributeName])!==-1 ? `Leaf ${props.leafIDs.indexOf(activeLeaf[attributeName])+1}` : "None"}
             </div>
           </div>
         );
+      } else{
+        leafAttributes.push(
+          <div className={divStyle} key={"infoLeaf" + leafAttribute.displayName}>
+            <div>
+              <span>{leafAttribute.displayName}</span>
+              {activeLeaf[attributeName]}
+            </div>
+          </div>
+        );
+      }
     }
   }
 
@@ -71,6 +82,7 @@ const Leaf = (props) => {
       <Side 
         key={rectoSide.id}
         activeSide={rectoSide} 
+        activeSideParentOrder={props.leafIDs.indexOf(rectoSide.parentID)+1}
         collationManager={props.collationManager}
         handleObjectClick={props.handleObjectClick}
         toggleFocusLeaf={props.toggleFocusLeaf}
@@ -81,6 +93,7 @@ const Leaf = (props) => {
       <Side 
         key={versoSide.id}
         activeSide={versoSide} 
+        activeSideParentOrder={props.leafIDs.indexOf(versoSide.parentID) + 1}
         collationManager={props.collationManager}
         handleObjectClick={props.handleObjectClick}
         toggleFocusLeaf={props.toggleFocusLeaf}
@@ -97,7 +110,7 @@ const Leaf = (props) => {
   if (props.focusLeafID === activeLeaf.id) sectionStyle += "focus";
 
   let leafComponent =  <div 
-                  className={flashItems.leaves.includes(activeLeaf.order)? "flash leafContainer" : "leafContainer"}
+                  className={flashItems.leaves.includes(activeLeaf.id)? "flash leafContainer" : "leafContainer"}
                 >
                   <div className="itemContainer">
                     <div 
@@ -108,9 +121,9 @@ const Leaf = (props) => {
                       onMouseLeave={()=>props.toggleFocusLeaf(null)}
                     >
                       <div className="itemName">
-                        Leaf {activeLeaf.order} 
+                        Leaf {props.activeLeafOrder} 
                         <input 
-                          aria-label={"Leaf " + activeLeaf.order}
+                          aria-label={"Leaf " + props.activeLeafOrder}
                           name={"tabular"} 
                           type="radio"
                           onKeyPress={(e)=>{if(e.key===" "){props.handleObjectPress(activeLeaf, e)}}}

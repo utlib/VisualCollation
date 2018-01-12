@@ -22,6 +22,12 @@ export default function projectReducer(state=initialState, action) {
     case "LOGOUT_SUCCESS":
       state = initialState
       break;
+    case "BACKEND_SERVER_ERROR":
+      state = {...state, serverError: true}
+      break;
+    case "BACKEND_UNAUTHORIZED_ERROR":
+      state = {...state, unauthorizedError: true}
+      break;
     default:
       break;
   }

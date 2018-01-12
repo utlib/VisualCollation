@@ -118,22 +118,21 @@ export default class ViewingMode extends React.Component {
     };
 
 
-    let leafID, rectoURL, versoURL;
+    let leafID, leaf, recto, verso, isRectoDIY, isVersoDIY, rectoURL, versoURL;
     if (this.props.selectedObjects.type==="Leaf"){
       leafID = this.props.selectedObjects.members[0];
-      const leaf = this.props.project.Leafs[leafID];
-      const recto = this.props.project.Rectos[leaf.rectoID];
-      const verso = this.props.project.Versos[leaf.versoID];
-      rectoURL = recto.image.url;
-      versoURL = verso.image.url;
+      leaf = this.props.project.Leafs[leafID];
+      recto = this.props.project.Rectos[leaf.rectoID];
+      verso = this.props.project.Versos[leaf.versoID];
     } else if (this.props.selectedObjects.type==="Recto") {
-      const recto = this.props.project.Rectos[this.props.selectedObjects.members[0]];
-      rectoURL = recto.image.url;
+      recto = this.props.project.Rectos[this.props.selectedObjects.members[0]];
     } else if (this.props.selectedObjects.type==="Verso") {
-      const verso = this.props.project.Versos[this.props.selectedObjects.members[0]];
-      versoURL = verso.image.url;
+      verso = this.props.project.Versos[this.props.selectedObjects.members[0]];
     }
-
+    isRectoDIY = recto!==undefined && recto.image.manifestID!==undefined && recto.image.manifestID.includes("DIY");
+    isVersoDIY = verso!==undefined && verso.image.manifestID!==undefined && verso.image.manifestID.includes("DIY");
+    rectoURL = recto!==undefined && recto.image.url!==undefined? recto.image.url : null;
+    versoURL = verso!==undefined && verso.image.url!==undefined? verso.image.url : null;
     return (
     <div className="viewingMode">
       <div style={this.props.imageViewerEnabled?{width: "40%"}:{}}>
@@ -141,7 +140,7 @@ export default class ViewingMode extends React.Component {
         <canvas id="myCanvas" {...canvasAttr}></canvas>
       </div>
       {this.props.imageViewerEnabled?
-        <ImageViewer rectoURL={rectoURL} versoURL={versoURL} fixed={true} />
+        <ImageViewer isRectoDIY={isRectoDIY} isVersoDIY={isVersoDIY} rectoURL={rectoURL} versoURL={versoURL} fixed={true} />
         :""
       }
     </div>

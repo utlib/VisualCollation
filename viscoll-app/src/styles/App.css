@@ -41,19 +41,23 @@
   display: block;
   top: 55px;
   width: 18%;
-  height: 99%;
+  height: calc(100% - 55px);
   background: #3A4B55;
   opacity: 1;
   -webkit-transition: all 200ms ease-in-out;
   -ms-transition: all 200ms ease-in-out;
   transition: all 200ms ease-in-out;
-  overflow-y: auto; }
+  overflow-y: auto;
+  z-index: 2200; }
+  .sidebar.lowerZIndex {
+    z-index: inherit; }
   .sidebar.hidden {
     opacity: 0; }
   .sidebar hr {
     border: 1px solid #4ED6CB;
     margin: 0; }
   .sidebar h1 {
+    text-transform: uppercase;
     color: #FFFFFF;
     font-size: 1em;
     font-weight: 600; }
@@ -66,15 +70,23 @@
     text-transform: uppercase; }
     .sidebar h2:nth-child(1) {
       padding-top: 0em; }
+    @media screen and (max-width: 768px) {
+      .sidebar h2 {
+        font-size: 0.7em; } }
   .sidebar .panel .header {
     padding: 0.5em 1em;
     display: flex;
     justify-content: space-between; }
+    @media screen and (max-width: 768px) {
+      .sidebar .panel .header {
+        font-size: 0.85em; } }
   .sidebar .panel .content {
     padding: 1em;
     background: rgba(82, 108, 145, 0.2); }
     .sidebar .panel .content.hidden {
       display: none; }
+  .sidebar .panel:last-child {
+    margin-bottom: 50px; }
   .sidebar .selectMode {
     padding: 1em 1em 2em 1em;
     text-align: center;
@@ -92,9 +104,8 @@
       text-align: right;
       margin-right: -10px;
       margin-top: -10px; }
-  .sidebar .manager {
+  .sidebar .navigation, .sidebar .manager, .sidebar .dashboard {
     text-align: center;
-    padding: 0.5em 0em;
     margin: 0px;
     text-transform: uppercase;
     -webkit-transition: all 100ms ease-in-out;
@@ -105,13 +116,30 @@
     background: none;
     color: #FFFFFF;
     font-size: 1em; }
-    .sidebar .manager:hover {
+    .sidebar .navigation:hover, .sidebar .manager:hover, .sidebar .dashboard:hover {
       background: rgba(78, 214, 203, 0.1);
       font-weight: bold; }
-    .sidebar .manager.active {
+    .sidebar .navigation.active, .sidebar .active.manager, .sidebar .active.dashboard {
       background: #4ED6CB;
       font-weight: bold;
       color: #4e4e4e; }
+  .sidebar .manager {
+    padding: 0.5em 0em; }
+    @media screen and (max-width: 768px) {
+      .sidebar .manager {
+        font-size: 0.8em; } }
+  .sidebar .dashboard {
+    text-transform: none;
+    padding: 0.75em 0em; }
+    .sidebar .dashboard:hover {
+      background: rgba(255, 255, 255, 0.05); }
+    .sidebar .dashboard.active {
+      background: rgba(255, 255, 255, 0.1);
+      font-weight: bold;
+      color: #FFFFFF; }
+    @media screen and (max-width: 768px) {
+      .sidebar .dashboard {
+        font-size: 0.8em; } }
   .sidebar .export {
     line-height: 45px; }
 
@@ -156,6 +184,12 @@
   box-shadow: 0px 2px 10px 0px rgba(0, 0, 0, 0.1); }
   .infoBox .inner {
     padding: 10px 20px 15px 20px; }
+    @media screen and (max-width: 1024px) {
+      .infoBox .inner {
+        padding: 5px 15px 7px 15px; } }
+    @media screen and (max-width: 768px) {
+      .infoBox .inner {
+        padding: 5px 10px 7px 10px; } }
     .infoBox .inner .row {
       display: flex;
       flex-wrap: wrap;
@@ -165,6 +199,9 @@
       width: 35%; }
     .infoBox .inner .input {
       width: 55%; }
+      @media screen and (max-width: 768px) {
+        .infoBox .inner .input {
+          width: 50%; } }
   .infoBox button.image {
     border: 0;
     background: none;
@@ -263,6 +300,9 @@
   font-weight: 500;
   padding-left: 20px;
   min-height: 45px; }
+  @media screen and (max-width: 768px) {
+    .itemName {
+      font-size: 0.9em; } }
 
 .itemAttributes {
   flex-grow: 4;
@@ -279,11 +319,17 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap; }
+  @media screen and (max-width: 768px) {
+    .attribute {
+      font-size: 0.9em; } }
   .attribute span {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
     font-size: 11px; }
+    @media screen and (max-width: 768px) {
+      .attribute span {
+        font-size: 10px; } }
   .attribute span:nth-child(1) {
     color: rgba(78, 78, 78, 0.4);
     display: block; }
@@ -406,9 +452,11 @@
   position: fixed;
   left: 0px;
   width: 100%;
-  z-index: 100;
+  z-index: 2200;
   -webkit-box-shadow: 0px 1px 2px 1px rgba(0, 0, 0, 0.05);
   box-shadow: 0px 1px 2px 1px rgba(0, 0, 0, 0.05); }
+  .topbar.lowerZIndex {
+    z-index: 1500; }
   .topbar .logo {
     float: left;
     width: 18%;
@@ -424,6 +472,9 @@
       left: 50%;
       -ms-transform: translate(-50%, -50%);
       transform: translate(-50%, -50%); }
+      @media screen and (max-width: 768px) {
+        .topbar .logo img {
+          width: 85%; } }
 
 .notesManager {
   height: 100%; }
@@ -441,8 +492,7 @@
         transition: background 200ms ease-in-out; }
     .notesManager .browse .details {
       position: relative;
-      left: 256px;
-      width: 65%; }
+      width: 63%; }
   .notesManager .noteType {
     padding: 1em 2em; }
     .notesManager .noteType .items {
@@ -491,8 +541,15 @@
   .noteForm .label {
     padding-top: 1em;
     width: 20%; }
+    @media screen and (max-width: 768px) {
+      .noteForm .label {
+        font-size: 0.8em; } }
   .noteForm .input {
     width: 80%; }
+    @media screen and (max-width: 768px) {
+      .noteForm .input {
+        padding-left: 5%;
+        width: 75%; } }
     .noteForm .input .textOnly {
       margin-top: 1em;
       color: #4e4e4e; }
@@ -634,23 +691,38 @@
   .imageManager .form .row .input {
     flex-grow: 1; }
 .imageManager .manageManifests {
-  padding: 0em 2em; }
+  padding: 1em 2em 0em 2em; }
+  .imageManager .manageManifests h2 {
+    font-size: 1.1em;
+    padding: 0em 0em 0em 0em;
+    margin: 0em;
+    color: #4e4e4e; }
   .imageManager .manageManifests .manifestCard {
     display: flex;
     justify-content: space-between;
     flex-wrap: wrap;
-    padding: 1.5em 1.5em 1em 1.5em;
-    font-size: 1.1em;
-    font-weight: 500; }
+    padding: 1.5em 1.5em 1em 1.5em; }
     .imageManager .manageManifests .manifestCard span {
-      font-size: 0.8em;
+      font-size: 1em;
       font-weight: normal;
       color: rgba(78, 78, 78, 0.8); }
     .imageManager .manageManifests .manifestCard > div {
       flex-grow: 1; }
     .imageManager .manageManifests .manifestCard .thumbnails {
       text-align: right; }
-.imageManager .imageMapper .draggableItem {
+  .imageManager .manageManifests .addImages {
+    display: flex; }
+    .imageManager .manageManifests .addImages > div {
+      width: 50%;
+      padding: 1.5em 1.5em 1em 1.5em;
+      background: #FFFFFF;
+      -webkit-box-shadow: 0px 2px 10px 0px rgba(0, 0, 0, 0.1);
+      box-shadow: 0px 2px 10px 0px rgba(0, 0, 0, 0.1); }
+      .imageManager .manageManifests .addImages > div:first-child {
+        margin-right: 0.5em; }
+      .imageManager .manageManifests .addImages > div:nth-child(2) {
+        margin-left: 0.5em; }
+.imageManager .imageMapper .moveableItem {
   height: 50px;
   background: #FFFFFF;
   border-width: 0px 1px 0px 1px;
@@ -665,18 +737,20 @@
   display: flex;
   justify-content: space-between;
   align-items: center; }
-  .imageManager .imageMapper .draggableItem .text {
+  .imageManager .imageMapper .moveableItem .text {
     color: #4e4e4e;
     padding-left: 0.5em; }
-    .imageManager .imageMapper .draggableItem .text > span {
-      font-size: 0.8em;
-      color: rgba(78, 78, 78, 0.7); }
-  .imageManager .imageMapper .draggableItem .thumbnail {
+    @media screen and (max-width: 768px) {
+      .imageManager .imageMapper .moveableItem .text {
+        font-size: 0.9em; } }
+    .imageManager .imageMapper .moveableItem .text > span {
+      font-size: 0.8em; }
+  .imageManager .imageMapper .moveableItem .thumbnail {
     opacity: 0.5;
     -webkit-transition: all 200ms ease-in-out;
     -ms-transition: all 200ms ease-in-out;
     transition: all 200ms ease-in-out; }
-    .imageManager .imageMapper .draggableItem .thumbnail:hover {
+    .imageManager .imageMapper .moveableItem .thumbnail:hover {
       opacity: 1;
       cursor: pointer; }
 .imageManager .imageMapper .middleBar {
@@ -685,6 +759,9 @@
   background: #FFFFFF;
   margin: 0.5em 1em;
   padding: 0.2em 0em; }
+  @media screen and (max-width: 1024px) {
+    .imageManager .imageMapper .middleBar {
+      margin: 0.5em 0em; } }
 .imageManager .imageMapper .panelBar {
   background: #FFFFFF;
   width: 100%;
@@ -749,7 +826,8 @@
       display: flex;
       justify-content: space-evenly;
       border-bottom: 2px solid #F2F2F2;
-      background: #FFFFFF; }
+      background: #FFFFFF;
+      width: 100%; }
       .imageManager .imageMapper .bottomPanel .imageBacklog .manifestSelection .title {
         width: 70px;
         padding-top: 10px;
@@ -776,6 +854,14 @@
     font-size: 0.9em; }
   .imageManager .imageMapper .mainToolbar .actions {
     padding-right: 1em; }
+
+.imageFilter {
+  -webkit-box-shadow: 0px 2px 10px 0px rgba(0, 0, 0, 0.1);
+  box-shadow: 0px 2px 10px 0px rgba(0, 0, 0, 0.1);
+  background: #FFFFFF;
+  margin: 0em 0em 0.5em 0em;
+  display: flex;
+  justify-content: space-between; }
 
 .addDialog .title {
   color: #4e4e4e; }
@@ -811,10 +897,11 @@
 .newProjectDialog h1 {
   font-weight: normal;
   text-transform: inherit; }
-.newProjectDialog h2 {
-  font-size: 1em; }
+.newProjectDialog h3 {
+  font-size: 1em;
+  margin-top: 0em; }
 .newProjectDialog .section {
-  margin-left: 2em; }
+  margin-left: 1em; }
 .newProjectDialog .newProjectSelection button.btnSelection {
   width: 100%;
   background: #FFFFFF;
@@ -913,15 +1000,24 @@ textarea {
     outline-color: #4ED6CB; }
 
 h1 {
-  font-size: 1.5em;
-  text-transform: uppercase;
+  font-size: 1.6em;
   font-weight: bold;
   color: #4e4e4e; }
+  @media screen and (max-width: 768px) {
+    h1 {
+      font-size: 1.3em; } }
 
 h2 {
-  font-weight: normal;
-  color: #4e4e4e;
-  padding-top: 0.8em; }
+  color: #727272;
+  padding-top: 0.8em;
+  font-size: 1.15em; }
+  @media screen and (max-width: 768px) {
+    h2 {
+      font-size: 1em; } }
+
+@media screen and (max-width: 768px) {
+  h3 {
+    font-size: 1em; } }
 
 html, body {
   background: #F2F2F2; }

@@ -81,12 +81,12 @@ export function handleObjectClick(selectedObjects, object, event, objects) {
         selectedObjects.members = [object.id];
       } else {
         // Select all similar type objects within this object and last selected object
-        const orderOfCurrentElement = Object.keys(objects[object.memberType+"s"]).indexOf(object.id)
-        const orderOfLastElement = Object.keys(objects[object.memberType+"s"]).indexOf(selectedObjects.lastSelected)
+        const orderOfCurrentElement = objects[object.memberType+"s"].indexOf(object.id)
+        const orderOfLastElement = objects[object.memberType+"s"].indexOf(selectedObjects.lastSelected)
         let indexes = [orderOfLastElement, orderOfCurrentElement];
         indexes.sort((a, b) => {return a-b});
         const currentSelected = [...selectedObjects.members];
-        selectedObjects.members = Object.keys(objects[object.memberType+"s"]).slice(indexes[0], indexes[1]+1);
+        selectedObjects.members = objects[object.memberType+"s"].slice(indexes[0], indexes[1]+1);
         for (let id of currentSelected){
           if (!selectedObjects.members.includes(id))
             selectedObjects.members.push(id);
@@ -94,6 +94,8 @@ export function handleObjectClick(selectedObjects, object, event, objects) {
       }
     }
   }
+  // Sort the selected members by ascending order
+  selectedObjects.members.sort((a, b)=>objects[object.memberType+"s"].indexOf(a) > Object.keys(objects[object.memberType+"s"]).indexOf(b) ? 1 : -1);
  
   if (selectedObjects.members.length === 0) {
     selectedObjects.type = "";
@@ -166,29 +168,6 @@ export function changeInfoBoxTab(newType, selectedObjects, objects) {
   };
 }
 
-
-
-export function flashLeaves(request) {
-  let leavesToFlash = [];
-  for (let i = request.order; i < (request.order+(request.noOfLeafs)); i++) {
-    leavesToFlash.push(i);
-  }
-  return { 
-    type: 'FLASH_LEAVES',
-    payload: leavesToFlash
-  };
-}
-
-export function flashGroups(request) {
-  let groupsToFlash = [];
-  for (let i = request.order; i < (request.order+request.noOfGroups); i++) {
-    groupsToFlash.push(i);
-  }
-  return { 
-    type: 'FLASH_GROUPS',
-    payload: groupsToFlash
-  };
-}
 
 
 export function filterProject(projectID, queries) {
@@ -270,12 +249,7 @@ export function toggleFilterDisplay() {
 }
 
 
-export function updateFilterQuery(currentQueries, queryIndex, fieldName, index, value) {
-  let newQueries = [...currentQueries];
-  if (fieldName==="attribute") {
-    newQueries[queryIndex]["attributeIndex"] = index;
-  }
-  newQueries[queryIndex][fieldName] = value;
+export function updateFilterQuery(newQueries) {
   return { 
     type: 'UPDATE_FILTER_QUERY',
     payload: newQueries

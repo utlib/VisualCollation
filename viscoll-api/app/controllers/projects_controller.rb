@@ -1,21 +1,22 @@
 class ProjectsController < ApplicationController
-
   before_action :authenticate!
-  before_action :set_project, only: [:show, :update, :destroy, :createManifest, :updateManifest, :deleteManifest]
+  before_action :set_project, only: [:show, :update, :destroy, :createManifest, :updateManifest, :deleteManifest, :clone]
   
+
   # GET /projects
   def index
     @projects = current_user.projects
+    @images = current_user.images
   end
 
   # GET /projects/1
   def show
-    begin
+    # begin
       @data = generateResponse()
-    rescue Exception => e
-      render json: {error: e.message}, status: :unprocessable_entity
-      return
-    end
+    # rescue Exception => e
+      # render json: {error: e.message}, status: :unprocessable_entity
+      # return
+    # end
   end
 
   # POST /projects
@@ -43,6 +44,7 @@ class ProjectsController < ApplicationController
         end
         # Get list of all projects of current user to return in response
         @projects = current_user.projects.order_by(:updated_at => 'desc')
+        @images = current_user.images
         render :index, status: :ok
       else
         render json: {project: @project.errors}, status: :unprocessable_entity
@@ -58,6 +60,7 @@ class ProjectsController < ApplicationController
       @project = Project.find(params[:id])
       if @project.update(project_params)
         @projects = current_user.projects
+        @images = current_user.images
         render :index, status: :ok
       else
         render json: {project: @project.errors}, status: :unprocessable_entity
@@ -69,16 +72,25 @@ class ProjectsController < ApplicationController
 
   # DELETE /projects/1
   def destroy
+    deleteUnlinkedImages = project_delete_params.to_h["deleteUnlinkedImages"]
     begin
       # Skip some callbacks
       Leaf.skip_callback(:destroy, :before, :unlink_notes)
+      if deleteUnlinkedImages 
+        Image.skip_callback(:destroy, :before, :unlink_sides_before_delete)
+        current_user.images.where({ "projectIDs" => { '$eq': [@project.id.to_s] } }).each do | image | 
+          image.destroy
+        end
+      end
       @project.destroy
       @projects = current_user.projects
+      @images = current_user.images
       render :index, status: :ok
     rescue Exception => e
       render json: {errors: e.message}, status: :bad_request
     ensure
       # Enable callbacks again
+      Image.set_callback(:destroy, :before, :unlink_sides_before_delete)
       Leaf.set_callback(:destroy, :before, :unlink_notes)
     end
   end
@@ -142,6 +154,39 @@ class ProjectsController < ApplicationController
     end
   end
 
+
+  # GET /projects/:id/clone
+  def clone
+    begin
+      exportedData = buildJSON(@project)
+      export = {
+        project: exportedData[:project],
+        Groups: exportedData[:groups],
+        Leafs: exportedData[:leafs],
+        Rectos: exportedData[:rectos],
+        Versos: exportedData[:versos],
+        Notes: exportedData[:notes],
+      }
+      handleJSONImport(JSON.parse(export.to_json))
+      newProject = current_user.projects.order_by(:updated_at => 'desc').first
+      newProject.sides.each do |side|
+        if !side.image.empty? and side.image["manifestID"]=="DIYImages"
+          filename = side.image["label"]
+          image = current_user.images.where(:filename => filename).first
+          !(image.sideIDs.include?(side.id.to_s)) ? image.sideIDs.push(side.id.to_s) : nil
+          !(image.projectIDs.include?(newProject.id.to_s)) ? image.projectIDs.push(newProject.id.to_s) : nil
+          image.save
+        end
+      end    
+      @projects = current_user.projects.order_by(:updated_at => 'desc')
+      @images = current_user.images
+      render :index, status: :ok
+    rescue Exception => e
+      p e.message
+    end
+  end
+
+
   private
   def set_project
     begin
@@ -159,6 +204,10 @@ class ProjectsController < ApplicationController
   # Never trust parameters from the scary Internet, only allow the white list through.
   def project_params
     params.require(:project).permit(:title, :shelfmark, :metadata=>{}, :noteTypes=>[], :preferences=>{})
+  end
+
+  def project_delete_params
+    params.permit(:deleteUnlinkedImages)
   end
 
   def group_params

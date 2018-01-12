@@ -35,6 +35,7 @@ export default class Group extends React.Component {
             <Leaf  
               key={current_leaf.id}
               activeLeaf={current_leaf}
+              activeLeafOrder={this.props.project.leafIDs.indexOf(current_leaf.id) + 1}
               Rectos={this.props.project.Rectos}
               Versos={this.props.project.Versos}
               collationManager={this.props.collationManager}
@@ -43,6 +44,7 @@ export default class Group extends React.Component {
               focusLeafID={this.props.focusLeafID}
               handleObjectPress={this.props.handleObjectPress}
               tabIndex={this.props.tabIndex}
+              leafIDs={this.props.leafIDs}
             />
           );
         } else {
@@ -51,6 +53,7 @@ export default class Group extends React.Component {
             <Group 
               key={current_group.id}
               activeGroup={current_group}
+              activeGroupOrder={this.props.project.groupIDs.indexOf(current_group.id) + 1}
               project={this.props.project}
               collationManager={this.props.collationManager}
               handleObjectClick={this.props.handleObjectClick}
@@ -60,6 +63,7 @@ export default class Group extends React.Component {
               toggleFocusLeaf={this.props.toggleFocusLeaf}
               handleObjectPress={this.props.handleObjectPress}
               tabIndex={this.props.tabIndex}
+              leafIDs={this.props.leafIDs}
             />
           );
         }
@@ -89,7 +93,7 @@ export default class Group extends React.Component {
       activeGroupStyle["borderColor"] = "#d9dbdb";
     }
     let groupContainerClasses = "groupContainer ";
-    if (this.props.collationManager.flashItems.groups.includes(this.props.activeGroup.order)) groupContainerClasses += "flash ";
+    if (this.props.collationManager.flashItems.groups.includes(this.props.activeGroup.id)) groupContainerClasses += "flash ";
     if (isActive) groupContainerClasses += "active ";
     if (this.props.focusLeafID===null && this.props.focusGroupID === this.props.activeGroup.id) groupContainerClasses += "focus ";
 
@@ -103,9 +107,9 @@ export default class Group extends React.Component {
                               <div className={"itemContainer group"}>
                                 <div className="groupSection">
                                   <div className="itemName">
-                                    Group {this.props.activeGroup.order}
+                                    Group {this.props.activeGroupOrder}
                                     <input 
-                                      aria-label={"Group " + this.props.activeGroup.order}
+                                      aria-label={"Group " + this.props.activeGroupOrder}
                                       name={"tabular"} 
                                       type="radio"
                                       onKeyPress={(e)=>{if(e.key===" "){this.props.handleObjectPress(this.props.activeGroup, e)}}}
@@ -118,7 +122,7 @@ export default class Group extends React.Component {
                                 <div className="toggleButton">
                                   <IconButton 
                                     onClick={(e)=>{e.stopPropagation();e.preventDefault();this.handleChange("open", !this.state.open)}}
-                                    aria-label={this.state.open?"Collapse group " + this.props.activeGroup.order : "Expand group " + this.props.activeGroup.order }
+                                    aria-label={this.state.open?"Collapse group " + this.props.activeGroupOrder : "Expand group " + this.props.activeGroupOrder }
                                     tabIndex={this.props.tabIndex}
                                     tooltip={this.state.open?"Collapse group" : "Expand group"}
                                   >

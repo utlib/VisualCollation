@@ -66,8 +66,7 @@ class NotesController < ApplicationController
           when "Leaf"
             @object = Leaf.find(id)
             authorized = @object.project.user_id == current_user.id
-          when "Side"
-            type = id[0]=="R" ? "Recto" : "Verso"
+          when "Recto", "Verso"
             @object = Side.find(id)
             authorized = @object.project.user_id == current_user.id
           else
@@ -234,7 +233,7 @@ class NotesController < ApplicationController
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def note_create_params
-      params.require(:note).permit(:project_id, :title, :type, :description, :show)
+      params.require(:note).permit(:project_id, :id, :title, :type, :description, :show)
     end
 
     def note_update_params

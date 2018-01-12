@@ -2,11 +2,11 @@ import React, {Component} from 'react';
 import SideBacklog from './mapImages/SideBacklog';
 import ImageBacklog from './mapImages/ImageBacklog';
 import MapBoard from './mapImages/MapBoard';
-import SelectField from 'material-ui/SelectField';
-import MenuItem from 'material-ui/MenuItem';
 import RaisedButton from 'material-ui/RaisedButton';
 import ImageViewer from "../global/ImageViewer";
 import Dialog from 'material-ui/Dialog';
+import SelectField from '../global/SelectField';
+import { btnBase } from '../../styles/button';
 
 export default class MapImages extends Component {
 
@@ -21,7 +21,7 @@ export default class MapImages extends Component {
       initialMapping: {imageMapBoard: [], sideMapBoard: [], imageBacklog: {}, sideBacklog: []},
       selectedObjects: {type: "", members: [], lastSelected: null},
       imageModalOpen: false,
-      activeImage: null // "url"
+      activeImage: null // {url:"", isDIY: true/false}
     }
   }
 
@@ -44,7 +44,7 @@ export default class MapImages extends Component {
       }
     }
     // Remove items from backlog which already exists in the intial map board
-    imageBacklog = imageBacklog.filter(backlogImage => !imageMapBoard.find(mapImage => mapImage.label===backlogImage.label && mapImage.manifestID===backlogImage.manifestID));
+    imageBacklog = imageBacklog.filter(backlogImage => !imageMapBoard.find(mapImage => mapImage.url===backlogImage.url && mapImage.manifestID===backlogImage.manifestID));
     sideBacklog = sideBacklog.filter(sideID => !sideMapBoard.includes(sideID));
     this.setState({imageBacklog, sideBacklog, sideMapBoard, imageMapBoard, initialMapping:{imageBacklog, sideBacklog, sideMapBoard, imageMapBoard}});
   }
@@ -59,7 +59,7 @@ export default class MapImages extends Component {
 
   handleManifestChange = activeManifestID => this.setState({activeManifest: this.props.manifests[activeManifestID]});
 
-  toggleImageModal = (imageModalOpen, activeImage) => this.setState({imageModalOpen, activeImage});
+  toggleImageModal = (imageModalOpen, url, isDIY) => {this.props.togglePopUp(imageModalOpen); this.setState({imageModalOpen, activeImage: {url, isDIY}})};
 
   resetChanges = () => {
     const { imageBacklog, sideBacklog, sideMapBoard, imageMapBoard } = this.state.initialMapping;
@@ -78,7 +78,7 @@ export default class MapImages extends Component {
       }
       let index;
       if (type.includes("image"))
-        index = selectedObjects.members.findIndex(member => member.label===object.label && member.manifestID===object.manifestID);
+        index = selectedObjects.members.findIndex(member => member.url===object.url && member.manifestID===object.manifestID);
       else
         index = selectedObjects.members.indexOf(object);
       (index!==-1) ? selectedObjects.members.splice(index, 1) : selectedObjects.members.push(object);
@@ -106,8 +106,8 @@ export default class MapImages extends Component {
           let allMembers = [...this.state[type]];
           let indexOfCurrentElement, indexOfLastElement;
           if (type.includes("image")){
-            indexOfCurrentElement = allMembers.findIndex(member => member.label===object.label && member.manifestID===object.manifestID);
-            indexOfLastElement = allMembers.findIndex(member => member.label===selectedObjects.lastSelected.label && member.manifestID===selectedObjects.lastSelected.manifestID);
+            indexOfCurrentElement = allMembers.findIndex(member => member.url===object.url && member.manifestID===object.manifestID);
+            indexOfLastElement = allMembers.findIndex(member => member.url===selectedObjects.lastSelected.url && member.manifestID===selectedObjects.lastSelected.manifestID);
           }
           else {
             indexOfCurrentElement = allMembers.indexOf(object);
@@ -137,7 +137,7 @@ export default class MapImages extends Component {
     let newMapBoard = [...this.state[mapBoardType]];
     let indexOfItem;
     if (mapBoardType==="imageMapBoard"){
-      indexOfItem = newMapBoard.findIndex(image => image.label===item.label && image.manifestID===item.manifestID);
+      indexOfItem = newMapBoard.findIndex(image => image.url===item.url && image.manifestID===item.manifestID);
     } else {
       indexOfItem = newMapBoard.indexOf(item);
     }
@@ -152,7 +152,7 @@ export default class MapImages extends Component {
     let newMapBoard = [...this.state[mapBoardType], ...items];
     let newBacklogBoard;
     if (mapBoardType==="imageMapBoard"){
-      newBacklogBoard = [...this.state[backlogBoardType]].filter(image => !items.find(item => item.label===image.label && item.manifestID===image.manifestID));
+      newBacklogBoard = [...this.state[backlogBoardType]].filter(image => !items.find(item => item.url===image.url && item.manifestID===image.manifestID));
     } else {
       newBacklogBoard = [...this.state[backlogBoardType]].filter(item => !items.includes(item));
     }
@@ -165,16 +165,11 @@ export default class MapImages extends Component {
     let newBacklogBoard = [...this.state[backlogBoardType], ...items];
     let newMapBoard;
     if (mapBoardType==="imageMapBoard"){
-      newMapBoard = [...this.state[mapBoardType]].filter(image => !items.find(item => item.label===image.label && item.manifestID===image.manifestID));
-      newBacklogBoard.sort((a, b)=>this.state.initialMapping[backlogBoardType].findIndex(image => image.label===a.label && image.manifestID===a.manifestID) > this.state.initialMapping[backlogBoardType].findIndex(image => image.label===b.label && image.manifestID===b.manifestID) ? 1 : -1);
+      newMapBoard = [...this.state[mapBoardType]].filter(image => !items.find(item => item.url===image.url && item.manifestID===image.manifestID));
+      newBacklogBoard.sort((a, b)=>this.state.initialMapping[backlogBoardType].findIndex(image => image.url===a.url && image.manifestID===a.manifestID) > this.state.initialMapping[backlogBoardType].findIndex(image => image.url===b.url && image.manifestID===b.manifestID) ? 1 : -1);
       // newBacklogBoard.sort((a, b)=>a.label>b.label ? 1 : -1);
     } else {
       newMapBoard = [...this.state[mapBoardType]].filter(item => !items.includes(item));
-      // newBacklogBoard.sort((a, b)=> {
-      //   const sideA = a.charAt(0)==="R" ? this.props.Rectos[a] : this.props.Versos[a];
-      //   const sideB = b.charAt(0)==="R" ? this.props.Rectos[b] : this.props.Versos[b];
-      //   return (sideA.parentOrder>sideB.parentOrder) ? 1 : -1
-      // });
       newBacklogBoard.sort((a, b)=>this.state.initialMapping[backlogBoardType].indexOf(a) > this.state.initialMapping[backlogBoardType].indexOf(b) ? 1 : -1);
     }
     let selectedObjects = {...this.state.selectedObjects, members: [...this.state.selectedObjects.members]};
@@ -190,7 +185,7 @@ export default class MapImages extends Component {
     // check for changes in imageMapBoard
     const imageMapBoard = this.state.imageMapBoard;
     const initialImageMapBoard = this.state.initialMapping.imageMapBoard;
-    let noChangesInImageMapBoard = imageMapBoard.length===initialImageMapBoard.length && imageMapBoard.every((v,i) => v.label===initialImageMapBoard[i].label && v.manifestID===initialImageMapBoard[i].manifestID);
+    let noChangesInImageMapBoard = imageMapBoard.length===initialImageMapBoard.length && imageMapBoard.every((v,i) => v.url===initialImageMapBoard[i].url && v.manifestID===initialImageMapBoard[i].manifestID);
     // compare both changes
     const noChanges = noChangesInSideMapBoard && noChangesInImageMapBoard;
     const unevenMatches = this.state.sideMapBoard.length!==this.state.imageMapBoard.length;
@@ -223,25 +218,29 @@ export default class MapImages extends Component {
   
   submitMapping = () => {
     let newSideMappings = [];
-    let unlikedSideMappings = [];
+    let unlinkedSideMappings = [];
     let sideIDsWithImage = this.state.sideMapBoard.map((sideID, i) => [sideID, this.state.imageMapBoard[i]]);
     for (let [sideID, image] of sideIDsWithImage){
       newSideMappings.push({ id: sideID, attributes: {image} });
     }
     for (let sideID of this.state.initialMapping.sideMapBoard) {
       if (this.state.sideMapBoard.indexOf(sideID)===-1)
-        unlikedSideMappings.push({ id: sideID, attributes: {image: {}}})
+        unlinkedSideMappings.push({ id: sideID, attributes: {image: {}}})
     }    
-    this.props.mapSidesToImages(newSideMappings.concat(unlikedSideMappings));
+    this.props.mapSidesToImages(newSideMappings.concat(unlinkedSideMappings));
+    // Update initial mapping list
+    this.setState({
+      initialMapping: {imageMapBoard: this.state.imageMapBoard, sideMapBoard: this.state.sideMapBoard, imageBacklog: this.state.imageBacklog, sideBacklog: this.state.sideBacklog}
+    })
   }
 
 
   render() {
     if (Object.keys(this.props.manifests).length<1) {
       return (
-        <div style={{paddingLeft: "2em"}}>
-          <h2>Getting started</h2>
-          <p>To start mapping images to the collation, please upload a manifest in the "Manage Sources" tab.</p>
+        <div style={{paddingLeft: "2em", paddingTop:"1em"}}>
+          <h1>Getting started</h1>
+          <p>To start mapping images to the collation, please add images in the "Manage Images" tab.</p>
         </div>
       );
     }
@@ -260,6 +259,8 @@ export default class MapImages extends Component {
         moveItemUpOrDown={this.moveItemUpOrDown}
         moveItemsToBacklog={this.moveItemsToBacklog}
         tabIndex={this.props.tabIndex}
+        leafIDs={this.props.leafIDs}
+        windowWidth={this.props.windowWidth}
       />
     );
 
@@ -268,18 +269,20 @@ export default class MapImages extends Component {
         <div>
           <RaisedButton 
             primary
-            label={"▲ Move To Mapping"} 
+            label={this.props.windowWidth<=768?"▲":"▲ Move To Mapping"} 
             onClick={()=>this.moveItemsToMap(undefined, "sideMapBoard", "sideBacklog")}
             disabled={this.state.selectedObjects.members.length===0 || this.state.selectedObjects.type!=="sideBacklog"}
-            style={{marginRight:"0.2em"}}
+            {...btnBase()}
+            style={{...btnBase().style, marginRight:"0.2em"}}
             tabIndex={this.props.tabIndex}
             />
           <RaisedButton 
             primary
-            label="▼ Move To Backlog" 
+            label={this.props.windowWidth<=768?"▼":"▼ Move To Backlog"}
             onClick={()=>this.moveItemsToBacklog(undefined, "sideMapBoard", "sideBacklog")}
             disabled={this.state.selectedObjects.members.length===0 || this.state.selectedObjects.type!=="sideMapBoard"}
             tabIndex={this.props.tabIndex}
+            {...btnBase()}
           />
         </div>
         <div>
@@ -293,18 +296,20 @@ export default class MapImages extends Component {
         <div>
           <RaisedButton 
             primary
-            label="▲ Move To Mapping" 
+            label={this.props.windowWidth<=768?"▲":"▲ Move To Mapping" }
             onClick={()=>this.moveItemsToMap(undefined, "imageMapBoard", "imageBacklog")}
             disabled={this.state.selectedObjects.members.length===0 || this.state.selectedObjects.type!=="imageBacklog"}
-            style={{marginRight:"0.2em"}}
+            {...btnBase()}
+            style={{...btnBase().style, marginRight:"0.2em"}}
             tabIndex={this.props.tabIndex}
             />
           <RaisedButton 
             primary
-            label="▼ Move To Backlog" 
+            label={this.props.windowWidth<=768?"▼":"▼ Move To Backlog"}
             onClick={()=>this.moveItemsToBacklog(undefined, "imageMapBoard", "imageBacklog")}
             disabled={this.state.selectedObjects.members.length===0 || this.state.selectedObjects.type!=="imageMapBoard"}
             tabIndex={this.props.tabIndex}
+            {...btnBase()}
             />
           </div>
       </div>
@@ -325,6 +330,7 @@ export default class MapImages extends Component {
             selectedObjects={this.state.selectedObjects}
             moveItemsToMap={this.moveItemsToMap}
             tabIndex={this.props.tabIndex}
+            leafIDs={this.props.leafIDs}
           />
         </div>
       </div>
@@ -337,22 +343,15 @@ export default class MapImages extends Component {
           <div className="manifestSelection">
             <div className="form"  role="region" aria-label="manifest selection">
               <SelectField
+                label="Choose manifest"
+                id="manifestSelect"
                 value={this.state.activeManifest.id}
-                onChange={(e,i,manifestID)=>this.handleManifestChange(manifestID)}
-                underlineStyle={{border:0}}
-                labelStyle={{height: 40, lineHeight: "35px", top:0}}
-                iconStyle={{height: 40, padding:0}}
-                fullWidth
+                onChange={(manifestID)=>this.handleManifestChange(manifestID)}
                 tabIndex={this.props.tabIndex}
-              >
-                {Object.entries(this.props.manifests).map(([manifestID, manifest])=>
-                  <MenuItem 
-                    key={manifestID} 
-                    value={manifestID} 
-                    primaryText={manifest.name}
-                  />
+                data={Object.entries(this.props.manifests).map(([manifestID, manifest])=>{
+                  return {value: manifestID, text: manifest.name}}
                 )}
-              </SelectField>
+              />
             </div>
           </div>
         </div>
@@ -368,6 +367,7 @@ export default class MapImages extends Component {
             selectedObjects={this.state.selectedObjects}
             moveItemsToMap={this.moveItemsToMap}
             tabIndex={this.props.tabIndex}
+            windowWidth={this.props.windowWidth}
           />
         </div>
       </div>
@@ -402,7 +402,10 @@ export default class MapImages extends Component {
         contentStyle={{background: "none", boxShadow: "inherit"}}
         bodyStyle={{padding:0}}
       >
-        <ImageViewer rectoURL={this.state.activeImage} />
+        <ImageViewer 
+          isRectoDIY={this.state.activeImage? this.state.activeImage.isDIY : false}
+          rectoURL={this.state.activeImage? this.state.activeImage.url : ""} 
+        />
       </Dialog>
     );
 
