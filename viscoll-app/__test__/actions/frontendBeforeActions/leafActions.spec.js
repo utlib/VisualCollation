@@ -7,7 +7,7 @@ import {
   autoConjoinLeafs,
 } from '../../../src/frontendBeforeActions/leafActions';
 
-import {state001} from '../../testData/state001'
+import {projectState001} from '../../testData/projectState001'
 
 import {cloneDeep} from 'lodash';
 
@@ -37,8 +37,8 @@ describe('>>>A C T I O N --- Test leaf actions', () => {
         }
       }
     }
-    const beforeState =  cloneDeep(state001);
-    let expectedState = cloneDeep(state001);
+    const beforeState =  cloneDeep(projectState001);
+    let expectedState = cloneDeep(projectState001);
     expectedState.project.Groups["Group_5a57825a4cfad13070870df5"].memberIDs.push("Leaf_111");
     expectedState.project.Leafs["Leaf_111"] = {
       id: 'Leaf_111',
@@ -102,8 +102,8 @@ describe('>>>A C T I O N --- Test leaf actions', () => {
         }
       }
     }
-    const beforeState =  cloneDeep(state001);
-    let expectedState = cloneDeep(state001);
+    const beforeState =  cloneDeep(projectState001);
+    let expectedState = cloneDeep(projectState001);
     expectedState.project.Leafs["Leaf_5a57825a4cfad13070870dc4"].material = "Parchment";
     const gotState = updateLeaf(leafPayload, beforeState);
     expect(gotState).toEqual(expectedState);
@@ -138,8 +138,8 @@ describe('>>>A C T I O N --- Test leaf actions', () => {
         }
       }
     }
-    const beforeState =  cloneDeep(state001);
-    let expectedState = cloneDeep(state001);
+    const beforeState =  cloneDeep(projectState001);
+    let expectedState = cloneDeep(projectState001);
     expectedState.project.Leafs["Leaf_5a57825a4cfad13070870dc4"].material = "Parchment";
     expectedState.project.Leafs["Leaf_5a57825a4cfad13070870dc7"].material = "Parchment";
     expectedState.project.Leafs["Leaf_5a57825a4cfad13070870dc4"].type = "Added";
@@ -159,8 +159,8 @@ describe('>>>A C T I O N --- Test leaf actions', () => {
         }
       }
     }
-    const beforeState =  cloneDeep(state001);
-    let expectedState = cloneDeep(state001);
+    const beforeState =  cloneDeep(projectState001);
+    let expectedState = cloneDeep(projectState001);
 
     delete expectedState.project.Leafs["Leaf_5a57825a4cfad13070870dc4"];
     delete expectedState.project.Rectos["Recto_5a57825a4cfad13070870dc5"];
@@ -200,8 +200,8 @@ describe('>>>A C T I O N --- Test leaf actions', () => {
         }
       }
     }
-    const beforeState =  cloneDeep(state001);
-    let expectedState = cloneDeep(state001);
+    const beforeState =  cloneDeep(projectState001);
+    let expectedState = cloneDeep(projectState001);
 
     // Delete first leaf
     delete expectedState.project.Leafs["Leaf_5a57825a4cfad13070870dc4"];
@@ -254,8 +254,8 @@ describe('>>>A C T I O N --- Test leaf actions', () => {
         }
       }
     }
-    const beforeState =  cloneDeep(state001);
-    let expectedState = cloneDeep(state001);
+    const beforeState =  cloneDeep(projectState001);
+    let expectedState = cloneDeep(projectState001);
 
     expectedState.project.Leafs["Leaf_5a57825a4cfad13070870dd9"].conjoined_to = "Leaf_5a57825a4cfad13070870dd6";
     expectedState.project.Leafs["Leaf_5a57825a4cfad13070870dd6"].conjoined_to = "Leaf_5a57825a4cfad13070870dd9";
@@ -282,8 +282,8 @@ describe('>>>A C T I O N --- Test leaf actions', () => {
         }
       }
     }
-    const beforeState =  cloneDeep(state001);
-    let expectedState = cloneDeep(state001);
+    const beforeState =  cloneDeep(projectState001);
+    let expectedState = cloneDeep(projectState001);
 
     expectedState.project.Leafs["Leaf_5a57825a4cfad13070870dc4"].conjoined_to = "Leaf_5a57825a4cfad13070870dca";
     expectedState.project.Leafs["Leaf_5a57825a4cfad13070870dd3"].conjoined_to = null;

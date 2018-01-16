@@ -59,6 +59,9 @@ export default function dashboardReducer(state=initialState, action) {
     case "UPLOAD_IMAGES_SUCCESS_BACKEND":
       state = action.payload.dashboard
       break;
+    case "DELETE_PROJECT_SUCCESS_BACKEND":
+      state = action.payload
+      break;
     default:
       break;
   }

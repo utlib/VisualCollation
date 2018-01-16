@@ -9,7 +9,7 @@ import {
   deleteNote,
 } from '../../../src/frontendBeforeActions/noteActions';
 
-import {state001} from '../../testData/state001'
+import {projectState001} from '../../testData/projectState001'
 
 import {cloneDeep} from 'lodash';
 
@@ -32,9 +32,9 @@ describe('>>>A C T I O N --- Test note actions', () => {
         }
       }
     }
-    const beforeState =  cloneDeep(state001);
+    const beforeState =  cloneDeep(projectState001);
     const createNoteTypeAction = createNoteType(noteTypePayload, beforeState);
-    let afterState =  cloneDeep(state001);
+    let afterState =  cloneDeep(projectState001);
     afterState.project.noteTypes.push("Watermark");
     expect(createNoteTypeAction).toEqual(afterState);
   })
@@ -57,8 +57,8 @@ describe('>>>A C T I O N --- Test note actions', () => {
         }
       }
     }
-    const beforeState = cloneDeep(state001)
-    let expectedState = cloneDeep(state001)
+    const beforeState = cloneDeep(projectState001)
+    let expectedState = cloneDeep(projectState001)
     expectedState.project.noteTypes[3] = 'Damages'
     expectedState.project.Notes['5a57825a4cfad13070870dfa'].type = 'Damages'
     let gotState = updateNoteType(noteTypePayload, beforeState)
@@ -82,8 +82,8 @@ describe('>>>A C T I O N --- Test note actions', () => {
         }
       }
     }
-    const beforeState = cloneDeep(state001)
-    let expectedState = cloneDeep(state001)
+    const beforeState = cloneDeep(projectState001)
+    let expectedState = cloneDeep(projectState001)
     expectedState.project.noteTypes = ['Unknown', 'Ink', 'Damage']
     expectedState.project.Notes['5a57825a4cfad13070870df9'].type = 'Unknown'
     let gotState = deleteNoteType(noteTypePayload, beforeState)
@@ -111,7 +111,7 @@ describe('>>>A C T I O N --- Test note actions', () => {
         }
       }
     }
-    const beforeState = cloneDeep(state001)
+    const beforeState = cloneDeep(projectState001)
     let expectedState = cloneDeep(beforeState)
     expectedState.project.Notes["f951303fc9bf3c7b9a573a3f"] = {
       id: "f951303fc9bf3c7b9a573a3f",
@@ -143,7 +143,7 @@ describe('>>>A C T I O N --- Test note actions', () => {
         }
       }
     }
-    const beforeState = cloneDeep(state001)
+    const beforeState = cloneDeep(projectState001)
     let expectedState = cloneDeep(beforeState)
     expectedState.project.Notes["5a57825a4cfad13070870df8"].title = "Black inks"
     expectedState.project.Notes["5a57825a4cfad13070870df8"].type = "Ink"
@@ -179,7 +179,7 @@ describe('>>>A C T I O N --- Test note actions', () => {
         }
       }
     }
-    const beforeState = cloneDeep(state001)
+    const beforeState = cloneDeep(projectState001)
     let expectedState = cloneDeep(beforeState)
     expectedState.project.Notes["5a57825a4cfad13070870df8"].objects.Group.push("Group_5a57825a4cfad13070870df6")
     expectedState.project.Notes["5a57825a4cfad13070870df8"].objects.Leaf.push("Leaf_5a57825a4cfad13070870dee")
@@ -214,7 +214,7 @@ describe('>>>A C T I O N --- Test note actions', () => {
         }
       }
     }
-    const beforeState = cloneDeep(state001)
+    const beforeState = cloneDeep(projectState001)
     let expectedState = cloneDeep(beforeState)
     expectedState.project.Notes["5a57825a4cfad13070870df8"].objects.Group.splice(-1,1)
     expectedState.project.Notes["5a57825a4cfad13070870df8"].objects.Leaf.splice(1,1)
@@ -235,7 +235,7 @@ describe('>>>A C T I O N --- Test note actions', () => {
         }
       }
     }
-    const beforeState = cloneDeep(state001)
+    const beforeState = cloneDeep(projectState001)
     let expectedState = cloneDeep(beforeState)
     delete expectedState.project.Notes["5a57825a4cfad13070870df8"]
     expectedState.project.Groups["Group_5a57825a4cfad13070870df4"].notes = []

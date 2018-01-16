@@ -6,7 +6,7 @@ import {
   deleteGroups,
 } from '../../../src/frontendBeforeActions/groupActions';
 
-import {state001} from '../../testData/state001'
+import {projectState001} from '../../testData/projectState001'
 
 import {cloneDeep} from 'lodash';
 
@@ -39,8 +39,8 @@ describe('>>>A C T I O N --- Test group actions', () => {
         }
       }
     }
-    const beforeState =  cloneDeep(state001);
-    let expectedState = cloneDeep(state001);
+    const beforeState =  cloneDeep(projectState001);
+    let expectedState = cloneDeep(projectState001);
     
     expectedState.project.Groups["Group_123123"] = {
       id: 'Group_123123',
@@ -175,8 +175,8 @@ describe('>>>A C T I O N --- Test group actions', () => {
         }
       }
     }
-    const beforeState =  cloneDeep(state001);
-    let expectedState = cloneDeep(state001);
+    const beforeState =  cloneDeep(projectState001);
+    let expectedState = cloneDeep(projectState001);
     expectedState.project.Groups["Group_5a57825a4cfad13070870df4"].type = "Booklet";
     expectedState.project.Groups["Group_5a57825a4cfad13070870df4"].title = "New title";
     const gotState = updateGroup(groupPayload, beforeState);
@@ -212,8 +212,8 @@ describe('>>>A C T I O N --- Test group actions', () => {
         }
       }
     }
-    const beforeState =  cloneDeep(state001);
-    let expectedState = cloneDeep(state001);
+    const beforeState =  cloneDeep(projectState001);
+    let expectedState = cloneDeep(projectState001);
     expectedState.project.Groups["Group_5a57825a4cfad13070870df4"].type = "Booklet";
     expectedState.project.Groups["Group_5a57825a4cfad13070870df4"].title = "New title";
     expectedState.project.Groups["Group_5a57825a4cfad13070870df5"].type = "Booklet";
@@ -233,8 +233,8 @@ describe('>>>A C T I O N --- Test group actions', () => {
         }
       }
     }
-    const beforeState =  cloneDeep(state001);
-    let expectedState = cloneDeep(state001);
+    const beforeState =  cloneDeep(projectState001);
+    let expectedState = cloneDeep(projectState001);
     delete expectedState.project.Groups["Group_5a57825a4cfad13070870df7"];
     delete expectedState.project.Leafs["Leaf_5a57825a4cfad13070870dd6"];
     delete expectedState.project.Leafs["Leaf_5a57825a4cfad13070870dd9"];
@@ -274,8 +274,8 @@ describe('>>>A C T I O N --- Test group actions', () => {
         }
       }
     }
-    const beforeState =  cloneDeep(state001);
-    let expectedState = cloneDeep(state001);
+    const beforeState =  cloneDeep(projectState001);
+    let expectedState = cloneDeep(projectState001);
 
     delete expectedState.project.Groups["Group_5a57825a4cfad13070870df6"];
     delete expectedState.project.Leafs["Leaf_5a57825a4cfad13070870ddc"];

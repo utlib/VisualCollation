@@ -53,7 +53,7 @@ RSpec.describe ControllerHelper::ImportMappingHelper, type: :helper do
       expect(@project.sides[0].image['url']).to match(/http:\/\/127\.0\.0\.1:12345\/images\/[\w]+_1R\.png/)
       expect(@project.sides[1].image).to include('manifestID' => 'DIYImages', 'url' => "http://127.0.0.1:12345/images/#{preloads[0].id}_1V.png")
       expect(@project.sides[2].image).to include('manifestID' => 'DIYImages')
-      expect(@project.sides[2].image['url']).to match(/http:\/\/127\.0\.0\.1:12345\/images\/[\w]+_2R\.png/)
+      expect(@project.sides[2].image['url']).to match(/http:\/\/127\.0\.0\.1:12345\/images\/[\w]+_2R\(copy\)\.png/)
       expect(@project.sides[3].image).to include('manifestID' => 'DIYImages', 'url' => "http://127.0.0.1:12345/images/5a28221ec199860e7a2f5fd1waahoo_2V.png")
       expect(@project.sides[4].image).to be_empty
     end

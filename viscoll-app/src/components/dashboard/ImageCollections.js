@@ -91,6 +91,7 @@ class ImageCollection extends Component {
     const index = this.state.columnCount*rowIndex+columnIndex;
     if (index<imagesToRender.length) {
       let img = imagesToRender[this.state.columnCount*rowIndex+columnIndex];
+      let globalIndex = this.props.images.findIndex((image)=>image.id===img.id);
       return (
         <div
           key={key}
@@ -106,8 +107,8 @@ class ImageCollection extends Component {
             <Checkbox
               aria-label={img.label}
               label={img.label}
-              checked={this.state.selectedImages[index]}
-              onClick={()=>{this.toggleCheckbox(index)}}
+              checked={this.state.selectedImages[globalIndex]}
+              onClick={()=>{this.toggleCheckbox(globalIndex)}}
               labelStyle={{overflow:"hidden",  textOverflow: "ellipsis", wordWrap:"break-word", width:this.state.windowWidth*0.50*0.25-50}}
             />
         </div>
@@ -151,8 +152,28 @@ class ImageCollection extends Component {
     this.props.action.unlinkImages([chip],this.getActiveImages().map((img)=>img.id));    
   }
 
+  selectAll = () => {
+    let selectedImages = [];
+    if (this.state.filter.value === "all") {
+      selectedImages = this.props.images.map(()=>true);
+    } else if (this.state.filter.value === "orphans") {
+      selectedImages = this.props.images.map((img)=>img.projectIDs.length===0);
+    } else {
+      // Filter is a project ID
+      selectedImages = this.props.images.map((image)=>{if (image.projectIDs.includes(this.state.filter.value)) { return true } else { return false }});
+    }
+    this.setState({selectedImages});
+  }
+
   render() {
     if (this.props.images) {
+      let imagesToRender = this.props.images;
+      if (this.state.filter.value.includes("orphans")) {
+        imagesToRender = imagesToRender.filter((img)=>img.projectIDs.length===0);
+      } else if (this.state.filter.value!=="all") {
+        imagesToRender = imagesToRender.filter((img)=>img.projectIDs.includes(this.state.filter.value));
+      }
+
       // Generate info panel
       let infoPanel = <div><h1>Select one or more images to edit</h1></div>
       const numSelected = this.state.selectedImages.filter((x)=>x).length;
@@ -233,23 +254,19 @@ class ImageCollection extends Component {
         <div>
           <FlatButton 
             label="Select all"
-            onClick={()=>this.setState({selectedImages:this.props.images.map((image)=>true)})}
+            onClick={this.selectAll}
             labelStyle={this.state.windowWidth<=768?{fontSize:"0.6em"}:{}}
+            disabled={this.state.selectedImages.findIndex((x)=>!x)===-1}
           />
           <FlatButton 
             label="Clear selection"
             onClick={()=>this.setState({selectedImages:this.props.images.map((image)=>false)})}
             labelStyle={this.state.windowWidth<=768?{fontSize:"0.6em"}:{}}
+            disabled={this.state.selectedImages.findIndex((x)=>x)===-1}
           />
         </div>
       </div>
-      
-      let imagesToRender = this.props.images;
-      if (this.state.filter.value.includes("orphans")) {
-        imagesToRender = imagesToRender.filter((img)=>img.projectIDs.length===0);
-      } else if (this.state.filter.value!=="all") {
-        imagesToRender = imagesToRender.filter((img)=>img.projectIDs.includes(this.state.filter.value));
-      }
+
       return <div>
         <div style={{display:"flex", marginTop:"1em"}}>
           <div style={{paddingLeft:"1em"}}>

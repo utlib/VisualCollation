@@ -12,12 +12,12 @@ module ControllerHelper
             zip_file.each do |file|
               # Go through each file and check if it exists in the user directory and link them.
               # If it doesn't exist, create a new Image and link it to newProject and its Side.
-              tempfile = Tempfile.new(File.basename(file.name))
+              tempfile = Tempfile.new([File.basename(file.name).split("_", 2)[1].split('.', 2)[0], File.basename(file.name).split("_", 2)[1].split('.', 2)[1]])
               tempfile.binmode
               tempfile.write file.get_input_stream.read
               tempfile.rewind
-              imageID = file.name.split("_", 2)[0]
-              filename = file.name.split("_", 2)[1]
+              imageID = File.basename(file.name).split("_", 2)[0]
+              filename = File.basename(file.name).split("_", 2)[1]
               newImage = Image.new(user: current_user, filename: filename, image: tempfile, projectIDs: [newProject.id.to_s])
               uploadedImages[filename] = {:image => newImage, :file => file}
             end
@@ -44,11 +44,12 @@ module ControllerHelper
                     side.image["url"]=@base_api_url+"/images/"+existingImage.id.to_s+"_"+existingImage.filename
                     side.save
                     !(existingImage.sideIDs.include?(side.id.to_s)) ? existingImage.sideIDs.push(side.id.to_s) : nil
+                    !(existingImage.projectIDs.include?(newProject.id.to_s)) ? existingImage.projectIDs.push(newProject.id.to_s) : nil
                     existingImage.save
                   else
                     # Different Image, but with already existing filename. Rename the newImage and link to this Side.
-                    newFilename = newImage.filename+"_"+newImage.id.to_s
-                    tempfile = Tempfile.new(File.basename(newFilename))
+                    newFilename = "#{newImage.filename.split('.', 2)[0]}(copy).#{newImage.filename.split('.', 2)[1]}"
+                    tempfile = Tempfile.new([newFilename.split(".", 2)[0], newFilename.split(".", 2)[1]])
                     tempfile.binmode
                     tempfile.write uploadedImages[filename][:file].get_input_stream.read
                     tempfile.rewind
@@ -56,6 +57,7 @@ module ControllerHelper
                     side.image["url"]=@base_api_url+"/images/"+newImage.id.to_s+"_"+newFilename
                     side.save
                     !(newImage.sideIDs.include?(side.id.to_s)) ? newImage.sideIDs.push(side.id.to_s) : nil
+                    !(newImage.projectIDs.include?(newProject.id.to_s)) ? newImage.projectIDs.push(newProject.id.to_s) : nil
                     newImage.save
                   end
                 else
@@ -63,6 +65,7 @@ module ControllerHelper
                   side.image["url"]=@base_api_url+"/images/"+newImage.id.to_s+"_"+newImage.filename
                   side.save
                   !(newImage.sideIDs.include?(side.id.to_s)) ? newImage.sideIDs.push(side.id.to_s) : nil
+                  !(newImage.projectIDs.include?(newProject.id.to_s)) ? newImage.projectIDs.push(newProject.id.to_s) : nil
                   newImage.save
                 end
               else

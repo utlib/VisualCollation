@@ -121,14 +121,6 @@ class Dashboard extends Component {
     this.setState({userProfileDialogOpen});
   }
 
-  modalIsOpen = () => {
-    return this.state.feedbackOpen || this.state.newProjectModalOpen || this.state.newProjectPopoverOpen || this.state.userProfileDialogOpen;
-  }
-
-  userProfileToggle = (userProfileDialogOpen) => {
-    this.setState({userProfileDialogOpen});
-  }
-
   render() {
     let sidebar = (
       <div role="region" aria-label="sidebar" className="sidebar lowerZIndex">

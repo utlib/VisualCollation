@@ -24,6 +24,7 @@ class ImportController < ApplicationController
       end
       newProject = current_user.projects.order_by(:updated_at => 'desc').first
       handleMappingImport(newProject, imageData, current_user)
+      current_user.reload
       @projects = current_user.projects.order_by(:updated_at => 'desc')
       @images = current_user.images
       render :'projects/index', status: :ok
