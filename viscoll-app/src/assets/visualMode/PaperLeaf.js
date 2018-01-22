@@ -58,8 +58,8 @@ PaperLeaf.prototype = {
         this.showAttributes();
         this.createAttachments();
 
-        const leafNotesToShow = this.leaf.notes.filter((noteID)=>{return this.Notes[noteID].show});
-        const rectoNotesToShow = this.recto.notes.filter((noteID)=>{return this.Notes[noteID].show});
+        const leafNotesToShow = this.leaf.notes.filter((noteID)=>{return this.Notes[noteID].show}).reverse();
+        const rectoNotesToShow = this.recto.notes.filter((noteID)=>{return this.Notes[noteID].show}).reverse();
         const versoNotesToShow = this.verso.notes.filter((noteID)=>{return this.Notes[noteID].show});
 
         let textX = 0;

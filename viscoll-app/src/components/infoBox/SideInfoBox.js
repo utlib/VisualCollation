@@ -55,7 +55,12 @@ export default class SideInfoBox extends React.Component {
 
   hasActiveAttributes = () => {
     for (var i in this.props.defaultAttributes) {
-      if (this.state["batch_" + this.props.defaultAttributes[i]["name"]] && 
+      if (this.props.defaultAttributes[i]["name"]==="folio_number" &&
+          this.state["batch_" + this.props.defaultAttributes[i]["name"]] &&
+          this.state[this.props.defaultAttributes[i]["name"]]!=="keep") {
+          return true;
+      }
+      else if (this.state["batch_" + this.props.defaultAttributes[i]["name"]] && 
           this.state[this.props.defaultAttributes[i]["name"]]!=="keep" &&
           this.state[this.props.defaultAttributes[i]["name"]]!=="") {
         return true;
@@ -259,7 +264,7 @@ export default class SideInfoBox extends React.Component {
           iconStyle={{...checkboxStyle().iconStyle}}
           checked={this.state["batch_"+attributeDict.name]}
           style={{display:"inline-block",width:"25px"}}
-          disabled={this.state.isBatch && (attributeDict.name==="folio_number"||attributeDict.name==="uri")}
+          disabled={this.state.isBatch && attributeDict.name==="uri"}
           tabIndex={this.props.tabIndex}
         />;
       } else {

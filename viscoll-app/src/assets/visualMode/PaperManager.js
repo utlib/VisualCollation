@@ -154,6 +154,7 @@ PaperManager.prototype = {
         this.groupTacketGuideLine.removeChildren();
         
         this.tacketToolIsActive = true;
+        if (this.tool) this.tool.remove();
         this.tool = new paper.Tool();
         this.tool.minDistance=5;
         let targets = [];
@@ -164,7 +165,7 @@ PaperManager.prototype = {
         document.body.style.cursor = "crosshair";
         
         this.drawTacketGuide(groupID, type);
-
+        
         this.tool.onMouseDown = (event) => {
             this.tacketLineDrag = new paper.Path();
             this.tacketLineDrag.strokeColor = this.strokeColorTacket;
@@ -220,6 +221,7 @@ PaperManager.prototype = {
                 
             });
         }
+        this.tool.activate();
     },
     drawTacketGuide: function(groupID, type) {
         const targetGroup = this.paperGroups.find((member)=>{return (member.group.id===groupID)});
