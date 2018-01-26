@@ -105,6 +105,7 @@ export default class NoteDialog extends React.Component {
           leafIDs={this.props.leafIDs}
           rectoIDs={this.props.rectoIDs}
           versoIDs={this.props.versoIDs}
+          togglePopUp={this.props.togglePopUp}
         />
       </Dialog>
     );

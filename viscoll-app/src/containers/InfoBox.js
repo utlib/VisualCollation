@@ -24,6 +24,7 @@ import {
   updateSides,
   addNote,
   linkNote,
+  generateFolioNumbers,
 } from '../actions/editCollation/modificationActions';
 import {
   toggleVisibility,
@@ -187,8 +188,6 @@ class InfoBox extends React.Component {
    */
   updateSides = (sides) => { this.props.updateSides(sides, this.props.projectID, this.props.filters); }
 
-
-
   linkNote = (noteID) => {
     let objects = [];
     let type = this.props.selectedObjects.type;
@@ -230,6 +229,20 @@ class InfoBox extends React.Component {
       show: show
     }
     this.props.createAndAttachNote(note, objects, this.props.projectID, this.props.filters);
+  }
+
+  generateFolioNumbers = (startNumber) => {
+    let leafIDs = this.props.collationManager.selectedObjects.members;
+    let rectoIDs = [];
+    let versoIDs = [];
+
+    for (const leafID of leafIDs) {
+      const leaf = this.props.Leafs[leafID];
+      rectoIDs.push(leaf.rectoID);
+      versoIDs.push(leaf.versoID);
+    }
+
+    this.props.generateFolioNumbers(startNumber, rectoIDs, versoIDs);
   }
 
   handleChangeInfoBoxTab = (value, event) => {
@@ -364,6 +377,7 @@ class InfoBox extends React.Component {
               addLeafs: this.addLeafs, 
               deleteLeaf: this.deleteLeaf, 
               deleteLeafs: this.deleteLeafs,
+              generateFolioNumbers: this.generateFolioNumbers,
               ...noteActions
             }} 
             projectID={this.props.projectID}
@@ -583,6 +597,10 @@ const mapDispatchToProps = (dispatch) => {
       .then(() => dispatch(linkNote(note.id, objects)))
       .then(()=>dispatch(reapplyFilterProject(projectID, filters)));
     },
+
+    generateFolioNumbers: (startNumber, rectoIDs, versoIDs) => {
+      dispatch(generateFolioNumbers(startNumber, rectoIDs, versoIDs));
+    }
   };
 };
 

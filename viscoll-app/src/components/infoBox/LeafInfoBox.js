@@ -14,6 +14,7 @@ import SelectField from '../global/SelectField';
 import { getMemberOrder } from '../../helpers/getMemberOrder';
 import { checkboxStyle } from '../../styles/checkbox';
 import { btnBase } from '../../styles/button';
+import FolioNumberDialog from '../infoBox/dialog/FolioNumberDialog';
 
 export default class LeafInfoBox extends React.Component {
 
@@ -22,6 +23,7 @@ export default class LeafInfoBox extends React.Component {
     
     this.state = {
       imageModalOpen: false,
+      folioModalOpen: false,
       isBatch: this.props.selectedLeaves.length>1,
       ...this.emptyAttributeState(),
       ...this.batchAttributeToggleState(),
@@ -186,6 +188,10 @@ export default class LeafInfoBox extends React.Component {
   toggleImageModal = (imageModalOpen) => {  
     this.setState({imageModalOpen})
     this.props.togglePopUp(imageModalOpen);
+  }
+  toggleFolioModal = (folioModalOpen) => {  
+    this.setState({folioModalOpen})
+    this.props.togglePopUp(folioModalOpen);
   }
 
   render() {
@@ -404,7 +410,17 @@ export default class LeafInfoBox extends React.Component {
         style={{...btnBase().style,marginBottom:10,width:"100%"}}
         tabIndex={this.props.tabIndex} 
       />
-    );
+    ); 
+    let generateFolioButton = this.state.isBatch? (
+      <RaisedButton 
+        primary 
+        onClick={()=>this.toggleFolioModal(true)} 
+        label="Generate folio numbers"
+        {...btnBase()}
+        style={{...btnBase().style,marginBottom:10,width:"100%"}}
+        tabIndex={this.props.tabIndex} 
+      />) : "";
+
     if (this.props.selectedLeaves.length<2){
       conjoinButton = "";
     } else {
@@ -517,6 +533,7 @@ export default class LeafInfoBox extends React.Component {
             <div>
               <h3>Actions</h3>
               {conjoinButton}
+              {generateFolioButton}
               {addBtn}
               {deleteBtn}
             </div>
@@ -529,8 +546,14 @@ export default class LeafInfoBox extends React.Component {
             contentStyle={{background: "none", boxShadow: "inherit"}}
             bodyStyle={{padding:0}}
           >
-          {imageModalContent}
-        </Dialog>
+            {imageModalContent}
+          </Dialog>
+          <FolioNumberDialog
+            defaultFolioNumber={this.props.leafIDs.indexOf(this.props.selectedLeaves[0])+1}
+            folioModalOpen={this.state.folioModalOpen}
+            toggleFolioModal={this.toggleFolioModal}
+            action={{generateFolioNumbers: this.props.action.generateFolioNumbers}}
+          />
       </div>
     );
   }

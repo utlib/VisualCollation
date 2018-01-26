@@ -32,7 +32,6 @@ export function autoConjoinLeafs(action, state, leaves, oddMemberLeftOut=false) 
   return state
 }
 
-
 export function createLeaves(action, state, fromGroupCreation=false) {
   const parentGroupID = action.payload.request.data.leaf.parentID
   const parentGroup = state.project.Groups[parentGroupID]
@@ -69,7 +68,6 @@ export function createLeaves(action, state, fromGroupCreation=false) {
       id: "Recto_" + sideIDs[sideCount],
       parentID: "Leaf_" + leafIDs[count],
       folio_number: null,
-      generated_folio_number: null,
       texture: "Hair",
       image: {},
       script_direction: "None",
@@ -82,7 +80,6 @@ export function createLeaves(action, state, fromGroupCreation=false) {
       id: "Verso_" + sideIDs[sideCount+1],
       parentID: "Leaf_" + leafIDs[count],
       folio_number: null,
-      generated_folio_number: null,
       texture: "Flesh",
       image: {},
       script_direction: "None",
@@ -167,7 +164,6 @@ export function updateLeaves(action, state) {
   return state
 }
 
-
 export function deleteLeaf(deletedLeafID, state) {
   const deletedLeaf = state.project.Leafs[deletedLeafID]
   const deletedLeafParent = state.project.Groups[deletedLeaf.parentID]
@@ -228,7 +224,6 @@ export function deleteLeaf(deletedLeafID, state) {
   return state
 }
 
-
 export function deleteLeaves(deletedLeafIDs, state) {
   for (let deletedLeafID of deletedLeafIDs) {
     deleteLeaf(deletedLeafID, state)
@@ -236,3 +231,16 @@ export function deleteLeaves(deletedLeafIDs, state) {
   return state
 }
 
+export function generateFolioNumbers(action, state) {
+  let folioNumberCount = action.payload.request.data.startNumber;
+  let rectoIDs = action.payload.request.data.rectoIDs;
+  let versoIDs = action.payload.request.data.versoIDs;
+  for (const index in rectoIDs) {
+    const recto = state.project.Rectos[rectoIDs[index]];
+    const verso = state.project.Versos[versoIDs[index]];
+    recto.folio_number = folioNumberCount + recto.id[0];
+    verso.folio_number = folioNumberCount + verso.id[0];
+    folioNumberCount++;
+  }
+  return state
+}

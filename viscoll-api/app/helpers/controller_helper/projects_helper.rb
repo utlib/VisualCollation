@@ -135,7 +135,6 @@ module ControllerHelper
           "id": side.id.to_s,
           "parentID": side.parentID,
           "folio_number": side.folio_number,
-          "generated_folio_number": nil,
           "texture": side.texture, 
           "image": side.image,
           "script_direction": side.script_direction,
@@ -150,35 +149,10 @@ module ControllerHelper
       end
 
       # Generate list of recto and verso ID's
-      # Generate folio numbers for sides that do not have folio numbers parentOrder.to_s + side.id[0]
-      endleafCount = 0
-      folioNumberCount = 0
       @leafIDs.each do | leafID |
         leaf = @leafs[leafID]
         @rectoIDs.push(leaf[:rectoID])
         @versoIDs.push(leaf[:versoID])
-        recto = @rectos[leaf[:rectoID]]
-        verso = @versos[leaf[:versoID]]
-        if leaf[:type] == "Endleaf"
-          endleafCount += 1
-          if recto[:folio_number] == nil || recto[:folio_number] == ""
-            recto[:generated_folio_number] = to_roman(endleafCount) + recto[:id][0]
-          end
-          if verso[:folio_number] == nil || verso[:folio_number] == ""
-            verso[:generated_folio_number] = to_roman(endleafCount) + verso[:id][0]
-          end
-        else
-          if (recto[:folio_number] == nil || recto[:folio_number] == "" ) || (verso[:folio_number] == nil || verso[:folio_number] == "")
-            folioNumberCount += 1
-          end
-          if recto[:folio_number] == nil || recto[:folio_number] == ""
-            recto[:generated_folio_number] = (folioNumberCount).to_s + recto[:id][0]
-          end
-          if verso[:folio_number] == nil || verso[:folio_number] == ""
-            verso[:generated_folio_number] = (folioNumberCount).to_s + verso[:id][0]
-          end
-        end
-
       end
 
       @project.notes.each do | note | 

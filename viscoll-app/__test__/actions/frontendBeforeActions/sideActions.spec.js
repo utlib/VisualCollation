@@ -145,42 +145,4 @@ describe('>>>A C T I O N --- Test side actions', () => {
     expect(gotState.active).toEqual(expectedState)
     expect(gotState.dashboard).toEqual(expectedDashState)
   })
-
-  it('+++ actionCreator generateFolioNumbers', () => {
-    const beforeState =  cloneDeep(projectState001);
-    let expectedState = cloneDeep(projectState001);
-
-    const gotState = generateFolioNumbers(beforeState);
-
-    expectedState.project.Rectos["Recto_5a57825a4cfad13070870dc5"].generated_folio_number = "IR";
-    expectedState.project.Rectos["Recto_5a57825a4cfad13070870dd4"].generated_folio_number = "IIR";
-    expectedState.project.Versos["Verso_5a57825a4cfad13070870dc6"].generated_folio_number = "IV";
-    expectedState.project.Versos["Verso_5a57825a4cfad13070870dd5"].generated_folio_number = "IIV";
-
-
-    let folioNum = 1;
-    for (let i=0; i < expectedState.project.rectoIDs.length; i++) {
-      const id = expectedState.project.rectoIDs[i];
-      const isEndleaf = expectedState.project.Leafs[expectedState.project.Rectos[id].parentID].type == "Endleaf";
-      if (!isEndleaf && expectedState.project.Rectos[id].folio_number==null) {
-        expectedState.project.Rectos[id].generated_folio_number = folioNum + "R";
-      }
-      if (!isEndleaf && (expectedState.project.Rectos[id].folio_number==null || expectedState.project.Versos[expectedState.project.versoIDs[i]].folio_number==null)) {
-        folioNum++;
-      }
-    }
-    folioNum = 1;
-    for (let i=0; i < expectedState.project.rectoIDs.length; i++) {
-      const id = expectedState.project.versoIDs[i];
-      const isEndleaf = expectedState.project.Leafs[expectedState.project.Versos[id].parentID].type == "Endleaf";
-      if (!isEndleaf && expectedState.project.Versos[id].folio_number==null) {
-        expectedState.project.Versos[id].generated_folio_number = folioNum + "V";
-      }
-      if (!isEndleaf && (expectedState.project.Versos[id].folio_number==null || expectedState.project.Rectos[expectedState.project.rectoIDs[i]].folio_number==null)) {
-        folioNum++;
-      }
-
-    }
-    expect(gotState).toEqual(expectedState);
-  })
 })

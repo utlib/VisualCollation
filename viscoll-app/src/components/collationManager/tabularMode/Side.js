@@ -20,25 +20,14 @@ const Side = (props) => {
 
   for (let attribute of defaultAttributes.side) {
     if (visibleAttributes.side[attribute.name]) {
-      if (attribute.name==="folio_number" && (activeSide[attribute.name]===null || activeSide[attribute.name]==="")) {
-        sideAttributes.push(
-          <div 
-            className={isActive?"attribute active":"attribute"} 
-            key={activeSide.id+attribute.name}
-          >
-            <span>{attribute.displayName}:</span> {activeSide["generated_folio_number"]}
-          </div>
-        );
-      } else {
-        sideAttributes.push(
-          <div 
-            className={isActive?"attribute active":"attribute"} 
-            key={activeSide.id+attribute.name}
-          >
-            <span>{attribute.displayName}:</span> {activeSide[attribute.name]}
-          </div>
-        );
-      }
+      sideAttributes.push(
+        <div 
+          className={isActive?"attribute active":"attribute"} 
+          key={activeSide.id+attribute.name}
+        >
+          <span>{attribute.displayName}:</span> {activeSide[attribute.name]}
+        </div>
+      );
     } 
   }
 

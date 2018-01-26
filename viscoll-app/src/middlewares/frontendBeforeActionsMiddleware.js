@@ -28,7 +28,6 @@ import {
   updateSide,
   updateSides,
   mapSides,
-  generateFolioNumbers
 } from '../frontendBeforeActions/sideActions';
 
 import {
@@ -38,6 +37,7 @@ import {
   updateLeaves,
   deleteLeaf,
   deleteLeaves,
+  generateFolioNumbers
 } from '../frontendBeforeActions/leafActions';
 
 import {
@@ -96,7 +96,6 @@ const frontendBeforeActionsMiddleware = store => next => action => {
     // Group Actions
     case "CREATE_GROUPS_FRONTEND":
       action.payload = createGroups(action, cloneDeep(store.getState().active))
-      generateFolioNumbers(action.payload)
       setTimeout(()=>next({type: "UNFLASH"}), 5000)
       break;
     case "UPDATE_GROUP_FRONTEND":
@@ -108,49 +107,43 @@ const frontendBeforeActionsMiddleware = store => next => action => {
     case "DELETE_GROUP_FRONTEND":
       const deletedGroupID = action.payload.request.url.split("/").pop()
       action.payload = deleteGroup(deletedGroupID, cloneDeep(store.getState().active))
-      generateFolioNumbers(action.payload)
       break;
     case "DELETE_GROUPS_FRONTEND":
       const deletedGroupIDs = action.payload.request.data.groups
       action.payload = deleteGroups(deletedGroupIDs, cloneDeep(store.getState().active))
-      generateFolioNumbers(action.payload)
       break;
     // Leaf Actions
+    case "GENERATE_FOLIO_NUMBERS_FRONTEND":
+      action.payload = generateFolioNumbers(action, cloneDeep(store.getState().active))
+      break;
     case "AUTOCONJOIN_LEAFS_FRONTEND":
       let leafIDsToAutoConjoin = action.payload.request.data.leafs
       action.payload = autoConjoinLeafs(action, cloneDeep(store.getState().active), leafIDsToAutoConjoin)
       break;
     case "CREATE_LEAVES_FRONTEND":
       action.payload = createLeaves(action, cloneDeep(store.getState().active))
-      generateFolioNumbers(action.payload)
       setTimeout(()=>next({type: "UNFLASH"}), 5000)
       break;
     case "UPDATE_LEAF_FRONTEND":
       action.payload = updateLeaf(action, cloneDeep(store.getState().active))
-      generateFolioNumbers(action.payload)
       break;
     case "UPDATE_LEAVES_FRONTEND":
       action.payload = updateLeaves(action, cloneDeep(store.getState().active))
-      generateFolioNumbers(action.payload)
       break;
     case "DELETE_LEAF_FRONTEND":
       const deletedLeafID = action.payload.request.url.split("/").pop()
       action.payload = deleteLeaf(deletedLeafID, cloneDeep(store.getState().active))
-      generateFolioNumbers(action.payload)
       break;
     case "DELETE_LEAVES_FRONTEND":
       const deletedLeafIDs = action.payload.request.data.leafs
       action.payload = deleteLeaves(deletedLeafIDs, cloneDeep(store.getState().active))
-      generateFolioNumbers(action.payload)
       break;
     // Side Actions
     case "UPDATE_SIDE_FRONTEND":
       action.payload = updateSide(action, cloneDeep(store.getState().active))
-      generateFolioNumbers(action.payload)
       break;
     case "UPDATE_SIDES_FRONTEND":
       action.payload = updateSides(action, cloneDeep(store.getState().active))
-      generateFolioNumbers(action.payload)
       break;
     case "MAP_SIDES_FRONTEND":
       action.payload = mapSides(action, cloneDeep(store.getState().active), cloneDeep(store.getState().dashboard))

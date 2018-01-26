@@ -5,6 +5,7 @@ import {
   deleteLeaf,
   deleteLeaves,
   autoConjoinLeafs,
+  generateFolioNumbers,
 } from '../../../src/frontendBeforeActions/leafActions';
 
 import {projectState001} from '../../testData/projectState001'
@@ -60,7 +61,6 @@ describe('>>>A C T I O N --- Test leaf actions', () => {
       id: "Recto_11",
       parentID: "Leaf_111",
       folio_number: null,
-      generated_folio_number: null,
       script_direction: 'None',
       texture: 'Hair',
       image: {},
@@ -71,7 +71,6 @@ describe('>>>A C T I O N --- Test leaf actions', () => {
       id: "Verso_22",
       parentID: "Leaf_111",
       folio_number: null,
-      generated_folio_number: null,
       script_direction: 'None',
       texture: 'Flesh',
       image: {},
@@ -293,6 +292,54 @@ describe('>>>A C T I O N --- Test leaf actions', () => {
     expectedState.project.Leafs["Leaf_5a57825a4cfad13070870dcd"].conjoined_to = null;
     
     const gotState = autoConjoinLeafs(leafPayload, beforeState, ["Leaf_5a57825a4cfad13070870dc4","Leaf_5a57825a4cfad13070870dc7","Leaf_5a57825a4cfad13070870dca"]);
+    expect(gotState).toEqual(expectedState);
+  })
+  
+  it('+++ actionCreator generateFolioNumbers', () => {
+    const leafPayload = {
+      payload: {
+        request : {
+          url: `/leafs/generateFolio`,
+          method: 'put',
+          data: {
+            startNumber: 3,
+            rectoIDs: [
+              'Recto_5a57825a4cfad13070870dc8',
+              'Recto_5a57825a4cfad13070870dcb',
+              'Recto_5a57825a4cfad13070870dce',
+              'Recto_5a57825a4cfad13070870dd1',
+              'Recto_5a57825a4cfad13070870df2'
+            ],
+            versoIDs: [
+              'Verso_5a57825a4cfad13070870dc9',
+              'Verso_5a57825a4cfad13070870dcc',
+              'Verso_5a57825a4cfad13070870dcf',
+              'Verso_5a57825a4cfad13070870dd2',
+              'Verso_5a57825a4cfad13070870df3'
+            ],
+          },
+          successMessage: "Successfully generated the folio numbers" ,
+          errorMessage: "Ooops! Something went wrong"
+        }
+      }
+    }
+    const beforeState =  cloneDeep(projectState001);
+    let expectedState = cloneDeep(projectState001);
+
+    const gotState = generateFolioNumbers(leafPayload, beforeState);
+
+    expectedState.project.Rectos["Recto_5a57825a4cfad13070870dc8"].folio_number = "3R";
+    expectedState.project.Rectos["Recto_5a57825a4cfad13070870dcb"].folio_number = "4R";
+    expectedState.project.Rectos["Recto_5a57825a4cfad13070870dce"].folio_number = "5R";
+    expectedState.project.Rectos["Recto_5a57825a4cfad13070870dd1"].folio_number = "6R";
+    expectedState.project.Rectos["Recto_5a57825a4cfad13070870df2"].folio_number = "7R";
+
+    expectedState.project.Versos["Verso_5a57825a4cfad13070870dc9"].folio_number = "3V";
+    expectedState.project.Versos["Verso_5a57825a4cfad13070870dcc"].folio_number = "4V";
+    expectedState.project.Versos["Verso_5a57825a4cfad13070870dcf"].folio_number = "5V";
+    expectedState.project.Versos["Verso_5a57825a4cfad13070870dd2"].folio_number = "6V";
+    expectedState.project.Versos["Verso_5a57825a4cfad13070870df3"].folio_number = "7V";
+
     expect(gotState).toEqual(expectedState);
   })
 

@@ -87,7 +87,7 @@ PaperLeaf.prototype = {
         // Draw recto note text
         for (let noteIndex = 0; noteIndex < rectoNotesToShow.length; noteIndex++) {
             const note = this.Notes[rectoNotesToShow[noteIndex]];
-            const noteTitle = this.recto.folio_number?  "▼ " + this.recto.folio_number + " : " + note.title.substr(0,numChars) :  "▼ " + this.recto.generated_folio_number + " : " + note.title.substr(0,numChars);
+            const noteTitle = this.recto.folio_number?  "▼ " + this.recto.folio_number + " : " + note.title.substr(0,numChars) : "▼ R : " + note.title.substr(0,numChars) ;
             let textNote = new paper.PointText({
                 content: noteTitle,
                 point: [textX, textY - noteIndex*(this.spacing*0.7) - this.spacing*0.3],
@@ -117,7 +117,7 @@ PaperLeaf.prototype = {
         // Draw verso note text
         for (let noteIndex = 0; noteIndex < versoNotesToShow.length; noteIndex++) {
             const note = this.Notes[versoNotesToShow[noteIndex]];
-            const noteTitle = this.verso.folio_number? "▲ " + this.verso.folio_number + " : " + note.title.substr(0,numChars) : "▲ " + this.verso.generated_folio_number + " : " + note.title.substr(0,numChars);
+            const noteTitle = this.verso.folio_number? "▲ " + this.verso.folio_number + " : " + note.title.substr(0,numChars) : "▲ V : " + note.title.substr(0,numChars);
             let textNote = new paper.PointText({
                 content: noteTitle,
                 point: [textX, this.y + noteIndex*(this.spacing*0.7) + this.spacing*0.8],
@@ -408,8 +408,8 @@ PaperLeaf.prototype = {
         this.showAttributes();
     },
     showAttributes: function() {
-        const rectoFolioNumber = this.recto.folio_number? this.recto.folio_number : this.recto.generated_folio_number;
-        const versoFolioNumber = this.verso.folio_number? this.verso.folio_number : this.verso.generated_folio_number;
+        const rectoFolioNumber = this.recto.folio_number? this.recto.folio_number : " ";
+        const versoFolioNumber = this.verso.folio_number? this.verso.folio_number : " ";
         if (this.visibleAttributes.side.folio_number && this.visibleAttributes.side.texture) {
             
             if (this.leaf.stub === "None") {

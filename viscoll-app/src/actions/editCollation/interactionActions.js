@@ -95,7 +95,7 @@ export function handleObjectClick(selectedObjects, object, event, objects) {
     }
   }
   // Sort the selected members by ascending order
-  selectedObjects.members.sort((a, b)=>objects[object.memberType+"s"].indexOf(a) > Object.keys(objects[object.memberType+"s"]).indexOf(b) ? 1 : -1);
+  selectedObjects.members.sort((a, b)=>objects[object.memberType+"s"].indexOf(a) > objects[object.memberType+"s"].indexOf(b) ? 1 : -1);
  
   if (selectedObjects.members.length === 0) {
     selectedObjects.type = "";

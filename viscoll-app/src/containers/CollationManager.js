@@ -98,15 +98,13 @@ class CollationManager extends Component {
 
     // Update active note 
     const commonNotes = this.getCommonNotes(nextProps);
-    const activeNoteExists = this.state.activeNote!==null && commonNotes.filter((note)=>note.id===this.state.activeNote.id).length>0;
-    if (!activeNoteExists) {
+    if (this.state.activeNote!==null && commonNotes.findIndex((noteID)=>noteID===this.state.activeNote.id)<0 && !this.state.clickedFromDiagram) {
+      // Hide note when note was clicked from infobox and removed from selected object
       this.setState({activeNote:null});
+    } else if (this.state.activeNote) {
+      // Update note object
+      this.setState({activeNote: nextProps.project.Notes[this.state.activeNote.id]})
     }
-    commonNotes.forEach((noteID)=> {
-      if (this.state.activeNote!==null && noteID===this.state.activeNote.id) {
-        this.setState({activeNote: nextProps.project.Notes[noteID]});
-      }
-    });
   }
 
   resizeHandler = () => {
@@ -233,10 +231,10 @@ class CollationManager extends Component {
   }
 
   closeNoteDialog = () => {
-    this.setState({activeNote: null}, ()=>this.props.togglePopUp(false));
+    this.setState({activeNote: null, clickedFromDiagram: false}, ()=>this.props.togglePopUp(false));
   }
-  openNoteDialog = (note) => {
-    this.setState({activeNote: note},()=>this.props.togglePopUp(true));
+  openNoteDialog = (note, clickedFromDiagram=false) => {
+    this.setState({activeNote: note, clickedFromDiagram},()=>this.props.togglePopUp(true));
   }
 
   /**
@@ -287,8 +285,8 @@ class CollationManager extends Component {
   }
 
   deleteNote = (noteID) => {
+    this.closeNoteDialog();
     this.props.deleteNote(noteID, this.props.project.id, this.props.collationManager.filters);
-    // this.setState({activeNote:null});
   }
 
   render() {
@@ -548,7 +546,7 @@ class CollationManager extends Component {
                 sewing={this.props.collationManager.visualizations.sewing}
                 toggleVisualizationDrawing={this.props.toggleVisualizationDrawing}
                 updateGroup={this.updateGroup}
-                openNoteDialog={this.openNoteDialog}
+                openNoteDialog={(note)=>this.openNoteDialog(note, true)}
                 tabIndex={this.props.popUpActive?-1:0}
               />
             </div>
@@ -622,6 +620,7 @@ class CollationManager extends Component {
           Versos={this.props.project.Versos}
           versoIDs={this.props.project.versoIDs}
           isReadOnly={this.props.collationManager.viewMode==="VIEWING"}
+          togglePopUp={this.props.togglePopUp}
         />
       </div>
     );

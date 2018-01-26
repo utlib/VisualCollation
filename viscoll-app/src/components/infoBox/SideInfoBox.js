@@ -48,7 +48,7 @@ export default class SideInfoBox extends React.Component {
   emptyAttributeState = () => {
     let state = {};
     for (var i in this.props.defaultAttributes) {
-      state[this.props.defaultAttributes[i]["name"]]="";
+      state[this.props.defaultAttributes[i]["name"]]=null;
     }
     return state;
   }
@@ -57,7 +57,7 @@ export default class SideInfoBox extends React.Component {
     for (var i in this.props.defaultAttributes) {
       if (this.props.defaultAttributes[i]["name"]==="folio_number" &&
           this.state["batch_" + this.props.defaultAttributes[i]["name"]] &&
-          this.state[this.props.defaultAttributes[i]["name"]]!=="keep") {
+          this.state[this.props.defaultAttributes[i]["name"]]!=="Keep same") {
           return true;
       }
       else if (this.state["batch_" + this.props.defaultAttributes[i]["name"]] && 
@@ -152,13 +152,16 @@ export default class SideInfoBox extends React.Component {
         }
       }
     }
-    for (let id of this.props.selectedSides){
-      if (Object.keys(attributes).length>0) {
-        sides.push({id, attributes});
+    if (Object.keys(attributes).length>0) {
+      for (let id of this.props.selectedSides){
+        if (Object.keys(attributes).length>0) {
+          sides.push({id, attributes});
+        }
       }
-    };
+      this.props.action.updateSides(sides);
+    }
     this.setState({...this.otherAttributeStates()})
-    this.props.action.updateSides(sides);
+    
   }
 
   getAttributeValues = (selectedSides=this.props.selectedSides) => {
@@ -306,7 +309,7 @@ export default class SideInfoBox extends React.Component {
             menuItems.push({value:"keep", text:"Keep same"});
           }
           let value = this.state.isBatch?"keep":"";
-          if (this.state[attributeDict.name]!=="" && this.state.isBatch) {
+          if (this.state[attributeDict.name]!==null && this.state.isBatch) {
             value = this.state[attributeDict.name];
           } else if (sideAttributes[attributeDict.name]!==null) {
             value = sideAttributes[attributeDict.name];
@@ -347,10 +350,10 @@ export default class SideInfoBox extends React.Component {
               </div>
             );
           }
-          let value = "Keep same";
+          let value = this.state.isBatch? "Keep same" : "";
           if (this.state["editing_"+attributeDict.name]) {
             value = this.state[attributeDict.name];
-          } else if (sideAttributes[attributeDict.name]!==null && sideAttributes[attributeDict.name]!=="") {
+          } else if (sideAttributes[attributeDict.name]!==null) {
             value = sideAttributes[attributeDict.name];
           } else if (attributeDict.name==="folio_number" && sideAttributes["generated_folio_number"]!==null) {
             value = sideAttributes["generated_folio_number"];

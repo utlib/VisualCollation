@@ -112,6 +112,21 @@ export function deleteLeafs(leafs) {
   };
 }
 
+export function generateFolioNumbers(startNumber, rectoIDs, versoIDs) {
+  return { 
+    types: ['GENERATE_FOLIO_NUMBERS_FRONTEND','GENERATE_FOLIO_NUMBERS_SUCCESS_BACKEND','GENERATE_FOLIO_NUMBERS_FAILED_BACKEND'],
+    payload: {
+      request : {
+        url: `/leafs/generateFolio`,
+        method: 'put',
+        data: {startNumber, rectoIDs, versoIDs},
+        successMessage: "Successfully generated the folio numbers" ,
+        errorMessage: "Ooops! Something went wrong"
+      }
+    }
+  };
+}
+
 export function addGroups(group, additional) {
   return { 
     types: ['CREATE_GROUPS_FRONTEND','CREATE_GROUPS_SUCCESS_BACKEND','CREATE_GROUPS_FAILED_BACKEND'],

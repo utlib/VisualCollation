@@ -65,46 +65,5 @@ export function mapSides(action, active, dashboard) {
 }
 
 
-function to_roman(num) {
-  if (!+num) return NaN;
-  let digits = String(+num).split(""),
-    key = ["","C","CC","CCC","CD","D","DC","DCC","DCCC","CM",
-          "","X","XX","XXX","XL","L","LX","LXX","LXXX","XC",
-          "","I","II","III","IV","V","VI","VII","VIII","IX"],
-    roman = "",
-    i = 3;
-  while (i--)
-    roman = (key[+digits.pop() + (i * 10)] || "") + roman;
-  return Array(+digits.join("") + 1).join("M") + roman;
 
-}
 
-export function generateFolioNumbers(state) {
-  let endleafCount = 0
-  let folioNumberCount = 0
-  for (let leafID of state.project.leafIDs) {
-    const leaf = state.project.Leafs[leafID];
-    const recto = state.project.Rectos[leaf.rectoID];
-    const verso = state.project.Versos[leaf.versoID];
-    if (leaf.type==="Endleaf") {
-      endleafCount++;
-      if (!recto.folio_number) {
-        recto.generated_folio_number = to_roman(endleafCount) + recto.id[0];
-      }
-      if (!verso.folio_number) {
-        verso.generated_folio_number = to_roman(endleafCount) + verso.id[0];
-      }
-    } else {
-      if (!recto.folio_number || recto.folio_number==="" || !verso.folio_number || verso.folio_number==="") {
-        folioNumberCount++;
-        if (!recto.folio_number || recto.folio_number==="") {
-          recto.generated_folio_number = folioNumberCount + recto.id[0];
-        }
-        if (!verso.folio_number || verso.folio_number==="") {
-          verso.generated_folio_number = folioNumberCount + verso.id[0];
-        }
-      }
-    }
-  }
-  return state
-}
