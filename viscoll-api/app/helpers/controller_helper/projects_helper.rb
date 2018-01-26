@@ -29,12 +29,15 @@ module ControllerHelper
       project.add_groupIDs(groupIDs, 0)
     end
 
-
     def getManifestInformation(url)
       images = []
-      response = JSON.parse(Net::HTTP.get(URI(url)))
-      response["sequences"][0]["canvases"].each do |canvas|
-        images.push({label: canvas["label"], url: canvas["images"][0]["resource"]["service"]["@id"]})
+      begin
+        response = JSON.parse(Net::HTTP.get(URI(url)))
+        response["sequences"][0]["canvases"].each do |canvas|
+          images.push({label: canvas["label"], url: canvas["images"][0]["resource"]["service"]["@id"]})
+        end
+      rescue
+        return {name: "Unparseable manifest URL", images: images}
       end
       return {name: response["label"][0..150], images: images}
     end

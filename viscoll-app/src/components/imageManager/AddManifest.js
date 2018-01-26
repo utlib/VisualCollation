@@ -39,6 +39,7 @@ export default class AddManifest extends Component {
   }
 
   runValidation = () => {
+    // Check if manifest url already exists
     for (const manifestID in this.props.manifests){
       const manifest = this.props.manifests[manifestID];
       if (manifest.url===this.state.url){
@@ -46,8 +47,24 @@ export default class AddManifest extends Component {
         return;
       }
     }
-    // No validation errors
-    this.setState({urlError: ""});
+    // Check if url is a valid JSON
+    fetch(this.state.url)
+    .then(response => {
+      const contentType = response.headers.get("content-type");
+      if(contentType && contentType.indexOf("application/json") !== -1) {
+        // No validation errors
+        if (response.url!==this.state.url) {
+          // Original URL was a redirect to a valid JSON url, so update our state 
+          this.setState({url: response.url, urlError: ""});
+        }
+          this.setState({urlError: ""});
+      } else {
+        this.setState({urlError: "Invalid URL:  the URL does not resolve to a JSON file."})
+      }
+    })
+    .catch(()=> {
+      this.setState({urlError: "Invalid URL:  the URL does not resolve to a JSON file."})
+    })
   }
 
   isValid = () => {
