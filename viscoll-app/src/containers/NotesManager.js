@@ -24,8 +24,6 @@ import { sendFeedback } from "../actions/backend/userActions";
 
 
 
-
-
 class NotesManager extends Component {
 
   constructor(props) {

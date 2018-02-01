@@ -30,10 +30,7 @@ export const clientOptions = {
           dispatch({ type: "SHOW_NOTIFICATION", payload: error.config.errorMessage }); 
           setTimeout(()=>dispatch({type: "HIDE_NOTIFICATION"}), 4000); 
         }
-        if (error.response && error.response.status===401) {
-          dispatch({type: "BACKEND_UNAUTHORIZED_ERROR"});
-        }
-        else if (error.response && error.response.status!==422) {
+        if (error.response && (error.response.status===401 || error.response.status!==422)) {
           dispatch({type: "BACKEND_SERVER_ERROR"});
         }
         return Promise.reject(error);
