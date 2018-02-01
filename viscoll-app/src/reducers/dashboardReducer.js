@@ -2,19 +2,12 @@ import { initialState } from './initialStates/projects';
 
 export default function dashboardReducer(state=initialState, action) {
   try {
-    if (action.error) { action = {type: action.type, payload: action.error.response.data} }
+    if (action.error) { 
+      action = {type: action.type, payload: action.error.response.data} 
+    }
   } catch (e) {}
 
   switch(action.type) {
-    case "persist/REHYDRATE":
-      if (action.payload.projects){
-        state = {
-          projects: [...state.projects, ...action.payload.dashboard.projects], 
-          images: [...state.images, ...action.payload.dashboard.images], 
-          importStatus: null
-        }
-      }
-      break;
     case "LOAD_PROJECTS_SUCCESS":
     case "CREATE_PROJECT_SUCCESS":
     case "CLONE_PROJECT_IMPORT_SUCCESS":

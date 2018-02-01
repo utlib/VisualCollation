@@ -1,6 +1,5 @@
 import React from 'react';
 import update from 'immutability-helper';
-import PropTypes from 'prop-types';
 import Group from './tabularMode/Group';
 
 
@@ -66,9 +65,3 @@ export default class TabularMode extends React.Component {
     );
   }
 }
-
-TabularMode.propTypes = {
-  /** Callback for handling clicking on an object (group or leaf) */
-  handleObjectClick: PropTypes.func,
-}
-

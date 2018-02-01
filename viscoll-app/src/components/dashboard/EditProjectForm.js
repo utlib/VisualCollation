@@ -1,5 +1,4 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import IconButton from 'material-ui/IconButton';
 import CloseIcon from 'material-ui/svg-icons/navigation/close';
 import RaisedButton from 'material-ui/RaisedButton';
@@ -391,26 +390,6 @@ class EditProjectForm extends React.Component {
 
       </div>
     );
-  }
-  static propTypes = {
-    /** Array of projects belonging to the user. */
-    allProjects: PropTypes.array,
-    /** Currently selected project object. */
-    selectedProject: PropTypes.shape({
-      created_at: PropTypes.string,
-      updated_at: PropTypes.string,
-      id: PropTypes.string, 
-      title: PropTypes.string,
-    }), 
-    /** Callback to close the project panel. */
-    closeProjectPanel: PropTypes.func,
-    /** Callback to update a project. */
-    updateProject: PropTypes.func,
-    /** Callback to delete a project. */
-    deleteProject: PropTypes.func,
-    /** User object */
-    user: PropTypes.object,
-    
   }
 }
 

@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import PropTypes from 'prop-types';
 import ResendConfirmation from './ResendConfirmation';
 import TextField from 'material-ui/TextField';
 import RaisedButton from 'material-ui/RaisedButton';
@@ -100,19 +99,6 @@ class Login extends Component {
       content
     );
   }
-  static propTypes = {
-    /** History object provided by react router. */
-    history: PropTypes.object,
-    /** User object from the store. */
-    user: PropTypes.object,
-    /** Dictionary of actions. */
-    action: PropTypes.objectOf(PropTypes.func), 
-    /** Cancel callback to close this component. */
-    tapCancel: PropTypes.func,
-    /** Callback to show the reset password form. */
-    toggleResetRequest: PropTypes.func,
-  }
-  
 }
 
 export default Login;

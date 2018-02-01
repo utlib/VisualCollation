@@ -1,5 +1,4 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import Leaf from './Leaf';
 import IconButton from 'material-ui/IconButton';
 import ExpandMore from 'material-ui/svg-icons/navigation/expand-more';
@@ -143,12 +142,6 @@ export default class Group extends React.Component {
       );
     }
   }
-Group.propTypes = {
-  /** Group object */
-  activeGroup: PropTypes.object,
-  /** Callback for handling clicking on an object (group or leaf) */
-  handleObjectClick: PropTypes.func,
-}
 
 
  

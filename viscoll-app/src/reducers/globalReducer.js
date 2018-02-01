@@ -1,11 +1,11 @@
 import { initialState } from './initialStates/global';
 
 
-export default function projectReducer(state=initialState, action) {
+export default function globalReducer(state=initialState, action) {
+  if (action.error && action.error.status===0) {
+    state = {...state, serverError: true}
+  }
   switch(action.type) {
-    case "persist/REHYDRATE":
-      state = initialState
-      break;
     case "SHOW_LOADING":
       state = {...state, loading: true}
       break;
@@ -24,9 +24,6 @@ export default function projectReducer(state=initialState, action) {
       break;
     case "BACKEND_SERVER_ERROR":
       state = {...state, serverError: true}
-      break;
-    case "BACKEND_UNAUTHORIZED_ERROR":
-      state = {...state, unauthorizedError: true}
       break;
     default:
       break;

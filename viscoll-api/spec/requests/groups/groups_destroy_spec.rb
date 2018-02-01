@@ -33,12 +33,11 @@ describe "DELETE /groups/id", :type => :request do
     context 'and standard group specs' do
       before do
         delete "/groups/#{@group.id.to_str}", params: @parameters.to_json, headers: {'Authorization' => @authToken, 'CONTENT_TYPE' => 'application/json', 'ACCEPT' => 'application/json'}
-        @body = JSON.parse(response.body)
         @project.reload
       end
 
-      it 'returns 200' do
-        expect(response).to have_http_status(:ok)
+      it 'returns 204' do
+        expect(response).to have_http_status(:no_content)
       end
 
       it 'destroys the group' do

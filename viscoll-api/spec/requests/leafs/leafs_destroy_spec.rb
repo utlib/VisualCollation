@@ -47,14 +47,13 @@ describe "DELETE /leafs/:id", :type => :request do
     context 'and standard leaf' do
       before do
         delete "/leafs/#{@leafs[1].id.to_s}", headers: {'Authorization' => @authToken, 'CONTENT_TYPE' => 'application/json', 'ACCEPT' => 'application/json'}
-        @body = JSON.parse(response.body)
         @project.reload
         @group.reload
         @leafs.each { |leaf| leaf.reload unless leaf.id == @leafs[1].id }
       end
 
-      it 'returns 200' do
-        expect(response).to have_http_status(:ok)
+      it 'returns 204' do
+        expect(response).to have_http_status(:no_content)
       end
 
       it 'remove the leaf' do

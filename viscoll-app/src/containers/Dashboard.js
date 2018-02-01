@@ -1,5 +1,4 @@
 import React, {Component} from 'react';
-import PropTypes from 'prop-types';
 import Drawer from 'material-ui/Drawer';
 import RaisedButton from 'material-ui/RaisedButton';
 import NewProjectContainer from '../components/dashboard/NewProjectContainer';
@@ -8,7 +7,6 @@ import ImageCollections from "../components/dashboard/ImageCollections";
 import ListView from '../components/dashboard/ListView';
 import LoadingScreen from "../components/global/LoadingScreen";
 import ServerErrorScreen from "../components/global/ServerErrorScreen";
-import UnauthorizedErrorScreen from "../components/global/UnauthorizedErrorScreen";
 import NetworkErrorScreen from "../components/global/NetworkErrorScreen";
 import Notification from "../components/global/Notification";
 import TopBar from "./TopBar";
@@ -24,13 +22,13 @@ import {
   loadProjects,
   importProject,
   cloneProject,
-} from "../actions/dashboardActions";
+} from "../actions/backend/projectActions";
 import {
   uploadImages,
   linkImages,
   unlinkImages,
   deleteImages,
-} from '../actions/userActions';
+} from '../actions/backend/imageActions';
 
 /** Dashboard where user is directed to upon login.  This is where the user an create a new project or edit an existing project. */
 class Dashboard extends Component {
@@ -229,24 +227,11 @@ class Dashboard extends Component {
         </div>     
         <LoadingScreen loading={this.props.loading} />
         <ServerErrorScreen />
-        <UnauthorizedErrorScreen />
         <NetworkErrorScreen />
         <Notification message={this.props.notification} />
         <Feedback tabIndex={this.modalIsOpen()? -1 : 0 } togglePopUp={(v)=>this.setState({feedbackOpen:v})}/>
       </div>
       );
-  }
-  static propTypes = {
-    /** History object from React Router */
-    history: PropTypes.object,
-    /** User object from Redux store */
-    user: PropTypes.object,
-    /** Array of project objects from Redux store */
-    projects: PropTypes.arrayOf(PropTypes.object),
-    /** Boolean if loading screen should appear - from Redux store */
-    loading: PropTypes.bool,
-    /** Notification message from Redux store */
-    notification: PropTypes.string,
   }
 }
 

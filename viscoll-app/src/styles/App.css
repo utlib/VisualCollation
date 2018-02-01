@@ -224,8 +224,7 @@
   .projectWorkspace .viewingMode {
     display: flex; }
     .projectWorkspace .viewingMode > div:first-child {
-      margin-top: 4px;
-      margin-left: 15px; }
+      margin-top: 4px; }
     .projectWorkspace .viewingMode > div:nth-child(2) {
       margin-top: 14px; }
 

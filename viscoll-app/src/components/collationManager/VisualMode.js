@@ -1,5 +1,4 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import PaperManager from "../../assets/visualMode/PaperManager.js";
 
 /** Contains the collation drawing in a canvas element */
@@ -134,19 +133,4 @@ export default class VisualMode extends React.Component {
         </div>
     );
   }
-}
-VisualMode.propTypes = {
-  /** Array of root group objects */
-  groups: PropTypes.arrayOf(PropTypes.object),
-  /** Callback for handling clicking on an object (group or leaf) */
-  handleObjectClick: PropTypes.func,
-  /** Dictionary of selected objects */
-  selectedObjects: PropTypes.object,
-  /** Dictionary containing arrays of updated leaf/group ID's to 'flash' - from Redux store */
-  flashItems: PropTypes.shape({
-    leaves: PropTypes.arrayOf(PropTypes.number),
-    groups: PropTypes.arrayOf(PropTypes.number)
-  }),
-  /** Dictionary of filter matches */
-  filters: PropTypes.object,
 }

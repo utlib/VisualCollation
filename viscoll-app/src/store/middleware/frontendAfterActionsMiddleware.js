@@ -2,7 +2,7 @@ import { cloneDeep } from 'lodash';
 
 import {
   updateImagesAfterUpload,
-} from '../frontendAfterActions/imageActions';
+} from '../../actions/frontend/after/imageActions';
 
 const frontendAfterActionsMiddleware = store => next => action => {
   switch (action.type) {

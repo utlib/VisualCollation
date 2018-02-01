@@ -1,5 +1,4 @@
 import React, {Component} from 'react';
-import PropTypes from 'prop-types';
 import Drawer from 'material-ui/Drawer';
 import RaisedButton from 'material-ui/RaisedButton';
 import EditNoteForm from "./EditNoteForm";
@@ -222,9 +221,5 @@ export default class ManageNotes extends Component {
         </div>
       </div>
     );
-  }
-  static propTypes = {
-    /** Active project ID */
-    projectID: PropTypes.string
   }
 }

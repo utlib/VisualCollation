@@ -1,5 +1,4 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 
 /**
  * List the projects in a table format
@@ -35,14 +34,4 @@ const ListView = ({selectedProjectID, selectProject, allProjects=[], doubleClick
     </div>
   );
 };
-ListView.propTypes = {
-    /** Index of project that was selected through singleclick by user */
-    singleClickIndex: PropTypes.number,
-    /** Callback used when user selects a project */
-    selectProject: PropTypes.func,
-    /** Array of projects belonging to the user */
-    allProjects: PropTypes.array,
-    /** Callback for doubleclicking on a project  */
-    doubleClick: PropTypes.func,
-  }
 export default ListView;

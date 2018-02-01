@@ -1,5 +1,4 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import GroupInfoBox from '../components/infoBox/GroupInfoBox';
 import LeafInfoBox from '../components/infoBox/LeafInfoBox';
 import SideInfoBox from '../components/infoBox/SideInfoBox';
@@ -8,31 +7,39 @@ import {Tabs, Tab} from 'material-ui/Tabs';
 import RaisedButton from 'material-ui/RaisedButton';
 import AddGroupDialog from '../components/infoBox/dialog/AddGroupDialog';
 import { connect } from "react-redux";
-import { 
-  addLeafs,
-  updateLeaf, 
-  updateLeafs,
-  autoConjoinLeafs,
-  deleteLeaf,
-  deleteLeafs,
-  addGroups,
-  updateGroup,
-  updateGroups,
-  deleteGroup,
-  deleteGroups,
-  updateSide, 
-  updateSides,
+import {
+    addLeafs,
+    updateLeaf,
+    updateLeafs,
+    autoConjoinLeafs,
+    deleteLeaf,
+    deleteLeafs,
+    generateFolioNumbers,
+} from '../actions/backend/leafActions';
+import {
+    addGroups,
+    updateGroup,
+    updateGroups,
+    deleteGroup,
+    deleteGroups,
+} from '../actions/backend/groupActions';
+import {
+    updateSide,
+    updateSides,
+} from '../actions/backend/sideActions';
+import {
   addNote,
   linkNote,
-  generateFolioNumbers,
-} from '../actions/editCollation/modificationActions';
+} from '../actions/backend/noteActions';
 import {
   toggleVisibility,
   changeInfoBoxTab,
-  reapplyFilterProject,
-  toggleVisualizationDrawing,
-} from '../actions/editCollation/interactionActions';
 
+  toggleVisualizationDrawing,
+} from '../actions/backend/interactionActions';
+import {
+  reapplyFilterProject,
+} from '../actions/backend/filterActions';
 
 /** Container of the leaf, group and side infoboxes */
 class InfoBox extends React.Component {
@@ -486,10 +493,6 @@ class InfoBox extends React.Component {
         return (<div></div>);
     }
   } 
-  static propTypes = {
-    /** Dictionary of actions */
-    projectID: PropTypes.string,
-  }
 }
 const mapStateToProps = (state) => {
   return {

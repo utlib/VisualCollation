@@ -1,5 +1,4 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import Side from './Side';
 
 /** Stateless functional component that displays one leaf in the tabular edit mode.  */
@@ -148,11 +147,4 @@ const Leaf = (props) => {
     leafComponent
   );
 }
-Leaf.propTypes = {
-  /** Leaf object */
-  activeLeaf: PropTypes.object,
-  /** Callback for handling clicking on an object (group or leaf) */
-  handleObjectClick: PropTypes.func,
-}
-
 export default Leaf;

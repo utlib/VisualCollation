@@ -1,5 +1,4 @@
 import React, {Component} from 'react';
-import PropTypes from 'prop-types';
 import {Tabs, Tab} from 'material-ui/Tabs';
 import FlatButton from 'material-ui/FlatButton';
 import TabularMode from '../components/collationManager/TabularMode';
@@ -20,19 +19,28 @@ import {  changeViewMode,
           handleObjectPress,
           changeManagerMode,
           toggleFilterPanel,
-          updateFilterSelection,
-          reapplyFilterProject,
+
           toggleVisualizationDrawing,
-} from "../actions/editCollation/interactionActions";
-import { 
-  loadProject, 
-  updateGroup,
-  updateNote,
-  deleteNote,
-  linkNote,
-  unlinkNote,
-} from "../actions/editCollation/modificationActions";
-import { exportProject, updateProject } from "../actions/dashboardActions";
+} from "../actions/backend/interactionActions";
+import {
+  updateFilterSelection,
+  reapplyFilterProject,
+} from '../actions/backend/filterActions';
+import {
+    updateGroup,
+
+} from '../actions/backend/groupActions';
+import {
+    updateNote,
+    deleteNote,
+    linkNote,
+    unlinkNote,
+} from '../actions/backend/noteActions';
+import {
+  loadProject,
+  exportProject,
+  updateProject
+} from "../actions/backend/projectActions";
 import fileDownload from 'js-file-download';
 import NoteDialog from '../components/collationManager/dialog/NoteDialog';
 import {radioBtnDark} from "../styles/button";
@@ -46,7 +54,7 @@ class CollationManager extends Component {
       windowWidth: window.innerWidth,
       contentStyle: {  
         transition: 'top 450ms cubic-bezier(0.23, 1, 0.32, 1)',
-        top: 60,
+        top: 40,
       },
       infoboxStyle: {
         maxHeight: "90%"
@@ -519,6 +527,7 @@ class CollationManager extends Component {
         workspace = (
           <div role="main">
             <div className="projectWorkspace" style={this.state.contentStyle}>
+              <h1>{this.props.project.title}</h1>
                 <TabularMode 
                   project={this.props.project}
                   collationManager={this.props.collationManager}
@@ -538,6 +547,7 @@ class CollationManager extends Component {
         workspace = (
           <div role="main">
             <div className="projectWorkspace" style={this.state.contentStyle}>
+              <h1>{this.props.project.title}</h1>
               <VisualMode 
                 project={this.props.project}
                 collationManager={this.props.collationManager}
@@ -557,7 +567,8 @@ class CollationManager extends Component {
       } else {
         workspace = (
           <div role="main">
-            <div className="projectWorkspace" style={this.state.leftSideBarOpen?{margin: "1%", ...this.state.contentStyle}:{...this.state.contentStyle, left: 0, margin: "1%", width: "73%"}}>
+            <div className="projectWorkspace" style={this.state.leftSideBarOpen?{...this.state.contentStyle}:{...this.state.contentStyle, left: 0, width: "73%"}}>
+              <h1>{this.props.project.title}</h1>
               <ViewingMode 
                 project={this.props.project}
                 collationManager={this.props.collationManager}
@@ -624,26 +635,6 @@ class CollationManager extends Component {
         />
       </div>
     );
-  }
-
-  static propTypes = {
-    /** History object from React Router */
-    history: PropTypes.object,
-    /** Location object from React Router */
-    location: PropTypes.object,
-    /** Match object from React Router */
-    match: PropTypes.object,
-    /** User object from Redux store */
-    user: PropTypes.object,
-    /** Project that is being edited */
-    project: PropTypes.object,
-    /** Boolean if loading screen should appear - from Redux store */
-    loading: PropTypes.bool,
-    /** Dictionary containing arrays of updated leaf/group ID's to 'flash' - from Redux store */
-    flashItems: PropTypes.shape({
-      leaves: PropTypes.arrayOf(PropTypes.number),
-      groups: PropTypes.arrayOf(PropTypes.number)
-    }),
   }
 }
 

@@ -27,6 +27,8 @@
 
 /public/swagger/
 
+*.idea
+
 # React app stuff
 
 # dependencies

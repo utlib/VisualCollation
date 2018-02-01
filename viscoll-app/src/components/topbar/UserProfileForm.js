@@ -1,5 +1,4 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import {floatFieldLight} from '../../styles/textfield';
 import TextField from 'material-ui/TextField';
 import Dialog from 'material-ui/Dialog';
@@ -480,24 +479,6 @@ class UserProfileForm extends React.Component {
 
       </div>
     );
-  }
-  static propTypes = {
-    /** User's name */
-    name: PropTypes.string,
-    /** User's email address */
-    email: PropTypes.string,
-    /** Error message for the current password text field */
-    currentPasswordError: PropTypes.string,
-    /** Error message for the email text field */
-    emailTakenError: PropTypes.string,
-    /** True if user profile modal should be opened */
-    userProfileModalOpen: PropTypes.bool,
-    /** Callback to update user account  */
-    handleUserProfileUpdate: PropTypes.func,
-    /** Callback to toggle the user profile modal  */
-    toggleUserProfile: PropTypes.func,
-    /** Callback to delete user account  */
-    handleUserAccountDelete: PropTypes.func,
   }
 }
        

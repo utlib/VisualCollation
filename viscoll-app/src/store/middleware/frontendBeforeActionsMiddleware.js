@@ -3,7 +3,7 @@ import {cloneDeep} from 'lodash';
 import {
   updateProject,
   deleteProject
-} from '../frontendBeforeActions/projectActions';
+} from '../../actions/frontend/before/projectActions';
 
 import {
   createNoteType,
@@ -14,7 +14,7 @@ import {
   linkNote,
   unlinkNote,
   deleteNote
-} from '../frontendBeforeActions/noteActions';
+} from '../../actions/frontend/before/noteActions';
 
 import {
   createGroups,
@@ -22,13 +22,13 @@ import {
   updateGroups,
   deleteGroup,
   deleteGroups
-} from '../frontendBeforeActions/groupActions';
+} from '../../actions/frontend/before/groupActions';
 
 import {
   updateSide,
   updateSides,
   mapSides,
-} from '../frontendBeforeActions/sideActions';
+} from '../../actions/frontend/before/sideActions';
 
 import {
   autoConjoinLeafs,
@@ -38,18 +38,18 @@ import {
   deleteLeaf,
   deleteLeaves,
   generateFolioNumbers
-} from '../frontendBeforeActions/leafActions';
+} from '../../actions/frontend/before/leafActions';
 
 import {
   linkImages,
   unlinkImages,
   deleteImages
-} from '../frontendBeforeActions/imageActions';
+} from '../../actions/frontend/before/imageActions';
 
 import {
   updateManifest,
   deleteManifest
-} from '../frontendBeforeActions/manifestActions';
+} from '../../actions/frontend/before/manifestActions';
 
 
 const frontendBeforeActionsMiddleware = store => next => action => {

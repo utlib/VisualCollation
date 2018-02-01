@@ -13,7 +13,7 @@ import {
   toggleFilterDisplay,
   updateFilterQuery,
   updateFilterSelection
-} from "../actions/editCollation/interactionActions";
+} from "../actions/backend/filterActions";
 
 /** Filter groups, leaves and sides */
 class Filter extends Component {

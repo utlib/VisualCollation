@@ -51,7 +51,7 @@ export default class AddManifest extends Component {
     fetch(this.state.url)
     .then(response => {
       const contentType = response.headers.get("content-type");
-      if(contentType && contentType.indexOf("application/json") !== -1) {
+      if(contentType && contentType.indexOf("json") !== -1) {
         // No validation errors
         if (response.url!==this.state.url) {
           // Original URL was a redirect to a valid JSON url, so update our state 

@@ -3,7 +3,7 @@ import {
   updateSides,
   mapSides,
   generateFolioNumbers,
-} from '../../../src/frontendBeforeActions/sideActions';
+} from '../../../src/actions/frontend/before/sideActions';
 
 import {projectState001} from '../../testData/projectState001'
 import {dashboardState001} from '../../testData/dashboardState001'

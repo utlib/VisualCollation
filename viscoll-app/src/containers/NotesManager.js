@@ -1,6 +1,5 @@
 import React, {Component} from 'react';
 import { connect } from "react-redux";
-import PropTypes from 'prop-types';
 import TopBar from "./TopBar";
 import ManageNotes from "../components/notesManager/ManageNotes";
 import NoteType from "../components/notesManager/NoteType";
@@ -10,7 +9,7 @@ import topbarStyle from "../styles/topbar";
 import { 
   changeManagerMode,
   changeNotesTab, 
-} from "../actions/editCollation/interactionActions";
+} from "../actions/backend/interactionActions";
 import {  
   addNote, 
   updateNote, 
@@ -20,8 +19,10 @@ import {
   deleteNoteType, 
   linkNote, 
   unlinkNote 
-} from "../actions/editCollation/modificationActions";
-import { sendFeedback } from "../actions/userActions";
+} from "../actions/backend/noteActions";
+import { sendFeedback } from "../actions/backend/userActions";
+
+
 
 
 
@@ -237,12 +238,6 @@ class NotesManager extends Component {
         </div>
       </div>
     )
-  }
-  static propTypes = {
-    /** Current tab in notes manager */
-    activeTab: PropTypes.string,
-    /** Active project ID */
-    projectID: PropTypes.string,
   }
 }
 const mapStateToProps = (state) => {

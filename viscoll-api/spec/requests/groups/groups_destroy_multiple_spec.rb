@@ -37,11 +37,10 @@ describe "DELETE /groups", :type => :request do
       before do
         delete '/groups', params: @parameters.to_json, headers: {'Authorization' => @authToken, 'CONTENT_TYPE' => 'application/json', 'ACCEPT' => 'application/json'}
         @project.reload
-        @body = JSON.parse(response.body)
       end
 
-      it 'returns 200' do
-        expect(response).to have_http_status(:ok)
+      it 'returns 204' do
+        expect(response).to have_http_status(:no_content)
       end
 
       it 'deletes only the specified groups' do
@@ -57,12 +56,11 @@ describe "DELETE /groups", :type => :request do
       before do
         @parameters[:groups][0] += 'missing'
         @parameters[:groups][1] += 'missing'
-        put "/groups", params: @parameters.to_json, headers: {'Authorization' => @authToken, 'CONTENT_TYPE' => 'application/json', 'ACCEPT' => 'application/json'}
-        @body = JSON.parse(response.body)
+        delete "/groups", params: @parameters.to_json, headers: {'Authorization' => @authToken, 'CONTENT_TYPE' => 'application/json', 'ACCEPT' => 'application/json'}
       end
       
-      it 'returns 422' do
-        expect(response).to have_http_status(:unprocessable_entity)
+      it 'returns 204' do
+        expect(response).to have_http_status(:no_content)
       end
       
       it 'leaves the groups alone' do
@@ -99,7 +97,6 @@ describe "DELETE /groups", :type => :request do
   context 'with corrupted authorization' do
     before do
       delete '/groups', params: @parameters.to_json, headers: {'Authorization' => @authToken+'asdf', 'CONTENT_TYPE' => 'application/json', 'ACCEPT' => 'application/json'}
-      @body = JSON.parse(response.body)
     end
 
     it 'returns an bad request error' do

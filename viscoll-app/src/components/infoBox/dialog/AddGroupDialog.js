@@ -1,5 +1,4 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
 import RaisedButton from 'material-ui/RaisedButton';
@@ -517,19 +516,5 @@ export default class AddGroupDialog extends React.Component {
         {dialog}
       </div>
     );
-  }
-  static propTypes = {
-    /** Dictionary of actions */
-    action: PropTypes.objectOf(PropTypes.func),
-    /** Dictionary of selected groups where the key is the group ID and value is the group object */
-    selectedGroups: PropTypes.arrayOf(PropTypes.string),
-    /** ID of project that the new groups will be added to */
-    projectID: PropTypes.string,
-    /** `true` to have this component open */
-    open: PropTypes.bool,
-    /** Callback to close this component open */
-    closeDialog: PropTypes.func,
-    /** `true` to show Add Leafs Inside Group instead of Add Groups */
-    addLeafs: PropTypes.bool,
   }
 }

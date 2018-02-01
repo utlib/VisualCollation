@@ -5,10 +5,7 @@ class SidesController < ApplicationController
   # PATCH/PUT /sides/1
   def update
     begin
-      if @side.update(side_params)
-        @data = generateResponse()
-        render :'projects/show', status: :ok
-      else
+      if !@side.update(side_params)
         render json: @side.errors, status: :unprocessable_entity
       end
     rescue Exception => e
@@ -88,8 +85,6 @@ class SidesController < ApplicationController
           end
         end
       end
-      @data = generateResponse()
-      render :'projects/show', status: :ok
     rescue Exception => e
       render json: {error: e.message}, status: :unprocessable_entity
     end

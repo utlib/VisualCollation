@@ -1,16 +1,14 @@
 import React, {Component} from 'react';
 import { connect } from "react-redux";
-import PropTypes from 'prop-types';
 import CollationManager from './CollationManager'
 import NotesManager from './NotesManager';
 import ImageManager from './ImageManager';
 import LoadingScreen from "../components/global/LoadingScreen";
 import Notification from "../components/global/Notification";
 import ServerErrorScreen from "../components/global/ServerErrorScreen";
-import UnauthorizedErrorScreen from "../components/global/UnauthorizedErrorScreen";
 import NetworkErrorScreen from "../components/global/NetworkErrorScreen";
 import Feedback from "./Feedback";
-import { loadProject } from "../actions/editCollation/modificationActions";
+import { loadProject } from "../actions/backend/projectActions";
 
 
 /** Container for 'Manager (Collation or Notes or Image)', `LoadingScreen`, and `Notification`. */
@@ -62,23 +60,9 @@ class Project extends Component {
         <Notification message={this.props.notification} />
         <Feedback togglePopUp={this.togglePopUp} tabIndex={this.state.popUpActive?-1:0} />
         <ServerErrorScreen />
-        <UnauthorizedErrorScreen />
         <NetworkErrorScreen />
       </div>
     )
-  }
-
-  static propTypes = {
-    /** History object from React Router */
-    history: PropTypes.object,
-    /** Location object from React Router */
-    location: PropTypes.object,
-    /** User object from Redux store */
-    user: PropTypes.object,
-    /** Boolean if loading screen should appear - from Redux store */
-    loading: PropTypes.bool,
-    /** Notification message from Redux store */
-    notification: PropTypes.string,
   }
 }
 

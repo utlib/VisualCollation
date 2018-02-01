@@ -6,7 +6,7 @@ import {
   deleteLeaves,
   autoConjoinLeafs,
   generateFolioNumbers,
-} from '../../../src/frontendBeforeActions/leafActions';
+} from '../../../src/actions/frontend/before/leafActions';
 
 import {projectState001} from '../../testData/projectState001'
 

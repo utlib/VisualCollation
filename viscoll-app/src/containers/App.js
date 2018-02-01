@@ -8,7 +8,7 @@ import Authentication from './Authentication';
 import Dashboard from './Dashboard';
 import Project from './Project';
 import {persistStore} from 'redux-persist'
-import store from "../store";
+import store from "../store/store";
 import {Provider} from "react-redux";
 import AppLoadingScreen from "../components/global/AppLoadingScreen";
 import localForage from 'localforage'
@@ -31,7 +31,7 @@ class App extends Component {
   }
 
   componentWillMount(){
-    persistStore(store, {storage: localForage}, () => {
+    persistStore(store, {storage: localForage, whitelist:['user']}, () => {
       setTimeout(()=>{this.setState({ rehydrated: true })}, 500);
     })
   }

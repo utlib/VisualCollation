@@ -82,9 +82,6 @@ class GroupsController < ApplicationController
           end
         end
       end
-      @project = Project.find(project_id)
-      @data = generateResponse()
-      render :'projects/show', status: :ok
     rescue Exception => e
       render json: {error: e.message}, status: :unprocessable_entity
     end
@@ -93,10 +90,7 @@ class GroupsController < ApplicationController
   # PATCH/PUT /groups/1
   def update
     begin
-      if @group.update(group_params)
-        @data = generateResponse()
-        render :'projects/show', status: :ok
-      else
+      if !@group.update(group_params)
         render json: @group.errors, status: :unprocessable_entity
       end
     rescue Exception => e
@@ -126,9 +120,6 @@ class GroupsController < ApplicationController
           return
         end
       end
-      @project = Project.find(@group.project_id)
-      @data = generateResponse()
-      render :'projects/show', status: :ok
     rescue Exception => e
       render json: {error: e.message}, status: :unprocessable_entity
     end
@@ -139,9 +130,6 @@ class GroupsController < ApplicationController
     begin
       @group = Group.find(params[:id])
       @group.destroy
-      @project = Project.find(@group.project_id)
-      @data = generateResponse()
-      render :'projects/show', status: :ok
     rescue Exception => e
       render json: {error: e.message}, status: :unprocessable_entity
     end
@@ -167,9 +155,6 @@ class GroupsController < ApplicationController
           next
         end
       end
-      @project = Project.find(projectID)
-      @data = generateResponse()
-      render :'projects/show', status: :ok
     rescue Exception => e
       render json: {error: e.message}, status: :unprocessable_entity
     end

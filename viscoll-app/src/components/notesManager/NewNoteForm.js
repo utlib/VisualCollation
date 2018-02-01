@@ -1,5 +1,4 @@
 import React, {Component} from 'react';
-import PropTypes from 'prop-types';
 import TextField from 'material-ui/TextField';
 import RaisedButton from 'material-ui/RaisedButton';
 import Checkbox from 'material-ui/Checkbox';
@@ -216,9 +215,5 @@ export default class NewNoteForm extends Component {
         </div>
       </div>
     );
-  }
-  static propTypes = {
-    /** Active project ID */
-    projectID: PropTypes.string,
   }
 }

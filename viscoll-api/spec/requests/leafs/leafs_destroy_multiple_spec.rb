@@ -53,7 +53,6 @@ describe "DELETE /leafs", :type => :request do
     context 'and standard leaf' do
       before do
         delete '/leafs', params: @parameters.to_json, headers: {'Authorization' => @authToken, 'CONTENT_TYPE' => 'application/json', 'ACCEPT' => 'application/json'}
-        @body = JSON.parse(response.body)
         @project.reload
         @group.reload
         @leafs.each do |leaf| 
@@ -63,8 +62,8 @@ describe "DELETE /leafs", :type => :request do
         end
       end
 
-      it 'returns 200' do
-        expect(response).to have_http_status(:ok)
+      it 'returns 204' do
+        expect(response).to have_http_status(:no_content)
       end
 
       it 'deletes the specified leafs' do

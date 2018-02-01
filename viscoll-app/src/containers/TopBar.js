@@ -1,5 +1,4 @@
 import React, {Component} from 'react';
-import PropTypes from 'prop-types';
 import Toolbar from 'material-ui/Toolbar';
 import {ToolbarGroup} from 'material-ui/Toolbar';
 import IconMenu from 'material-ui/IconMenu';
@@ -19,7 +18,7 @@ import {
   logout,
   updateProfile,
   deleteProfile
-} from "../actions/userActions";
+} from "../actions/backend/userActions";
 
 /** The topbar menu used in `Dashboard` and `Project` components */
 class TopBar extends Component {
@@ -185,12 +184,6 @@ class TopBar extends Component {
         />
       </div>
     )
-  }
-  static propTypes = {
-    /** A set of Tabs content to display */
-    children: PropTypes.object,
-    /** User object from Redux store */
-    user: PropTypes.object,
   }
 }
 const mapStateToProps = (state) => {

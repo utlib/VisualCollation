@@ -39,10 +39,6 @@ export default function editCollationReducer(state=initialState, action) {
     case "HIDE_PROJECT_TIP":
       state.project.preferences.showTips = false
       break;
-    // INTERACTIONS
-    case "persist/REHYDRATE":
-      state = {...action.payload.active}
-      break;
     case "CHANGE_VIEW_MODE":
       state.collationManager.viewMode = action.payload 
       break;

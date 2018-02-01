@@ -35,8 +35,8 @@ describe "PUT /notes/id", :type => :request do
         @note.reload
       end
 
-      it 'returns 200' do
-        expect(response).to have_http_status(:ok)
+      it 'returns 204' do
+        expect(response).to have_http_status(:no_content)
       end
 
       it 'Updates the note' do

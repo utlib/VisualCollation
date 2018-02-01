@@ -1,6 +1,6 @@
 import {
   getLeafMembers,
-} from '../../../src/frontendBeforeActions/helperActions';
+} from '../../../src/actions/frontend/before/helperActions';
 
 import {projectState001} from '../../testData/projectState001';
 

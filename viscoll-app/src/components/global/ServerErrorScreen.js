@@ -2,7 +2,6 @@ import React, {Component} from 'react';
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
 import { connect } from "react-redux";
-import { logout } from "../../actions/userActions";
 
 class ServerErrorScreen extends Component {
 
@@ -25,7 +24,7 @@ class ServerErrorScreen extends Component {
         actions={actions}
       >
         Something has gone wrong likely having to do with internets and tubes. <br/>
-        Re-Login into your account to get back to business. <br/>
+        Re-login into your account to get back to business. <br/>
       </Dialog>
     );
   }
@@ -42,7 +41,7 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => {
   return {
     logout: () => {
-      dispatch(logout())
+      dispatch({type: "LOGOUT_SUCCESS"})
     }
   };
 };

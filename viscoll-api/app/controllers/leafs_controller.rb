@@ -88,9 +88,6 @@ class LeafsController < ApplicationController
     # Add leaves to parent group
     @group.add_members(newlyAddedLeafIDs, memberOrder)
 
-    # SUCCESS
-    @data = generateResponse()
-    render :'projects/show', status: :ok
   end
 
 
@@ -104,8 +101,6 @@ class LeafsController < ApplicationController
       if (leaf_params.to_h.key?(:attached_below)||leaf_params.to_h.key?(:attached_above))
         update_attached_to()
       end
-      @data = generateResponse()
-      render :'projects/show', status: :ok
     else
       render json: {leaf: @leaf.errors}, status: :unprocessable_entity
     end
@@ -141,8 +136,6 @@ class LeafsController < ApplicationController
           update_attached_to()
         end
       end
-      @data = generateResponse()
-      render :'projects/show', status: :ok
     rescue Exception => e
       render json: {error: e.message}, status: :unprocessable_entity
     end
@@ -170,8 +163,6 @@ class LeafsController < ApplicationController
       end
       @leaf.remove_from_group()
       @leaf.destroy
-      @data = generateResponse()
-      render :'projects/show', status: :ok
     rescue Exception => e
       render json: {error: e.message}, status: :unprocessable_entity
     end
@@ -225,8 +216,6 @@ class LeafsController < ApplicationController
       parentAndChildren.each do |parentID, leafIDs|
         @project.groups.find(parentID).remove_members(leafIDs)
       end
-      @data = generateResponse()
-      render :'projects/show', status: :ok
     rescue Exception => e
       render json: {error: e.message}, status: :unprocessable_entity
     end
@@ -265,8 +254,6 @@ class LeafsController < ApplicationController
       end
       @project = Project.find(leaves[0].project_id)
       autoConjoinLeaves(leaves, (leaves.length+1)/2)
-      @data = generateResponse()
-      render :'projects/show', status: :ok
     rescue Exception => e
       render json: {error: e.message}, status: :unprocessable_entity
     end
@@ -287,8 +274,6 @@ class LeafsController < ApplicationController
         @project = Project.find(recto.project_id)
       end
     end
-    @data = generateResponse()
-    render :'projects/show', status: :ok
   end
 
 

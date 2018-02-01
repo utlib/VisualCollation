@@ -124,8 +124,6 @@ class ProjectsController < ApplicationController
       # ONLY UPDATING MANIFEST NAME FOR NOW 
       @project.manifests[manifest["id"]]["name"] = manifest["name"]
       @project.save
-      @data = generateResponse()
-      render :show, status: :ok
     rescue Exception => e
       render json: {errors: e.message}, status: :bad_request
     end
@@ -147,8 +145,6 @@ class ProjectsController < ApplicationController
         end
       end
       @project.save
-      @data = generateResponse()
-      render :show, status: :ok
     rescue Exception => e
       render json: {errors: e.message}, status: :bad_request
     end

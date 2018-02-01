@@ -1,5 +1,4 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
 import RaisedButton from 'material-ui/RaisedButton';
@@ -140,13 +139,5 @@ export default class DeleteConfirmationDialog extends React.Component {
         </Dialog>
       </div>
     );
-  }
-  static propTypes = {
-    /** `true` to have the Delete button span the whole width of its parent container */
-    fullWidth: PropTypes.bool,
-    /** Dictionary of actions */
-    action: PropTypes.object,
-    /** Dictionary of selected objects to delete */
-    selectedObjects: PropTypes.arrayOf(PropTypes.string),
   }
 }

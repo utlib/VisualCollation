@@ -7,21 +7,23 @@ import Panel from '../components/global/Panel';
 import { 
   changeManagerMode,
   changeImageTab, 
-} from "../actions/editCollation/interactionActions";
+} from "../actions/backend/interactionActions";
 import { 
   createManifest,
   updateManifest,
   deleteManifest,
   cancelCreateManifest,
-} from "../actions/dashboardActions";
-import { mapSidesToImages } from "../actions/editCollation/modificationActions";
-import { 
+} from "../actions/backend/manifestActions";
+import {
   sendFeedback,
+} from "../actions/backend/userActions";
+import {
+  mapSidesToImages,
   uploadImages,
   linkImages,
   unlinkImages,
   deleteImages,
-} from "../actions/userActions";
+} from "../actions/backend/imageActions";
 import ManageManifests from '../components/imageManager/ManageManifests';
 import MapImages from '../components/imageManager/MapImages';
 import {RadioButton, RadioButtonGroup} from 'material-ui/RadioButton';

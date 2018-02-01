@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import PropTypes from 'prop-types';
 import TextField from 'material-ui/TextField';
 import RaisedButton from 'material-ui/RaisedButton';
 import FlatButton from 'material-ui/FlatButton';
@@ -90,12 +89,6 @@ class ResetPasswordRequest extends Component {
         </div>
       </form>
     )
-  }
-  static propTypes = {
-    /** Dictionary of actions. */
-    action: PropTypes.objectOf(PropTypes.func), 
-    /** Cancel callback to close this component. */
-    tapCancel: PropTypes.func,
   }
 }
 export default ResetPasswordRequest;
