@@ -11,6 +11,7 @@ export default class Group extends React.Component {
     this.state = {
       open: true,
     }
+  }
 
   handleChange = (type, value) => {
     this.setState({[type]:value});
@@ -146,8 +147,7 @@ export default class Group extends React.Component {
       return (
         groupComponent
       );
-    }
   }
-
+}
 
  
