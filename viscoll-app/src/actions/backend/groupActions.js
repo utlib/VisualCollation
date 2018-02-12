@@ -10,7 +10,8 @@ export function addGroups(group, additional) {
                 successMessage: "Successfully added the groups" ,
                 errorMessage: "Ooops! Something went wrong"
             }
-        }
+        },
+        isUndoable: true,
     };
 }
 
@@ -25,7 +26,8 @@ export function updateGroup(groupID, group) {
                 successMessage: "Successfully updated the group" ,
                 errorMessage: "Ooops! Something went wrong"
             }
-        }
+        },
+        isUndoable: true,
     };
 }
 
@@ -40,7 +42,8 @@ export function updateGroups(groups) {
                 successMessage: "Successfully updated the groups" ,
                 errorMessage: "Ooops! Something went wrong"
             }
-        }
+        },
+        isUndoable: true,
     };
 }
 
@@ -54,7 +57,8 @@ export function deleteGroup(groupID) {
                 successMessage: "Successfully deleted the group" ,
                 errorMessage: "Ooops! Something went wrong"
             }
-        }
+        },
+        isUndoable: true,
     };
 }
 
@@ -69,6 +73,7 @@ export function deleteGroups(groups, projectID) {
                 successMessage: "Successfully deleted the groups" ,
                 errorMessage: "Ooops! Something went wrong"
             }
-        }
+        },
+        isUndoable: true,
     };
 }

@@ -37,26 +37,6 @@ export const initialState = {
       lastSelected: "" 
     },
     viewMode: "VISUAL",
-    visibleAttributes: {
-      group: {
-        type:false, 
-        title:false
-      },
-      leaf: {
-        type:false, 
-        material:false, 
-        conjoined_leaf_order:false, 
-        attached_below:false, 
-        attached_above:false, 
-        stub:false
-      },
-      side: {
-        folio_number:false, 
-        texture:false, 
-        script_direction:false, 
-        uri:false
-      }
-    },
     defaultAttributes: {
       leaf: [
         {

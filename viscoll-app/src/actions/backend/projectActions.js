@@ -43,6 +43,21 @@ export function updateProject(projectID, project) {
     };
 }
 
+export function updatePreferences(projectID, project) {
+    return {
+        types: ['UPDATE_PREFERENCES_FRONTEND','','UPDATE_PROJECT_FAILED_BACKEND'],
+        payload: {
+            request : {
+                url: `/projects/${projectID}`,
+                method: 'put',
+                data: {project},
+                successMessage: "Successfully updated the project",
+                errorMessage: "Ooops! Something went wrong"
+            }
+        }
+    };
+}
+
 export function deleteProject(projectID, deleteUnlinkedImages) {
     return {
         types: ['DELETE_PROJECT_FRONTEND','DELETE_PROJECT_SUCCESS_BACKEND','DELETE_PROJECT_FAILED_BACKEND'],

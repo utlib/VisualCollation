@@ -8,6 +8,9 @@ export default function dashboardReducer(state=initialState, action) {
   } catch (e) {}
 
   switch(action.type) {
+    case "LOAD_PROJECT_SUCCESS":
+      state = action.payload.dashboard
+      break;
     case "LOAD_PROJECTS_SUCCESS":
     case "CREATE_PROJECT_SUCCESS":
     case "CLONE_PROJECT_IMPORT_SUCCESS":
@@ -43,14 +46,16 @@ export default function dashboardReducer(state=initialState, action) {
     // FRONT-END ACTIONS
     case "UPDATE_PROJECT_FRONTEND":
     case "DELETE_PROJECT_FRONTEND":
-      state = action.payload
+      state = action.payload.response
       break;
     case "LINK_IMAGES_FRONTEND":
     case "UNLINK_IMAGES_FRONTEND":
     case "DELETE_IMAGES_FRONTEND":
     case "MAP_SIDES_FRONTEND":
+      state = action.payload.response.dashboard
+      break;
     case "UPLOAD_IMAGES_SUCCESS_BACKEND":
-      state = action.payload.dashboard
+      state = action.payload.response.dashboard
       break;
     case "DELETE_PROJECT_SUCCESS_BACKEND":
       state = action.payload

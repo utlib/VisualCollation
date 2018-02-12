@@ -193,7 +193,9 @@ export default class LeafInfoBox extends React.Component {
     this.setState({folioModalOpen})
     this.props.togglePopUp(folioModalOpen);
   }
-
+  clickVisibility = (attributeName, value) => {
+    this.props.action.updatePreferences({leaf:{...this.props.preferences.leaf, [attributeName]:value}});
+  }
   render() {
     let leafAttributes = this.getAttributeValues();
     let attributeDivs = [];
@@ -222,23 +224,25 @@ export default class LeafInfoBox extends React.Component {
       let label = <div style={{padding:"10px 0px", color:"rgb(78, 78, 78)", fontSize}}>{attributeDict.displayName}</div>;
       // Generate eye toggle checkbox
       let eyeCheckbox = "";
+      let eyeIsChecked = this.props.preferences.leaf && this.props.preferences.leaf[attributeDict.name]?this.props.preferences.leaf[attributeDict.name]:false;
+
       if (this.props.viewMode==="TABULAR" && this.state.isBatch) {
         eyeCheckbox = 
         <div className="tooltip eyeToggle">
           <Checkbox
-            aria-label={this.props.visibleAttributes[attributeDict.name]?"Hide '" + attributeDict.displayName + "' attribute in collation":"Show '" + attributeDict.displayName + "' attribute in collation"}
+            aria-label={eyeIsChecked?"Hide '" + attributeDict.displayName + "' attribute in collation":"Show '" + attributeDict.displayName + "' attribute in collation"}
             checkedIcon={<Visibility  />}
             uncheckedIcon={<VisibilityOff />}
-            onClick={(event)=>this.props.action.toggleVisibility("leaf", attributeDict.name, !this.props.visibleAttributes[attributeDict.name])}
+            onClick={()=>this.clickVisibility(attributeDict.name, !eyeIsChecked)}
             style={this.props.windowWidth<=1024?{display:"none"}:{display:"inline-block",width:"25px"}}
             iconStyle={{...checkboxStyle().iconStyle}}
-            checked={this.props.visibleAttributes[attributeDict.name]}
+            checked={eyeIsChecked}
             onMouseEnter={()=>{this.setState({["visibility_hover_"+attributeDict.name]:true})}}
             onMouseOut={()=>{this.setState({["visibility_hover_"+attributeDict.name]:false})}}
             tabIndex={this.props.tabIndex}
           />
           <div className={this.state["visibility_hover_"+attributeDict.name]===true?"text active":"text"}>
-            {this.props.visibleAttributes[attributeDict.name]?
+            {this.props.preferences[attributeDict.name]?
               "Hide attribute in the collation"
               : "Show attribute in the collation"
             }
@@ -249,14 +253,14 @@ export default class LeafInfoBox extends React.Component {
         label = 
         <div className="tooltip eyeToggle">
           <Checkbox
-            aria-label={this.props.visibleAttributes[attributeDict.name]?"Hide '" + attributeDict.displayName + "' attribute in collation":"Show '" + attributeDict.displayName + "' attribute in collation"}
+            aria-label={eyeIsChecked?"Hide '" + attributeDict.displayName + "' attribute in collation":"Show '" + attributeDict.displayName + "' attribute in collation"}
             key={"single_"+attributeDict.displayName}
             label={attributeDict.displayName} 
             checkedIcon={<Visibility />}
             uncheckedIcon={<VisibilityOff />}
-            onClick={(event)=>this.props.action.toggleVisibility("leaf", attributeDict.name, !this.props.visibleAttributes[attributeDict.name])}
+            onClick={()=>this.clickVisibility(attributeDict.name, !eyeIsChecked)}
             style={{display:"inline-block",width:"25px"}}
-            checked={this.props.visibleAttributes[attributeDict.name]}
+            checked={eyeIsChecked}
             iconStyle={{...checkboxStyle().iconStyle,color:"gray"}}
             labelStyle={{...checkboxStyle().labelStyle}}
             onMouseEnter={()=>{this.setState({["visibility_hover_"+attributeDict.name]:true})}}
@@ -264,7 +268,7 @@ export default class LeafInfoBox extends React.Component {
             tabIndex={this.props.tabIndex}
           />
           <div className={this.state["visibility_hover_"+attributeDict.name]===true?"text active":"text"}>
-            {this.props.visibleAttributes[attributeDict.name]?
+            {eyeIsChecked?
               "Hide attribute in the collation"
               : "Show attribute in the collation"
             }

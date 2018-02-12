@@ -316,6 +316,7 @@ class CollationManager extends Component {
         togglePopUp={this.props.togglePopUp}
         popUpActive={this.props.popUpActive}
         windowWidth={this.state.windowWidth}
+        showUndoRedo={this.props.collationManager.viewMode!=="VIEWING"}
       >
         <Tabs 
           tabItemContainerStyle={{backgroundColor: '#ffffff'}}
@@ -513,7 +514,7 @@ class CollationManager extends Component {
             closeNoteDialog={this.closeNoteDialog}
             commonNotes={this.getCommonNotes()}
             openNoteDialog={this.openNoteDialog}
-            action={{linkNote: this.props.linkNote, unlinkNote: this.props.unlinkNote}}
+            action={{linkNote: this.props.linkNote, unlinkNote: this.props.unlinkNote, updatePreferences: this.props.updatePreferences}}
             togglePopUp={this.props.togglePopUp}
             tabIndex={this.props.popUpActive?-1:0}
             windowWidth={this.state.windowWidth}

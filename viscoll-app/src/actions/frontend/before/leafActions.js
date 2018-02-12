@@ -48,13 +48,13 @@ export function createLeaves(action, state, fromGroupCreation=false) {
     // Create new Leaf with give leafID
     state.project.Leafs["Leaf_" + leafIDs[count]] = {
       id: "Leaf_" + leafIDs[count],
-      material: "None",
-      type: "None",
+      material: action.payload.request.data.leaf.material? action.payload.request.data.leaf.material : "None",
+      type: action.payload.request.data.leaf.type? action.payload.request.data.leaf.type : "None",
       attachment_method: "None",
       conjoined_to: null,
       attached_above: "None",
       attached_below: "None",
-      stub: "None",
+      stub: action.payload.request.data.leaf.stub? action.payload.request.data.leaf.stub : "None",
       nestLevel: parentGroup.nestLevel,
       parentID: parentGroupID,
       rectoID: "Recto_" + sideIDs[sideCount],

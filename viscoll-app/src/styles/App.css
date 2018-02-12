@@ -512,6 +512,9 @@
 
 .noteSearch {
   height: 56px; }
+  @media screen and (max-width: 890px) {
+    .noteSearch {
+      width: 170px; } }
   .noteSearch .searchTextbox {
     padding-top: 5px; }
 
@@ -519,6 +522,7 @@
   visibility: hidden;
   opacity: 0;
   background: #FFFFFF;
+  width: 200px;
   -webkit-border-radius: 0px 0px 6px 6px;
   -moz-border-radius: 0px 0px 6px 6px;
   -ms-border-radius: 0px 0px 6px 6px;
@@ -527,6 +531,9 @@
   -ms-transition: all 200ms ease-in-out;
   transition: all 200ms ease-in-out;
   padding: 0em 1em; }
+  @media screen and (max-width: 890px) {
+    .searchOptions {
+      width: 140px; } }
   .searchOptions.active {
     visibility: visible;
     opacity: 1; }

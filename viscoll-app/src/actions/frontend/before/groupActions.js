@@ -13,15 +13,19 @@ export function createGroups(action, state) {
   const groupIDs = action.payload.request.data.additional.groupIDs
   const leafIDs = action.payload.request.data.additional.leafIDs
   const sideIDs = action.payload.request.data.additional.sideIDs
+  const title = action.payload.request.data.group.title
+  const type = action.payload.request.data.group.type
+  const tacketed = action.payload.request.data.group.tacketed
+  const sewing = action.payload.request.data.group.sewing
   let newlyAddedGroupIDs = []
   for (let count = 0; count < noOfGroups; count++) {
     // Create new Group with give groupID
     state.project.Groups["Group_" + groupIDs[count]] = {
       id: "Group_" + groupIDs[count],
-      title: "None",
-      type: "Quire",
-      tacketed: [],
-      sewing: [],
+      title: title? title : "None",
+      type: type? type : "Quire",
+      tacketed: tacketed? tacketed : [],
+      sewing: sewing? sewing : [],
       nestLevel: parentGroup ? parentGroup.nestLevel+1 : 1,
       parentID: parentGroup ? parentGroup.id : null,
       notes: [],

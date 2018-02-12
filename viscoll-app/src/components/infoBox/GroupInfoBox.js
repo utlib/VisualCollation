@@ -268,6 +268,12 @@ export default class GroupInfoBox extends React.Component {
     }
   }
 
+  clickVisibility = (attributeName, value) => {
+    if (attributeName!=="type"||this.props.viewMode==="TABULAR") {
+      this.props.action.updatePreferences({group:{...this.props.preferences.group, [attributeName]:value}});
+    }
+  }
+
   render() {
     const isBatch = this.props.selectedGroups.length > 1;
     let attributeDivs = [];
@@ -276,11 +282,11 @@ export default class GroupInfoBox extends React.Component {
       let label = attributeDict.displayName;
       let eyeCheckbox = "";
       let eyeStyle = {};
-      let eyeIsChecked = this.props.visibleAttributes[attributeDict.name];
+      let eyeIsChecked = this.props.preferences.group && this.props.preferences.group[attributeDict.name]?this.props.preferences.group[attributeDict.name] : false;
       if (this.props.viewMode!=="TABULAR") {
         if (attributeDict.name==="type") {
           eyeStyle = {fill: "#C2C2C2", cursor:"not-allowed"};
-          eyeIsChecked = true;
+          eyeIsChecked = false;
         }
       }
       if (isBatch && !this.props.isReadOnly) {
@@ -290,7 +296,7 @@ export default class GroupInfoBox extends React.Component {
               aria-label={eyeIsChecked?"Hide '" + attributeDict.displayName + "' attribute in collation":"Show '" + attributeDict.displayName + "' attribute in collation"}
               checkedIcon={<Visibility />}
               uncheckedIcon={<VisibilityOff />}
-              onClick={(event)=>this.props.action.toggleVisibility("group", attributeDict.name, !this.props.visibleAttributes[attributeDict.name])}
+              onClick={()=>this.clickVisibility(attributeDict.name, !eyeIsChecked)}
               style={{display:this.props.windowWidth<=1024?"none":"inline-block",width:"25px",...eyeStyle}}
               iconStyle={{...checkboxStyle().iconStyle,...eyeStyle}}
               checked={eyeIsChecked}
@@ -324,10 +330,10 @@ export default class GroupInfoBox extends React.Component {
               label={attributeDict.displayName} 
               checkedIcon={<Visibility />}
               uncheckedIcon={<VisibilityOff />}
-              onClick={(event)=>this.props.action.toggleVisibility("group", attributeDict.name, !this.props.visibleAttributes[attributeDict.name])}
+              onClick={()=>this.clickVisibility(attributeDict.name, !eyeIsChecked)}
               style={{display:"inline-block",width:"25px",...eyeStyle}}
+              {...checkboxStyle()}
               iconStyle={{...checkboxStyle().iconStyle, color:"gray", ...eyeStyle}}
-              labelStyle={{fontSize:this.props.windowWidth<=768?"12px":null}}
               checked={eyeIsChecked}
               onMouseEnter={()=>{this.setState({["visibility_hover_"+attributeDict.name]:true})}}
               onMouseOut={()=>{this.setState({["visibility_hover_"+attributeDict.name]:false})}}

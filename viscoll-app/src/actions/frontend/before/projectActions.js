@@ -6,6 +6,16 @@ export function updateProject(action, state){
   return state
 }
 
+export function updatePreferences(action, state) {
+  const preferences = action.payload.request.data.project.preferences;
+  state.project.preferences = {
+    group:{...state.project.preferences.group, ...preferences.group},
+    leaf:{...state.project.preferences.leaf, ...preferences.leaf},
+    side:{...state.project.preferences.side,...preferences.side}
+  };
+  return state;
+}
+
 export function deleteProject(action, state) {
   const deletedProjectID = action.payload.request.url.split("/").pop();
   const deletedProjectIndex = state.projects.findIndex(project => project.id === deletedProjectID);

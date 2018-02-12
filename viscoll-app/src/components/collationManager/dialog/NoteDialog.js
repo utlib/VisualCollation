@@ -77,6 +77,7 @@ export default class NoteDialog extends React.Component {
         autoScrollBodyContent
         contentStyle={{width:500}}
       >
+      {this.props.open? 
         <EditNoteForm 
           action={{ 
             addNote: this.props.action.addNote, 
@@ -106,7 +107,7 @@ export default class NoteDialog extends React.Component {
           rectoIDs={this.props.rectoIDs}
           versoIDs={this.props.versoIDs}
           togglePopUp={this.props.togglePopUp}
-        />
+        />: ""}
       </Dialog>
     );
   }

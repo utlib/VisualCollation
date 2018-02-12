@@ -410,7 +410,7 @@ PaperLeaf.prototype = {
     showAttributes: function() {
         const rectoFolioNumber = this.recto.folio_number? this.recto.folio_number : " ";
         const versoFolioNumber = this.verso.folio_number? this.verso.folio_number : " ";
-        if (this.visibleAttributes.side.folio_number && this.visibleAttributes.side.texture) {
+        if (this.visibleAttributes.side && this.visibleAttributes.side.folio_number && this.visibleAttributes.side.texture) {
             
             if (this.leaf.stub === "None") {
                 // Reduce leaf width so we can fit attribute text
@@ -421,7 +421,7 @@ PaperLeaf.prototype = {
             this.textLeafOrder.set({point: [this.width-this.spacing*1.8, this.textLeafOrder.point.y]});
             this.textRecto.set({point:[this.textLeafOrder.bounds.right+this.spacing*0.2, this.textRecto.point.y], content: rectoFolioNumber + "   " + this.recto.texture});
             this.textVerso.set({point:[this.textLeafOrder.bounds.right+this.spacing*0.2, this.textVerso.point.y], content: versoFolioNumber + "   " + this.verso.texture});
-        } else if (this.visibleAttributes.side.folio_number) {
+        } else if (this.visibleAttributes.side && this.visibleAttributes.side.folio_number) {
             if (this.leaf.stub === "None") {
                 // Reduce leaf width so we can fit folio number text
                 this.path.segments[this.path.segments.length-1].point.x = this.width - this.spacing;
@@ -432,7 +432,7 @@ PaperLeaf.prototype = {
             this.textLeafOrder.set({point: [this.width-this.spacing*0.80, this.textLeafOrder.point.y]});
             this.textRecto.set({point:[this.textLeafOrder.bounds.right+this.spacing*0.2, this.textRecto.point.y], content: rectoFolioNumber});
             this.textVerso.set({point:[this.textLeafOrder.bounds.right+this.spacing*0.2, this.textVerso.point.y], content: versoFolioNumber});
-        } else if (this.visibleAttributes.side.texture) {
+        } else if (this.visibleAttributes.side && this.visibleAttributes.side.texture) {
             if (this.leaf.stub === "None") {
                 // Reduce leaf width so we can fit texture text
                 this.path.segments[this.path.segments.length-1].point.x = this.width - this.spacing;

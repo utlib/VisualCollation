@@ -13,6 +13,8 @@ class ProjectsController < ApplicationController
   def show
     # begin
       @data = generateResponse()
+      @projects = current_user.projects
+      @images = current_user.images
     # rescue Exception => e
       # render json: {error: e.message}, status: :unprocessable_entity
       # return
@@ -99,10 +101,16 @@ class ProjectsController < ApplicationController
   def createManifest
     begin
       manifest = manifest_params.to_h
-      manifestID = Project.new.id.to_s
+      if not manifest.key?("id")
+        manifestID = Project.new.id.to_s
+      else 
+        manifestID = manifest[:id]
+      end
       @project.manifests[manifestID] = {id: manifestID, url: manifest[:url]}
       @project.save
       @data = generateResponse()
+      @projects = current_user.projects
+      @images = current_user.images
       render :show, status: :ok
     rescue Exception => e
       render json: {errors: e}, status: :bad_request

@@ -22,7 +22,7 @@ class NotesFilter extends Component {
             id="searchNoteField"
             hintText="Search notes ..."
             onChange={(e,value)=>{this.setState({value});this.props.onValueChange(e,value)}}
-            style={{marginLeft:10,marginRight:10, width:200}}
+            style={window.innerWidth<=890?{marginLeft:10,marginRight:10, width:150}:{marginLeft:10,marginRight:10, width:200}}
             value={this.state.value}
             {...floatFieldLight}
             tabIndex={this.props.tabIndex}
@@ -32,8 +32,8 @@ class NotesFilter extends Component {
           <Checkbox 
             aria-label="Search note titles"
             label="Title" 
-            iconStyle={{marginRight: 0}} 
-            style={{width: 60, paddingRight: 10, display: 'inline-flex', fontSize:14}}
+            iconStyle={{marginRight: 0, height:20, width:20}} 
+            style={{width: 60, paddingRight: 0, display: 'inline-flex', fontSize:14}}
             checked={this.props.filterTypes["title"]}
             onClick={()=>this.props.onTypeChange("title", !this.props.filterTypes["title"])}
             tabIndex={this.props.tabIndex}
@@ -41,8 +41,8 @@ class NotesFilter extends Component {
           <Checkbox 
             aria-label="Search note types"
             label="Type" 
-            iconStyle={{marginRight: 0}} 
-            style={{width: 55, paddingRight: 15, display: 'inline-flex', fontSize:14}}
+            iconStyle={{marginRight: 0, height:20, width:20}} 
+            style={{width: 55, paddingRight: 0, display: 'inline-flex', fontSize:14}}
             checked={this.props.filterTypes["type"]}
             onClick={()=>this.props.onTypeChange("type", !this.props.filterTypes["type"])}
             tabIndex={this.props.tabIndex}
@@ -50,8 +50,8 @@ class NotesFilter extends Component {
           <Checkbox 
             aria-label="Search note descriptions"
             label="Description" 
-            iconStyle={{marginRight: 0}} 
-            style={{width: 50, paddingRight: 15, display: 'inline-flex', fontSize:14}}
+            iconStyle={{marginRight: 0, height:20, width:20}} 
+            style={{width: 50, paddingRight: 0, display: 'inline-flex', fontSize:14}}
             checked={this.props.filterTypes["description"]}
             onClick={()=>this.props.onTypeChange("description", !this.props.filterTypes["description"])}
             tabIndex={this.props.tabIndex}

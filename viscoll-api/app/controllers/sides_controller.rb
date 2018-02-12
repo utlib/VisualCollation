@@ -113,7 +113,7 @@ class SidesController < ApplicationController
     end
 
     def side_params_batch_update
-      params.permit(:sides => [:id, :attributes=>[:texture, :script_direction, :image=>[:manifestID, :label, :url]]])
+      params.permit(:sides => [:id, :attributes=>[:folio_number, :texture, :script_direction, :image=>[:manifestID, :label, :url]]])
     end
 
 end

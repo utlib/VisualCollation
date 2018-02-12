@@ -44,6 +44,9 @@
 }
 .noteSearch {
   height: 56px;
+  @media screen and (max-width: 890px) {
+    width: 170px;
+  }
 
   .searchTextbox {
     padding-top: 5px;
@@ -53,8 +56,13 @@
   visibility: hidden;
   opacity: 0;
   background: $white;
+  width: 200px;
   @include border-radius(0px 0px 6px 6px);
   @include transition(all, 200ms, ease-in-out);
+
+  @media screen and (max-width: 890px) {
+    width: 140px;
+  }
 
   padding: 0em 1em;
   &.active{

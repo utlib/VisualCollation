@@ -42,7 +42,7 @@ export default class ViewingMode extends React.Component {
         activeVersos: this.props.collationManager.selectedObjects.type==="Verso"? this.props.collationManager.selectedObjects.members : [],
         flashItems: this.props.collationManager.flashItems,
         filters: this.props.collationManager.filters,
-        visibleAttributes: this.props.collationManager.visibleAttributes,
+        visibleAttributes: this.props.project.preferences,
         toggleTacket: this.props.toggleTacket,
         addTacket: this.addTacket,
         viewingMode: true,
@@ -54,7 +54,7 @@ export default class ViewingMode extends React.Component {
     return (
       this.props.collationManager.selectedObjects!==nextProps.collationManager.selectedObjects ||
       this.props.collationManager.filters !== nextProps.collationManager.filters ||
-      this.props.collationManager.visibleAttributes !== nextProps.collationManager.visibleAttributes ||
+      this.props.project.preferences !== nextProps.project.preferences ||
       this.props.project.Notes!==nextProps.project.Notes ||
       this.state.viewingMode !== nextState.viewingMode ||
       this.props.imageViewerEnabled !== nextProps.imageViewerEnabled
@@ -69,7 +69,7 @@ export default class ViewingMode extends React.Component {
       this.state.paperManager.setActiveRectos(nextProps.collationManager.selectedObjects.type==="Recto"? nextProps.collationManager.selectedObjects.members : []);
       this.state.paperManager.setActiveVersos(nextProps.collationManager.selectedObjects.type==="Verso"? nextProps.collationManager.selectedObjects.members : []);
       this.state.paperManager.setFilter(nextProps.collationManager.filters);
-      this.state.paperManager.setVisibility(nextProps.collationManager.visibleAttributes);
+      this.state.paperManager.setVisibility(nextProps.project.preferences);
     }
   }
 

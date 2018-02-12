@@ -18,6 +18,9 @@ export default function globalReducer(state=initialState, action) {
     case "HIDE_NOTIFICATION":
       state = {...state, notification: ""}
       break;
+    case "UPDATE_LOADING_COUNT":
+      state = {...state, loadingRequestCount: action.payload};
+      break;
     case "DELETE_PROFILE_SUCCESS":
     case "LOGOUT_SUCCESS":
       state = initialState

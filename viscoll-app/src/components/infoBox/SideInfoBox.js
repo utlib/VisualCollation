@@ -217,6 +217,11 @@ export default class SideInfoBox extends React.Component {
     this.setState({imageModalOpen})
   }
 
+  clickVisibility = (attributeName, value) => {
+    if (attributeName!=="script_direction") {
+      this.props.action.updatePreferences({side:{...this.props.preferences.side, [attributeName]:value}});
+    }
+  }
 
   render() {
     let attributeDivs = [];
@@ -230,9 +235,9 @@ export default class SideInfoBox extends React.Component {
       let eyeCheckbox = "";
 
       let eyeStyle = {};
-      let eyeIsChecked = this.props.visibleAttributes[attributeDict.name];
+      let eyeIsChecked = this.props.preferences.side && this.props.preferences.side[attributeDict.name]?this.props.preferences.side[attributeDict.name]:false;
       if (this.props.viewMode!=="TABULAR") {
-        if (attributeDict.name==="uri"||attributeDict.name==="script_direction") {
+        if (attributeDict.name==="script_direction") {
           eyeStyle = {fill: "#C2C2C2", cursor:"not-allowed"};
           eyeIsChecked = false;
         }
@@ -241,10 +246,10 @@ export default class SideInfoBox extends React.Component {
         eyeCheckbox = 
           <div className="tooltip eyeToggle">
             <Checkbox
-              aria-label={this.props.visibleAttributes[attributeDict.name]?"Hide '" + attributeDict.displayName + "' attribute in collation":"Show '" + attributeDict.displayName + "' attribute in collation"}
+              aria-label={eyeIsChecked?"Hide '" + attributeDict.displayName + "' attribute in collation":"Show '" + attributeDict.displayName + "' attribute in collation"}
               checkedIcon={<Visibility />}
               uncheckedIcon={<VisibilityOff />}
-              onClick={()=>this.props.action.toggleVisibility("side", attributeDict.name, !this.props.visibleAttributes[attributeDict.name])}
+              onClick={()=>this.clickVisibility(attributeDict.name, !eyeIsChecked)}
               style={this.props.windowWidth<=1024?{display:"none"}:{display:"inline-block",width:"25px",...eyeStyle}}
               iconStyle={{...checkboxStyle().iconStyle,...eyeStyle}}
               checked={eyeIsChecked}
@@ -275,17 +280,18 @@ export default class SideInfoBox extends React.Component {
         label = 
           <div className="tooltip eyeToggle">
             <Checkbox
-              aria-label={this.props.visibleAttributes[attributeDict.name]?"Hide '" + attributeDict.displayName + "' attribute in collation":"Show '" + attributeDict.displayName + "' attribute in collation"}
+              aria-label={eyeIsChecked?"Hide '" + attributeDict.displayName + "' attribute in collation":"Show '" + attributeDict.displayName + "' attribute in collation"}
               label={attributeDict.displayName} 
               checkedIcon={<Visibility />}
               uncheckedIcon={<VisibilityOff />}
-              onClick={()=>this.props.action.toggleVisibility("side", attributeDict.name, !this.props.visibleAttributes[attributeDict.name])}
+              onClick={()=>this.clickVisibility(attributeDict.name, !eyeIsChecked)}
               style={{display:"inline-block",width:"25px",...eyeStyle}}
+              {...checkboxStyle()}
+              iconStyle={{...checkboxStyle().iconStyle, color:"gray", ...eyeStyle}}
               checked={eyeIsChecked}
               onMouseEnter={()=>{this.setState({["visibility_hover_"+attributeDict.name]:true})}}
               onMouseOut={()=>{this.setState({["visibility_hover_"+attributeDict.name]:false})}}
               tabIndex={this.props.tabIndex}
-              {...checkboxStyle()}
             />
             <div className={this.state["visibility_hover_"+attributeDict.name]?"text active":"text"} style={Object.keys(eyeStyle).length>0?{display:"none"}:{}}>
               {eyeIsChecked?

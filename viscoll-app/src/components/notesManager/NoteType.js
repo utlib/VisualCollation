@@ -21,7 +21,7 @@ export default class NoteType extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    if (this.state.types.length !== nextProps.noteTypes.length) {
+    if (this.state.types.length !== nextProps.noteTypes.length || this.props.noteTypes!==nextProps.noteTypes) {
       this.setState({types: [...nextProps.noteTypes]});
       this.resetEditing();
     }

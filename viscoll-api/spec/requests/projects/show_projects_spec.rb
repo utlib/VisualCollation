@@ -23,7 +23,7 @@ describe "GET /projects/id", :type => :request do
       end
 
       it "contains the user's own projects only" do
-        expect(@body['id']).to eq @project1.id.to_str
+        expect(@body['active']['id']).to eq @project1.id.to_str
       end
     end
 

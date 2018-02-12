@@ -10,7 +10,8 @@ export function addLeafs(leaf, additional) {
                 successMessage: "Successfully added the leaf(s)" ,
                 errorMessage: "Ooops! Something went wrong"
             }
-        }
+        },
+        isUndoable: true,
     };
 }
 
@@ -25,7 +26,8 @@ export function updateLeaf(leafID, leaf) {
                 successMessage: "Successfully updated the leaf" ,
                 errorMessage: "Ooops! Something went wrong"
             }
-        }
+        },
+        isUndoable: true,
     };
 }
 
@@ -40,7 +42,8 @@ export function updateLeafs(leafs, project_id) {
                 successMessage: "Successfully updated the leafs" ,
                 errorMessage: "Ooops! Something went wrong"
             }
-        }
+        },
+        isUndoable: true,
     };
 }
 
@@ -64,7 +67,8 @@ export function autoConjoinLeafs(leafs) {
                 successMessage: "Successfully conjoined the leafs" ,
                 errorMessage: "Ooops! Something went wrong"
             }
-        }
+        },
+        isUndoable: true,
     };
 }
 
@@ -80,7 +84,8 @@ export function deleteLeaf(leafID) {
                 successMessage: "Successfully deleted the leaf" ,
                 errorMessage: "Ooops! Something went wrong"
             }
-        }
+        },
+        isUndoable: true,
     };
 }
 
@@ -95,7 +100,8 @@ export function deleteLeafs(leafs) {
                 successMessage: "Successfully deleted the leafs" ,
                 errorMessage: "Ooops! Something went wrong"
             }
-        }
+        },
+        isUndoable: true,
     };
 }
 
@@ -110,6 +116,7 @@ export function generateFolioNumbers(startNumber, rectoIDs, versoIDs) {
                 successMessage: "Successfully generated the folio numbers" ,
                 errorMessage: "Ooops! Something went wrong"
             }
-        }
+        },
+        isUndoable: true,
     };
 }

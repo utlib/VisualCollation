@@ -43,7 +43,7 @@ export default class VisualMode extends React.Component {
         activeVersos: this.props.collationManager.selectedObjects.type==="Verso"? this.props.collationManager.selectedObjects.members : [],
         flashItems: this.props.collationManager.flashItems,
         filters: this.props.collationManager.filters,
-        visibleAttributes: this.props.collationManager.visibleAttributes,
+        visibleAttributes: this.props.project.preferences,
         toggleVisualizationDrawing: this.props.toggleVisualizationDrawing,
         addVisualization: this.addVisualization,
         openNoteDialog: this.props.openNoteDialog,
@@ -57,7 +57,7 @@ export default class VisualMode extends React.Component {
     window.removeEventListener("resize", this.drawOnCanvas);
   }
 
-  shouldComponentUpdate(nextProps, nextState) {
+  shouldComponentUpdate(nextProps) {
     return (this.props.project.Groups!==nextProps.project.Groups || 
       this.props.project.Sides!==nextProps.project.Sides || 
       this.props.project.Rectos!==nextProps.project.Rectos || 
@@ -66,7 +66,7 @@ export default class VisualMode extends React.Component {
       this.props.collationManager.selectedObjects!==nextProps.collationManager.selectedObjects ||
       this.props.collationManager.flashItems !== nextProps.collationManager.flashItems ||
       this.props.collationManager.filters !== nextProps.collationManager.filters ||
-      this.props.collationManager.visibleAttributes !== nextProps.collationManager.visibleAttributes ||
+      this.props.project.preferences !== nextProps.project.preferences ||
       this.props.tacketed !== nextProps.tacketed || 
       this.props.sewing !== nextProps.sewing
     );
@@ -81,7 +81,7 @@ export default class VisualMode extends React.Component {
       this.state.paperManager.setActiveRectos(nextProps.collationManager.selectedObjects.type==="Recto"? nextProps.collationManager.selectedObjects.members : []);
       this.state.paperManager.setActiveVersos(nextProps.collationManager.selectedObjects.type==="Verso"? nextProps.collationManager.selectedObjects.members : []);
       this.state.paperManager.setFilter(nextProps.collationManager.filters);
-      this.state.paperManager.setVisibility(nextProps.collationManager.visibleAttributes);
+      this.state.paperManager.setVisibility(nextProps.project.preferences);
       this.drawOnCanvas();
       if (nextProps.tacketed!=="") {
           this.state.paperManager.activateTacketTool(nextProps.tacketed);

@@ -9,6 +9,8 @@ import UserProfileForm from '../components/topbar/UserProfileForm';
 import FlatButton from 'material-ui/FlatButton';
 import NotesFilter from "../components/notesManager/NotesFilter";
 import FilterIcon from 'material-ui/svg-icons/content/filter-list';
+import Undo from 'material-ui/svg-icons/content/undo';
+import Redo from 'material-ui/svg-icons/content/redo';
 import Image from 'material-ui/svg-icons/image/image';
 import imgLogo from '../assets/logo_white.svg';
 import {btnBase} from "../styles/button";
@@ -28,6 +30,23 @@ class TopBar extends Component {
     this.state = {
       userProfileModalOpen: false
     };
+  }
+
+  componentDidMount() {
+    window.addEventListener("keydown", this.shortcutListener);
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener("keydown", this.shortcutListener);
+  }
+
+  shortcutListener = (event) => {
+    if ((event.ctrlKey || event.metaKey) && event.code==="KeyZ") {
+      if (this.props.actionHistory.undo.length>0) this.props.undo();
+    } else if ((event.ctrlKey || event.metaKey) && event.code==="KeyY") {
+      event.preventDefault();
+      if (this.props.actionHistory.redo.length>0) this.props.redo();
+    }
   }
 
   /**
@@ -75,6 +94,7 @@ class TopBar extends Component {
     if (this.props.history.location.pathname.includes("dashboard")) {
       this.props.goToDashboardProjectList();
     } else {
+      this.props.resetActionHistory();
       this.props.history.push('/dashboard');
     }
   }
@@ -114,12 +134,6 @@ class TopBar extends Component {
     } else if (this.props.windowWidth>768) {
       imageViewerTitle = "Image viewer";
     }
-    let filterTitle="";
-    if (this.props.windowWidth>768 && this.props.filterOpen) {
-      filterTitle = "Hide filter";
-    } else if (this.props.windowWidth>768) {
-      filterTitle = "Filter";
-    }
     return (
       <div role="region" aria-label="toolbar" className={topbarClasses} style={this.props.viewMode==="VIEWING"?{left:0, width:"100%"}:{}}>
         <button 
@@ -136,6 +150,30 @@ class TopBar extends Component {
               {this.props.children}
           </ToolbarGroup>
           <ToolbarGroup>
+            {this.props.showUndoRedo?
+              <div>
+                <IconButton 
+                  tooltip={this.props.actionHistory.undo.length===0? "" : "Undo (Ctrl Z)"}
+                  aria-label="Undo action"
+                  tabIndex={this.props.tabIndex}
+                  disabled={this.props.actionHistory.undo.length===0}
+                  onClick={(e)=>{e.preventDefault();this.props.undo()}}
+                >
+                  <Undo color={"#526C91"} />
+                </IconButton>
+                <IconButton 
+                  tooltip={this.props.actionHistory.redo.length===0? "" : "Redo (Ctrl Y)"}
+                  aria-label="Redo action"
+                  tabIndex={this.props.tabIndex}
+                  disabled={this.props.actionHistory.redo.length===0}
+                  onClick={(e)=>{e.preventDefault();this.props.redo()}}
+                >
+                  <Redo color={"#526C91"} />
+                </IconButton>
+              </div>
+              : null 
+            }
+
             {this.props.showImageViewerButton ? 
               <FlatButton
                 primary
@@ -149,15 +187,15 @@ class TopBar extends Component {
               : null
             }
             {this.props.toggleFilterDrawer? 
-                <FlatButton 
-                  primary={true} 
+              <div style={{borderRight:"1px solid #ffffff", paddingRight:"10px"}}>
+                <IconButton 
+                  tooltip="Filter"
                   onClick={(e)=>{e.preventDefault();this.props.toggleFilterDrawer()}}
-                  label={filterTitle}
-                  icon={<FilterIcon style={{height:15}}/>}
                   tabIndex={this.props.tabIndex}
-                  labelStyle={{...btnBase().labelStyle, padding:this.props.windowWidth<=1024?"0px 10px 0px 0px":10}}
-                  style={{...btnBase().style, marginLeft:0}}
-                  />
+                >
+                  <FilterIcon color={"#526C91"}/>
+                </IconButton>
+              </div>
               : null
             }
             {this.props.notesFilter ? <NotesFilter 
@@ -189,7 +227,8 @@ class TopBar extends Component {
 const mapStateToProps = (state) => {
   return {
     user: state.user,
-    notes: state.active.notes
+    notes: state.active.notes,
+    actionHistory: state.history,
   };
 };
 
@@ -204,6 +243,15 @@ const mapDispatchToProps = (dispatch) => {
     deleteProfile: (userID) => {
       dispatch(deleteProfile(userID));
     },
+    undo: () => {
+      dispatch({type:"UNDO"})
+    },
+    redo: () => {
+      dispatch({type:"REDO"})
+    },
+    resetActionHistory: () => {
+      dispatch({type:"CLEAR_ACTION_HISTORY"})
+    }
   };
 };
 

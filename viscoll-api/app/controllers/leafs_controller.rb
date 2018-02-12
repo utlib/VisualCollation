@@ -303,7 +303,7 @@ class LeafsController < ApplicationController
     end
 
     def leaf_params_batch_update
-      params.permit(:project_id, :leafs => [:id, :attributes=>[:type, :material, :stub, :attached_above, :attached_below]])
+      params.permit(:project_id, :leafs => [:id, :attributes=>[:conjoined_to, :type, :material, :stub, :attached_above, :attached_below]])
     end
 
     def leaf_params_batch_delete

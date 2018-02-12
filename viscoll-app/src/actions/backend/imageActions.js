@@ -15,7 +15,8 @@ export function linkImages(projectIDs, imageIDs) {
                 successMessage: projectIDs.length>1 ? "You have successfully linked the projects to this image" : "You have successfully linked the project to this image" ,
                 errorMessage: "Ooops! Something went wrong"
             }
-        }
+        },
+        isUndoable: true,
     };
 }
 
@@ -35,7 +36,8 @@ export function unlinkImages(projectIDs, imageIDs) {
                 successMessage: projectIDs.length>1 ? "You have successfully unlinked the projects to this image" : "You have successfully unlinked this project to this image" ,
                 errorMessage: "Ooops! Something went wrong"
             }
-        }
+        },
+        isUndoable: true,
     };
 }
 
@@ -90,6 +92,7 @@ export function mapSidesToImages(sideMappings) {
         successMessage: "Successfully updated the sides" ,
         errorMessage: "Ooops! Something went wrong"
       }
-    }
+    },
+    isUndoable: true,
   };
 }

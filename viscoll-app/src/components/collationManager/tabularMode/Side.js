@@ -2,12 +2,11 @@ import React from 'react';
 
 
 const Side = (props) => {
-  const { activeSide } = props;
+  const { activeSide, project } = props;
   const { 
     selectedObjects, 
     filters, 
     defaultAttributes, 
-    visibleAttributes,
   } = props.collationManager;
   const isActive = selectedObjects.members.includes(activeSide.id);
   const sidesOfMatchingElements = filters.SidesOfMatchingNotes;
@@ -19,7 +18,7 @@ const Side = (props) => {
   let sideAttributes = [];
 
   for (let attribute of defaultAttributes.side) {
-    if (visibleAttributes.side[attribute.name]) {
+    if (project.preferences.side && project.preferences.side[attribute.name]) {
       sideAttributes.push(
         <div 
           className={isActive?"attribute active":"attribute"} 

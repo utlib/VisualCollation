@@ -11,10 +11,10 @@ export default function editCollationReducer(state=initialState, action) {
   switch(action.type) {
     // MODIFICATIONS
     case "LOAD_PROJECT_SUCCESS":
-      state.project = action.payload
+      state.project = action.payload.active
       break;
     case "CREATE_MANIFEST_SUCCESS":
-      state.project = action.payload
+      state.project = action.payload.active
       state.imageManager.manageSources.error = ""
       break;
     case "CREATE_MANIFEST_FAILED":
@@ -58,16 +58,17 @@ export default function editCollationReducer(state=initialState, action) {
     case "UPDATE_CURRENT_SELECTED_OBJECTS":
       state.collationManager.selectedObjects = action.payload
       break;
-    case "TOGGLE_VISIBILITY":
-      state.collationManager.visibleAttributes[action.payload.memberType][action.payload.attributeName] = action.payload.newValue
-      break;
     case "FILTER_PROJECT_SUCCESS":
       state.collationManager.filters = {
         ...state.collationManager.filters,
         ...action.payload,
         active: true
       }
-      state.collationManager.visibleAttributes = action.payload.visibleAttributes
+      state.project.preferences = {
+        group: { ...action.payload.visibleAttributes.group},
+        leaf: { ...action.payload.visibleAttributes.leaf},
+        side: { ...action.payload.visibleAttributes.side},
+      } 
       delete state.collationManager.filters["visibleAttributes"];
       break;
     case "RESET_FILTERS":
@@ -122,14 +123,15 @@ export default function editCollationReducer(state=initialState, action) {
     case "DELETE_MANIFEST_FRONTEND":
     case "CREATE_NOTE_FRONTEND":
     case "GENERATE_FOLIO_NUMBERS_FRONTEND":
-      state = action.payload
+    case "UPDATE_PREFERENCES_FRONTEND":
+      state = action.payload.response
       break;
     case "LINK_IMAGES_FRONTEND":
     case "UNLINK_IMAGES_FRONTEND":
     case "DELETE_IMAGES_FRONTEND":
     case "MAP_SIDES_FRONTEND":
     case "UPLOAD_IMAGES_SUCCESS_BACKEND":
-      state = action.payload.active
+      state = action.payload.response.active
       break;
     default:
       break;
