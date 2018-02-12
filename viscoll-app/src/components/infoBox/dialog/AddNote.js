@@ -97,19 +97,11 @@ export default class AddNote extends React.Component {
 
   /**
    * Mapping function to render one note type menu item 
-   * @param {string} name note type name
-   * @public
    */
   renderNoteTypes = (name) => {
     return <MenuItem key={name} value={name} primaryText={name} />;
   }
 
-  /**
-   * Update state on input change
-   * @param {string} name input name
-   * @param {string} value new value
-   * @public
-   */
   onChange = (name, value) => {
     this.setState({[name]:value});
   }

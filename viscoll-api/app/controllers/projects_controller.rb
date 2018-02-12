@@ -11,12 +11,9 @@ class ProjectsController < ApplicationController
 
   # GET /projects/1
   def show
-    # begin
-      @data = generateResponse()
-    # rescue Exception => e
-      # render json: {error: e.message}, status: :unprocessable_entity
-      # return
-    # end
+    @data = generateResponse()
+    @projects = current_user.projects
+    @images = current_user.images
   end
 
   # POST /projects
@@ -24,10 +21,13 @@ class ProjectsController < ApplicationController
     begin
       # Run validatins for groups params
       allGroups = group_params.to_h["groups"]
+      folioNumber = group_params.to_h["folioNumber"]
+      pageNumber = group_params.to_h["pageNumber"]
+      startingTexture = group_params.to_h["startingTexture"]
+
       validationResult = validateProjectCreateGroupsParams(allGroups)
       if (not validationResult[:status])
-        render json: {groups: validationResult[:errors]}, status: :unprocessable_entity
-        return
+        render json: {groups: validationResult[:errors]}, status: :unprocessable_entity and return
       end
       # Instantiate a new project with the given params
       @project = Project.new(project_params)
@@ -40,17 +40,17 @@ class ProjectsController < ApplicationController
       if @project.save
         # If groups params were given, create the Groups & Leaves & auto-conjoin if required
         if (not allGroups.empty?)
-          addGroupsLeafsConjoin(@project, allGroups)
+          addGroupsLeafsConjoin(@project, allGroups, folioNumber, pageNumber, startingTexture)
         end
         # Get list of all projects of current user to return in response
         @projects = current_user.projects.order_by(:updated_at => 'desc')
         @images = current_user.images
-        render :index, status: :ok
+        render :index, status: :ok and return
       else
-        render json: {project: @project.errors}, status: :unprocessable_entity
+        render json: {project: @project.errors}, status: :unprocessable_entity and return
       end
     rescue Exception => e
-      render json: {errors: e.message}, status: :bad_request
+      render json: {errors: e.message}, status: :bad_request and return
     end
   end
 
@@ -61,12 +61,12 @@ class ProjectsController < ApplicationController
       if @project.update(project_params)
         @projects = current_user.projects
         @images = current_user.images
-        render :index, status: :ok
+        render :index, status: :ok and return
       else
-        render json: {project: @project.errors}, status: :unprocessable_entity
+        render json: {project: @project.errors}, status: :unprocessable_entity and return
       end
     rescue Exception => e
-      render json: {errors: e.message}, status: :bad_request
+      render json: {errors: e.message}, status: :bad_request and return
     end
   end
 
@@ -85,9 +85,9 @@ class ProjectsController < ApplicationController
       @project.destroy
       @projects = current_user.projects
       @images = current_user.images
-      render :index, status: :ok
+      render :index, status: :ok and return
     rescue Exception => e
-      render json: {errors: e.message}, status: :bad_request
+      render json: {errors: e.message}, status: :bad_request and return
     ensure
       # Enable callbacks again
       Image.set_callback(:destroy, :before, :unlink_sides_before_delete)
@@ -99,13 +99,19 @@ class ProjectsController < ApplicationController
   def createManifest
     begin
       manifest = manifest_params.to_h
-      manifestID = Project.new.id.to_s
+      if not manifest.key?("id")
+        manifestID = Project.new.id.to_s
+      else 
+        manifestID = manifest[:id]
+      end
       @project.manifests[manifestID] = {id: manifestID, url: manifest[:url]}
       @project.save
       @data = generateResponse()
-      render :show, status: :ok
+      @projects = current_user.projects
+      @images = current_user.images
+      render :show, status: :ok and return
     rescue Exception => e
-      render json: {errors: e}, status: :bad_request
+      render json: {errors: e}, status: :bad_request and return
     end
   end
 
@@ -114,18 +120,16 @@ class ProjectsController < ApplicationController
     begin
       manifest = manifest_params.to_h
       if not manifest.key?("id")
-        render json: {error: "Param required: id."}, status: :unprocessable_entity
-        return
+        render json: {error: "Param required: id."}, status: :unprocessable_entity and return
       end
       if not @project.manifests.key?(manifest["id"])
-        render json: {error: "Manifest with id: " + manifest["id"] + " not found in project with id: " + @project.id.to_s + "."}, status: :unprocessable_entity
-        return
+        render json: {error: "Manifest with id: " + manifest["id"] + " not found in project with id: " + @project.id.to_s + "."}, status: :unprocessable_entity and return
       end
       # ONLY UPDATING MANIFEST NAME FOR NOW 
       @project.manifests[manifest["id"]]["name"] = manifest["name"]
       @project.save
     rescue Exception => e
-      render json: {errors: e.message}, status: :bad_request
+      render json: {errors: e.message}, status: :bad_request and return
     end
   end
 
@@ -134,8 +138,7 @@ class ProjectsController < ApplicationController
     begin
       manifestIDToDelete = manifest_params.to_h[:id]
       if not @project.manifests.key?(manifestIDToDelete)
-        render json: {error: "Manifest with id: " + manifestIDToDelete + " not found in project with id: " + @project.id.to_s + "."}, status: :unprocessable_entity
-        return
+        render json: {error: "Manifest with id: " + manifestIDToDelete + " not found in project with id: " + @project.id.to_s + "."}, status: :unprocessable_entity and return
       end
       @project.manifests.delete(manifestIDToDelete)
       # Update all sides that have the deleted manuscripts mapping
@@ -146,7 +149,7 @@ class ProjectsController < ApplicationController
       end
       @project.save
     rescue Exception => e
-      render json: {errors: e.message}, status: :bad_request
+      render json: {errors: e.message}, status: :bad_request and return
     end
   end
 
@@ -176,7 +179,7 @@ class ProjectsController < ApplicationController
       end    
       @projects = current_user.projects.order_by(:updated_at => 'desc')
       @images = current_user.images
-      render :index, status: :ok
+      render :index, status: :ok and return
     rescue Exception => e
       p e.message
     end
@@ -188,12 +191,10 @@ class ProjectsController < ApplicationController
     begin
       @project = Project.find(params[:id])
       if (@project.user_id!=current_user.id)
-        render json: {error: ""}, status: :unauthorized
-        return
+        render json: {error: ""}, status: :unauthorized and return
       end
     rescue Exception => e
-      render json: {error: "project not found with id "+params[:id]}, status: :not_found
-      return
+      render json: {error: "project not found with id "+params[:id]}, status: :not_found and return
     end
   end
 
@@ -207,7 +208,7 @@ class ProjectsController < ApplicationController
   end
 
   def group_params
-    params.permit(:groups => [:number, :leaves, :conjoin, :oddLeaf])
+    params.permit(:folioNumber, :pageNumber, :startingTexture, :groups => [:number, :leaves, :conjoin, :oddLeaf])
   end
 
   def manifest_params

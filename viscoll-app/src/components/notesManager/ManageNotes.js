@@ -1,5 +1,4 @@
 import React, {Component} from 'react';
-import Drawer from 'material-ui/Drawer';
 import RaisedButton from 'material-ui/RaisedButton';
 import EditNoteForm from "./EditNoteForm";
 import NewNoteForm from "./NewNoteForm";
@@ -20,8 +19,6 @@ export default class ManageNotes extends Component {
 
   /**
    * Update state when user clicks on new note item
-   * @param {number} index note index in the list of notes 
-   * @public
    */
   onItemChange = (activeNote) => {
     this.setState({activeNote});
@@ -34,28 +31,29 @@ export default class ManageNotes extends Component {
 
   /**
    * Mapping function to render a note thumbnail 
-   * @public
    */
   renderList = (noteID) => {
     const note = this.props.Notes[noteID];
     return (
-      <RaisedButton 
-        className={"item active"}
-        key={noteID}
+      <button 
+        type="button" 
+        name="noteButton" 
+        aria-label={"Note: " + note.title} 
+        className={this.state.activeNote && this.state.activeNote.id===noteID? "noteButton item active" : "noteButton item"}
         onClick={()=>this.onItemChange(note)}
-        style={{width:"90%"}}
-        {...btnMd}
-        label={note.title.length>18? note.title.substring(0,18) + "...": note.title}
-        labelStyle={{...btnBase().labelStyle}}
-        backgroundColor={this.state.activeNote && this.state.activeNote.id===noteID? "#4ED6CB": "#F2F2F2" }
         tabIndex={this.props.tabIndex}
-      />
+        key={noteID}
+      >
+        <div>
+          <div className="title">{note.title.length>80? note.title.substring(0,80) + "...": note.title}</div>
+          <div className="type">{note.type}</div>
+        </div>
+      </button>
     );
   }
 
   /**
    * Clear values in the input fields 
-   * @public
    */
   reset = () => {
     this.setState({
@@ -116,12 +114,16 @@ export default class ManageNotes extends Component {
     const sidesWithCurrentNote = [];
     for (let value of rectosWithCurrentNote){
       const leafOrder = this.props.leafIDs.indexOf(this.props.Rectos[value].parentID) + 1;
-      const label = `L${leafOrder} Recto (${this.props.Rectos[value].folio_number})`;
+      const folioNumber = this.props.Rectos[value].folio_number && this.props.Rectos[value].folio_number!==""? `(${this.props.Rectos[value].folio_number})`:"";
+      const pageNumber = this.props.Rectos[value].page_number && this.props.Rectos[value].page_number!==""? `(${this.props.Rectos[value].page_number})`:"";
+      const label = `L${leafOrder} Recto ${folioNumber} ${pageNumber}`;
       sidesWithCurrentNote.push({label, value})
     }
     for (let value of versosWithCurrentNote){
       const leafOrder = this.props.leafIDs.indexOf(this.props.Versos[value].parentID) + 1;
-      const label = `L${leafOrder} Verso (${this.props.Versos[value].folio_number})`;
+      const folioNumber = this.props.Versos[value].folio_number && this.props.Versos[value].folio_number!==""? `(${this.props.Versos[value].folio_number})`:"";
+      const pageNumber = this.props.Versos[value].page_number && this.props.Versos[value].page_number!==""? `(${this.props.Versos[value].page_number})`:"";
+      const label = `L${leafOrder} Verso ${folioNumber} ${pageNumber}`;
       sidesWithCurrentNote.push({label, value})
     }
     return sidesWithCurrentNote;
@@ -139,9 +141,7 @@ export default class ManageNotes extends Component {
     return result;
   }
 
-
   render() {
-
     let noteForm;
     if (!this.state.activeNote) {
       noteForm = (
@@ -189,13 +189,9 @@ export default class ManageNotes extends Component {
       );
     }
 
-
-
     return (
       <div className="browse">
-        <Drawer 
-          open
-          containerStyle={{top:"56px",left:"18%",width:Math.min(250,this.props.windowWidth*0.25), height: window.innerHeight-56,background:"#e5e5e5",boxShadow:"none"}}
+        <div 
           className="notesList"
         >
           <div role="region" aria-label="browse note titles">
@@ -215,8 +211,8 @@ export default class ManageNotes extends Component {
           </RaisedButton>
           {Object.keys(this.props.Notes).map(this.renderList)}
           </div>
-        </Drawer>
-        <div className="details" role="region" aria-label="note details" style={{left:Math.min(250, this.props.windowWidth*0.25)}}>
+        </div>
+        <div className="details" role="region" aria-label="note details">
           {noteForm}
         </div>
       </div>

@@ -1,13 +1,11 @@
 import React from 'react';
 import SuperSelectField from 'material-ui-superselectfield';
 
-
 const selectionsRenderer = (values) => {
   if (values.length===1) return "1 item selected"
   if (values.length>1) return `${values.length} items selected`
   return "Select item(s)..."
 }
-
 
 const MultiSelectAutoComplete = (props) => {
   return (

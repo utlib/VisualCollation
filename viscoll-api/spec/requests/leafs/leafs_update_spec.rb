@@ -18,7 +18,6 @@ describe "PUT /leafs/:id", :type => :request do
       "leaf": {
         "material": "Paper",
         "type": "Added",
-        "attachment_method": "Glued",
         "conjoined_to": @leafs[2].id.to_s,
         "attached_below": "Sewn"
       }

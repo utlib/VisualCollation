@@ -40,11 +40,6 @@ export default class AddGroupDialog extends React.Component {
   /**
    * Increment a state's value by one, bounded by `max` and `min`. If the user previously 
    * entered an invalid value, the value is set to `min`.  
-   * 
-   * @param {string} name state name
-   * @param {number} min
-   * @param {number} max
-   * @public
    */
   incrementNumber = (name, min, max, e) => {
     if (e) e.preventDefault();
@@ -63,11 +58,6 @@ export default class AddGroupDialog extends React.Component {
   /**
    * Decrement a state by one, bounded by `max` and `min`. If the user previously 
    * entered an invalid value, the value is set to min. 
-   * 
-   * @param {string} name state name
-   * @param {number} min
-   * @param {number} max
-   * @public
    */
   decrementNumber = (name, min, max, e) => {
     if (e) e.preventDefault();
@@ -80,10 +70,6 @@ export default class AddGroupDialog extends React.Component {
   
   /**
    * Validate user input. If invalid, display error message, otherwise update relevant state 
-   * 
-   * @param {string} name state name
-   * @param {number} value new input value
-   * @public
    */
   onNumberChange = (name, value) => {
     let errorState = this.state.errorText;
@@ -107,9 +93,6 @@ export default class AddGroupDialog extends React.Component {
 
   /**
    * Check if string is an integer
-   * 
-   * @param {string} str 
-   * @public
    */
   isNormalInteger = (str) => {
     return /^([1-9]\d*)$/.test(str);
@@ -117,10 +100,6 @@ export default class AddGroupDialog extends React.Component {
 
   /**
    * Toggle a checkbox
-   * 
-   * @param {string} stateName 
-   * @param {boolean} value 
-   * @public
    */
   onToggleCheckbox = (stateName, value) => {
     let newState = {};
@@ -130,18 +109,12 @@ export default class AddGroupDialog extends React.Component {
 
   /**
    * Update location radio button group
-   * 
-   * @param {string} value 
-   * @public
    */
   onLocationChange = (value) => {
     this.setState({location: value});;
   }
   /**
    * Returns next sibling of a group
-   * 
-   * @param {number} groupOrder global order of group of interest 
-   * @public
    */
   getNextSibling = () => {
     let activeGroup = this.props.Groups[this.props.selectedGroups[0]];
@@ -155,9 +128,6 @@ export default class AddGroupDialog extends React.Component {
 
   /**
    * Returns the last child group
-   * 
-   * @param {array} members array of members 
-   * @public
    */
   findLastChildGroup = (memberIDs) => {
     let lastGroup = null;
@@ -178,7 +148,6 @@ export default class AddGroupDialog extends React.Component {
 
   /**
    * Submit add group request
-   * @public
    */
   submit = () => {
     if (this.props.addLeafs || !this.isDisabled()) {
@@ -266,7 +235,6 @@ export default class AddGroupDialog extends React.Component {
 
    /**
    * Return `true` if there are any errors in the input fields
-   * @public
    */
   isDisabled = () => {
     let copiesError = !(this.state.errorText.copies===undefined) && this.state.errorText.copies.length>0;
@@ -278,7 +246,6 @@ export default class AddGroupDialog extends React.Component {
 
   /**
    * Reset state
-   * @public
    */
   resetForm = () => {
     this.setState({

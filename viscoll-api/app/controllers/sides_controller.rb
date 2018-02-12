@@ -6,10 +6,10 @@ class SidesController < ApplicationController
   def update
     begin
       if !@side.update(side_params)
-        render json: @side.errors, status: :unprocessable_entity
+        render json: @side.errors, status: :unprocessable_entity and return
       end
     rescue Exception => e
-      render json: {error: e.message}, status: :unprocessable_entity
+      render json: {error: e.message}, status: :unprocessable_entity and return
     end
   end
 
@@ -33,19 +33,16 @@ class SidesController < ApplicationController
       end
       @project = Project.find(sides[0].project_id)
       if (@project.user_id!=current_user.id)
-        render json: {error: ""}, status: :unauthorized
-        return
+        render json: {error: ""}, status: :unauthorized and return
       end
       if haveErrors
-        render json: {sides: @errors}, status: :unprocessable_entity
-        return
+        render json: {sides: @errors}, status: :unprocessable_entity and return
       end
       allSides.each_with_index do |side_params, index|
         side = sides[index]
         previousSideImage = side.image.clone
         if !side.update(side_params[:attributes])
-          render json: side.errors, status: :unprocessable_entity
-          return
+          render json: side.errors, status: :unprocessable_entity and return
         else
           # SPEICAL CASE FOR DIY IMAGE MAPPING
           if side_params[:attributes]["image"]
@@ -86,7 +83,81 @@ class SidesController < ApplicationController
         end
       end
     rescue Exception => e
-      render json: {error: e.message}, status: :unprocessable_entity
+      render json: {error: e.message}, status: :unprocessable_entity and return
+    end
+  end
+
+
+  # PUT /sides/generateFolio
+  def generateFolio
+    folioNumberCount = side_params_generate.to_h[:startNumber].to_i
+    rectoIDs = side_params_generate.to_h[:rectoIDs]
+    versoIDs = side_params_generate.to_h[:versoIDs]
+    rectoIDs.each_with_index do | rectoID, index | 
+      recto = Side.find(rectoID)
+      verso = Side.find(versoIDs[index])
+      recto.update_attribute(:folio_number, folioNumberCount.to_s+"R")
+      verso.update_attribute(:folio_number, folioNumberCount.to_s+"V")
+      folioNumberCount += 1
+      if index==0
+        @project = Project.find(recto.project_id)
+      end
+    end
+  end
+  
+  
+  # PUT /sides/generatePageNumber
+  def generatePageNumber
+    pageNumberCount = side_params_generate.to_h[:startNumber].to_i
+    rectoIDs = side_params_generate.to_h[:rectoIDs]
+    versoIDs = side_params_generate.to_h[:versoIDs]
+    rectoIDs.each_with_index do | rectoID, index | 
+      recto = Side.find(rectoID)
+      verso = Side.find(versoIDs[index])
+      recto.update_attribute(:page_number, pageNumberCount.to_s)
+      pageNumberCount += 1
+      verso.update_attribute(:page_number, pageNumberCount.to_s)
+      pageNumberCount += 1
+      if index==0
+        @project = Project.find(recto.project_id)
+      end
+    end
+  end
+
+
+  # PUT /sides/generateFolio
+  def generateFolio
+    folioNumberCount = side_params_generate.to_h[:startNumber].to_i
+    rectoIDs = side_params_generate.to_h[:rectoIDs]
+    versoIDs = side_params_generate.to_h[:versoIDs]
+    rectoIDs.each_with_index do | rectoID, index | 
+      recto = Side.find(rectoID)
+      verso = Side.find(versoIDs[index])
+      recto.update_attribute(:folio_number, folioNumberCount.to_s+"R")
+      verso.update_attribute(:folio_number, folioNumberCount.to_s+"V")
+      folioNumberCount += 1
+      if index==0
+        @project = Project.find(recto.project_id)
+      end
+    end
+  end
+  
+  
+  # PUT /sides/generatePageNumber
+  def generatePageNumber
+    pageNumberCount = side_params_generate.to_h[:startNumber].to_i
+    rectoIDs = side_params_generate.to_h[:rectoIDs]
+    versoIDs = side_params_generate.to_h[:versoIDs]
+    rectoIDs.each_with_index do | rectoID, index | 
+      recto = Side.find(rectoID)
+      verso = Side.find(versoIDs[index])
+      recto.update_attribute(:page_number, pageNumberCount.to_s)
+      pageNumberCount += 1
+      verso.update_attribute(:page_number, pageNumberCount.to_s)
+      pageNumberCount += 1
+      if index==0
+        @project = Project.find(recto.project_id)
+      end
     end
   end
 
@@ -98,22 +169,24 @@ class SidesController < ApplicationController
         @side = Side.find(params[:id])
         @project = Project.find(@side.project_id)
         if (@project.user_id!=current_user.id)
-          render json: {error: ""}, status: :unauthorized
-          return
+          render json: {error: ""}, status: :unauthorized and return
         end
       rescue Exception => e
-        render json: {error: "side not found"}, status: :not_found
-        return
+        render json: {error: "side not found"}, status: :not_found and return
       end   
     end
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def side_params
-      params.require(:side).permit(:folio_number, :texture, :script_direction, :image=>[:manifestID, :label, :url])
+      params.require(:side).permit(:folio_number, :page_number, :texture, :script_direction, :image=>[:manifestID, :label, :url])
     end
 
     def side_params_batch_update
-      params.permit(:sides => [:id, :attributes=>[:texture, :script_direction, :image=>[:manifestID, :label, :url]]])
+      params.permit(:sides => [:id, :attributes=>[:folio_number, :page_number, :texture, :script_direction, :image=>[:manifestID, :label, :url]]])
+    end
+
+    def side_params_generate
+      params.permit(:startNumber, :rectoIDs => [], :versoIDs => [])
     end
 
 end

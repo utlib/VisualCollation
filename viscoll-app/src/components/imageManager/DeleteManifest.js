@@ -3,6 +3,7 @@ import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
 import RaisedButton from 'material-ui/RaisedButton';
 
+/** Confirmation dialog to delete manifest */
 export default class DeleteManifest extends Component {
   render() {
     const actions = [

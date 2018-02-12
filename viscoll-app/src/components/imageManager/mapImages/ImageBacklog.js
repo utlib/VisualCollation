@@ -4,7 +4,7 @@ import IconButton from 'material-ui/IconButton';
 import Add from 'material-ui/svg-icons/content/add-circle-outline';
 import VirtualList from 'react-tiny-virtual-list';
 
-
+/** Panel for unmapped images */
 export default class ImageBacklog extends Component {
 
   renderImageItem = (index, style) => {
@@ -41,7 +41,6 @@ export default class ImageBacklog extends Component {
       </div>
     );
   }
-
 
   render() {
     if (this.props.id==="imageMapBoard") {

@@ -140,7 +140,6 @@ export const leaf1 = {
   order: 1,
   material: "Paper",
   type: "None",
-  attachment_method: "None",
   conjoined_to: "555",
   attached_to: {
     aboveID: "",
@@ -163,7 +162,6 @@ export const leaf2 = {
   order: 2,
   material: "Paper",
   type: "None",
-  attachment_method: "None",
   conjoined_to: "555",
   attached_to: {
     aboveID: "",
@@ -186,7 +184,6 @@ export const leaf3 = {
   order: 3,
   material: "None",
   type: "None",
-  attachment_method: "None",
   conjoined_to: "555",
   attached_to: {
     aboveID: "",
@@ -209,7 +206,6 @@ export const leaf4 = {
   order: 4,
   material: "None",
   type: "None",
-  attachment_method: "None",
   conjoined_to: "555",
   attached_to: {
     aboveID: "",
@@ -232,7 +228,6 @@ export const leaf5 = {
   order: 5,
   material: "None",
   type: "None",
-  attachment_method: "None",
   conjoined_to: "555",
   attached_to: {
     aboveID: "",

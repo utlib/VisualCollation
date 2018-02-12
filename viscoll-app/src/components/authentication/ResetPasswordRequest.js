@@ -22,9 +22,6 @@ class ResetPasswordRequest extends Component {
 
   /**
    * Update state when user inputs new value in a text field 
-   * @param {string} v new value 
-   * @param {string} type text field name
-   * @public
    */
   onInputChange(v, type) {
     this.setState({[type]: v});
@@ -32,7 +29,6 @@ class ResetPasswordRequest extends Component {
 
   /**
    * Validate email address and submit password reset request
-   * @public
    */
   resetPasswordRequest = (e) => {
     if (e) e.preventDefault();

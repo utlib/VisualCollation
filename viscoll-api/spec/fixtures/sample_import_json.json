@@ -63,7 +63,6 @@
       "params":{
         "material":"Paper",
         "type":"Original",
-        "attachment_method":"None",
         "attached_above":"None",
         "attached_below":"None",
         "stub":"None",
@@ -78,7 +77,6 @@
       "params":{
         "material":"Paper",
         "type":"Original",
-        "attachment_method":"None",
         "attached_above":"None",
         "attached_below":"None",
         "stub":"None",
@@ -93,7 +91,6 @@
       "params":{
         "material":"Paper",
         "type":"Original",
-        "attachment_method":"None",
         "attached_above":"None",
         "attached_below":"None",
         "stub":"None",
@@ -108,7 +105,6 @@
       "params":{
         "material":"Paper",
         "type":"Original",
-        "attachment_method":"None",
         "attached_above":"None",
         "attached_below":"None",
         "stub":"None",
@@ -123,7 +119,6 @@
       "params":{
         "material":"Paper",
         "type":"Original",
-        "attachment_method":"None",
         "attached_above":"None",
         "attached_below":"None",
         "stub":"None",
@@ -138,7 +133,6 @@
       "params":{
         "material":"Paper",
         "type":"Endleaf",
-        "attachment_method":"None",
         "attached_above":"None",
         "attached_below":"None",
         "stub":"None",

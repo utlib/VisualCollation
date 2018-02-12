@@ -69,14 +69,9 @@ class CollationManager extends Component {
       showTips: props.preferences.showTips,
       imageViewerEnabled: false,
       activeNote: null,
+      tipIndex: 0,
     };
   }
-
-  // componentWillMount() {
-  //   if (this.props.collationManager.viewMode==="VIEWING") {
-  //     this.setState({leftSideBarOpen:false});
-  //   }
-  // }
 
   componentDidMount() {
     window.addEventListener('resize', this.resizeHandler);
@@ -119,10 +114,6 @@ class CollationManager extends Component {
     this.setState({windowWidth:window.innerWidth});
   }
 
-  /**
-   * Toggle filter panel
-   * @public
-   */
   toggleFilterDrawer = () => {
     this.props.toggleFilterPanel(!this.props.filterPanelOpen);
     let filterPanelHeight = document.getElementById('filterContainer').offsetHeight;
@@ -136,12 +127,6 @@ class CollationManager extends Component {
     this.props.handleObjectPress(this.props.selectedObjects, object, event);
   }
 
-  /**
-   * Pass the newly clicked object to the `handleObjectClick` action
-   * @param {object} object 
-   * @param {object} event
-   * @public
-   */
   handleObjectClick = (object, event) => {
     event.stopPropagation();
     this.props.handleObjectClick( 
@@ -154,11 +139,7 @@ class CollationManager extends Component {
       this.props.project.versoIDs,
     );
   }
-  /**
-   * Pass new view mode value (`VISUAL`, `TABULAR` or `VIEWING`) to the `changeViewMode` action
-   * @param {string} value 
-   * @public
-   */
+
   handleViewModeChange = (value) => {
     if (value==="VIEWING") {
       this.setState({leftSideBarOpen: true, imageViewerEnabled: false}, ()=>this.props.changeViewMode(value));
@@ -169,11 +150,6 @@ class CollationManager extends Component {
     }
   }
 
-  /**
-   * Update the content style when filter panel height changes
-   * @param {number} value new height
-   * @public
-   */
   filterHeightChange = (value) => {
     let infoboxHeight = "90%";
     if (value>0) infoboxHeight = window.innerHeight - value - 56 - 30 + "px";
@@ -183,14 +159,7 @@ class CollationManager extends Component {
     });
   }
 
-  /**
-   * Submit update group request
-   * @param {string} groupID
-   * @param {object} group
-   * @public
-   */
   updateGroup = (groupID, group) => { this.props.updateGroup(groupID, group, this.props); }
-  
 
   closeTip = () => {
     const project = {
@@ -212,7 +181,6 @@ class CollationManager extends Component {
     );
   }
 
-
   handleExportToggle = (open, type, label) => {
     this.setState({export: {open, type, label}}, ()=>{
       if (this.state.export.open && type!=="png")
@@ -220,7 +188,6 @@ class CollationManager extends Component {
     });
     this.props.togglePopUp(open);
   };
-
 
   showCopyToClipboardNotification = () => {
     this.props.showCopyToClipboardNotification();
@@ -245,10 +212,6 @@ class CollationManager extends Component {
     this.setState({activeNote: note, clickedFromDiagram},()=>this.props.togglePopUp(true));
   }
 
-  /**
-   * Returns notes of currently selected objects
-   * @public
-   */
   getCommonNotes = (props=this.props) => {
     // Find the common notes of all currently selected objects
     const memberType = props.selectedObjects.type;
@@ -265,9 +228,6 @@ class CollationManager extends Component {
 
   /**
    * Returns items in common
-   * @param {array} list1
-   * @param {array} list2
-   * @public
    */
   intersect = (list1, list2) => {
     if (list1.length >= list2.length)
@@ -316,6 +276,7 @@ class CollationManager extends Component {
         togglePopUp={this.props.togglePopUp}
         popUpActive={this.props.popUpActive}
         windowWidth={this.state.windowWidth}
+        showUndoRedo={this.props.collationManager.viewMode!=="VIEWING"}
       >
         <Tabs 
           tabItemContainerStyle={{backgroundColor: '#ffffff'}}
@@ -331,7 +292,12 @@ class CollationManager extends Component {
 
     const singleEditTip = 'Hold the CTRL key (or Command key for Mac users) to select multiple groups/leaves/sides. Hold SHIFT key to select a range of groups/leaves/sides.';
     const batchEditTip = 'You are in batch edit mode. To leave this mode, click on any group/leaf/side without holding down any keys.';
-    const tip = this.props.selectedObjects.members.length>1 ? batchEditTip : singleEditTip
+    const tip = [
+      this.props.selectedObjects.members.length>1 ? batchEditTip : singleEditTip,
+      "Generate folio/page numbers by selecting multiple leaves and clicking on the 'Generate folio/page numbers' button in the infobox on the right.",
+      "View a zoomed out version of the collation diagram by selecting PNG export in the Export section of this sidebar.",
+      "Undo an action with CTRL+Z (or CMD+Z for Mac users), and redo an action with CTRL+Y (or CMD+Y for Mac users).",
+    ];
     let tipsDiv;
     if (this.props.managerMode==="collationManager" && this.props.preferences.showTips===true) {
       tipsDiv =
@@ -348,7 +314,19 @@ class CollationManager extends Component {
             </IconButton>
           </div>
           <div className="tip">
-            <span>TIP:</span> {tip}
+            <span>TIP:</span> {tip[this.state.tipIndex]}
+            <div style={{textAlign:"right"}}>
+              <button 
+                type="button" 
+                name="Next tip" 
+                aria-label="Next tip" 
+                onClick={()=>this.setState({tipIndex:((this.state.tipIndex+1)%tip.length)})}
+                tabIndex={this.props.popUpActive?-1:0}
+                style={{color:"#4ED6CB", background:"none", border:0}}
+              >
+                Next tip &#10095;
+              </button>
+            </div>
           </div>
         </div>
     }
@@ -513,7 +491,7 @@ class CollationManager extends Component {
             closeNoteDialog={this.closeNoteDialog}
             commonNotes={this.getCommonNotes()}
             openNoteDialog={this.openNoteDialog}
-            action={{linkNote: this.props.linkNote, unlinkNote: this.props.unlinkNote}}
+            action={{linkNote: this.props.linkNote, unlinkNote: this.props.unlinkNote, updatePreferences: this.props.updatePreferences}}
             togglePopUp={this.props.togglePopUp}
             tabIndex={this.props.popUpActive?-1:0}
             windowWidth={this.state.windowWidth}

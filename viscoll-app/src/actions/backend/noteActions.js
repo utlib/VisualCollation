@@ -58,7 +58,8 @@ export function deleteNote(noteID) {
                 successMessage: "Successfully deleted the note" ,
                 errorMessage: "Ooops! Something went wrong"
             }
-        }
+        },
+        isUndoable: true,
     };
 }
 
@@ -82,7 +83,8 @@ export function linkNote(noteID, objects) {
                 successMessage: "Successfully linked the note" ,
                 errorMessage: "Ooops! Something went wrong"
             }
-        }
+        },
+        isUndoable: true,
     };
 }
 
@@ -105,7 +107,8 @@ export function unlinkNote(noteID, objects) {
                 successMessage: "Successfully unlinked the note" ,
                 errorMessage: "Ooops! Something went wrong"
             }
-        }
+        },
+        isUndoable: true,
     };
 }
 
@@ -127,7 +130,8 @@ export function createNoteType(noteType) {
                 successMessage: "Successfully created the note type" ,
                 errorMessage: "Ooops! Something went wrong"
             }
-        }
+        },
+        isUndoable: true,
     };
 }
 
@@ -150,7 +154,8 @@ export function updateNoteType(noteType) {
                 successMessage: "Successfully updated the note type" ,
                 errorMessage: "Ooops! Something went wrong"
             }
-        }
+        },
+        isUndoable: true,
     };
 }
 
@@ -172,6 +177,7 @@ export function deleteNoteType(noteType) {
                 successMessage: "Successfully deleted the note type" ,
                 errorMessage: "Ooops! Something went wrong"
             }
-        }
+        },
+        isUndoable: true,
     };
 }

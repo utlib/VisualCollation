@@ -18,12 +18,15 @@ class FilterRow extends Component {
       return [];
     }
   }
+
   mapNoteAttributeMenuItems = (noteType, index) => {
     return { key:noteType+index, value:noteType, text:noteType }
   }
+
   mapAttributeMenuItems = (item, index) => {
     return { key:item.name+index, value:item.name, text:item.displayName}
   }
+  
   renderValueItems = (item, index) => {
     return <MenuItem insetChildren key={item} value={item} primaryText={item} checked={this.props.values && this.props.values.indexOf(item) > -1} />;
   }
@@ -96,7 +99,7 @@ class FilterRow extends Component {
             <TextField 
               hintText="Value" 
               style={{paddingTop: 24, width: '100%'}}
-              onChange={(e,v)=>this.props.onChange(this.props.queryIndex,"values",e,0,[v])}
+              onChange={(e,v)=>this.props.onChange(this.props.queryIndex,"values",0,[v])}
               tabIndex={this.props.tabIndex}
               {...floatFieldLight}
             />;

@@ -25,21 +25,18 @@ class GroupsController < ApplicationController
         end
       end
       if (hasAdditionalErrors)
-        render json: {additional: @additionalErrors}, status: :unprocessable_entity
-        return
+        render json: {additional: @additionalErrors}, status: :unprocessable_entity and return
       end
       @groupErrors = {project_id: []}
       if (project_id == nil) 
         @groupErrors[:project_id].push("not found")
-        render json: {group: @groupErrors}, status: :unprocessable_entity
-        return
+        render json: {group: @groupErrors}, status: :unprocessable_entity and return
       end
       begin
         @project = Project.find(project_id)
       rescue Exception => e
         @groupErrors[:project_id].push("project not found with id "+project_id)
-        render json: {group: @groupErrors}, status: :unprocessable_entity
-        return
+        render json: {group: @groupErrors}, status: :unprocessable_entity and return
       end
       new_groups = []
       new_group_ids = []
@@ -62,8 +59,7 @@ class GroupsController < ApplicationController
           new_groups.push(group)
           new_group_ids.push(group.id.to_s)
         else
-          render json: {group: group.errors}, status: :unprocessable_entity
-          return
+          render json: {group: group.errors}, status: :unprocessable_entity and return
         end
       end
       # Add new group(s) to parent
@@ -83,7 +79,7 @@ class GroupsController < ApplicationController
         end
       end
     rescue Exception => e
-      render json: {error: e.message}, status: :unprocessable_entity
+      render json: {error: e.message}, status: :unprocessable_entity and return
     end
   end
 
@@ -91,10 +87,10 @@ class GroupsController < ApplicationController
   def update
     begin
       if !@group.update(group_params)
-        render json: @group.errors, status: :unprocessable_entity
+        render json: @group.errors, status: :unprocessable_entity and return
       end
     rescue Exception => e
-      render json: {error: e.message}, status: :unprocessable_entity
+      render json: {error: e.message}, status: :unprocessable_entity and return
     end
   end
 
@@ -105,23 +101,20 @@ class GroupsController < ApplicationController
       # Run validations
       errors = validateGroupBatchUpdate(allGroups)
       if not errors.empty?
-        render json: {groups: errors}, status: :unprocessable_entity
-        return
+        render json: {groups: errors}, status: :unprocessable_entity and return
       end
       allGroups.each do |group_params|
         @group = Group.find(group_params[:id])
         @project = Project.find(@group.project_id)
         if (@project.user_id!=current_user.id)
-          render json: {error: ""}, status: :unauthorized
-          return
+          render json: {error: ""}, status: :unauthorized and return
         end
         if !@group.update(group_params[:attributes])
-          render json: @group.errors, status: :unprocessable_entity
-          return
+          render json: @group.errors, status: :unprocessable_entity and return
         end
       end
     rescue Exception => e
-      render json: {error: e.message}, status: :unprocessable_entity
+      render json: {error: e.message}, status: :unprocessable_entity and return
     end
   end
 
@@ -131,7 +124,7 @@ class GroupsController < ApplicationController
       @group = Group.find(params[:id])
       @group.destroy
     rescue Exception => e
-      render json: {error: e.message}, status: :unprocessable_entity
+      render json: {error: e.message}, status: :unprocessable_entity and return
     end
   end
 
@@ -147,8 +140,7 @@ class GroupsController < ApplicationController
           group = Group.find(groupID)
           @project = Project.find(group.project_id)
           if (@project.user_id!=current_user.id)
-            render json: {error: ""}, status: :unauthorized
-            return
+            render json: {error: ""}, status: :unauthorized and return
           end
           group.destroy
         rescue Exception => e
@@ -156,7 +148,7 @@ class GroupsController < ApplicationController
         end
       end
     rescue Exception => e
-      render json: {error: e.message}, status: :unprocessable_entity
+      render json: {error: e.message}, status: :unprocessable_entity and return
     end
   end
 
@@ -167,12 +159,10 @@ class GroupsController < ApplicationController
       @group = Group.find(params[:id])
       @project = Project.find(@group.project_id)
       if (@project.user_id!=current_user.id)
-        render json: {error: ""}, status: :unauthorized
-        return
+        render json: {error: ""}, status: :unauthorized and return
       end
     rescue Exception => e
-      render json: {error: "group not found"}, status: :not_found
-      return
+      render json: {error: "group not found"}, status: :not_found and return
     end    
   end
 
@@ -185,7 +175,7 @@ class GroupsController < ApplicationController
   end
 
   def group_params_batch_update
-    params.permit(:groups => [:id, :attributes=>[:type, :title]])
+    params.permit(:groups => [:id, :attributes=>[:type, :title, :tacketed=>[], :sewing=>[]]])
   end
 
   def group_params_batch_delete

@@ -4,7 +4,6 @@ import RaisedButton from 'material-ui/RaisedButton';
 import Checkbox from 'material-ui/Checkbox';
 import SelectField from '../global/SelectField';
 
-
 /** Create New Note tab in the Note Manager */
 export default class NewNoteForm extends Component {
   constructor(props) {
@@ -20,11 +19,6 @@ export default class NewNoteForm extends Component {
     };
   }
 
-  /**
-   * Validates title
-   * @param {string} title
-   * @public
-   */
   validateTitle = (title) => {
     for (let noteID in this.props.Notes) {
       const note = this.props.Notes[noteID];
@@ -42,12 +36,6 @@ export default class NewNoteForm extends Component {
     }
   }
 
-  /**
-   * Update state on input change
-   * @param {string} name input name
-   * @param {string} value new value
-   * @public
-   */
   onChange = (name, value) => {
     this.setState({[name]:value, editing: {...this.state.editing, [name]: true}});
     if (name==="title") this.validateTitle(value.trim());
@@ -63,10 +51,6 @@ export default class NewNoteForm extends Component {
     }
   }
 
-  /**
-   * Create new note 
-   * @public
-   */
   create = () => {
     let note = {
       "project_id": this.props.projectID,
@@ -91,8 +75,6 @@ export default class NewNoteForm extends Component {
   /**
    * Clear values in the input fields if we are creating a new note
    * Reset to original values if we are editing an existing note
-   * @param {object} props
-   * @public
    */
   reset = (props) => {
     this.setState({
@@ -109,15 +91,9 @@ export default class NewNoteForm extends Component {
   }
 
 
-  /**
-   * Mapping function to render one note type menu item 
-   * @param {string} name note type name
-   * @public
-   */
   renderNoteTypes = (name) => {
     return {value:name, text:name};
   }
-
 
   renderMenuItem = (item, type, index) => {
     let label = "";
@@ -150,8 +126,6 @@ export default class NewNoteForm extends Component {
         onClick={()=>this.create()}
         disabled={this.state.errors.title!=="" || this.state.type==="" || this.state.title===""}
       />
-     
-               
     </div>
 
     return (

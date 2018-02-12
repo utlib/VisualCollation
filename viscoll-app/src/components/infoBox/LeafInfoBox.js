@@ -16,6 +16,7 @@ import { checkboxStyle } from '../../styles/checkbox';
 import { btnBase } from '../../styles/button';
 import FolioNumberDialog from '../infoBox/dialog/FolioNumberDialog';
 
+/** Leaf infobox */
 export default class LeafInfoBox extends React.Component {
 
   constructor(props) {
@@ -30,7 +31,6 @@ export default class LeafInfoBox extends React.Component {
       ...this.visibilityHoverState(),
     }
   }
-  
 
   visibilityHoverState() {
     let state = {};
@@ -40,8 +40,10 @@ export default class LeafInfoBox extends React.Component {
     return state;
   }
 
-  // Creates a dictionary of attributes and if its toggled on or off during batch edit
-  // This is used for the checkbox states
+  /**
+   *  Creates a dictionary of attributes and if its toggled on or off during batch edit
+   *  This is used for the checkbox states
+   */
   batchAttributeToggleState = () => {
     let state = {};
     for (var i in this.props.defaultAttributes) {
@@ -50,7 +52,9 @@ export default class LeafInfoBox extends React.Component {
     return state;
   }
 
-  // Creates a dictionary of attributes with no values
+  /**
+   * Creates a dictionary of attributes with no values
+   */  
   emptyAttributeState = () => {
     let state = {};
     for (var i in this.props.defaultAttributes) {
@@ -78,6 +82,7 @@ export default class LeafInfoBox extends React.Component {
       }
     return false;
   }
+
   dropDownChange = (value, attributeName) => {
     if (this.props.selectedLeaves.length===1) {
       // In single edit - we submit change immediately
@@ -132,9 +137,11 @@ export default class LeafInfoBox extends React.Component {
     this.setState({...this.batchAttributeToggleState()});
   }
 
-  // Returns dictionary of attribute names and values
-  // If multiple selected leaves have conflicting values,
-  // the value of that attribute will be set to null
+  /**
+   *  Returns dictionary of attribute names and values
+   *  If multiple selected leaves have conflicting values,
+   *  the value of that attribute will be set to null
+   */
   getAttributeValues() {
     let leafAttributes = {};
     for (var i in this.props.defaultAttributes) {
@@ -152,7 +159,9 @@ export default class LeafInfoBox extends React.Component {
     return leafAttributes;
   }
 
-  // Handle checkbox toggling by updating relevant attribute state
+  /**
+   *  Handle checkbox toggling by updating relevant attribute state
+   */
   toggleCheckbox = (target) => {
     let newToggleState = {};
     newToggleState["batch_"+target]= !this.state["batch_"+target];
@@ -189,11 +198,16 @@ export default class LeafInfoBox extends React.Component {
     this.setState({imageModalOpen})
     this.props.togglePopUp(imageModalOpen);
   }
+
   toggleFolioModal = (folioModalOpen) => {  
     this.setState({folioModalOpen})
     this.props.togglePopUp(folioModalOpen);
   }
 
+  clickVisibility = (attributeName, value) => {
+    this.props.action.updatePreferences({leaf:{...this.props.preferences.leaf, [attributeName]:value}});
+  }
+  
   render() {
     let leafAttributes = this.getAttributeValues();
     let attributeDivs = [];
@@ -222,23 +236,27 @@ export default class LeafInfoBox extends React.Component {
       let label = <div style={{padding:"10px 0px", color:"rgb(78, 78, 78)", fontSize}}>{attributeDict.displayName}</div>;
       // Generate eye toggle checkbox
       let eyeCheckbox = "";
+      let eyeIsChecked = this.props.preferences.leaf && this.props.preferences.leaf[attributeDict.name]?this.props.preferences.leaf[attributeDict.name]:false;
+
+
+
       if (this.props.viewMode==="TABULAR" && this.state.isBatch) {
         eyeCheckbox = 
         <div className="tooltip eyeToggle">
           <Checkbox
-            aria-label={this.props.visibleAttributes[attributeDict.name]?"Hide '" + attributeDict.displayName + "' attribute in collation":"Show '" + attributeDict.displayName + "' attribute in collation"}
+            aria-label={eyeIsChecked?"Hide '" + attributeDict.displayName + "' attribute in collation":"Show '" + attributeDict.displayName + "' attribute in collation"}
             checkedIcon={<Visibility  />}
             uncheckedIcon={<VisibilityOff />}
-            onClick={(event)=>this.props.action.toggleVisibility("leaf", attributeDict.name, !this.props.visibleAttributes[attributeDict.name])}
+            onClick={()=>this.clickVisibility(attributeDict.name, !eyeIsChecked)}
             style={this.props.windowWidth<=1024?{display:"none"}:{display:"inline-block",width:"25px"}}
             iconStyle={{...checkboxStyle().iconStyle}}
-            checked={this.props.visibleAttributes[attributeDict.name]}
+            checked={eyeIsChecked}
             onMouseEnter={()=>{this.setState({["visibility_hover_"+attributeDict.name]:true})}}
             onMouseOut={()=>{this.setState({["visibility_hover_"+attributeDict.name]:false})}}
             tabIndex={this.props.tabIndex}
           />
           <div className={this.state["visibility_hover_"+attributeDict.name]===true?"text active":"text"}>
-            {this.props.visibleAttributes[attributeDict.name]?
+            {this.props.preferences[attributeDict.name]?
               "Hide attribute in the collation"
               : "Show attribute in the collation"
             }
@@ -249,14 +267,14 @@ export default class LeafInfoBox extends React.Component {
         label = 
         <div className="tooltip eyeToggle">
           <Checkbox
-            aria-label={this.props.visibleAttributes[attributeDict.name]?"Hide '" + attributeDict.displayName + "' attribute in collation":"Show '" + attributeDict.displayName + "' attribute in collation"}
+            aria-label={eyeIsChecked?"Hide '" + attributeDict.displayName + "' attribute in collation":"Show '" + attributeDict.displayName + "' attribute in collation"}
             key={"single_"+attributeDict.displayName}
             label={attributeDict.displayName} 
             checkedIcon={<Visibility />}
             uncheckedIcon={<VisibilityOff />}
-            onClick={(event)=>this.props.action.toggleVisibility("leaf", attributeDict.name, !this.props.visibleAttributes[attributeDict.name])}
+            onClick={()=>this.clickVisibility(attributeDict.name, !eyeIsChecked)}
             style={{display:"inline-block",width:"25px"}}
-            checked={this.props.visibleAttributes[attributeDict.name]}
+            checked={eyeIsChecked}
             iconStyle={{...checkboxStyle().iconStyle,color:"gray"}}
             labelStyle={{...checkboxStyle().labelStyle}}
             onMouseEnter={()=>{this.setState({["visibility_hover_"+attributeDict.name]:true})}}
@@ -264,7 +282,7 @@ export default class LeafInfoBox extends React.Component {
             tabIndex={this.props.tabIndex}
           />
           <div className={this.state["visibility_hover_"+attributeDict.name]===true?"text active":"text"}>
-            {this.props.visibleAttributes[attributeDict.name]?
+            {eyeIsChecked?
               "Hide attribute in the collation"
               : "Show attribute in the collation"
             }
@@ -415,7 +433,7 @@ export default class LeafInfoBox extends React.Component {
       <RaisedButton 
         primary 
         onClick={()=>this.toggleFolioModal(true)} 
-        label="Generate folio numbers"
+        label="Generate folio/page numbers"
         {...btnBase()}
         style={{...btnBase().style,marginBottom:10,width:"100%"}}
         tabIndex={this.props.tabIndex} 
@@ -549,10 +567,13 @@ export default class LeafInfoBox extends React.Component {
             {imageModalContent}
           </Dialog>
           <FolioNumberDialog
-            defaultFolioNumber={this.props.leafIDs.indexOf(this.props.selectedLeaves[0])+1}
+            defaultStartNumber={this.props.leafIDs.indexOf(this.props.selectedLeaves[0])+1}
             folioModalOpen={this.state.folioModalOpen}
             toggleFolioModal={this.toggleFolioModal}
-            action={{generateFolioNumbers: this.props.action.generateFolioNumbers}}
+            action={{
+              generateFolioNumbers: this.props.action.generateFolioNumbers,
+              generatePageNumbers: this.props.action.generatePageNumbers,
+            }}
           />
       </div>
     );

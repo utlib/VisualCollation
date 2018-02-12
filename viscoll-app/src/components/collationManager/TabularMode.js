@@ -3,7 +3,7 @@ import update from 'immutability-helper';
 import Group from './tabularMode/Group';
 
 
-/** Stateless functional component that mounts the root groups. */
+/** Tabular mode - shows collation as table rows */
 export default class TabularMode extends React.Component {
   constructor(props) {
     super(props);

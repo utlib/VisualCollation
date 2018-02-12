@@ -10,18 +10,12 @@ export default class DeleteConfirmation extends React.Component {
   state = {
     open: false,
   };
-  /**
-   * Open the dialog 
-   * @public
-   */
+
   handleOpen = () => {
     this.setState({open: true});
     this.props.togglePopUp(true);
   };
-  /**
-   * Close the dialog 
-   * @public
-   */
+
   handleClose = () => {
     this.setState({open: false});
     this.props.togglePopUp(false);

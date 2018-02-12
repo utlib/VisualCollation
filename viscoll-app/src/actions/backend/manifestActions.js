@@ -28,7 +28,8 @@ export function updateManifest(projectID, manifest) {
         successMessage: "You have successfully updated the manifest" ,
         errorMessage: "Ooops! Something went wrong"
       }
-    }
+    },
+    isUndoable: true,
   };  
 }
 
@@ -44,7 +45,8 @@ export function deleteManifest(projectID, manifest) {
         successMessage: "You have successfully deleted the manifest" ,
         errorMessage: "Ooops! Something went wrong"
       }
-    }
+    },
+    isUndoable: true,
   };  
 }
 

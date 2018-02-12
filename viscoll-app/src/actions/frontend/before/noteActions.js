@@ -4,7 +4,6 @@ export function createNoteType(action, state) {
   return state
 }
 
-
 export function updateNoteType(action, state) {
   const updatedNoteType = action.payload.request.data.noteType.type
   const oldNoteType = action.payload.request.data.noteType.old_type
@@ -18,7 +17,6 @@ export function updateNoteType(action, state) {
   state.project.noteTypes[oldNoteTypeIndex] = updatedNoteType
   return state
 }
-
 
 export function deleteNoteType(action, state) {
   const deletedNoteType = action.payload.request.data.noteType.type
@@ -48,7 +46,6 @@ export function createNote(action, state) {
   return state
 }
 
-
 export function updateNote(action, state) {
   const updatedNoteID = action.payload.request.url.split("/").pop();
   const updatedNote = action.payload.request.data.note
@@ -56,7 +53,6 @@ export function updateNote(action, state) {
   state.project.Notes[updatedNoteID] = { ...state.project.Notes[updatedNoteID], ...updatedNote }
   return state
 }
-
 
 export function linkNote(action, state) {
   const linkedNoteID = action.payload.request.url.split("/").slice(-2)[0];
@@ -71,7 +67,6 @@ export function linkNote(action, state) {
   } 
   return state
 }
-
 
 export function unlinkNote(action, state) {
   const unlinkedNoteID = action.payload.request.url.split("/").slice(-2)[0];
@@ -88,7 +83,6 @@ export function unlinkNote(action, state) {
   }
   return state
 }
-
 
 export function deleteNote(action, state) {
   const deletedNoteID = action.payload.request.url.split("/").pop();

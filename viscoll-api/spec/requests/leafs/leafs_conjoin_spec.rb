@@ -13,7 +13,7 @@ describe "PUT /leafs/conjoin", :type => :request do
     @project = FactoryGirl.create(:project, user: @user)
     @group = FactoryGirl.create(:group, project: @project)
     @project.add_groupIDs([@group.id.to_s], 0)
-    @leafs = leaf_count.times.collect { FactoryGirl.create(:leaf, project: @project, material: 'Parchment', attachment_method: 'Glued', parentID: @group.id.to_s) }
+    @leafs = leaf_count.times.collect { FactoryGirl.create(:leaf, project: @project, material: 'Parchment', parentID: @group.id.to_s) }
     @group.add_members(@leafs.collect { |leaf| leaf.id.to_s }, 0)
     @parameters = {
       "leafs": @leafs[0..3].collect { |leaf| leaf.id.to_s }

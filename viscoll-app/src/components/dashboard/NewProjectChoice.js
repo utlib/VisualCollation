@@ -2,6 +2,7 @@ import React from 'react';
 import RaisedButton from 'material-ui/RaisedButton';
 import {btnMd} from '../../styles/button';
 
+/** New Project dialog - select between starting with an empty project or pre-poulating it  */
 const NewProjectChoice = (props) => {
   return <div style={{width:"100%", padding:"2em 0em", margin: "auto", textAlign: "center"}}>
     <RaisedButton

@@ -3,6 +3,7 @@ import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
 import { connect } from "react-redux";
 
+/** Dialog for server error */
 class ServerErrorScreen extends Component {
 
   render() {
@@ -30,13 +31,11 @@ class ServerErrorScreen extends Component {
   }
 }
 
-
 const mapStateToProps = (state) => {
   return {
     serverError: state.global.serverError
   };
 };
-
 
 const mapDispatchToProps = (dispatch) => {
   return {
@@ -45,6 +44,5 @@ const mapDispatchToProps = (dispatch) => {
     }
   };
 };
-
 
 export default connect(mapStateToProps, mapDispatchToProps)(ServerErrorScreen);

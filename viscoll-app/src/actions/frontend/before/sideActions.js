@@ -9,7 +9,6 @@ export function updateSide(action, state) {
   return state
 }
 
-
 export function updateSides(action, state) {
   const updatedSides = action.payload.request.data.sides
   for (let updatedSide of updatedSides) {
@@ -21,7 +20,6 @@ export function updateSides(action, state) {
   }
   return state
 }
-
 
 export function mapSides(action, active, dashboard) {
   // SPEICAL CASE FOR DIY IMAGE MAPPING
@@ -36,10 +34,12 @@ export function mapSides(action, active, dashboard) {
     if (mappedSideImage.hasOwnProperty('manifestID') && mappedSideImage.manifestID==='DIYImages'){
       imageLinkedID = mappedSideImage.url.split("/").pop().split("_")[0]
       let imageLinkedIDIndex = dashboard.images.findIndex(image => image.id===imageLinkedID)
-      let mappedSideIDIndex = dashboard.images[imageLinkedIDIndex].sideIDs.indexOf(mappedSideID)
-      // Link mappedSideID to this image
-      if (mappedSideIDIndex===-1)
-        dashboard.images[imageLinkedIDIndex].sideIDs.push(mappedSideID)  
+      if (imageLinkedIDIndex>=0) {
+        let mappedSideIDIndex = dashboard.images[imageLinkedIDIndex].sideIDs.indexOf(mappedSideID)
+        // Link mappedSideID to this image
+        if (mappedSideIDIndex===-1)
+          dashboard.images[imageLinkedIDIndex].sideIDs.push(mappedSideID)  
+      }
     }
     // Check if this mappedSideID is now already linked to another DIY Image and unlink this mappedSideID from that Image
     if (mappedSideImage.hasOwnProperty('manifestID') && currentSideImage.hasOwnProperty('manifestID') && currentSideImage.manifestID === 'DIYImages') {
@@ -55,9 +55,11 @@ export function mapSides(action, active, dashboard) {
     if (!mappedSideImage.hasOwnProperty('manifestID') && currentSideImage.hasOwnProperty('manifestID') && currentSideImage.manifestID==='DIYImages'){
       let imageID = currentSideImage.url.split("/").pop().split("_")[0]
       let imageIndex = dashboard.images.findIndex(image => image.id === imageID)
-      let mappedSideIDIndex = dashboard.images[imageIndex].sideIDs.indexOf(mappedSideID)
-      if (mappedSideIDIndex !== -1)
-        dashboard.images[imageIndex].sideIDs.splice(mappedSideIDIndex, 1)
+      if (imageIndex>=0) {
+        let mappedSideIDIndex = dashboard.images[imageIndex].sideIDs.indexOf(mappedSideID)
+        if (mappedSideIDIndex !== -1)
+          dashboard.images[imageIndex].sideIDs.splice(mappedSideIDIndex, 1)
+      }
     }
   }
   updateSides(action, active) // this will handle updating the 'image' field of all mapped Sides

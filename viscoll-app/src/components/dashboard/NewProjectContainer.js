@@ -6,7 +6,9 @@ import ProjectStructure from './ProjectStructure';
 import ImportProject from './ImportProject';
 import CloneProject from './CloneProject';
 import NewProjectChoice from './NewProjectChoice';
+import ProjectOptions from './ProjectOptions';
 
+/** New Project dialog wrapper */
 export default class NewProjectContainer extends React.Component {
   constructor(props) {
     super(props);
@@ -19,6 +21,9 @@ export default class NewProjectContainer extends React.Component {
       quireNo: 2,
       leafNo: 10,
       conjoined: true,
+      startFolioPageNumber: 1,
+      generateFolioPageNumber: null,
+      startingTexture: "Hair",
       collationGroups: [],
       errors: {
         title: "",
@@ -44,6 +49,8 @@ export default class NewProjectContainer extends React.Component {
       quireNo: 1,
       leafNo: 10,
       conjoined: true,
+      startFolioPageNumber: 1,
+      generateFolioPageNumber: null,
       collationGroups: [],
       errors: {
         title: "",
@@ -193,9 +200,16 @@ export default class NewProjectContainer extends React.Component {
         shelfmark: this.state.shelfmark,
         metadata: {
           date: this.state.date
+        },
+        preferences: {
+          showTips: true,
+          side: this.state.generateFolioPageNumber!==null?{[this.state.generateFolioPageNumber]:true}:{},
         }
       },
-      groups: []
+      groups: [],
+      folioNumber: this.state.generateFolioPageNumber==="folio_number"? this.state.startFolioPageNumber : null,
+      pageNumber: this.state.generateFolioPageNumber==="page_number"? this.state.startFolioPageNumber : null,
+      startingTexture: this.state.startingTexture,
     }
     this.state.collationGroups.forEach((group)=>request.groups.push(group));
     this.props.createProject(request, user);
@@ -234,15 +248,15 @@ export default class NewProjectContainer extends React.Component {
           nextStep={()=>this.set("step",3)}
           finish={this.finish}
           />
-      } else {
+      } else if (this.state.step===3) {
         content = <ProjectStructure 
-          finish={this.finish}
           previousStep={()=>this.setState({
                           step: 1, 
                           quireNo: 2,
                           leafNo: 10,
                           conjoined: true,
                           collationGroups: []})}
+          nextStep={()=>this.set("step",4)}
           set={this.set}
           quireNo={this.state.quireNo}
           leafNo={this.state.leafNo}
@@ -253,6 +267,15 @@ export default class NewProjectContainer extends React.Component {
           addCollationRows={this.handleAddNewCollationGroupRow}
           handleRemoveCollationGroupRow={this.handleRemoveCollationGroupRow}
         />;
+      } else {
+        content = <ProjectOptions
+          startFolioPageNumber={this.state.startFolioPageNumber}
+          generateFolioPageNumber={this.state.generateFolioPageNumber}
+          startingTexture={this.state.startingTexture}
+          previousStep={()=>this.set("step", 3)}
+          finish={this.finish}
+          set={this.set}
+        />
       }
     } else if (this.state.projectType==="import") {
         content = (

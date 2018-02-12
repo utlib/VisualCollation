@@ -12,11 +12,44 @@
         margin: 0.5em 0em 0em 0em;
         overflow: hidden;
         @include transition(background, 200ms, ease-in-out);
+        width: 90%;
+        font-size: 1em;
+        background: $gray;
+        border: 0px;
+        @include box-shadow(0px 0px 5px 0px rgba(0,0,0,0.2));
+        &:hover {
+          cursor: pointer;
+          background: $white;
+        }
+        .title {
+          padding-top: 10px;
+          font-weight: 500;
+          color: $black;
+        }
+        .type {
+          padding-top: 5px;
+          padding-bottom: 10px;
+          color: $dark_gray;
+          font-style: italic;
+          font-size: 0.9em;
+        }
+        &.active {
+          background: $teal;
+        }
       }
+      position: fixed;
+      top:56px;
+      left:18%;
+      width: 300px;
+      height: calc(100% - 56px);
+      overflow-y: auto;
+      text-align: center;
+      background: darken($gray, 5%);      
     }
     .details {
       position: relative;
-      width: 63%;
+      width: calc(100% - 320px);
+      left: 300px;
     }
   }
   .noteType {
@@ -44,6 +77,9 @@
 }
 .noteSearch {
   height: 56px;
+  @media screen and (max-width: 890px) {
+    width: 170px;
+  }
 
   .searchTextbox {
     padding-top: 5px;
@@ -53,8 +89,13 @@
   visibility: hidden;
   opacity: 0;
   background: $white;
+  width: 200px;
   @include border-radius(0px 0px 6px 6px);
   @include transition(all, 200ms, ease-in-out);
+
+  @media screen and (max-width: 890px) {
+    width: 140px;
+  }
 
   padding: 0em 1em;
   &.active{

@@ -3,17 +3,18 @@ module ControllerHelper
 
     # Auto-Conjoin the given leaves
     def autoConjoinLeaves(leaves, oddLeafNumber)
+      targetLeaves = leaves.dup
       leafIds = leaves.collect { |leaf| leaf.id.to_s }
-      if leaves.size.odd?
-        oddLeaf = leaves[oddLeafNumber-1]
+      if targetLeaves.size.odd?
+        oddLeaf = targetLeaves[oddLeafNumber-1]
         unless oddLeaf.conjoined_to.blank?
           @project.leafs.find(oddLeaf.conjoined_to).update(conjoined_to: nil)
           oddLeaf.update(conjoined_to: nil)
         end
-        leaves.delete_at(oddLeafNumber-1)
+        targetLeaves.delete_at(oddLeafNumber-1)
         leafIds.delete_at(oddLeafNumber-1)
       end
-      leaves.each do |leaf|
+      targetLeaves.each do |leaf|
         if leaf.conjoined_to && !leafIds.include?(leaf.conjoined_to)
           old_conjoined_to_leaf =  @project.leafs.find(leaf.conjoined_to)
           if (old_conjoined_to_leaf.conjoined_to)
@@ -21,9 +22,9 @@ module ControllerHelper
           end
         end
       end
-      (leaves.size/2).times do |i|
-        leafOne = leaves[i]
-        leafTwo = leaves[-i-1]
+      (targetLeaves.size/2).times do |i|
+        leafOne = targetLeaves[i]
+        leafTwo = targetLeaves[-i-1]
         leafOne.update(conjoined_to: leafTwo.id.to_s)
         leafTwo.update(conjoined_to: leafOne.id.to_s)
       end
@@ -70,6 +71,13 @@ module ControllerHelper
         end
         new_conjoined_to_leaf.update(conjoined_to: @leaf.id.to_s)
       end
+    end
+
+    def handle_paper_update(leaf)
+      recto = @project.sides.find(leaf.rectoID)
+      verso = @project.sides.find(leaf.versoID)
+      recto.update(:texture => "None")
+      verso.update(:texture => "None")
     end
   end
 end

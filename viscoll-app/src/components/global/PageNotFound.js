@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import RaisedButton from 'material-ui/RaisedButton';
 
+/** 404 page */
 export default class PageNotFound extends Component {
   render() {
     return <div className="fourOhFour">

@@ -4,7 +4,7 @@ import IconButton from 'material-ui/IconButton';
 import ExpandMore from 'material-ui/svg-icons/navigation/expand-more';
 import ExpandLess from 'material-ui/svg-icons/navigation/expand-less';
 
-/** Displays one group in the tabular edit mode. Recursively mounts nested groups and leaves. */
+/** Group element in the tabular edit mode. Recursively mounts nested groups and leaves. */
 export default class Group extends React.Component {
   constructor(props) {
     super(props);
@@ -15,6 +15,10 @@ export default class Group extends React.Component {
 
   handleChange = (type, value) => {
     this.setState({[type]:value});
+  }
+
+  findItemByName = (attributeName) => {
+    return this.props.collationManager.defaultAttributes.group.find((item)=>item.name===attributeName);
   }
 
   render() {
@@ -44,6 +48,7 @@ export default class Group extends React.Component {
               handleObjectPress={this.props.handleObjectPress}
               tabIndex={this.props.tabIndex}
               leafIDs={this.props.leafIDs}
+              project={this.props.project}
             />
           );
         } else {
@@ -69,17 +74,19 @@ export default class Group extends React.Component {
     });
 
     let attributes = [];
-    for (var i in this.props.collationManager.defaultAttributes.group) {
-      let attributeName = this.props.collationManager.defaultAttributes.group[i].name;
-      if (this.props.collationManager.visibleAttributes.group[attributeName]) {
-        attributes.push(
-          <div className={isActive? "attribute active" : "attribute"} key={"infoGroup"+attributeName}>
-            <div>
-              <span>{this.props.collationManager.defaultAttributes.group[i].displayName}</span>
-              {this.props.activeGroup[attributeName]}
+    if (this.props.project.preferences.group) {
+      for (var attributeName of Object.keys(this.props.project.preferences.group)) {
+        if (this.props.project.preferences.group[attributeName]) {
+          const item = this.findItemByName(attributeName);
+          attributes.push(
+            <div className={isActive? "attribute active" : "attribute"} key={"infoGroup"+attributeName}>
+              <div>
+                <span>{item.displayName}</span>
+                {this.props.activeGroup[attributeName]}
+              </div>
             </div>
-          </div>
-        );
+          );
+        }
       }
     }
 

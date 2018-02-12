@@ -22,8 +22,6 @@ import {
 } from "../actions/backend/noteActions";
 import { sendFeedback } from "../actions/backend/userActions";
 
-
-
 class NotesManager extends Component {
 
   constructor(props) {
@@ -76,7 +74,6 @@ class NotesManager extends Component {
     this.props.addNote(note)
   }
 
-
   filterNotes = (value, filterTypes) => {
     if (value==="") {
       this.setState({Notes: this.props.Notes});
@@ -103,13 +100,8 @@ class NotesManager extends Component {
       };
       this.setState({Notes: filteredNotes});
     }
-
   }
 
-  /**
-   * Toggle notes filter panel
-   * @public
-   */
   toggleFilterDrawer = () => {
     this.setState({filterOpen: !this.state.filterOpen});
   }
@@ -220,6 +212,7 @@ class NotesManager extends Component {
           tabIndex={this.props.popUpActive?-1:0}
           popUpActive={this.props.popUpActive}
           windowWidth={this.state.windowWidth}
+          showUndoRedo={true}
         >
           <Tabs 
             tabItemContainerStyle={{backgroundColor: '#ffffff'}}

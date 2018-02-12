@@ -2,6 +2,7 @@ import React from 'react';
 import AutoComplete from 'material-ui/AutoComplete';
 import {floatFieldLight} from '../../styles/textfield';
 
+/** Custom select field */
 export default class SelectField extends React.Component {
 
   constructor(props) {

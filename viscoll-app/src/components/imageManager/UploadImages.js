@@ -4,6 +4,7 @@ import RaisedButton from 'material-ui/RaisedButton';
 import Checkbox from 'material-ui/Checkbox';
 import { btnBase } from '../../styles/button';
 
+/** Upload image component */
 class UploadImages extends Component {
   constructor(props) {
     super(props);
@@ -88,7 +89,6 @@ class UploadImages extends Component {
   }
 
   render() {
-
     // Generate file duplicate error message content if neccessary
     let duplicateErrorSection = null;
     let filesizeErrorSection = null;

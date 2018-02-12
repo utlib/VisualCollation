@@ -48,13 +48,12 @@ export function createLeaves(action, state, fromGroupCreation=false) {
     // Create new Leaf with give leafID
     state.project.Leafs["Leaf_" + leafIDs[count]] = {
       id: "Leaf_" + leafIDs[count],
-      material: "None",
-      type: "None",
-      attachment_method: "None",
+      material: action.payload.request.data.leaf.material? action.payload.request.data.leaf.material : "None",
+      type: action.payload.request.data.leaf.type? action.payload.request.data.leaf.type : "None",
       conjoined_to: null,
       attached_above: "None",
       attached_below: "None",
-      stub: "None",
+      stub: action.payload.request.data.leaf.stub? action.payload.request.data.leaf.stub : "None",
       nestLevel: parentGroup.nestLevel,
       parentID: parentGroupID,
       rectoID: "Recto_" + sideIDs[sideCount],
@@ -118,10 +117,12 @@ export function updateLeaf(action, state) {
   // Do side effects if necessary
   if (action.payload.request.data.leaf.hasOwnProperty("conjoined_to")) {
     state = handleConjoin(state, updatedLeafID, action.payload.request.data.leaf.conjoined_to);
-  } else if (action.payload.request.data.leaf.attached_above) {
+  } else if (action.payload.request.data.leaf.hasOwnProperty("attached_above")) {
     state = handleAttachAbove(state, updatedLeafID, action.payload.request.data.leaf.attached_above);
-  } else if (action.payload.request.data.leaf.attached_below) {
+  } else if (action.payload.request.data.leaf.hasOwnProperty("attached_below")) {
     state = handleAttachBelow(state, updatedLeafID, action.payload.request.data.leaf.attached_below);
+  } else if (action.payload.request.data.leaf.hasOwnProperty("material") && action.payload.request.data.leaf.material==="Paper") {
+    state = handlePaperUpdate(state, updatedLeafID);
   }
   // Update the leaf with id updatedLeafID
   state.project.Leafs[updatedLeafID] = { ...state.project.Leafs[updatedLeafID], ...updatedLeaf }
@@ -155,11 +156,21 @@ function handleAttachBelow(state, leafID, attachType) {
   return state;
 }
 
+function handlePaperUpdate(state, leafID) {
+  const leaf = state.project.Leafs[leafID];
+  state.project.Rectos[leaf.rectoID].texture = "None";
+  state.project.Versos[leaf.versoID].texture = "None";
+  return state;
+}
+
 export function updateLeaves(action, state) {
   const updatedLeaves = action.payload.request.data.leafs
   for (let updatedLeaf of updatedLeaves) {
     // Update the leaf of id updatedLeaf.id with attributes updatedLeaf.attributes
-    state.project.Leafs[updatedLeaf.id] = { ...state.project.Leafs[updatedLeaf.id], ...updatedLeaf.attributes }
+    state.project.Leafs[updatedLeaf.id] = { ...state.project.Leafs[updatedLeaf.id], ...updatedLeaf.attributes };
+    if (updatedLeaf.attributes.hasOwnProperty("material") && updatedLeaf.attributes.material==="Paper") {
+      state = handlePaperUpdate(state, updatedLeaf.id);
+    }
   }
   return state
 }
@@ -231,16 +242,23 @@ export function deleteLeaves(deletedLeafIDs, state) {
   return state
 }
 
-export function generateFolioNumbers(action, state) {
-  let folioNumberCount = action.payload.request.data.startNumber;
+export function generateFolioPageNumbers(action, state, folioOrPage) {
+  let numberCount = action.payload.request.data.startNumber;
   let rectoIDs = action.payload.request.data.rectoIDs;
   let versoIDs = action.payload.request.data.versoIDs;
   for (const index in rectoIDs) {
     const recto = state.project.Rectos[rectoIDs[index]];
     const verso = state.project.Versos[versoIDs[index]];
-    recto.folio_number = folioNumberCount + recto.id[0];
-    verso.folio_number = folioNumberCount + verso.id[0];
-    folioNumberCount++;
+    if (folioOrPage==="folio_number") {
+      recto[folioOrPage] = numberCount + recto.id[0];
+      verso[folioOrPage] = numberCount + verso.id[0];
+      
+    } else {
+      recto[folioOrPage] = numberCount;
+      numberCount++;
+      verso[folioOrPage] = numberCount;
+    }
+    numberCount++;
   }
   return state
 }

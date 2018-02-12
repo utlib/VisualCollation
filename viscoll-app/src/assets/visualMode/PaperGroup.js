@@ -84,7 +84,7 @@ PaperGroup.prototype = {
   setVisibility: function(visibleAttributes) {
     this.visibleAttributes = visibleAttributes;
     let groupText = this.group.type + " " + this.groupOrder;
-    if (this.visibleAttributes.title) groupText = groupText + ": " + this.group.title;
+    if (this.visibleAttributes && this.visibleAttributes.title) groupText = groupText + ": " + this.group.title;
     this.text.set({
       content: groupText,
     });

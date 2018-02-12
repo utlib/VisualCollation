@@ -7,6 +7,7 @@ import DeleteManifest from './DeleteManifest';
 import ImageViewer from "../global/ImageViewer";
 import Dialog from 'material-ui/Dialog';
 
+/** Manage Images page */
 export default class ManageManifests extends Component {
   constructor(props) {
     super(props);

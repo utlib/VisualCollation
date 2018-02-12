@@ -234,6 +234,7 @@ class ImageManager extends Component {
             tabIndex={this.props.popUpActive?-1:0}
             popUpActive={this.props.popUpActive}
             windowWidth={this.state.windowWidth}
+            showUndoRedo={true}
           >
             <Tabs 
               tabItemContainerStyle={{backgroundColor: '#ffffff'}}

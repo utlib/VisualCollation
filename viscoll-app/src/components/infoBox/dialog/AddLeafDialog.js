@@ -47,11 +47,6 @@ export default class AddLeafDialog extends React.Component {
   /**
    * Increment a state's value by one, bounded by `max` and `min`. If the user previously 
    * entered an invalid value, the value is set to `min`.  
-   * 
-   * @param {string} name state name
-   * @param {number} min
-   * @param {number} max
-   * @public
    */
   incrementNumber = (name, min, max, e) => {
     if (e) e.preventDefault();
@@ -70,11 +65,6 @@ export default class AddLeafDialog extends React.Component {
   /**
    * Decrement a state by one, bounded by `max` and `min`. If the user previously 
    * entered an invalid value, the value is set to min. 
-   * 
-   * @param {string} name state name
-   * @param {number} min
-   * @param {number} max
-   * @public
    */
   decrementNumber = (name, min, max, e) => {
     if (e) e.preventDefault();
@@ -87,10 +77,6 @@ export default class AddLeafDialog extends React.Component {
 
   /**
    * Validate user input. If invalid, display error message, otherwise update relevant state 
-   * 
-   * @param {string} name state name
-   * @param {number} value new input value
-   * @public
    */
   onNumberChange = (stateName, value) => {
     let errorState = this.state.errorText;
@@ -112,9 +98,6 @@ export default class AddLeafDialog extends React.Component {
 
   /**
    * Check if string is an integer
-   * 
-   * @param {string} str 
-   * @public
    */
   isNormalInteger = (str) => {
     return /^([1-9]\d*)$/.test(str);
@@ -122,8 +105,6 @@ export default class AddLeafDialog extends React.Component {
 
   /**
    * Toggle conjoin checkbox
-   * 
-   * @public
    */
   onToggleConjoin = () => {
     this.setState({conjoin: !this.state.conjoin});
@@ -131,9 +112,6 @@ export default class AddLeafDialog extends React.Component {
 
   /**
    * Update location radio button group
-   * 
-   * @param {string} value 
-   * @public
    */
   onLocationChange = (value) => {
     this.setState({location: value});;
@@ -141,7 +119,6 @@ export default class AddLeafDialog extends React.Component {
 
   /**
    * Return `true` if there are any errors in the input fields
-   * @public
    */
   isDisabled = (activeLeaf) => {
     let addable = activeLeaf.attached_above!=="None" && activeLeaf.attached_below!=="None";
@@ -152,7 +129,6 @@ export default class AddLeafDialog extends React.Component {
 
   /**
    * Submit add leaf request
-   * @public
    */
   submit = () => {
     const leaf = this.props.Leafs[this.props.selectedLeaves[0]];
@@ -181,7 +157,6 @@ export default class AddLeafDialog extends React.Component {
 
   /**
    * Reset state
-   * @public
    */
   clearForm = () => {
     this.setState({

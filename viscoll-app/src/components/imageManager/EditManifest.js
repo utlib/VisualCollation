@@ -14,6 +14,7 @@ import MenuItem from 'material-ui/MenuItem';
 import Popover from 'material-ui/Popover';
 import IconFilter from 'material-ui/svg-icons/content/filter-list';
 
+/** Dialog to edit manifest name */
 export default class EditManifest extends Component {
   constructor(props) {
     super(props);

@@ -10,7 +10,6 @@ import NetworkErrorScreen from "../components/global/NetworkErrorScreen";
 import Feedback from "./Feedback";
 import { loadProject } from "../actions/backend/projectActions";
 
-
 /** Container for 'Manager (Collation or Notes or Image)', `LoadingScreen`, and `Notification`. */
 class Project extends Component {
 
@@ -66,13 +65,13 @@ class Project extends Component {
   }
 }
 
-
 const mapStateToProps = (state) => {
   return {
     user: state.user,
     managerMode: state.active.managerMode,
     loading: state.global.loading,
     notification: state.global.notification,
+    projectID: state.active.project.id,
   };
 };
 
@@ -80,7 +79,7 @@ const mapDispatchToProps = (dispatch) => {
   return {
     loadProject: (projectID) => {
       dispatch(loadProject(projectID))
-    }
+    },
   };
 };
 

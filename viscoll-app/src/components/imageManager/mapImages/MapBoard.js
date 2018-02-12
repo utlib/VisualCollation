@@ -6,19 +6,22 @@ import ArrowUp from 'material-ui/svg-icons/navigation/arrow-upward';
 import Remove from 'material-ui/svg-icons/content/remove-circle-outline';
 import VirtualList from 'react-tiny-virtual-list';
 
-
+/** Panel with the mapped sides and images */
 export default class MapBoard extends Component {
-
 
   renderSideItem = (index) => {
     const sideID = this.props.sideIDs[index];
-    const side = sideID.charAt(0)==="R" ? this.props.Rectos[sideID] : this.props.Versos[sideID];
-    const folioNumber = side.folio_number!=="None" ? side.folio_number : "";
+    const sideType = sideID.charAt(0)==="R"? "recto" : "verso";
+    const side = sideType === "recto" ? this.props.Rectos[sideID] : this.props.Versos[sideID];
+    const folioNumber = side.folio_number && side.folio_number!=="" ? "("+side.folio_number+")" : "";
+    const pageNumber = side.page_number && side.page_number!=="" ? "("+side.page_number+")" : "";
+    const leafOrder = this.props.leafIDs.indexOf(side.parentID)+1;
+
     let actionButtons = (
       <div style={{paddingRight: "1em"}} onClick={(event)=> event.stopPropagation()}>
         <IconButton 
           tooltip={index===0?"":"Move Up" }
-          aria-label={"Move " + folioNumber + " up"}
+          aria-label={"Move leaf " + leafOrder + " " + sideType + " to mapping"}
           onClick={()=>this.props.moveItemUpOrDown(sideID, "sideMapBoard", "up")} 
           disabled={index===0}
           tabIndex={this.props.tabIndex}
@@ -52,7 +55,8 @@ export default class MapBoard extends Component {
     return (
       <div key={side.id} style={{...activeStyle, width: this.props.windowWidth<=1024?'47%':'48.5%', float: 'left'}} className="moveableItem" onClick={(event)=>this.props.handleObjectClick("sideMapBoard", sideID, event)}>
         <div className="text" style={{display: 'inline-block'}}>
-          {"Leaf " + (this.props.leafIDs.indexOf(side.parentID)+1) + " " + side.memberType + " (" + folioNumber+")"}
+          {"Leaf " + leafOrder + " " + side.memberType + " " + folioNumber + " " + pageNumber}
+
         </div>
         {actionButtons}
       </div>

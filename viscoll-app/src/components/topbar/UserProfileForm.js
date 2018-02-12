@@ -40,7 +40,6 @@ class UserProfileForm extends React.Component {
     };
   }
 
-
   componentWillReceiveProps(nextProps) {
     this.setState({ 
       name: nextProps.name,
@@ -63,8 +62,6 @@ class UserProfileForm extends React.Component {
 
   /**
    * Validate user input and display appropriate error message
-   * @param {string} type text field name
-   * @public
    */
   checkValidationError = () => {
     const errors = {};
@@ -108,48 +105,29 @@ class UserProfileForm extends React.Component {
     return errors;
   }
 
-  /**
-   * Return true if any errors exist in the project form
-   * @public
-   */
   ifErrorsExist = (type) => {
     return (this.state.errors[type]!=="");
   }
 
   /**
    * Return true if any input fields have been changed and not saved
-   * @public
    */
   isEditing = () => {
     return (this.state.editing.name || this.state.editing.email || this.state.editing.currentPassword || this.state.editing.newPassword || this.state.editing.newPasswordConfirm);
   }
 
-  /**
-   * Update state when user inputs new value in a text field 
-   * @param {string} event 
-   * @param {string} newValue new value 
-   * @param {string} type text field name
-   * @public
-   */
   onInputChange = (newValue, type) => {
     this.setState({[type]: newValue, editing: {...this.state.editing, [type]:true}}, () => {
       this.setState({errors: {...this.state.errors, ...this.checkValidationError()}})
     });
   }
 
-  /**
-   * Toggle delete confirmation dialog
-   * @param {boolean} deleteDialog show dialog?
-   * @public
-   */
   handleDeleteDialogToggle = (deleteDialog=false) => {
     this.setState({ deleteDialog });
   };
 
   /**
    * Show ignore changes dialog or close user profile, depending on parameter
-   * @param {boolean} ignoreChanges show ignore changes dialog?
-   * @public
    */
   handleUserProfileClose = (ignoreChanges=false) => {
     // Check for any unsaved changes before closing and show the warning dialog.
@@ -182,27 +160,17 @@ class UserProfileForm extends React.Component {
     }
   }
 
-  /**
-   * Delete user account
-   * @public
-   */
   handleUserAccountDelete = () => {
     this.props.toggleUserProfile(false);
     this.props.handleUserAccountDelete();
   }
 
-  /**
-   * Toggle unsaved dialog
-   * @public
-   */
   handleUnsavedDialogToggle = (unsavedDialog=false) => {
     this.setState({ unsavedDialog });
   };
 
   /**
    * Reset input field to original value 
-   * @param {string} type text field name
-   * @public
    */
   handleCancelUpdate = (type) => {
     if (type==="currentPassword") {
@@ -238,11 +206,6 @@ class UserProfileForm extends React.Component {
     }
   }
 
-  /**
-   * Return a generated HTML of submit and cancel buttons for a specific input name
-   * @param {string} type text field name
-   * @public
-   */
   submitButtons = (type) => {
     if (this.state.editing[type]) {
       return (
@@ -271,12 +234,6 @@ class UserProfileForm extends React.Component {
     }
   }
 
-  /**
-   * Update a field in user
-   * @param {object} event
-   * @param {string} type text field name
-   * @public
-   */
   handleUserUpdate = (event, type) => {
     if (event) event.preventDefault();
     let updatedUser = { 

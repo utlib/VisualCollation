@@ -13,6 +13,7 @@ import ImageViewer from "../global/ImageViewer";
 import SelectField from '../global/SelectField';
 import { checkboxStyle } from '../../styles/checkbox';
 
+/** Side infobox */
 export default class SideInfoBox extends React.Component {
   constructor(props) {
     super(props);
@@ -33,8 +34,10 @@ export default class SideInfoBox extends React.Component {
     return state;
   }
 
-  // Creates a dictionary of attributes and if its toggled on or off during batch edit
-  // This is used for the checkbox states
+  /**
+   *  Creates a dictionary of attributes and if its toggled on or off during batch edit
+   *  This is used for the checkbox states
+   */
   otherAttributeStates = () => {
     let state = {};
     for (var i in this.props.defaultAttributes) {
@@ -44,7 +47,9 @@ export default class SideInfoBox extends React.Component {
     return state;
   }
 
-  // Creates a dictionary of attributes with no values
+  /**
+   * Creates a dictionary of attributes with no values
+   */
   emptyAttributeState = () => {
     let state = {};
     for (var i in this.props.defaultAttributes) {
@@ -55,7 +60,7 @@ export default class SideInfoBox extends React.Component {
 
   hasActiveAttributes = () => {
     for (var i in this.props.defaultAttributes) {
-      if (this.props.defaultAttributes[i]["name"]==="folio_number" &&
+      if ((this.props.defaultAttributes[i]["name"]==="folio_number"|this.props.defaultAttributes[i]["name"]==="page_number") &&
           this.state["batch_" + this.props.defaultAttributes[i]["name"]] &&
           this.state[this.props.defaultAttributes[i]["name"]]!=="Keep same") {
           return true;
@@ -77,7 +82,6 @@ export default class SideInfoBox extends React.Component {
       this.setState({...this.emptyAttributeState()});
     }
   }
-
 
   dropDownChange = (value, attributeName) => {
     if (!this.state.isBatch) {
@@ -130,7 +134,9 @@ export default class SideInfoBox extends React.Component {
     this.setState({...newAttributeState,...newEditingState});
   }
 
-  // Handle checkbox toggling by updating relevant attribute state
+  /**
+   * Handle checkbox toggling by updating relevant attribute state
+   */
   toggleCheckbox = (target) => {
     let newToggleState = {};
     newToggleState["batch_"+target]=!this.state["batch_"+target];
@@ -217,6 +223,11 @@ export default class SideInfoBox extends React.Component {
     this.setState({imageModalOpen})
   }
 
+  clickVisibility = (attributeName, value) => {
+    if (attributeName!=="script_direction") {
+      this.props.action.updatePreferences({side:{...this.props.preferences.side, [attributeName]:value}});
+    }
+  }
 
   render() {
     let attributeDivs = [];
@@ -230,9 +241,9 @@ export default class SideInfoBox extends React.Component {
       let eyeCheckbox = "";
 
       let eyeStyle = {};
-      let eyeIsChecked = this.props.visibleAttributes[attributeDict.name];
+      let eyeIsChecked = this.props.preferences.side && this.props.preferences.side[attributeDict.name]?this.props.preferences.side[attributeDict.name]:false;
       if (this.props.viewMode!=="TABULAR") {
-        if (attributeDict.name==="uri"||attributeDict.name==="script_direction") {
+        if (attributeDict.name==="script_direction") {
           eyeStyle = {fill: "#C2C2C2", cursor:"not-allowed"};
           eyeIsChecked = false;
         }
@@ -241,10 +252,10 @@ export default class SideInfoBox extends React.Component {
         eyeCheckbox = 
           <div className="tooltip eyeToggle">
             <Checkbox
-              aria-label={this.props.visibleAttributes[attributeDict.name]?"Hide '" + attributeDict.displayName + "' attribute in collation":"Show '" + attributeDict.displayName + "' attribute in collation"}
+              aria-label={eyeIsChecked?"Hide '" + attributeDict.displayName + "' attribute in collation":"Show '" + attributeDict.displayName + "' attribute in collation"}
               checkedIcon={<Visibility />}
               uncheckedIcon={<VisibilityOff />}
-              onClick={()=>this.props.action.toggleVisibility("side", attributeDict.name, !this.props.visibleAttributes[attributeDict.name])}
+              onClick={()=>this.clickVisibility(attributeDict.name, !eyeIsChecked)}
               style={this.props.windowWidth<=1024?{display:"none"}:{display:"inline-block",width:"25px",...eyeStyle}}
               iconStyle={{...checkboxStyle().iconStyle,...eyeStyle}}
               checked={eyeIsChecked}
@@ -275,17 +286,18 @@ export default class SideInfoBox extends React.Component {
         label = 
           <div className="tooltip eyeToggle">
             <Checkbox
-              aria-label={this.props.visibleAttributes[attributeDict.name]?"Hide '" + attributeDict.displayName + "' attribute in collation":"Show '" + attributeDict.displayName + "' attribute in collation"}
+              aria-label={eyeIsChecked?"Hide '" + attributeDict.displayName + "' attribute in collation":"Show '" + attributeDict.displayName + "' attribute in collation"}
               label={attributeDict.displayName} 
               checkedIcon={<Visibility />}
               uncheckedIcon={<VisibilityOff />}
-              onClick={()=>this.props.action.toggleVisibility("side", attributeDict.name, !this.props.visibleAttributes[attributeDict.name])}
+              onClick={()=>this.clickVisibility(attributeDict.name, !eyeIsChecked)}
               style={{display:"inline-block",width:"25px",...eyeStyle}}
+              {...checkboxStyle()}
+              iconStyle={{...checkboxStyle().iconStyle, color:"gray", ...eyeStyle}}
               checked={eyeIsChecked}
               onMouseEnter={()=>{this.setState({["visibility_hover_"+attributeDict.name]:true})}}
               onMouseOut={()=>{this.setState({["visibility_hover_"+attributeDict.name]:false})}}
               tabIndex={this.props.tabIndex}
-              {...checkboxStyle()}
             />
             <div className={this.state["visibility_hover_"+attributeDict.name]?"text active":"text"} style={Object.keys(eyeStyle).length>0?{display:"none"}:{}}>
               {eyeIsChecked?

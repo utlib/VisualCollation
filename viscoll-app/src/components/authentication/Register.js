@@ -4,6 +4,7 @@ import RaisedButton from 'material-ui/RaisedButton';
 import FlatButton from 'material-ui/FlatButton';
 import { btnLg, btnAuthCancel } from '../../styles/button';
 import {floatFieldDark} from '../../styles/textfield';
+
 /**
  * Contains the registration form that is used by the landing page component called `Landing`.
  */
@@ -19,16 +20,12 @@ class Register extends Component {
   }
   /**
    * Update state when user inputs new value in a text field 
-   * @param {string} v new value 
-   * @param {string} type text field name
-   * @public
    */
   onInputChange = (v, type) => {
     this.setState({[type]: v});
   }
   /**
    * Submit registration information
-   * @public
    */
   submit = (e) => {
     if (e) e.preventDefault();
@@ -115,5 +112,4 @@ class Register extends Component {
     }
   }
 }
-
 export default Register;

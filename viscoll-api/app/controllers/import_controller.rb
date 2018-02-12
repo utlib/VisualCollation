@@ -18,8 +18,7 @@ class ImportController < ApplicationController
         if errors.empty?
           handleXMLImport(xml)
         else
-          render json: {error: errors}, status: :unprocessable_entity
-          return
+          render json: {error: errors}, status: :unprocessable_entity and return
         end
       end
       newProject = current_user.projects.order_by(:updated_at => 'desc').first
@@ -27,9 +26,9 @@ class ImportController < ApplicationController
       current_user.reload
       @projects = current_user.projects.order_by(:updated_at => 'desc')
       @images = current_user.images
-      render :'projects/index', status: :ok
+      render :'projects/index', status: :ok and return
     rescue Exception => e
-      render json: {error: errorMessage}, status: :unprocessable_entity
+      render json: {error: errorMessage}, status: :unprocessable_entity and return
     ensure
     end
   end

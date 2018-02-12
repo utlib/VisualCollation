@@ -110,17 +110,6 @@ export function handleObjectClick(selectedObjects, object, event, objects) {
   };
 }
 
-
-export function toggleVisibility(memberType, attributeName, newValue) {
-  return { 
-    type: "TOGGLE_VISIBILITY", 
-    payload: {
-      memberType, 
-      attributeName, 
-      newValue
-    } 
-  };
-}
 /**
  * Switch selectedObjects between types: Leaf, Recto, Verso
  * @param {object} selectedObjects currently selected objects

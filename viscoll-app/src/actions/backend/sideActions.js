@@ -9,7 +9,8 @@ export function updateSide(sideID, side) {
                 successMessage: "Successfully updated the side" ,
                 errorMessage: "Ooops! Something went wrong"
             }
-        }
+        },
+        isUndoable: true,
     };
 }
 
@@ -24,6 +25,7 @@ export function updateSides(sides) {
                 successMessage: "Successfully updated the sides" ,
                 errorMessage: "Ooops! Something went wrong"
             }
-        }
+        },
+        isUndoable: true,
     };
 }

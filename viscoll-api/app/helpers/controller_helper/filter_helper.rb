@@ -57,6 +57,7 @@ module ControllerHelper
           },
           'side' => {
             'folio_number' => ['equals', 'not equals', 'contains', 'not contains'],
+            'page_number' => ['equals', 'not equals', 'contains', 'not contains'],
             'texture' => ['equals', 'not equals'],
             'script_direction' => ['equals', 'not equals'],
             'uri' => ['equals', 'not equals', 'contains', 'not contains'],

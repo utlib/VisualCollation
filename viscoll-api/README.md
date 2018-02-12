@@ -21,6 +21,20 @@ rvm --ruby-version use 2.4.1@viscollobns
 bundle install
 ```
 
+Set the admin email address in two locations:
+
+`viscoll-api/app/mailers/mailer.rb` on line 18: 
+
+```
+toEmail = Rails.application.secrets.admin_email || "dummy-admin@library.utoronto.ca"
+```
+
+and `viscoll-api/app/mailers/feedback_mailer.rb` on line 10:
+
+```
+to:"utlviscoll@library.utoronto.ca",
+```
+
 Then run this to start the API server:
 ```
 rails s -p 3001

@@ -4,6 +4,7 @@ class Side
 
   # Fields
   field :folio_number, type: String, default: nil
+  field :page_number, type: String, default: nil
   field :texture, type: String, default: "None"
   field :script_direction, type: String, default: "None"
   field :image, type: Hash, default: lambda { { } } # {manifestID: 123, label: "bla, " url: "https://iiif.library.utoronto.ca/image/v2/hollar:Hollar_a_3002_0001"}

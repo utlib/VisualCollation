@@ -1,6 +1,6 @@
 let topbarStyle = () => {
   let width = 200;
-  if (window.innerWidth<=768) {
+  if (window.innerWidth<=870) {
     width = 120;
   } else if (window.innerWidth<=1024) {
     width = 150;
@@ -10,7 +10,7 @@ let topbarStyle = () => {
       width, 
       height: 55, 
       color: '#6A6A6A',
-      fontSize: window.innerWidth<=768?"12px":null,
+      fontSize: window.innerWidth<=870?"12px":null,
     },
   }
 }

@@ -9,6 +9,7 @@ import IconButton from 'material-ui/IconButton';
 import ImageViewer from "../global/ImageViewer";
 
 
+/** Dialog to export collation to JSON, XML or PNG */
 const Export = (props) => {
 
   const filename = props.projectTitle.replace(/\s/g, "_");
@@ -75,6 +76,12 @@ const Export = (props) => {
       onRequestClose={()=>props.handleExportToggle(false)}
       contentStyle={{maxWidth: 1000}}
     >
+      {props.label==="XML"?
+      <p>
+        <strong>Note:</strong> custom folio numbers and page numbers will be lost when exporting to XML format.  
+        If you wish to preserve all collation data, please choose JSON export.
+      </p>
+      :""}
       {exportedData}
     </Dialog>
   );

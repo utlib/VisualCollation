@@ -74,13 +74,14 @@ class Dashboard extends Component {
     this.setState({projectDrawerOpen: false, selectedProject: null});
   }
 
-  doubleClick = projectID => this.props.history.push(`/project/${projectID}`);
+  doubleClick = projectID => {
+    this.props.resetActionHistory();
+    this.props.history.push(`/project/${projectID}`);
+  }
 
   handleProjectSelection = (index) => {
     if (index>=0) {
       let project = this.props.projects[index];
-      // let toggle = this.state.projectDrawerOpen;
-      // if (this.state.selectedProject) {toggle = !toggle};
       this.setState({projectDrawerOpen: true, selectedProject: project});
     } 
   }
@@ -109,7 +110,6 @@ class Dashboard extends Component {
       }
     });
   }
-
 
   modalIsOpen = () => {
     return this.state.deleteConfirmationOpen || this.state.feedbackOpen || this.state.newProjectModalOpen || this.state.newProjectPopoverOpen || this.state.userProfileDialogOpen;
@@ -185,6 +185,7 @@ class Dashboard extends Component {
           togglePopUp={this.userProfileToggle} 
           popUpActive={this.modalIsOpen()}
           goToDashboardProjectList={()=>this.setState({page:"collations"})}
+          showUndoRedo={this.state.page==="image"}
         >
           <Tabs tabItemContainerStyle={{backgroundColor: '#ffffff'}}>
             <Tab tabIndex={-1} label="List view" buttonStyle={topbarStyle().tab} />
@@ -243,6 +244,7 @@ const mapStateToProps = (state) => {
     importStatus: state.dashboard.importStatus,
     loading: state.global.loading,
     notification: state.global.notification,
+    actionHistory: state.history,
   };
 };
 
@@ -281,6 +283,9 @@ const mapDispatchToProps = (dispatch) => {
     deleteImages: (imageIDs) => {
       dispatch(deleteImages(imageIDs));
     },
+    resetActionHistory: () => {
+      dispatch({type:"CLEAR_ACTION_HISTORY"})
+    }
   };
 };
 

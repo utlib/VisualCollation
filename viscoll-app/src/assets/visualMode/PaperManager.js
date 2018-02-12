@@ -288,13 +288,13 @@ PaperManager.prototype = {
                 const leafID1 = group.group.sewing[0];
                 const leafID2 = group.group.sewing.length>1? group.group.sewing[1] : undefined;
 
-                if (leafID1!==undefined) {
+                if (leafID1!==undefined && this.leafIDs.indexOf(leafID1)>=0) {
                     let startX, startY, endX, endY;
                     let paperLeaf1, paperLeaf2;
 
-                    paperLeaf1 = this.getLeaf(this.leafIDs.indexOf(this.Leafs[leafID1].id)+1);
+                    paperLeaf1 = this.getLeaf(this.leafIDs.indexOf(leafID1)+1);
                     if (leafID2!==undefined) {
-                        paperLeaf2 = this.getLeaf(this.leafIDs.indexOf(this.Leafs[leafID2].id)+1);
+                        paperLeaf2 = this.getLeaf(this.leafIDs.indexOf(leafID2)+1);
                         startX = paperLeaf1.path.segments[0].point.x-this.strokeWidth;
                         startY = paperLeaf2.path.segments[0].point.y;
                         endX = paperLeaf2.path.segments[0].point.x;
@@ -334,13 +334,13 @@ PaperManager.prototype = {
             if (group.group.tacketed!==null && group.group.tacketed.length>0) {
                 const leafID1 = group.group.tacketed[0];
                 const leafID2 =group.group.tacketed[1];
-                if (leafID1!==undefined) {
+                if (leafID1!==undefined && this.leafIDs.indexOf(leafID1)>=0) {
                     let startX, startY, endX, endY;
                     let paperLeaf1, paperLeaf2;
 
-                    paperLeaf1 = this.getLeaf(this.leafIDs.indexOf(this.Leafs[leafID1].id)+1);
+                    paperLeaf1 = this.getLeaf(this.leafIDs.indexOf(leafID1)+1);
                     if (leafID2!==undefined) {
-                        paperLeaf2 = this.getLeaf(this.leafIDs.indexOf(this.Leafs[leafID2].id)+1);
+                        paperLeaf2 = this.getLeaf(this.leafIDs.indexOf(leafID2)+1);
                         startX = paperLeaf1.path.segments[0].point.x-this.strokeWidth;
                         startY = paperLeaf2.path.segments[0].point.y;
                         endX = paperLeaf2.path.segments[0].point.x;

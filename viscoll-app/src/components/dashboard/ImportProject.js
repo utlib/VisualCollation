@@ -3,7 +3,7 @@ import FlatButton from 'material-ui/FlatButton';
 import RaisedButton from 'material-ui/RaisedButton';
 import {RadioButton, RadioButtonGroup} from 'material-ui/RadioButton';
 
-
+/** New Project dialog - import existing project */
 export default class ImportProject extends React.Component {
 
   constructor(props) {

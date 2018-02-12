@@ -3,7 +3,7 @@ import OpenSeadragon from 'openseadragon';
 import UUID from 'uuid';
 import BlankPage from '../../assets/blank_page.png';
 
-/** iamge viewing component (OpenSeaDragon) */
+/** Image viewing component (OpenSeaDragon) */
 export default class ImageViewer extends React.Component {
   constructor(props) {
     super(props);

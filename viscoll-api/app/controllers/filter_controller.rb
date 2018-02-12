@@ -8,8 +8,7 @@ class FilterController < ApplicationController
       queries = filter_params.to_h[:queries]
       errors = runValidations(queries)
       if errors != []
-        render json: {errors: errors}, status: :unprocessable_entity
-        return 
+        render json: {errors: errors}, status: :unprocessable_entity and return
       end
       @objectIDs = {Groups: [], Leafs: [], Sides: [], Notes: []}
       @visibleAttributes = {
@@ -39,7 +38,7 @@ class FilterController < ApplicationController
         @visibleAttributes[:side] = {folio_number:false, texture:false, script_direction:false, uri:false}
       end
     rescue Exception => e
-      render json: {errors: e.message}, status: :unprocessable_entity
+      render json: {errors: e.message}, status: :unprocessable_entity and return
     end
   end
 
@@ -204,12 +203,10 @@ class FilterController < ApplicationController
     begin
       @project = Project.find(params[:id])
       if (@project.user_id!=current_user.id)
-        render status: :unauthorized
-        return
+        render status: :unauthorized and return
       end
     rescue Exception => e
-      render json: {error: "project not found with id "+params[:id]}, status: :not_found
-      return
+      render json: {error: "project not found with id "+params[:id]}, status: :not_found and return
     end
   end
 

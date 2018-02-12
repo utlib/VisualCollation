@@ -1,16 +1,14 @@
 import React from 'react';
 import Side from './Side';
 
-/** Stateless functional component that displays one leaf in the tabular edit mode.  */
-
+/** Leaf element of collation used in tabular edit mode*/
 const Leaf = (props) => {
-  const { activeLeaf } = props;
-  const { 
-    selectedObjects, 
+  const { activeLeaf, project } = props;
+  const {
+    selectedObjects,
     filters, 
     defaultAttributes, 
-    visibleAttributes,
-    flashItems 
+    flashItems,
   } = props.collationManager;
   const isActive = selectedObjects.members.includes(activeLeaf.id);
   const isFiltered = filters.Leafs.includes(activeLeaf.id);
@@ -24,7 +22,7 @@ const Leaf = (props) => {
   // Determine if any side attributes are active (visibility toggled)
   for (let sideAttribute of defaultAttributes.side) {
     let attributeName = sideAttribute.name;
-    if (visibleAttributes.side[attributeName]) {
+    if (project.preferences.side && project.preferences.side[attributeName]) {
       sideAttributesActive = true;
       break;
     } 
@@ -33,7 +31,7 @@ const Leaf = (props) => {
   // Render any visible leaf attributes
   for (let leafAttribute of defaultAttributes.leaf) {
     let attributeName = leafAttribute.name;
-    if (visibleAttributes.leaf[attributeName]) {
+    if (project.preferences.leaf && project.preferences.leaf[attributeName]) {
       let divStyle = "attribute ";
       if (isActive) divStyle += "active ";
       if (attributeName==="conjoined_to"){
@@ -88,6 +86,7 @@ const Leaf = (props) => {
         focusLeafID={props.focusLeafID}
         handleObjectPress={props.handleObjectPress}
         tabIndex={props.tabIndex}
+        project={props.project}
       />
       <Side 
         key={versoSide.id}
@@ -99,6 +98,7 @@ const Leaf = (props) => {
         focusLeafID={props.focusLeafID}
         handleObjectPress={props.handleObjectPress}
         tabIndex={props.tabIndex}
+        project={props.project}
       />
     </div>
   );

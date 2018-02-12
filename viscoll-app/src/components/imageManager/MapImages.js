@@ -8,6 +8,7 @@ import Dialog from 'material-ui/Dialog';
 import SelectField from '../global/SelectField';
 import { btnBase } from '../../styles/button';
 
+/** Map Images page */
 export default class MapImages extends Component {
 
   constructor(props) {
@@ -26,10 +27,23 @@ export default class MapImages extends Component {
   }
 
   componentWillMount() {
+    this.updateBoards(this.props);
+  }
+
+  componentWillReceiveProps(nextProps) {
+    let members = [];
+    if (nextProps.selectAll!=="")
+      members = [...this.state[nextProps.selectAll]];
+    const selectedObjects = {type: nextProps.selectAll, members, lastSelected: members[-1]};
+    this.setState({ selectedObjects });
+    if (nextProps.Rectos!==this.props.Rectos||nextProps.Versos!==this.props.Versos) this.updateBoards(nextProps);
+  }
+
+  updateBoards = (props) => {
     // Update initial map board with already existing mappings
-    const { Rectos, rectoIDs, Versos, versoIDs } = this.props;
+    const { Rectos, rectoIDs, Versos, versoIDs } = props;
     let imageBacklog = [];
-    for (let manifest of Object.entries(this.props.manifests)) {
+    for (let manifest of Object.entries(props.manifests)) {
       imageBacklog = imageBacklog.concat(manifest[1].images);
     }
     let sideBacklog = [...rectoIDs].map((rectoID, index) => [rectoID, versoIDs[index]]).reduce((a,b)=> a.concat(b), []);
@@ -47,14 +61,6 @@ export default class MapImages extends Component {
     imageBacklog = imageBacklog.filter(backlogImage => !imageMapBoard.find(mapImage => mapImage.url===backlogImage.url && mapImage.manifestID===backlogImage.manifestID));
     sideBacklog = sideBacklog.filter(sideID => !sideMapBoard.includes(sideID));
     this.setState({imageBacklog, sideBacklog, sideMapBoard, imageMapBoard, initialMapping:{imageBacklog, sideBacklog, sideMapBoard, imageMapBoard}});
-  }
-
-  componentWillReceiveProps(nextProps) {
-    let members = [];
-    if (nextProps.selectAll!=="")
-      members = [...this.state[nextProps.selectAll]];
-    const selectedObjects = {type: nextProps.selectAll, members, lastSelected: members[-1]};
-    this.setState({ selectedObjects });
   }
 
   handleManifestChange = activeManifestID => this.setState({activeManifest: this.props.manifests[activeManifestID]});

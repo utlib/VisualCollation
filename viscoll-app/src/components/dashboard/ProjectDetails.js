@@ -4,7 +4,7 @@ import TextField from 'material-ui/TextField';
 import RaisedButton from 'material-ui/RaisedButton';
 import FlatButton from 'material-ui/FlatButton';
 
-
+/** New Project dialog - panel with a form to fill out project details  */
 const ProjectDetails = (props) => {
   let submit = (event) => {
     if (event) event.preventDefault();

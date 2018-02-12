@@ -21,7 +21,7 @@ export default class NoteType extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    if (this.state.types.length !== nextProps.noteTypes.length) {
+    if (this.state.types.length !== nextProps.noteTypes.length || this.props.noteTypes!==nextProps.noteTypes) {
       this.setState({types: [...nextProps.noteTypes]});
       this.resetEditing();
     }
@@ -32,7 +32,6 @@ export default class NoteType extends Component {
   }
 
   onNewTypeChange = (newType) => {
-    // newType = newType.trim();
     this.setState({newType}, ()=>{
       if (!this.isValid(newType.trim())){
         let errorMessage = `Note type with name ${newType} already exists in this project`;
@@ -126,11 +125,6 @@ export default class NoteType extends Component {
     this.setState({errorTypes: newErrors});
   }
 
-  /**
-   * Return a generated HTML of submit and cancel buttons for a specific input name
-   * @param {number} index index of note type
-   * @public
-   */
   renderSubmitButtons = (index) => {
     if (this.state.editing[index]) {
       return (

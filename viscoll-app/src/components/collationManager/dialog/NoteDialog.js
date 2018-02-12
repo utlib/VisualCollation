@@ -3,9 +3,8 @@ import EditNoteForm from '../../notesManager/EditNoteForm';
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
 
+/** Note dialog */
 export default class NoteDialog extends React.Component {
-
-
   getLinkedGroups = () => {
     const groupsWithCurrentNote = Object.keys(this.props.Groups).filter((groupID) => {
       return (this.props.Groups[groupID].notes.includes(this.props.activeNote.id))
@@ -36,12 +35,16 @@ export default class NoteDialog extends React.Component {
     const sidesWithCurrentNote = [];
     for (let value of rectosWithCurrentNote){
       const leafOrder = this.props.leafIDs.indexOf(this.props.Rectos[value].parentID) + 1;
-      const label = `L${leafOrder} Recto (${this.props.Rectos[value].folio_number})`;
+      const folioNumber = this.props.Rectos[value].folio_number && this.props.Rectos[value].folio_number!==""? `(${this.props.Rectos[value].folio_number})`:"";
+      const pageNumber = this.props.Rectos[value].page_number && this.props.Rectos[value].page_number!==""? `(${this.props.Rectos[value].page_number})`:"";
+      const label = `L${leafOrder} Recto ${folioNumber} ${pageNumber}`;
       sidesWithCurrentNote.push({label, value})
     }
     for (let value of versosWithCurrentNote){
       const leafOrder = this.props.leafIDs.indexOf(this.props.Versos[value].parentID) + 1;
-      const label = `L${leafOrder} Verso (${this.props.Versos[value].folio_number})`;
+      const folioNumber = this.props.Versos[value].folio_number && this.props.Versos[value].folio_number!==""? `(${this.props.Versos[value].folio_number})`:"";
+      const pageNumber = this.props.Versos[value].page_number && this.props.Versos[value].page_number!==""? `(${this.props.Versos[value].page_number})`:"";
+      const label = `L${leafOrder} Verso ${folioNumber} ${pageNumber}`;
       sidesWithCurrentNote.push({label, value})
     }
     return sidesWithCurrentNote;
@@ -77,6 +80,7 @@ export default class NoteDialog extends React.Component {
         autoScrollBodyContent
         contentStyle={{width:500}}
       >
+      {this.props.open? 
         <EditNoteForm 
           action={{ 
             addNote: this.props.action.addNote, 
@@ -106,7 +110,7 @@ export default class NoteDialog extends React.Component {
           rectoIDs={this.props.rectoIDs}
           versoIDs={this.props.versoIDs}
           togglePopUp={this.props.togglePopUp}
-        />
+        />: ""}
       </Dialog>
     );
   }

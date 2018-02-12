@@ -5,7 +5,7 @@ import {
   deleteLeaf,
   deleteLeaves,
   autoConjoinLeafs,
-  generateFolioNumbers,
+  generateFolioPageNumbers,
 } from '../../../src/actions/frontend/before/leafActions';
 
 import {projectState001} from '../../testData/projectState001'
@@ -45,7 +45,6 @@ describe('>>>A C T I O N --- Test leaf actions', () => {
       id: 'Leaf_111',
       attached_above: 'None',
       attached_below: 'None',
-      attachment_method: 'None',
       conjoined_to: null,
       material: 'None',
       stub: 'None',
@@ -295,7 +294,7 @@ describe('>>>A C T I O N --- Test leaf actions', () => {
     expect(gotState).toEqual(expectedState);
   })
   
-  it('+++ actionCreator generateFolioNumbers', () => {
+  it('+++ actionCreator generateFolioPageNumbers', () => {
     const leafPayload = {
       payload: {
         request : {
@@ -326,7 +325,9 @@ describe('>>>A C T I O N --- Test leaf actions', () => {
     const beforeState =  cloneDeep(projectState001);
     let expectedState = cloneDeep(projectState001);
 
-    const gotState = generateFolioNumbers(leafPayload, beforeState);
+    let gotState = generateFolioPageNumbers(leafPayload, beforeState, "folio_number");
+    leafPayload.payload.request.data.startNumber = 6;
+    gotState = generateFolioPageNumbers(leafPayload, gotState, "page_number");
 
     expectedState.project.Rectos["Recto_5a57825a4cfad13070870dc8"].folio_number = "3R";
     expectedState.project.Rectos["Recto_5a57825a4cfad13070870dcb"].folio_number = "4R";
@@ -339,6 +340,18 @@ describe('>>>A C T I O N --- Test leaf actions', () => {
     expectedState.project.Versos["Verso_5a57825a4cfad13070870dcf"].folio_number = "5V";
     expectedState.project.Versos["Verso_5a57825a4cfad13070870dd2"].folio_number = "6V";
     expectedState.project.Versos["Verso_5a57825a4cfad13070870df3"].folio_number = "7V";
+
+    expectedState.project.Rectos["Recto_5a57825a4cfad13070870dc8"].page_number = 6;
+    expectedState.project.Rectos["Recto_5a57825a4cfad13070870dcb"].page_number = 8;
+    expectedState.project.Rectos["Recto_5a57825a4cfad13070870dce"].page_number = 10;
+    expectedState.project.Rectos["Recto_5a57825a4cfad13070870dd1"].page_number = 12;
+    expectedState.project.Rectos["Recto_5a57825a4cfad13070870df2"].page_number = 14;
+
+    expectedState.project.Versos["Verso_5a57825a4cfad13070870dc9"].page_number = 7;
+    expectedState.project.Versos["Verso_5a57825a4cfad13070870dcc"].page_number = 9;
+    expectedState.project.Versos["Verso_5a57825a4cfad13070870dcf"].page_number = 11;
+    expectedState.project.Versos["Verso_5a57825a4cfad13070870dd2"].page_number = 13;
+    expectedState.project.Versos["Verso_5a57825a4cfad13070870df3"].page_number = 15;
 
     expect(gotState).toEqual(expectedState);
   })

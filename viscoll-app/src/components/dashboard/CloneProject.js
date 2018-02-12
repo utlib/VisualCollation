@@ -4,6 +4,7 @@ import RaisedButton from 'material-ui/RaisedButton';
 import FlatButton from 'material-ui/FlatButton';
 import SelectField from '../global/SelectField';
 
+/** New Project dialog - clone existing project */
 export default class CloneProject extends React.Component {
 
   constructor(props) {
