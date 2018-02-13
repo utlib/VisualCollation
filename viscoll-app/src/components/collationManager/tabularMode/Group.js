@@ -147,7 +147,8 @@ export default class Group extends React.Component {
       return (
         groupComponent
       );
+    }
   }
-}
+
 
  

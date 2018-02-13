@@ -8,7 +8,7 @@ RSpec.describe ControllerHelper::ProjectsHelper, type: :helper do
         { 'leaves' => 2 },
         { 'leaves' => 4, 'conjoin' => true },
         { 'leaves' => 3, 'conjoin' => true, 'oddLeaf' => 2 }
-      ])
+      ], nil)
       expect(@project.groups.count).to eq 3
       expect(@project.groups[0].memberIDs.count).to eq 2
       expect(@project.groups[1].memberIDs.count).to eq 4

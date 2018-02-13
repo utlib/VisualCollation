@@ -69,6 +69,7 @@ class CollationManager extends Component {
       showTips: props.preferences.showTips,
       imageViewerEnabled: false,
       activeNote: null,
+      tipIndex: 0,
     };
   }
 
@@ -332,7 +333,12 @@ class CollationManager extends Component {
 
     const singleEditTip = 'Hold the CTRL key (or Command key for Mac users) to select multiple groups/leaves/sides. Hold SHIFT key to select a range of groups/leaves/sides.';
     const batchEditTip = 'You are in batch edit mode. To leave this mode, click on any group/leaf/side without holding down any keys.';
-    const tip = this.props.selectedObjects.members.length>1 ? batchEditTip : singleEditTip
+    const tip = [
+      this.props.selectedObjects.members.length>1 ? batchEditTip : singleEditTip,
+      "Generate folio numbers by selecting multiple leaves and clicking on the 'Generate folio numbers' button in the infobox on the right.",
+      "View a zoomed out version of the collation diagram by selecting PNG export in the Export section of this sidebar.",
+      "Undo an action with CTRL+Z (or CMD+Z for Mac users), and redo an action with CTRL+Y (or CMD+Y for Mac users).",
+    ];
     let tipsDiv;
     if (this.props.managerMode==="collationManager" && this.props.preferences.showTips===true) {
       tipsDiv =
@@ -349,7 +355,19 @@ class CollationManager extends Component {
             </IconButton>
           </div>
           <div className="tip">
-            <span>TIP:</span> {tip}
+            <span>TIP:</span> {tip[this.state.tipIndex]}
+            <div style={{textAlign:"right"}}>
+              <button 
+                type="button" 
+                name="Next tip" 
+                aria-label="Next tip" 
+                onClick={()=>this.setState({tipIndex:((this.state.tipIndex+1)%tip.length)})}
+                tabIndex={this.props.popUpActive?-1:0}
+                style={{color:"#4ED6CB", background:"none", border:0}}
+              >
+                Next tip &#10095;
+              </button>
+            </div>
           </div>
         </div>
     }

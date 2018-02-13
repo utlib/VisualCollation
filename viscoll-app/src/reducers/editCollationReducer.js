@@ -123,8 +123,16 @@ export default function editCollationReducer(state=initialState, action) {
     case "DELETE_MANIFEST_FRONTEND":
     case "CREATE_NOTE_FRONTEND":
     case "GENERATE_FOLIO_NUMBERS_FRONTEND":
-    case "UPDATE_PREFERENCES_FRONTEND":
       state = action.payload.response
+      break;
+    case "UPDATE_PREFERENCES_FRONTEND":
+      const showTips = action.payload.response.project.preferences.showTips!==undefined?action.payload.response.project.preferences.showTips:state.project.preferences.showTips;
+      state.project.preferences = {
+        showTips,
+        group: {...state.project.preferences.group, ...action.payload.response.project.preferences.group},
+        leaf: {...state.project.preferences.leaf, ...action.payload.response.project.preferences.leaf},
+        side: {...state.project.preferences.side, ...action.payload.response.project.preferences.side},
+      }
       break;
     case "LINK_IMAGES_FRONTEND":
     case "UNLINK_IMAGES_FRONTEND":

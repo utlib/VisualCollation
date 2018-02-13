@@ -6,6 +6,7 @@ import ProjectStructure from './ProjectStructure';
 import ImportProject from './ImportProject';
 import CloneProject from './CloneProject';
 import NewProjectChoice from './NewProjectChoice';
+import ProjectOptions from './ProjectOptions';
 
 export default class NewProjectContainer extends React.Component {
   constructor(props) {
@@ -19,6 +20,8 @@ export default class NewProjectContainer extends React.Component {
       quireNo: 2,
       leafNo: 10,
       conjoined: true,
+      startFolioNumber: 1,
+      generateFolioNumber: false,
       collationGroups: [],
       errors: {
         title: "",
@@ -44,6 +47,8 @@ export default class NewProjectContainer extends React.Component {
       quireNo: 1,
       leafNo: 10,
       conjoined: true,
+      startFolioNumber: 1,
+      generateFolioNumber: false,
       collationGroups: [],
       errors: {
         title: "",
@@ -193,9 +198,14 @@ export default class NewProjectContainer extends React.Component {
         shelfmark: this.state.shelfmark,
         metadata: {
           date: this.state.date
+        },
+        preferences: {
+          showTips: true,
+          side: this.state.generateFolioNumber?{folio_number:true}:{},
         }
       },
-      groups: []
+      groups: [],
+      folioNumber: this.state.generateFolioNumber? this.state.startFolioNumber : null,
     }
     this.state.collationGroups.forEach((group)=>request.groups.push(group));
     this.props.createProject(request, user);
@@ -232,17 +242,16 @@ export default class NewProjectContainer extends React.Component {
         content = <NewProjectChoice 
           previousStep={()=>this.set("step", 1)}
           nextStep={()=>this.set("step",3)}
-          finish={this.finish}
           />
-      } else {
+      } else if (this.state.step===3) {
         content = <ProjectStructure 
-          finish={this.finish}
           previousStep={()=>this.setState({
                           step: 1, 
                           quireNo: 2,
                           leafNo: 10,
                           conjoined: true,
                           collationGroups: []})}
+          nextStep={()=>this.set("step",4)}
           set={this.set}
           quireNo={this.state.quireNo}
           leafNo={this.state.leafNo}
@@ -253,6 +262,14 @@ export default class NewProjectContainer extends React.Component {
           addCollationRows={this.handleAddNewCollationGroupRow}
           handleRemoveCollationGroupRow={this.handleRemoveCollationGroupRow}
         />;
+      } else {
+        content = <ProjectOptions
+          startFolioNumber={this.state.startFolioNumber}
+          generateFolioNumber={this.state.generateFolioNumber}
+          previousStep={()=>this.set("step", 3)}
+          finish={this.finish}
+          set={this.set}
+        />
       }
     } else if (this.state.projectType==="import") {
         content = (

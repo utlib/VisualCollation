@@ -60,7 +60,7 @@ const ProjectStructure = (props) => {
             style={{width:50}}
           />
         </TableRowColumn>
-        <TableRowColumn aria-label="Conjoined?" style={{paddingTop:"0.75em", textAlign: "center"}}>
+        <TableRowColumn aria-label="Conjoined?" style={{paddingTop:"0.75em"}}>
           <Checkbox 
             aria-label="Conjoin leaves in quire"
             onClick={() => props.handleToggleConjoin(group)}
@@ -94,14 +94,14 @@ const ProjectStructure = (props) => {
   });
 
     return (
-      <div style={{width:"100%", margin: "auto", textAlign: "center"}}>
+      <div style={{width:"100%", margin: "auto"}}>
         <div style={{position:"absolute", right:5, top:5}}>  
           <IconButton tooltip="More info coming soon">
             <IconHelp color={"#727272"} />
           </IconButton>
         </div>
-        <h1>Structure</h1>
-        <p style={{paddingTop: 20}}>
+        <h1 style={{textAlign:"center"}}>Structure</h1>
+        <p style={{paddingTop: 20, textAlign:"center"}}>
           Pre-populate your collation with quires and leaves by using the formula below.  
           Generate the items by clicking the "Add" button.  You can add multiple times.
         </p>
@@ -163,7 +163,7 @@ const ProjectStructure = (props) => {
                   <TableHeaderColumn style={{color:"#4e4e4e"}}>Unconjoined leaf</TableHeaderColumn>
                 </TableRow>
               </TableHeader>
-              <TableBody displayRowCheckbox={false} style={{textAlign: "center"}}>
+              <TableBody displayRowCheckbox={false}>
                 {collationGroupsRows}
               </TableBody>
             </Table>
@@ -178,10 +178,10 @@ const ProjectStructure = (props) => {
           />
           {props.collationGroups.length>0?
           <RaisedButton 
-            label="Finish"
-            aria-label="Finish"
+            label="Next"
+            aria-label="Next"
             primary
-            onClick={() => props.finish()}
+            onClick={() => props.nextStep()}
           />:""}
         </div>
       </div>

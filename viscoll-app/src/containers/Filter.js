@@ -305,7 +305,7 @@ class Filter extends Component {
 
   render() {
     let queries = [];
-    if (this.state.queries)
+    if (this.state.queries && this.props.open)
       for (let i=0; i<this.state.queries.length; i++) {
         queries.push(
           <FilterRow 

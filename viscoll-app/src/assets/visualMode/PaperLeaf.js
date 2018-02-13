@@ -520,6 +520,9 @@ function PaperLeaf(args) {
         // If leaf is missing, make stroke dashed
         this.path.dashArray = [20, 10];
     }
+    if (this.leaf.type==='Replaced') {
+        this.path.strokeColor = "#9d6464";
+    }
     if (this.isActive) {
         this.path.strokeColor = args.strokeColorActive;
     }

@@ -2,7 +2,7 @@ require 'net/http'
 module ControllerHelper
   module ProjectsHelper
     include ControllerHelper::LeafsHelper
-    def addGroupsLeafsConjoin(project, allGroups)
+    def addGroupsLeafsConjoin(project, allGroups, folioNumber)
       groupIDs = []
       allGroups.each do |groupInfo|
         group = Group.new({project_id: project, title:"Default", type:"Quire"})
@@ -24,6 +24,16 @@ module ControllerHelper
         end
         group.save
         groupIDs.push(group.id.to_s)
+        # Add folio numbers 
+        if folioNumber
+          newlyAddedLeafs.each do |leaf|
+            recto = Side.find(leaf.rectoID)
+            verso = Side.find(leaf.versoID)
+            recto.update_attribute(:folio_number, folioNumber.to_s+"R")
+            verso.update_attribute(:folio_number, folioNumber.to_s+"V")
+            folioNumber += 1
+          end
+        end
       end
       # Add groups to project
       project.add_groupIDs(groupIDs, 0)
