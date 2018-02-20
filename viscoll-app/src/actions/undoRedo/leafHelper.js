@@ -18,19 +18,33 @@ export function undoCreateLeaves(action, state) {
 }
 
 export function undoUpdateLeaf(action, state) {
+  const historyActions = [];
   const leafID = action.payload.request.url.split("/").pop();
   const attribute = Object.keys(action.payload.request.data.leaf)[0];
 
   const leaf = {
     [attribute]: state.project.Leafs[leafID][attribute],
   }
-  const historyAction = updateLeaf(leafID, leaf);
-  return [historyAction];
+  historyActions.push(updateLeaf(leafID, leaf));
+  if (attribute==="material" && (action.payload.request.data.leaf.material==="Paper" || action.payload.request.data.leaf.material==="Parchment")) {
+    historyActions.push(updateSides([
+      {
+        id: state.project.Leafs[leafID].rectoID,
+        attributes: {texture: state.project.Rectos[state.project.Leafs[leafID].rectoID].texture},
+      },
+      {
+        id: state.project.Leafs[leafID].versoID,
+        attributes: {texture: state.project.Versos[state.project.Leafs[leafID].versoID].texture},
+      }
+    ]))
+  }
+  return historyActions;
 }
 
 export function undoUpdateLeaves(action, state) {
   const requestData = action.payload.request.data.leafs;
   const leafs = [];
+  const historyActions = [];
 
   for (const request of requestData) {
     const leaf = state.project.Leafs[request.id];
@@ -41,11 +55,23 @@ export function undoUpdateLeaves(action, state) {
     for (const attribute in request.attributes) {
       if (!request.attributes.hasOwnProperty(attribute)) continue;
       item.attributes[attribute] = leaf[attribute];
+      if (attribute==="material" && (request.attributes[attribute]==="Paper"||request.attributes[attribute]==="Parchment")) {
+        historyActions.push(updateSides([
+          {
+            id: state.project.Leafs[leaf.id].rectoID,
+            attributes: {texture: state.project.Rectos[state.project.Leafs[leaf.id].rectoID].texture},
+          },
+          {
+            id: state.project.Leafs[leaf.id].versoID,
+            attributes: {texture: state.project.Versos[state.project.Leafs[leaf.id].versoID].texture},
+          }
+        ]))
+      }
     }
     leafs.push(item)
   }
-  const historyAction = updateLeafs(leafs, state.project.id);
-  return [historyAction];
+  historyActions.push(updateLeafs(leafs, state.project.id));
+  return historyActions;
 }
 
 export function undoDeleteLeaves(action, state) {
@@ -212,7 +238,7 @@ export function undoAutoconjoin(action, state) {
   return [historyAction];  
 }
 
-export function undoFolioNumbers(action, state) {
+export function undoFolioPageNumbers(action, state, folioOrPage) {
   const sideIDs = action.payload.request.data.rectoIDs.concat(action.payload.request.data.versoIDs);
   const sides = [];
   for (const sideID of sideIDs) {
@@ -220,7 +246,7 @@ export function undoFolioNumbers(action, state) {
     const item = {
       id: sideID,
       attributes: {
-        folio_number: state.project[sideType][sideID].folio_number,
+        [folioOrPage]: state.project[sideType][sideID][folioOrPage],
       }
     }
     sides.push(item);

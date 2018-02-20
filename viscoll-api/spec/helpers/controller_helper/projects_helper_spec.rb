@@ -8,7 +8,7 @@ RSpec.describe ControllerHelper::ProjectsHelper, type: :helper do
         { 'leaves' => 2 },
         { 'leaves' => 4, 'conjoin' => true },
         { 'leaves' => 3, 'conjoin' => true, 'oddLeaf' => 2 }
-      ], nil)
+      ], nil, nil)
       expect(@project.groups.count).to eq 3
       expect(@project.groups[0].memberIDs.count).to eq 2
       expect(@project.groups[1].memberIDs.count).to eq 4
@@ -20,6 +20,30 @@ RSpec.describe ControllerHelper::ProjectsHelper, type: :helper do
       expect(Leaf.find(@project.groups[2].memberIDs[1]).conjoined_to).to be_blank
       expect(Leaf.find(@project.groups[2].memberIDs[0]).conjoined_to).to eq @project.groups[2].memberIDs[2]
       expect(Leaf.find(@project.groups[2].memberIDs[2]).conjoined_to).to eq @project.groups[2].memberIDs[0]
+    end
+    it 'should generate folio numbers' do
+      project = FactoryGirl.create(:project)
+      addGroupsLeafsConjoin(project, [
+        { 'leaves' => 2 },
+        { 'leaves' => 4, 'conjoin' => true },
+        { 'leaves' => 3, 'conjoin' => true, 'oddLeaf' => 2 }
+      ], 2, nil)
+      expect(Side.find(Leaf.find(project.groups[0].memberIDs[0]).rectoID).folio_number).to eq "2R"
+      expect(Side.find(Leaf.find(project.groups[0].memberIDs[0]).versoID).folio_number).to eq "2V"
+      expect(Side.find(Leaf.find(project.groups[0].memberIDs[1]).rectoID).folio_number).to eq "3R"
+      expect(Side.find(Leaf.find(project.groups[0].memberIDs[1]).versoID).folio_number).to eq "3V"
+    end
+    it 'should generate page numbers' do
+      project = FactoryGirl.create(:project)
+      addGroupsLeafsConjoin(project, [
+        { 'leaves' => 2 },
+        { 'leaves' => 4, 'conjoin' => true },
+        { 'leaves' => 3, 'conjoin' => true, 'oddLeaf' => 2 }
+      ], nil, 5)
+      expect(Side.find(Leaf.find(project.groups[0].memberIDs[0]).rectoID).page_number).to eq "5"
+      expect(Side.find(Leaf.find(project.groups[0].memberIDs[0]).versoID).page_number).to eq "6"
+      expect(Side.find(Leaf.find(project.groups[0].memberIDs[1]).rectoID).page_number).to eq "7"
+      expect(Side.find(Leaf.find(project.groups[0].memberIDs[1]).versoID).page_number).to eq "8"
     end
   end
   

@@ -75,6 +75,12 @@ const Export = (props) => {
       onRequestClose={()=>props.handleExportToggle(false)}
       contentStyle={{maxWidth: 1000}}
     >
+      {props.label==="XML"?
+      <p>
+        <strong>Note:</strong> custom folio numbers and page numbers will be lost when exporting to XML format.  
+        If you wish to preserve all collation data, please choose JSON export.
+      </p>
+      :""}
       {exportedData}
     </Dialog>
   );

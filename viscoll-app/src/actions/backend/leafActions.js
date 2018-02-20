@@ -1,5 +1,8 @@
 
 export function addLeafs(leaf, additional) {
+    let successMessage = "Successfully added the leaf";
+    if (additional.noOfLeafs>1) successMessage = "Successfully added the leaves";
+
     return {
         types: ['CREATE_LEAVES_FRONTEND','CREATE_LEAVES_SUCCESS_BACKEND','CREATE_LEAVES_FAILED_BACKEND'],
         payload: {
@@ -7,7 +10,7 @@ export function addLeafs(leaf, additional) {
                 url: `/leafs`,
                 method: 'post',
                 data: { leaf, additional },
-                successMessage: "Successfully added the leaf(s)" ,
+                successMessage,
                 errorMessage: "Ooops! Something went wrong"
             }
         },
@@ -39,7 +42,7 @@ export function updateLeafs(leafs, project_id) {
                 url: `/leafs`,
                 method: 'put',
                 data: {leafs, project_id},
-                successMessage: "Successfully updated the leafs" ,
+                successMessage: "Successfully updated the leaves" ,
                 errorMessage: "Ooops! Something went wrong"
             }
         },
@@ -64,7 +67,7 @@ export function autoConjoinLeafs(leafs) {
                 url: `/leafs/conjoin`,
                 method: 'put',
                 data: {leafs},
-                successMessage: "Successfully conjoined the leafs" ,
+                successMessage: "Successfully conjoined the leaves" ,
                 errorMessage: "Ooops! Something went wrong"
             }
         },
@@ -97,7 +100,7 @@ export function deleteLeafs(leafs) {
                 url: `/leafs`,
                 method: 'delete',
                 data: leafs,
-                successMessage: "Successfully deleted the leafs" ,
+                successMessage: "Successfully deleted the leaves" ,
                 errorMessage: "Ooops! Something went wrong"
             }
         },
@@ -110,10 +113,26 @@ export function generateFolioNumbers(startNumber, rectoIDs, versoIDs) {
         types: ['GENERATE_FOLIO_NUMBERS_FRONTEND','GENERATE_FOLIO_NUMBERS_SUCCESS_BACKEND','GENERATE_FOLIO_NUMBERS_FAILED_BACKEND'],
         payload: {
             request : {
-                url: `/leafs/generateFolio`,
+                url: `/sides/generateFolio`,
                 method: 'put',
                 data: {startNumber, rectoIDs, versoIDs},
                 successMessage: "Successfully generated the folio numbers" ,
+                errorMessage: "Ooops! Something went wrong"
+            }
+        },
+        isUndoable: true,
+    };
+}
+
+export function generatePageNumbers(startNumber, rectoIDs, versoIDs) {
+    return {
+        types: ['GENERATE_PAGE_NUMBERS_FRONTEND','GENERATE_PAGE_NUMBERS_SUCCESS_BACKEND','GENERATE_PAGE_NUMBERS_FAILED_BACKEND'],
+        payload: {
+            request : {
+                url: `/sides/generatePageNumber`,
+                method: 'put',
+                data: {startNumber, rectoIDs, versoIDs},
+                successMessage: "Successfully generated the page numbers" ,
                 errorMessage: "Ooops! Something went wrong"
             }
         },

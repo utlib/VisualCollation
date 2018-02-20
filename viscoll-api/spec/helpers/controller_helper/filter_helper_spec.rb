@@ -91,7 +91,7 @@ RSpec.describe ControllerHelper::FilterHelper, type: :helper do
       result = runValidations([
         { 'type' => 'side', 'attribute' => 'waahoo', 'condition' => 'equals', 'values' => ['3r'] }
       ])
-      expect(result).to include a_hash_including('attribute' => 'valid attributes for side: [folio_number, texture, script_direction, uri]')
+      expect(result).to include a_hash_including('attribute' => 'valid attributes for side: [folio_number, page_number, texture, script_direction, uri]')
     end
     
     it 'should reject invalid conditions for texture and script_direction' do

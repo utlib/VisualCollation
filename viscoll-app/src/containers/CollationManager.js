@@ -335,7 +335,7 @@ class CollationManager extends Component {
     const batchEditTip = 'You are in batch edit mode. To leave this mode, click on any group/leaf/side without holding down any keys.';
     const tip = [
       this.props.selectedObjects.members.length>1 ? batchEditTip : singleEditTip,
-      "Generate folio numbers by selecting multiple leaves and clicking on the 'Generate folio numbers' button in the infobox on the right.",
+      "Generate folio/page numbers by selecting multiple leaves and clicking on the 'Generate folio/page numbers' button in the infobox on the right.",
       "View a zoomed out version of the collation diagram by selecting PNG export in the Export section of this sidebar.",
       "Undo an action with CTRL+Z (or CMD+Z for Mac users), and redo an action with CTRL+Y (or CMD+Y for Mac users).",
     ];

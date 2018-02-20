@@ -182,8 +182,14 @@ export default class EditNoteForm extends Component {
     let sideData = [];
     for (let i=0; i<this.props.leafIDs.length; i++) {
       const leaf = this.props.Leafs[this.props.leafIDs[i]];
-      sideData.push({value:leaf.rectoID, label:"L"+(this.props.leafIDs.indexOf(leaf.id)+1)+" Recto ("+this.props.Rectos[leaf.rectoID].folio_number+")"});
-      sideData.push({value:leaf.versoID, label:"L"+(this.props.leafIDs.indexOf(leaf.id)+1)+" Verso ("+this.props.Versos[leaf.versoID].folio_number+")"});
+      const recto = this.props.Rectos[leaf.rectoID];
+      const verso = this.props.Versos[leaf.versoID];
+      const rectoFolioNumber = recto.folio_number && recto.folio_number!==""? "(" + recto.folio_number + ")": "";
+      const rectoPageNumber = recto.page_number && recto.page_number!==""? "(" + recto.page_number + ")": "";
+      const versoFolioNumber = verso.folio_number && verso.folio_number!==""? "(" + verso.folio_number + ")": "";
+      const versoPageNumber = verso.page_number && verso.page_number!==""? "(" + verso.page_number + ")": "";
+      sideData.push({value:leaf.rectoID, label:"L"+(this.props.leafIDs.indexOf(leaf.id)+1)+" Recto " + rectoFolioNumber + " " + rectoPageNumber});
+      sideData.push({value:leaf.versoID, label:"L"+(this.props.leafIDs.indexOf(leaf.id)+1)+" Verso " + versoFolioNumber + " " + versoPageNumber});
     }
     const linkToGroups = (
         <div style={{display:"flex", alignItems:"center"}}>

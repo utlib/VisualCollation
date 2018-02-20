@@ -100,6 +100,8 @@ class LeafsController < ApplicationController
     if @leaf.update(leaf_params)
       if (leaf_params.to_h.key?(:attached_below)||leaf_params.to_h.key?(:attached_above))
         update_attached_to()
+      elsif leaf_params.to_h.key?(:material) and leaf_params.to_h[:material] == "Paper"
+        handle_paper_update(@leaf)
       end
     else
       render json: {leaf: @leaf.errors}, status: :unprocessable_entity
@@ -134,6 +136,8 @@ class LeafsController < ApplicationController
         end
         if (leaf_params[:attributes].key?(:attached_below)||leaf_params[:attributes].key?(:attached_above))
           update_attached_to()
+        elsif leaf_params[:attributes].key?(:material) and leaf_params[:attributes][:material] == "Paper"
+          handle_paper_update(@leaf)
         end
       end
     rescue Exception => e
@@ -275,6 +279,8 @@ class LeafsController < ApplicationController
       end
     end
   end
+
+
 
 
   private

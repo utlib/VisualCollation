@@ -2,7 +2,7 @@ require 'net/http'
 module ControllerHelper
   module ProjectsHelper
     include ControllerHelper::LeafsHelper
-    def addGroupsLeafsConjoin(project, allGroups, folioNumber)
+    def addGroupsLeafsConjoin(project, allGroups, folioNumber, pageNumber)
       groupIDs = []
       allGroups.each do |groupInfo|
         group = Group.new({project_id: project, title:"Default", type:"Quire"})
@@ -32,6 +32,15 @@ module ControllerHelper
             recto.update_attribute(:folio_number, folioNumber.to_s+"R")
             verso.update_attribute(:folio_number, folioNumber.to_s+"V")
             folioNumber += 1
+          end
+        elsif pageNumber
+          newlyAddedLeafs.each do |leaf|
+            recto = Side.find(leaf.rectoID)
+            verso = Side.find(leaf.versoID)
+            recto.update_attribute(:page_number, pageNumber.to_s)
+            pageNumber += 1
+            verso.update_attribute(:page_number, pageNumber.to_s)
+            pageNumber += 1
           end
         end
       end
@@ -148,6 +157,7 @@ module ControllerHelper
           "id": side.id.to_s,
           "parentID": side.parentID,
           "folio_number": side.folio_number,
+          "page_number": side.page_number,
           "texture": side.texture, 
           "image": side.image,
           "script_direction": side.script_direction,

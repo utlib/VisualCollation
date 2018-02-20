@@ -38,7 +38,7 @@ import {
   updateLeaves,
   deleteLeaf,
   deleteLeaves,
-  generateFolioNumbers
+  generateFolioPageNumbers
 } from '../../actions/frontend/before/leafActions';
 
 import {
@@ -118,7 +118,10 @@ const frontendBeforeActionsMiddleware = store => next => action => {
       break;
     // Leaf Actions
     case "GENERATE_FOLIO_NUMBERS_FRONTEND":
-      action.payload.response = generateFolioNumbers(action, cloneDeep(store.getState().active))
+      action.payload.response = generateFolioPageNumbers(action, cloneDeep(store.getState().active), "folio_number")
+      break;
+    case "GENERATE_PAGE_NUMBERS_FRONTEND":
+      action.payload.response = generateFolioPageNumbers(action, cloneDeep(store.getState().active), "page_number")
       break;
     case "AUTOCONJOIN_LEAFS_FRONTEND":
       let leafIDsToAutoConjoin = action.payload.request.data.leafs

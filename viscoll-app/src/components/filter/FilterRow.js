@@ -96,7 +96,7 @@ class FilterRow extends Component {
             <TextField 
               hintText="Value" 
               style={{paddingTop: 24, width: '100%'}}
-              onChange={(e,v)=>this.props.onChange(this.props.queryIndex,"values",e,0,[v])}
+              onChange={(e,v)=>this.props.onChange(this.props.queryIndex,"values",0,[v])}
               tabIndex={this.props.tabIndex}
               {...floatFieldLight}
             />;

@@ -123,6 +123,7 @@ export default function editCollationReducer(state=initialState, action) {
     case "DELETE_MANIFEST_FRONTEND":
     case "CREATE_NOTE_FRONTEND":
     case "GENERATE_FOLIO_NUMBERS_FRONTEND":
+    case "GENERATE_PAGE_NUMBERS_FRONTEND":
       state = action.payload.response
       break;
     case "UPDATE_PREFERENCES_FRONTEND":

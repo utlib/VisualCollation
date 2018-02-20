@@ -27,6 +27,7 @@ class ProjectsController < ApplicationController
       # Run validatins for groups params
       allGroups = group_params.to_h["groups"]
       folioNumber = group_params.to_h["folioNumber"]
+      pageNumber = group_params.to_h["pageNumber"]
 
       validationResult = validateProjectCreateGroupsParams(allGroups)
       if (not validationResult[:status])
@@ -44,7 +45,7 @@ class ProjectsController < ApplicationController
       if @project.save
         # If groups params were given, create the Groups & Leaves & auto-conjoin if required
         if (not allGroups.empty?)
-          addGroupsLeafsConjoin(@project, allGroups, folioNumber)
+          addGroupsLeafsConjoin(@project, allGroups, folioNumber, pageNumber)
         end
         # Get list of all projects of current user to return in response
         @projects = current_user.projects.order_by(:updated_at => 'desc')
@@ -217,7 +218,7 @@ class ProjectsController < ApplicationController
   end
 
   def group_params
-    params.permit(:folioNumber, :groups => [:number, :leaves, :conjoin, :oddLeaf])
+    params.permit(:folioNumber, :pageNumber, :groups => [:number, :leaves, :conjoin, :oddLeaf])
   end
 
   def manifest_params

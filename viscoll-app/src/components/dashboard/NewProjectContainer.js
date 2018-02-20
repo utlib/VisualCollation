@@ -20,8 +20,8 @@ export default class NewProjectContainer extends React.Component {
       quireNo: 2,
       leafNo: 10,
       conjoined: true,
-      startFolioNumber: 1,
-      generateFolioNumber: false,
+      startFolioPageNumber: 1,
+      generateFolioPageNumber: null,
       collationGroups: [],
       errors: {
         title: "",
@@ -47,8 +47,8 @@ export default class NewProjectContainer extends React.Component {
       quireNo: 1,
       leafNo: 10,
       conjoined: true,
-      startFolioNumber: 1,
-      generateFolioNumber: false,
+      startFolioPageNumber: 1,
+      generateFolioPageNumber: null,
       collationGroups: [],
       errors: {
         title: "",
@@ -201,11 +201,12 @@ export default class NewProjectContainer extends React.Component {
         },
         preferences: {
           showTips: true,
-          side: this.state.generateFolioNumber?{folio_number:true}:{},
+          side: this.state.generateFolioPageNumber!==null?{[this.state.generateFolioPageNumber]:true}:{},
         }
       },
       groups: [],
-      folioNumber: this.state.generateFolioNumber? this.state.startFolioNumber : null,
+      folioNumber: this.state.generateFolioPageNumber==="folio_number"? this.state.startFolioPageNumber : null,
+      pageNumber: this.state.generateFolioPageNumber==="page_number"? this.state.startFolioPageNumber : null,
     }
     this.state.collationGroups.forEach((group)=>request.groups.push(group));
     this.props.createProject(request, user);
@@ -264,8 +265,8 @@ export default class NewProjectContainer extends React.Component {
         />;
       } else {
         content = <ProjectOptions
-          startFolioNumber={this.state.startFolioNumber}
-          generateFolioNumber={this.state.generateFolioNumber}
+          startFolioPageNumber={this.state.startFolioPageNumber}
+          generateFolioPageNumber={this.state.generateFolioPageNumber}
           previousStep={()=>this.set("step", 3)}
           finish={this.finish}
           set={this.set}

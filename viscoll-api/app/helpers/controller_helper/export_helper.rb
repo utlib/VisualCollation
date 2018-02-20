@@ -95,7 +95,8 @@ module ControllerHelper
         parentOrder =  @leafIDs.index(recto.parentID) + 1
         @rectos[index + 1] = {
           "params": {
-            "folio_number": recto.folio_number ? recto.folio_number : parentOrder.to_s + recto.id[0],
+            "folio_number": recto.folio_number ? recto.folio_number : "",
+            "page_number": recto.page_number ? recto.page_number : "",
             "texture": recto.texture, 
             "image": recto.image,
             "script_direction": recto.script_direction
@@ -109,7 +110,8 @@ module ControllerHelper
         parentOrder =  @leafIDs.index(verso.parentID) + 1
         @versos[index + 1] = {
           "params": {
-            "folio_number": verso.folio_number ? verso.folio_number : parentOrder.to_s + verso.id[0],
+            "folio_number": verso.folio_number ? verso.folio_number : "",
+            "page_number": verso.page_number ? verso.page_number : "",
             "texture": verso.texture, 
             "image": verso.image,
             "script_direction": verso.script_direction
@@ -332,6 +334,7 @@ module ControllerHelper
                 end
                 @allLeafAttributeValues += leafAttributeValues
               end
+              @leafs[leafID]["xmlID"] = leafAttributes["xml:id"]
             end
           end
           leafAttribute = {"xml:id": 'leaf_attachment_method'}
@@ -354,29 +357,34 @@ module ControllerHelper
           end
 
           # Side Attributes Taxonomy
-          ['texture', 'script_direction'].each do |attribute|
+          ['texture', 'script_direction', 'page_number'].each do |attribute|
             sideAttribute = {"xml:id": 'side_'+attribute}
             sideAttributeValues = []
             @rectos.each do |rectoID, recto|
-              if not sideAttributeValues.include? recto[attribute] and recto[attribute] != "None"
+              if recto[attribute] == nil and not sideAttributeValues.include? "EMPTY" 
+                sideAttributeValues.push("EMPTY")
+              elsif recto[attribute] != nil and not sideAttributeValues.include? recto[attribute] and recto[attribute] != "None"
                 sideAttributeValues.push(recto[attribute])
               end
             end
             @versos.each do |versoID, verso|
-              if not sideAttributeValues.include? verso[attribute] and verso[attribute] != "None"
+              if verso[attribute] == nil and not sideAttributeValues.include? "EMPTY" 
+                sideAttributeValues.push("EMPTY")
+              elsif verso[attribute] != nil and not sideAttributeValues.include? verso[attribute] and  verso[attribute] != "None"
                 sideAttributeValues.push(verso[attribute])
               end
             end
             if not sideAttributeValues.empty?
-              xml.taxonomy sideAttribute do            
+              xml.taxonomy sideAttribute do
                 xml.label do
                   xml.text 'List of values for Side ' + attribute
                 end
-              
                 sideAttributeValues.each do |attributeValue| 
-                  termID = {"xml:id": "side_"+attribute+"_"+attributeValue.parameterize.underscore}
-                  xml.term termID do
-                    xml.text attributeValue
+                  if attributeValue
+                    termID = {"xml:id": "side_"+attribute+"_"+attributeValue.parameterize.underscore}
+                    xml.term termID do
+                      xml.text attributeValue
+                    end
                   end
                 end
                 @allSideAttributeValues += sideAttributeValues
@@ -492,6 +500,11 @@ module ControllerHelper
                 else
                   rectoAttributes[:folioNumber] = folioNumber[:val].to_s+"R"
                 end
+                if rectoSide.page_number
+                  rectoAttributes[:page_number] = rectoSide.page_number
+                else 
+                  rectoAttributes[:page_number] = "EMPTY"
+                end
                 rectoAttributes[:texture] = rectoSide.texture unless rectoSide.texture == "None"
                 rectoAttributes[:script_direction] = rectoSide.script_direction unless rectoSide.script_direction == "None"
                 rectoAttributes[:image] = rectoSide.image[:url] unless rectoSide.image.empty?
@@ -499,7 +512,6 @@ module ControllerHelper
                 # xml.side rectoAttributes
                 @rectos[leaf.rectoID] = rectoAttributes
                 @rectos[leaf.rectoID]["recto"] = rectoSide
-
                 versoSide = project.sides.find(leaf.versoID)
                 versoAttributes = {}
                 versoAttributes["xml:id"] = leafAttributes["xml:id"]
@@ -508,6 +520,11 @@ module ControllerHelper
                   versoAttributes[:folioNumber] = versoSide.folio_number
                 else
                   versoAttributes[:folioNumber] = folioNumber[:val].to_s+"R"
+                end
+                if versoSide.page_number
+                  versoAttributes[:page_number] = versoSide.page_number
+                else 
+                  versoAttributes[:page_number] = "EMPTY"
                 end
                 versoAttributes[:texture] = versoSide.texture unless versoSide.texture == "None"
                 versoAttributes[:script_direction] = versoSide.script_direction unless versoSide.script_direction == "None"
@@ -623,10 +640,12 @@ module ControllerHelper
               linkedNotes = (recto.notes.map {|note| "#note_title"+"_"+note.title.parameterize.underscore}).join(" ")
               linkedImage = recto.image.empty? ? "" : recto.image[:url]
               linkedAttributes = []
-              ['texture', 'script_direction'].each do |attribute|
+              ['texture', 'script_direction', 'page_number'].each do |attribute|
                 attributeValue = recto[attribute]
-                if @allSideAttributeValues.include? attributeValue
+                if @allSideAttributeValues.include? attributeValue and attributeValue
                   linkedAttributes.push("side_"+attribute+"_"+attributeValue.parameterize.underscore)
+                elsif attributeValue==nil and attribute=="page_number" and @allSideAttributeValues.include? "EMPTY"
+                  linkedAttributes.push("side_"+attribute+"_EMPTY")
                 end
               end
               linkedAttributes = linkedAttributes.empty? ? "" : linkedAttributes.join(" #")
@@ -656,10 +675,12 @@ module ControllerHelper
               linkedNotes = (verso.notes.map {|note| "#note_title"+"_"+note.title.parameterize.underscore}).join(" ")
               linkedImage = verso.image.empty? ? "" : verso.image[:url]
               linkedAttributes = []
-              ['texture', 'script_direction'].each do |attribute|
+              ['texture', 'script_direction', 'page_number'].each do |attribute|
                 attributeValue = verso[attribute]
-                if @allSideAttributeValues.include? attributeValue
+                if @allSideAttributeValues.include? attributeValue and attributeValue
                   linkedAttributes.push("side_"+attribute+"_"+attributeValue.parameterize.underscore)
+                elsif attributeValue==nil and attribute=="page_number" and @allSideAttributeValues.include? "EMPTY"
+                  linkedAttributes.push("side_"+attribute+"_EMPTY")
                 end
               end
               linkedAttributes = linkedAttributes.empty? ? "" : linkedAttributes.join(" #")

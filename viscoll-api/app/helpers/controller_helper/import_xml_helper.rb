@@ -115,7 +115,7 @@ module ControllerHelper
       allLeafNodes = xml.xpath('//x:leaf', "x" => "http://schoenberginstitute.org/schema/collation")
       allLeafNodes.each_with_index do |leafNode, index|
         leafNodeID = leafNode.attributes["id"].value
-        stub = leafNode.attributes["stube"] ? "Original" : "None"
+        stub = leafNode.attributes["stub"] ? "Original" : "None"
         type = "None"
         conjoinedToNodeID = nil
         leafOrder = index+1
@@ -160,6 +160,7 @@ module ControllerHelper
         @rectos[leafOrder] = {
           params: {
             folio_number: nil,
+            page_number: nil,
             texture: "None",
             image: {},
             script_direction: "None"
@@ -170,6 +171,7 @@ module ControllerHelper
         @versos[leafOrder] = {
           params: {
             folio_number: nil,
+            page_number: nil,
             texture: "None",
             image: {},
             script_direction: "None"
@@ -199,7 +201,7 @@ module ControllerHelper
       end
 
       # In @leafs, Update conjoined_to from nodeIDs to globalOrders.
-      # Also Map material, attachment_methods (for Leaves), texture, script_direction (for Sides) and noteTitles. 
+      # Also Map material, attachment_methods (for Leaves), texture, script_direction, page_number (for Sides) and noteTitles. 
       @leafs.each do |leafOrder, attributes|    
         if @leafs[leafOrder][:conjoined_leaf_order]
           @leafs[leafOrder][:conjoined_leaf_order] = @allLeafNodeIDsInOrder.index(attributes[:conjoined_leaf_order])+1
@@ -238,6 +240,7 @@ module ControllerHelper
                     if leafMappingNode.attributes["side"].value=="recto"
                       sideTermTaxonomyID=="side_texture" ? @rectos[leafOrder][:params][:texture]=sideTerm.text : nil
                       sideTermTaxonomyID=="side_script_direction" ? @rectos[leafOrder][:params][:script_direction]=sideTerm.text : nil
+                      sideTermTaxonomyID=="side_page_number" ? @rectos[leafOrder][:params][:page_number]=sideTerm.text : nil
                       sideTermTaxonomyID=="manifests" ? @rectos[leafOrder][:params][:image][:manifestID]=sideTerm.attributes["id"].value.split("_")[1] : nil
                       if sideTermTaxonomyID=="note_title"
                        @rectos[leafOrder][:noteTitles].push(sideTerm.text) unless @rectos[leafOrder][:noteTitles].include? sideTerm.text
@@ -245,6 +248,7 @@ module ControllerHelper
                     else
                       sideTermTaxonomyID=="side_texture" ? @versos[leafOrder][:params][:texture]=sideTerm.text : nil
                       sideTermTaxonomyID=="side_script_direction" ? @versos[leafOrder][:params][:script_direction]=sideTerm.text : nil
+                      sideTermTaxonomyID=="side_page_number" ? @versos[leafOrder][:params][:page_number]=sideTerm.text : nil
                       sideTermTaxonomyID=="manifests" ? @versos[leafOrder][:params][:image][:manifestID]=sideTerm.attributes["id"].value.split("_")[1] : nil
                       if sideTermTaxonomyID=="note_title"
                        @versos[leafOrder][:noteTitles].push(sideTerm.text) unless @versos[leafOrder][:noteTitles].include? sideTerm.text

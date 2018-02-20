@@ -98,7 +98,10 @@ export const initialState = {
           name: 'folio_number',
           displayName: 'Folio Number',
         },
-
+        {
+          name: 'page_number',
+          displayName: 'Page Number',
+        },
         {
           name: 'script_direction',
           displayName: 'Script Direction',

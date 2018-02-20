@@ -7,7 +7,7 @@ import {
   undoDeleteLeaf,
   undoDeleteLeaves,
   undoAutoconjoin,
-  undoFolioNumbers,
+  undoFolioPageNumbers,
 } from '../../actions/undoRedo/leafHelper';
 
 import {
@@ -109,7 +109,10 @@ const undoRedoMiddleware = store => next => action => {
       historyAction = undoAutoconjoin(action, store.getState().active);
       break;
     case "GENERATE_FOLIO_NUMBERS_FRONTEND":
-      historyAction = undoFolioNumbers(action, store.getState().active);
+      historyAction = undoFolioPageNumbers(action, store.getState().active, "folio_number");
+      break;
+    case "GENERATE_PAGE_NUMBERS_FRONTEND":
+      historyAction = undoFolioPageNumbers(action, store.getState().active, "page_number");
       break;
     case "UPDATE_GROUPS_FRONTEND":
       historyAction = undoUpdateGroups(action, store.getState().active);

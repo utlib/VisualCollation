@@ -6,22 +6,24 @@ import TextField from 'material-ui/TextField';
 import IconButton from 'material-ui/IconButton';
 import AddCircle from 'material-ui/svg-icons/content/add-circle';
 import RemoveCircle from 'material-ui/svg-icons/content/remove-circle-outline';
+import {RadioButton, RadioButtonGroup} from 'material-ui/RadioButton';
 import light from '../../../styles/light';
 
 /** Dialog to add leaves in a collation.  This component is used in the visual and tabular edit modes. */
-export default class AddLeafDialog extends React.Component {
+export default class FolioNumberDialog extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      folioNumber: this.props.defaultFolioNumber,
+      folioOrPage: null,
+      startNumber: this.props.defaultStartNumber,
       errorText: {
-        folioNumber: "",
+        startNumber: "",
       },
     };
   }
 
   componentWillReceiveProps(nextProps) {
-    this.setState({folioNumber: nextProps.defaultFolioNumber});
+    this.setState({startNumber: nextProps.defaultStartNumber});
   }
 
    /**
@@ -80,7 +82,7 @@ export default class AddLeafDialog extends React.Component {
     } else {
       value = parseInt(value, 10);
     }
-    if (stateName==="folioNumber" && (value<1 || value>9999)) {
+    if (stateName==="startNumber" && (value<1 || value>9999)) {
       errorState[stateName] = "Number must be between 1 and 9999";
     }
     let newState = {};
@@ -94,12 +96,17 @@ export default class AddLeafDialog extends React.Component {
 
   clearForm = () => {
     this.setState({
-      errorText: { folioNumber: "" }, 
+      folioOrPage: null,
+      errorText: { startNumber: "" }, 
     })
   }
 
   submit = () => {
-    this.props.action.generateFolioNumbers(this.state.folioNumber);
+    if (this.state.folioOrPage==="folio_number") {
+      this.props.action.generateFolioNumbers(this.state.startNumber);
+    } else {
+      this.props.action.generatePageNumbers(this.state.startNumber);
+    }
     this.clearForm();
     this.props.toggleFolioModal(false);
   }
@@ -116,13 +123,13 @@ export default class AddLeafDialog extends React.Component {
         label="Submit"
         primary
         onClick={this.submit}
-        disabled={this.state.errorText.folioNumber!==""}
+        disabled={this.state.errorText.startNumber!==""}
         style={{width:"49%"}}
       />,
     ];
 
     return (<Dialog
-    title="Generate folio numbers"
+    title="Generate folio or page numbers"
     actions={actions}
     modal={false}
     open={this.props.folioModalOpen}
@@ -132,34 +139,56 @@ export default class AddLeafDialog extends React.Component {
     paperClassName="addDialog"
     >
     <div>
-      <div className="label">
-        <h4>Starting folio number</h4>
-      </div>
-      <div className="input">
-        <TextField
-          aria-label="Starting folio number"
-          name="folioNumber"
-          value={this.state.folioNumber}
-          errorText={this.state.errorText.folioNumber}
-          onChange={(e,v)=>this.onNumberChange("folioNumber", v)}
-          style={{width:"100px"}}
-          inputStyle={{textAlign:"center"}}
-        />
-        <IconButton
-          aria-label="Decrement folio number"
-          name="Decrement folio number"
-          onClick={(e) => this.decrementNumber("folioNumber", 1, 9999, e)}
-        >
-          <RemoveCircle color={light.palette.primary1Color} />
-        </IconButton>
-        <IconButton
-          aria-label="Increment folio number"
-          name="Increment folio number"
-          onClick={(e) => this.incrementNumber("folioNumber", 1, 9999, e)}
-        >
-          <AddCircle color={light.palette.primary1Color} />
-        </IconButton>
-      </div>
+      <h4 style={{marginBottom:"1em"}}>Generate...</h4>
+      <RadioButtonGroup 
+        name="folioOrPage" 
+        defaultSelected={""} 
+        onChange={(e,v)=>this.setState({folioOrPage: v})}
+      >
+        <RadioButton
+          aria-label="Generate folio numbers"
+          value="folio_number"
+          label="Folio numbers"
+        /> 
+        <RadioButton
+          aria-label="Generate page numbers"
+          value="page_number"
+          label="Page numbers"
+        /> 
+      </RadioButtonGroup>
+
+      {this.state.folioOrPage? 
+        <div>
+          <div className="label">
+            <h4>Starting number</h4>
+          </div>
+          <div className="input">
+            <TextField
+              aria-label="Starting folio number"
+              name="startNumber"
+              value={this.state.startNumber}
+              errorText={this.state.errorText.startNumber}
+              onChange={(e,v)=>this.onNumberChange("startNumber", v)}
+              style={{width:"100px"}}
+              inputStyle={{textAlign:"center"}}
+            />
+            <IconButton
+              aria-label="Decrement folio number"
+              name="Decrement folio number"
+              onClick={(e) => this.decrementNumber("startNumber", 1, 9999, e)}
+            >
+              <RemoveCircle color={light.palette.primary1Color} />
+            </IconButton>
+            <IconButton
+              aria-label="Increment folio number"
+              name="Increment folio number"
+              onClick={(e) => this.incrementNumber("startNumber", 1, 9999, e)}
+            >
+              <AddCircle color={light.palette.primary1Color} />
+            </IconButton>
+          </div>
+        </div>
+      :""}
     </div>
     </Dialog>);
   }

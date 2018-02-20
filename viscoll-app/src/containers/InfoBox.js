@@ -15,6 +15,7 @@ import {
     deleteLeaf,
     deleteLeafs,
     generateFolioNumbers,
+    generatePageNumbers,
 } from '../actions/backend/leafActions';
 import {
     addGroups,
@@ -251,6 +252,19 @@ class InfoBox extends React.Component {
     this.props.generateFolioNumbers(startNumber, rectoIDs, versoIDs);
   }
 
+  generatePageNumbers = (startNumber) => {
+    let leafIDs = this.props.collationManager.selectedObjects.members;
+    let rectoIDs = [];
+    let versoIDs = [];
+
+    for (const leafID of leafIDs) {
+      const leaf = this.props.Leafs[leafID];
+      rectoIDs.push(leaf.rectoID);
+      versoIDs.push(leaf.versoID);
+    }
+    this.props.generatePageNumbers(startNumber, rectoIDs, versoIDs);
+  }
+
   handleChangeInfoBoxTab = (value, event) => {
     this.props.changeInfoBoxTab(
       value, 
@@ -388,6 +402,7 @@ class InfoBox extends React.Component {
               deleteLeaf: this.deleteLeaf, 
               deleteLeafs: this.deleteLeafs,
               generateFolioNumbers: this.generateFolioNumbers,
+              generatePageNumbers: this.generatePageNumbers,
               updatePreferences: this.updatePreferences,
               ...noteActions
             }} 
@@ -605,6 +620,11 @@ const mapDispatchToProps = (dispatch) => {
     generateFolioNumbers: (startNumber, rectoIDs, versoIDs) => {
       dispatch(generateFolioNumbers(startNumber, rectoIDs, versoIDs));
     },
+
+    generatePageNumbers: (startNumber, rectoIDs, versoIDs) => {
+      dispatch(generatePageNumbers(startNumber, rectoIDs, versoIDs));
+    },
+
     updatePreferences: (projectID, project) => {
       dispatch(updatePreferences(projectID, project));
     }

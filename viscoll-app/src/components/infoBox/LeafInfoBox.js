@@ -227,6 +227,8 @@ export default class LeafInfoBox extends React.Component {
       let eyeIsChecked = this.props.preferences.leaf && this.props.preferences.leaf[attributeDict.name]?this.props.preferences.leaf[attributeDict.name]:false;
 
       if (this.props.viewMode==="TABULAR" && this.state.isBatch) {
+
+      if (this.props.viewMode==="TABULAR" && this.state.isBatch) {
         eyeCheckbox = 
         <div className="tooltip eyeToggle">
           <Checkbox
@@ -419,7 +421,7 @@ export default class LeafInfoBox extends React.Component {
       <RaisedButton 
         primary 
         onClick={()=>this.toggleFolioModal(true)} 
-        label="Generate folio numbers"
+        label="Generate folio/page numbers"
         {...btnBase()}
         style={{...btnBase().style,marginBottom:10,width:"100%"}}
         tabIndex={this.props.tabIndex} 
@@ -553,10 +555,13 @@ export default class LeafInfoBox extends React.Component {
             {imageModalContent}
           </Dialog>
           <FolioNumberDialog
-            defaultFolioNumber={this.props.leafIDs.indexOf(this.props.selectedLeaves[0])+1}
+            defaultStartNumber={this.props.leafIDs.indexOf(this.props.selectedLeaves[0])+1}
             folioModalOpen={this.state.folioModalOpen}
             toggleFolioModal={this.toggleFolioModal}
-            action={{generateFolioNumbers: this.props.action.generateFolioNumbers}}
+            action={{
+              generateFolioNumbers: this.props.action.generateFolioNumbers,
+              generatePageNumbers: this.props.action.generatePageNumbers,
+            }}
           />
       </div>
     );

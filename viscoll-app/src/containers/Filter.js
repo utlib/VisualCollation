@@ -146,7 +146,7 @@ class Filter extends Component {
     let validQueries = true;
     for (let i=0; i<updatedQueries.length; i++) {
       // Check if this row of query is complete
-      const isComplete = updatedQueries[i].type!==null && updatedQueries[i].attribute!=="" && updatedQueries[i].attributeIndex!=="" && updatedQueries[i].condition!=="" && updatedQueries[i].values.length>0;
+      const isComplete = updatedQueries[i].type!==null && updatedQueries[i].attribute!=="" && updatedQueries[i].attributeIndex!=="" && updatedQueries[i].condition!=="" && updatedQueries[i].values.length>0 && updatedQueries[i].values.findIndex((value)=>value==="")<0;
       if (!isComplete) {
         validQueries = false;
         break;
@@ -246,6 +246,8 @@ class Filter extends Component {
       if (query.attribute === "")
         haveErrors = true
       if (query.values.length === 0)
+        haveErrors = true
+      if (query.values.find((value)=>value==="")>=0)
         haveErrors = true
       if (query.condition === "")
         haveErrors = true
