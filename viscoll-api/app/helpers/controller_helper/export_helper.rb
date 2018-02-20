@@ -334,7 +334,6 @@ module ControllerHelper
                 end
                 @allLeafAttributeValues += leafAttributeValues
               end
-              @leafs[leafID]["xmlID"] = leafAttributes["xml:id"]
             end
           end
           leafAttribute = {"xml:id": 'leaf_attachment_method'}
