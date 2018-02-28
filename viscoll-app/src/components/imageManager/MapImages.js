@@ -8,6 +8,7 @@ import Dialog from 'material-ui/Dialog';
 import SelectField from '../global/SelectField';
 import { btnBase } from '../../styles/button';
 
+/** Map Images page */
 export default class MapImages extends Component {
 
   constructor(props) {

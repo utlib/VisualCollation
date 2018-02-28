@@ -16,6 +16,7 @@ import { checkboxStyle } from '../../styles/checkbox';
 import { btnBase } from '../../styles/button';
 import FolioNumberDialog from '../infoBox/dialog/FolioNumberDialog';
 
+/** Leaf infobox */
 export default class LeafInfoBox extends React.Component {
 
   constructor(props) {
@@ -30,7 +31,6 @@ export default class LeafInfoBox extends React.Component {
       ...this.visibilityHoverState(),
     }
   }
-  
 
   visibilityHoverState() {
     let state = {};
@@ -40,8 +40,10 @@ export default class LeafInfoBox extends React.Component {
     return state;
   }
 
-  // Creates a dictionary of attributes and if its toggled on or off during batch edit
-  // This is used for the checkbox states
+  /**
+   *  Creates a dictionary of attributes and if its toggled on or off during batch edit
+   *  This is used for the checkbox states
+   */
   batchAttributeToggleState = () => {
     let state = {};
     for (var i in this.props.defaultAttributes) {
@@ -50,7 +52,9 @@ export default class LeafInfoBox extends React.Component {
     return state;
   }
 
-  // Creates a dictionary of attributes with no values
+  /**
+   * Creates a dictionary of attributes with no values
+   */  
   emptyAttributeState = () => {
     let state = {};
     for (var i in this.props.defaultAttributes) {
@@ -78,6 +82,7 @@ export default class LeafInfoBox extends React.Component {
       }
     return false;
   }
+
   dropDownChange = (value, attributeName) => {
     if (this.props.selectedLeaves.length===1) {
       // In single edit - we submit change immediately
@@ -132,9 +137,11 @@ export default class LeafInfoBox extends React.Component {
     this.setState({...this.batchAttributeToggleState()});
   }
 
-  // Returns dictionary of attribute names and values
-  // If multiple selected leaves have conflicting values,
-  // the value of that attribute will be set to null
+  /**
+   *  Returns dictionary of attribute names and values
+   *  If multiple selected leaves have conflicting values,
+   *  the value of that attribute will be set to null
+   */
   getAttributeValues() {
     let leafAttributes = {};
     for (var i in this.props.defaultAttributes) {
@@ -152,7 +159,9 @@ export default class LeafInfoBox extends React.Component {
     return leafAttributes;
   }
 
-  // Handle checkbox toggling by updating relevant attribute state
+  /**
+   *  Handle checkbox toggling by updating relevant attribute state
+   */
   toggleCheckbox = (target) => {
     let newToggleState = {};
     newToggleState["batch_"+target]= !this.state["batch_"+target];
@@ -189,13 +198,16 @@ export default class LeafInfoBox extends React.Component {
     this.setState({imageModalOpen})
     this.props.togglePopUp(imageModalOpen);
   }
+
   toggleFolioModal = (folioModalOpen) => {  
     this.setState({folioModalOpen})
     this.props.togglePopUp(folioModalOpen);
   }
+
   clickVisibility = (attributeName, value) => {
     this.props.action.updatePreferences({leaf:{...this.props.preferences.leaf, [attributeName]:value}});
   }
+  
   render() {
     let leafAttributes = this.getAttributeValues();
     let attributeDivs = [];
@@ -225,6 +237,8 @@ export default class LeafInfoBox extends React.Component {
       // Generate eye toggle checkbox
       let eyeCheckbox = "";
       let eyeIsChecked = this.props.preferences.leaf && this.props.preferences.leaf[attributeDict.name]?this.props.preferences.leaf[attributeDict.name]:false;
+
+
 
       if (this.props.viewMode==="TABULAR" && this.state.isBatch) {
         eyeCheckbox = 

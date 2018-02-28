@@ -50,21 +50,11 @@ class InfoBox extends React.Component {
     }
   }
 
-  /**
-   * Toggle the add group dialog
-   * @param {boolean} value 
-   * @public
-   */
   toggleAddGroupDialog = (value=false) => {
     this.setState({ addGroupDialogOpen: value });
     this.props.togglePopUp(value);
   }
 
-  /**
-   * Submit add leaf request
-   * @param {object} data 
-   * @public
-   */
   addLeafs = (data) => { 
     let leafIDs = [];
     const userID = this.props.user.id;
@@ -84,62 +74,21 @@ class InfoBox extends React.Component {
     this.props.addLeafs(data.leaf, data.additional, this.props.projectID, this.props.filters); 
   }
 
-  /**
-   * Submit update leaf request
-   * @param {string} leafID 
-   * @param {object} leaf 
-   * @public
-   */
   updateLeaf = (leafID, leaf) => { this.props.updateLeaf(leafID, leaf, this.props.projectID, this.props.filters); }
 
-  /**
-   * Submit update multiple leaves request
-   * @param {object} leafs
-   * @public
-   */
   updateLeafs = (leafs) => { this.props.updateLeafs(leafs, this.props.projectID, this.props.filters); }
 
-  /**
-   * Submit conjoin leaves request
-   * @public
-   */
   autoConjoinLeafs = () => { 
     this.props.autoConjoinLeafs(this.props.selectedObjects.members, this.props.projectID, this.props.filters); }
 
-  /**
-   * Submit delete leaf request
-   * @param {string} leafID
-   * @public
-   */
   deleteLeaf = (leafID) => { this.props.deleteLeaf(leafID, this.props.projectID, this.props.filters); }
 
-  /**
-   * Submit delete multiple leaves request
-   * @param {object} leafs
-   * @public
-   */
   deleteLeafs = (leafs) => { this.props.deleteLeafs(leafs, this.props.projectID, this.props.filters); }
 
-  /**
-   * Submit update group request
-   * @param {string} groupID
-   * @param {object} group
-   * @public
-   */
   updateGroup = (groupID, group) => { this.props.updateGroup(groupID, group, this.props.projectID, this.props.filters); }
 
-  /**
-   * Submit update multiple groups request
-   * @param {object} data
-   * @public
-   */
   updateGroups = (groups) => { this.props.updateGroups(groups, this.props.projectID, this.props.filters); }
 
-  /**
-   * Submit add multiple groups request
-   * @param {object} data
-   * @public
-   */
   addGroups = (data) => { 
     const userID = this.props.user.id;
     let groupIDs = [];
@@ -166,33 +115,12 @@ class InfoBox extends React.Component {
     this.props.addGroups(data.group, data.additional, this.props.projectID, this.props.filters); 
   }
 
-  /**
-   * Submit delete group request
-   * @param {string} groupID
-   * @public
-   */
   deleteGroup = (groupID) => { this.props.deleteGroup(groupID, this.props.projectID, this.props.filters); }
 
-  /**
-   * Submit delete multiple groups request
-   * @param {object} groups
-   * @public
-   */
   deleteGroups = (groups) => { this.props.deleteGroups(groups, this.props.projectID, this.props.filters); }
 
-  /**
-   * Submit update side request
-   * @param {string} sideID
-   * @param {object} side
-   * @public
-   */
   updateSide = (sideID, side) => { this.props.updateSide(sideID, side, this.props.projectID, this.props.filters); }
 
-  /**
-   * Submit update multiple sides request
-   * @param {object} sides
-   * @public
-   */
   updateSides = (sides) => { this.props.updateSides(sides, this.props.projectID, this.props.filters); }
 
   linkNote = (noteID) => {
@@ -279,7 +207,6 @@ class InfoBox extends React.Component {
     const preferences = {...this.props.preferences, ...newPreferences};
     this.props.updatePreferences(this.props.projectID, {preferences});
   }
-
 
   render() {
     if (Object.keys(this.props.Groups).length===0){

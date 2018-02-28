@@ -14,7 +14,6 @@ import Redo from 'material-ui/svg-icons/content/redo';
 import Image from 'material-ui/svg-icons/image/image';
 import imgLogo from '../assets/logo_white.svg';
 import {btnBase} from "../styles/button";
-
 import { connect } from "react-redux";
 import { 
   logout,
@@ -49,47 +48,25 @@ class TopBar extends Component {
     }
   }
 
-  /**
-   * Pass the user object to the `updateProfile` action
-   * @param {object} user 
-   * @public
-   */
   handleUserProfileUpdate = (user) => {
     const userID = this.props.user.id;
     this.props.updateProfile(user, userID);
   }
 
-  /**
-   * Toggle user profile modal
-   * @param {boolean} userProfileModalOpen 
-   * @public
-   */
   toggleUserProfile = (userProfileModalOpen=false) => {
     this.setState({ userProfileModalOpen });
     this.props.togglePopUp(userProfileModalOpen);
   }
 
-  /**
-   * Delete user account
-   * @public
-   */
   handleUserAccountDelete = () => {
     const userID = this.props.user.id;
     this.props.deleteProfile(userID);
   }
 
-  /**
-   * Log out user
-   * @public
-   */
   handleUserLogout = () => {
     this.props.logoutUser();
   }
 
-  /**
-   * Redirect to dashboard
-   * @public
-   */
   goHome = () => {
     if (this.props.history.location.pathname.includes("dashboard")) {
       this.props.goToDashboardProjectList();

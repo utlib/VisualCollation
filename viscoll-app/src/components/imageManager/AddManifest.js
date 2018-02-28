@@ -5,6 +5,7 @@ import {floatFieldLight} from '../../styles/textfield';
 import UploadImages from './UploadImages';
 import { btnBase } from '../../styles/button';
 
+/** Form to submit a new manifest */
 export default class AddManifest extends Component {
   constructor(props) {
     super(props);

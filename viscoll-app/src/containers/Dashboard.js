@@ -82,8 +82,6 @@ class Dashboard extends Component {
   handleProjectSelection = (index) => {
     if (index>=0) {
       let project = this.props.projects[index];
-      // let toggle = this.state.projectDrawerOpen;
-      // if (this.state.selectedProject) {toggle = !toggle};
       this.setState({projectDrawerOpen: true, selectedProject: project});
     } 
   }
@@ -112,7 +110,6 @@ class Dashboard extends Component {
       }
     });
   }
-
 
   modalIsOpen = () => {
     return this.state.deleteConfirmationOpen || this.state.feedbackOpen || this.state.newProjectModalOpen || this.state.newProjectPopoverOpen || this.state.userProfileDialogOpen;

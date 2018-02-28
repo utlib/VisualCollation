@@ -3,9 +3,8 @@ import EditNoteForm from '../../notesManager/EditNoteForm';
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
 
+/** Note dialog */
 export default class NoteDialog extends React.Component {
-
-
   getLinkedGroups = () => {
     const groupsWithCurrentNote = Object.keys(this.props.Groups).filter((groupID) => {
       return (this.props.Groups[groupID].notes.includes(this.props.activeNote.id))

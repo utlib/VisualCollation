@@ -8,7 +8,7 @@ RSpec.describe ControllerHelper::ProjectsHelper, type: :helper do
         { 'leaves' => 2 },
         { 'leaves' => 4, 'conjoin' => true },
         { 'leaves' => 3, 'conjoin' => true, 'oddLeaf' => 2 }
-      ], nil, nil)
+      ], nil, nil, "Hair")
       expect(@project.groups.count).to eq 3
       expect(@project.groups[0].memberIDs.count).to eq 2
       expect(@project.groups[1].memberIDs.count).to eq 4
@@ -27,7 +27,7 @@ RSpec.describe ControllerHelper::ProjectsHelper, type: :helper do
         { 'leaves' => 2 },
         { 'leaves' => 4, 'conjoin' => true },
         { 'leaves' => 3, 'conjoin' => true, 'oddLeaf' => 2 }
-      ], 2, nil)
+      ], 2, nil, "Hair")
       expect(Side.find(Leaf.find(project.groups[0].memberIDs[0]).rectoID).folio_number).to eq "2R"
       expect(Side.find(Leaf.find(project.groups[0].memberIDs[0]).versoID).folio_number).to eq "2V"
       expect(Side.find(Leaf.find(project.groups[0].memberIDs[1]).rectoID).folio_number).to eq "3R"
@@ -39,11 +39,25 @@ RSpec.describe ControllerHelper::ProjectsHelper, type: :helper do
         { 'leaves' => 2 },
         { 'leaves' => 4, 'conjoin' => true },
         { 'leaves' => 3, 'conjoin' => true, 'oddLeaf' => 2 }
-      ], nil, 5)
+      ], nil, 5, "Hair")
       expect(Side.find(Leaf.find(project.groups[0].memberIDs[0]).rectoID).page_number).to eq "5"
       expect(Side.find(Leaf.find(project.groups[0].memberIDs[0]).versoID).page_number).to eq "6"
       expect(Side.find(Leaf.find(project.groups[0].memberIDs[1]).rectoID).page_number).to eq "7"
       expect(Side.find(Leaf.find(project.groups[0].memberIDs[1]).versoID).page_number).to eq "8"
+    end
+    it 'should generate correct patterns of texture' do
+      project = FactoryGirl.create(:project)
+      addGroupsLeafsConjoin(project, [
+        { 'leaves' => 4, 'conjoin' => true},
+        { 'leaves' => 4, 'conjoin' => true },
+        { 'leaves' => 3, 'conjoin' => true, 'oddLeaf' => 2 }
+      ], nil, 5, "Flesh")
+      expect(Side.find(Leaf.find(Group.find(project.groupIDs[0]).memberIDs[0]).rectoID).texture).to eq "Flesh"
+      expect(Side.find(Leaf.find(Group.find(project.groupIDs[0]).memberIDs[0]).versoID).texture).to eq "Hair"
+      expect(Side.find(Leaf.find(Group.find(project.groupIDs[0]).memberIDs[1]).rectoID).texture).to eq "Hair"
+      expect(Side.find(Leaf.find(Group.find(project.groupIDs[0]).memberIDs[1]).versoID).texture).to eq "Flesh"
+      expect(Side.find(Leaf.find(Group.find(project.groupIDs[0]).memberIDs[2]).rectoID).texture).to eq "Flesh"
+      expect(Side.find(Leaf.find(Group.find(project.groupIDs[0]).memberIDs[2]).versoID).texture).to eq "Hair"
     end
   end
   

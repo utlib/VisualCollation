@@ -1,6 +1,6 @@
 import React from 'react';
 
-
+/** Side element of collation used in tabular edit mode */
 const Side = (props) => {
   const { activeSide, project } = props;
   const { 
@@ -93,11 +93,8 @@ const Side = (props) => {
     );
   }
 
-
   return (
     sideComponent
   );
 }
-
-
 export default Side;

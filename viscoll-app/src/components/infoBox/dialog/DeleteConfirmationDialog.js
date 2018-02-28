@@ -23,19 +23,11 @@ export default class DeleteConfirmationDialog extends React.Component {
     window.removeEventListener("resize", this.resizeHandler);
   }
 
-  /**
-   * Open the dialog 
-   * @public
-   */
   handleOpen = () => {
     this.setState({open: true});
     this.props.togglePopUp(true);
   };
 
-  /**
-   * Close the dialog 
-   * @public
-   */
   handleClose = () => {
     this.setState({open: false});
     this.props.togglePopUp(false);
@@ -44,17 +36,17 @@ export default class DeleteConfirmationDialog extends React.Component {
   containsTacketedLeaf = () => {
     if (this.props.memberType==="Leaf") {
       for (const leafID of this.props.selectedObjects) {
-        if (this.props.Groups[this.props.Leafs[leafID].parentID].tacketed===leafID)
-        return true;
+        const group = this.props.Groups[this.props.Leafs[leafID].parentID];
+        if (
+          (group.tacketed.length>0 && (group.tacketed[0]===leafID || (group.tacketed[1] && group.tacketed[1]===leafID)))
+          ||
+          (group.sewing.length>0 && (group.sewing[0]===leafID || (group.sewing[1] && group.sewing[1]===leafID)))
+        ) return true;
       }
     }
     return false;
   }
 
-  /**
-   * Generate text depending of the type and number of selected object(s) 
-   * @public
-   */
   getTitle = () => {
     const memberType = this.props.memberType;
     const item = this.props[memberType+"s"][this.props.selectedObjects[0]];
@@ -63,24 +55,22 @@ export default class DeleteConfirmationDialog extends React.Component {
     if (item){
       if (this.containsTacketedLeaf()) {
         if (this.props.selectedObjects.length>1) {
-          return "One of the selected leaves is tacketed. You cannot delete tacketed leaves.";
+          return "One of the selected leaves is tacketed or sewn. You cannot delete tacketed/sewn leaves.";
         } else {
-          return "You cannot delete a leaf that is tacketed.";
+          return "You cannot delete a leaf that is tacketed or sewn.";
         }
       } else if (this.props.selectedObjects.length===1) {
         return "Are you sure you want to delete " + item.memberType.toLowerCase() + " " + itemOrder + "?";
       } else {
+        let itemName = item.memberType.toLowerCase();
+        if (itemName==="leaf") itemName = "leave";
         return "Are you sure you want to delete " + 
-        this.props.selectedObjects.length + " " + item.memberType.toLowerCase() + "s?";
+        this.props.selectedObjects.length + " " + itemName + "s?";
       }
     }
 
   }
 
-  /**
-   * Submit delete request and close dialog 
-   * @public
-   */
   submit = (e) => {
     if (e) e.preventDefault();
     if (this.props.selectedObjects.length===1) {

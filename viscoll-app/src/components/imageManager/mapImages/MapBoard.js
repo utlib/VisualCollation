@@ -6,9 +6,8 @@ import ArrowUp from 'material-ui/svg-icons/navigation/arrow-upward';
 import Remove from 'material-ui/svg-icons/content/remove-circle-outline';
 import VirtualList from 'react-tiny-virtual-list';
 
-
+/** Panel with the mapped sides and images */
 export default class MapBoard extends Component {
-
 
   renderSideItem = (index) => {
     const sideID = this.props.sideIDs[index];

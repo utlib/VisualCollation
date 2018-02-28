@@ -18,12 +18,15 @@ class FilterRow extends Component {
       return [];
     }
   }
+
   mapNoteAttributeMenuItems = (noteType, index) => {
     return { key:noteType+index, value:noteType, text:noteType }
   }
+
   mapAttributeMenuItems = (item, index) => {
     return { key:item.name+index, value:item.name, text:item.displayName}
   }
+  
   renderValueItems = (item, index) => {
     return <MenuItem insetChildren key={item} value={item} primaryText={item} checked={this.props.values && this.props.values.indexOf(item) > -1} />;
   }

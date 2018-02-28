@@ -4,7 +4,7 @@ import IconButton from 'material-ui/IconButton';
 import ExpandMore from 'material-ui/svg-icons/navigation/expand-more';
 import ExpandLess from 'material-ui/svg-icons/navigation/expand-less';
 
-/** Displays one group in the tabular edit mode. Recursively mounts nested groups and leaves. */
+/** Group element in the tabular edit mode. Recursively mounts nested groups and leaves. */
 export default class Group extends React.Component {
   constructor(props) {
     super(props);

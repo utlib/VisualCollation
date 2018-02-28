@@ -10,6 +10,9 @@ import {
 import {
   linkNote,
 } from '../backend/noteActions';
+import {
+  updateGroups,
+} from '../backend/groupActions';
 
 export function undoCreateLeaves(action, state) {
   const leafIDs = action.payload.request.data.additional.leafIDs.map((id)=>{return ("Leaf_"+id)});
@@ -222,6 +225,29 @@ export function helperUndoDeleteLeaves(leafIDs, state) {
       }
     }
   }
+  // Update parent group if leaves were part of sewing/tacket
+  const groupsRequest = [];
+  for (const leafID of leafIDs) {
+    const leaf = state.project.Leafs[leafID];
+    const group = state.project.Groups[leaf.parentID];
+    if (group.sewing.length>0 && (group.sewing[0]===leafID || (group.sewing[1] && group.sewing[1]===leafID))) {
+      groupsRequest.push({
+        id: group.id,
+        attributes: {
+          sewing: group.sewing,
+        }
+      });
+    }
+    if (group.tacketed.length>0 && (group.tacketed[0]===leafID || (group.tacketed[1] && group.tacketed[1]===leafID))) {
+      groupsRequest.push({
+        id: group.id,
+        attributes: {
+          tacketed: group.tacketed,
+        }
+      });
+    }
+  }
+  if (groupsRequest.length>0) historyActions.push(updateGroups(groupsRequest))
   return historyActions;
 }
 

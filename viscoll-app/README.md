@@ -20,7 +20,7 @@ Run this to install the dependencies:
 npm install
 ```
 
-Then run this to serve the user interface and bring up a browser window:
+Then run the dev server which brings up a browser window serving the user interface: 
 ```
 npm start
 ```
@@ -35,4 +35,18 @@ npm test
 Alternatively, run this command to test continually while monitoring for changes:
 ```
 npm test -- --watch
+```
+
+## Building
+
+Before building the app, edit line 3 in `viscoll-app/src/store/axiosConfig.js` to contain the correct root endpoint of the VisColl API: 
+
+```Javascript
+export let API_URL = '/api';
+
+```
+
+Build the app with:
+```
+npm build
 ```

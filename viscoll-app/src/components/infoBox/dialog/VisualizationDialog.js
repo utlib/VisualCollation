@@ -5,6 +5,7 @@ import FlatButton from 'material-ui/FlatButton';
 import RaisedButton from 'material-ui/RaisedButton';
 import SelectField from '../../global/SelectField';
 
+/** Dialog for creating/editing sewing or tacketed attribute */
 export default class VisualizationDialog extends React.Component {
 
   constructor(props) {

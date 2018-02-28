@@ -1,8 +1,7 @@
 import React from 'react';
 import Side from './Side';
 
-/** Stateless functional component that displays one leaf in the tabular edit mode.  */
-
+/** Leaf element of collation used in tabular edit mode*/
 const Leaf = (props) => {
   const { activeLeaf, project } = props;
   const {

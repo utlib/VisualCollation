@@ -39,18 +39,18 @@ class ExportController < ApplicationController
         schema = Nokogiri::XML::RelaxNG(File.open("public/viscoll-datamodel2.rng"))
         errors = schema.validate(xml)
         if errors.empty?
-          render json: {data: exportData, type: @format, Images: {exportedImages:@zipFilePath ? @zipFilePath : false}}, status: :ok
+          render json: {data: exportData, type: @format, Images: {exportedImages:@zipFilePath ? @zipFilePath : false}}, status: :ok and return
         else
-          render json: {data: errors, type: @format}, status: :unprocessable_entity
+          render json: {data: errors, type: @format}, status: :unprocessable_entity and return
         end
       when "json"
         @data = buildJSON(@project)    
-        render :'exports/show', status: :ok
+        render :'exports/show', status: :ok and return
       else
-        render json: {error: "Export format must be one of [json, xml]"}, status: :unprocessable_entity
+        render json: {error: "Export format must be one of [json, xml]"}, status: :unprocessable_entity and return
       end
     rescue Exception => e
-      render json: {error: e.message}, status: :internal_server_error
+      render json: {error: e.message}, status: :internal_server_error and return
     end
   end
 
@@ -59,13 +59,11 @@ class ExportController < ApplicationController
     begin
       @project = Project.find(params[:id])
       if (@project.user_id!=current_user.id)
-        render json: {error: ""}, status: :unauthorized
-        return
+        render json: {error: ""}, status: :unauthorized and return
       end
       @format = params[:format]
     rescue Exception => e
-      render json: {error: "project not found with id "+params[:id]}, status: :not_found
-      return
+      render json: {error: "project not found with id "+params[:id]}, status: :not_found and return
     end
   end
     

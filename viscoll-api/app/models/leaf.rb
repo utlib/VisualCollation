@@ -5,7 +5,6 @@ class Leaf
   # Fields
   field :material, type: String, default: "None"
   field :type, type: String, default: "None"
-  field :attachment_method, type: String, default: "None"
   field :conjoined_to, type: String
   field :attached_above, type: String, default: "None"
   field :attached_below, type: String, default: "None"
@@ -44,8 +43,8 @@ class Leaf
 
   # Create 2 sides(Recto & Verso) for this new leaf.
   def create_sides
-    recto = Side.new({parentID: self.id.to_s, project: self.project, texture: "Hair"})
-    verso = Side.new({parentID: self.id.to_s, project: self.project, texture: "Flesh"})
+    recto = Side.new({parentID: self.id.to_s, project: self.project})
+    verso = Side.new({parentID: self.id.to_s, project: self.project})
     recto.id = "Recto_"+recto.id.to_s
     verso.id = "Verso_"+verso.id.to_s
     recto.save

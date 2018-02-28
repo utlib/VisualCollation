@@ -8,17 +8,14 @@ class ImagesController < ApplicationController
       if image_create_params.to_h.key?("projectID")
         @project = Project.find(image_create_params.to_h[:projectID])
         if (@project.user_id!=current_user.id)
-          render json: {error: ""}, status: :unauthorized
-          return
+          render json: {error: ""}, status: :unauthorized and return
         end
         projectIDs.push(@project.id.to_s)
       end
     rescue Mongoid::Errors::DocumentNotFound
-      render json: {error: "project not found with id #{params[:projectID]}"}, status: :not_found
-      return
+      render json: {error: "project not found with id #{params[:projectID]}"}, status: :not_found and return
     rescue Exception => e
-      render json: {error: e.message}, status: :unprocessable_entity
-      return
+      render json: {error: e.message}, status: :unprocessable_entity and return
     end
     newImages = []
     allImages = image_create_params.to_h[:images]
@@ -44,8 +41,7 @@ class ImagesController < ApplicationController
             image.image_file_name = filename
             copyCounter += 1
           else
-            render json: image.errors, status: :unprocessable_entity
-            return
+            render json: image.errors, status: :unprocessable_entity and return
           end 
         end
       end
@@ -53,7 +49,7 @@ class ImagesController < ApplicationController
     end
     @projects = current_user.projects
     @images = newImages
-    render :'projects/index', status: :ok
+    render :'projects/index', status: :ok and return
   end
 
   # GET /images/:imageID
@@ -64,11 +60,9 @@ class ImagesController < ApplicationController
       filename = params[:imageID_filename].split("_", 2)[1]
       @image = Image.find(imageID)
     rescue Mongoid::Errors::DocumentNotFound
-      render json: {error: "image not found with id #{imageID}"}, status: :not_found
-      return
+      render json: {error: "image not found with id #{imageID}"}, status: :not_found and return
     rescue Exception => e
-      render json: {error: e.message}, status: :unprocessable_entity
-      return
+      render json: {error: e.message}, status: :unprocessable_entity and return
     end
     send_file @image.image.path, :type => @image.image_content_type, :disposition => 'inline'
   end
@@ -85,8 +79,7 @@ class ImagesController < ApplicationController
       imagePath = imagePath.join("/")
       zipFilePath = imagePath+"/"+projectID+"_images.zip"
     rescue Exception => e
-      render json: {error: e.message}, status: :unprocessable_entity
-      return
+      render json: {error: e.message}, status: :unprocessable_entity and return
     end
     send_file zipFilePath, :type => 'application/zip', :disposition => 'inline'
   end
@@ -102,16 +95,13 @@ class ImagesController < ApplicationController
       begin
         project = Project.find(projectID)
         if (project.user_id!=current_user.id)
-          render json: {error: ""}, status: :unauthorized
-          return
+          render json: {error: ""}, status: :unauthorized and return
         end
         projects.push(project)
       rescue Mongoid::Errors::DocumentNotFound
-        render json: {error: "project not found with id #{projectID}"}, status: :not_found
-        return
+        render json: {error: "project not found with id #{projectID}"}, status: :not_found and return
       rescue Exception => e
-        render json: {error: e.message}, status: :unprocessable_entity
-        return
+        render json: {error: e.message}, status: :unprocessable_entity and return
       end
     end
     images = []
@@ -119,16 +109,13 @@ class ImagesController < ApplicationController
       begin
         image = Image.find(imageID)
         if (image.user_id!=current_user.id)
-          render json: {error: ""}, status: :unauthorized
-          return
+          render json: {error: ""}, status: :unauthorized and return
         end
         images.push(image)
       rescue Mongoid::Errors::DocumentNotFound
-        render json: {error: "image not found with id #{imageID}"}, status: :not_found
-        return
+        render json: {error: "image not found with id #{imageID}"}, status: :not_found and return
       rescue Exception => e
-        render json: {error: e.message}, status: :unprocessable_entity
-        return
+        render json: {error: e.message}, status: :unprocessable_entity and return
       end
     end
     projects.each do |project|
@@ -141,7 +128,7 @@ class ImagesController < ApplicationController
     end  
     @projects = current_user.projects
     @images = current_user.images
-    render :'projects/index', status: :ok
+    render :'projects/index', status: :ok and return
   end
 
 
@@ -154,16 +141,13 @@ class ImagesController < ApplicationController
       begin
         project = Project.find(projectID)
         if (project.user_id!=current_user.id)
-          render json: {error: ""}, status: :unauthorized
-          return
+          render json: {error: ""}, status: :unauthorized and return
         end
         projects.push(project)
       rescue Mongoid::Errors::DocumentNotFound
-        render json: {error: "project not found with id #{projectID}"}, status: :not_found
-        return
+        render json: {error: "project not found with id #{projectID}"}, status: :not_found and return
       rescue Exception => e
-        render json: {error: e.message}, status: :unprocessable_entity
-        return
+        render json: {error: e.message}, status: :unprocessable_entity and return
       end
     end
     images = []
@@ -171,16 +155,13 @@ class ImagesController < ApplicationController
       begin
         image = Image.find(imageID.split("_", 2)[0])
         if (image.user_id!=current_user.id)
-          render json: {error: ""}, status: :unauthorized
-          return
+          render json: {error: ""}, status: :unauthorized and return
         end
         images.push(image)
       rescue Mongoid::Errors::DocumentNotFound
-        render json: {error: "image not found with id #{imageID.split("_", 2)[0]}"}, status: :not_found
-        return
+        render json: {error: "image not found with id #{imageID.split("_", 2)[0]}"}, status: :not_found and return
       rescue Exception => e
-        render json: {error: e.message}, status: :unprocessable_entity
-        return
+        render json: {error: e.message}, status: :unprocessable_entity and return
       end
     end
     projects.each do |project|
@@ -202,7 +183,7 @@ class ImagesController < ApplicationController
     end
     @projects = current_user.projects
     @images = current_user.images
-    render :'projects/index', status: :ok
+    render :'projects/index', status: :ok and return
   end
 
 
@@ -215,15 +196,12 @@ class ImagesController < ApplicationController
         image = Image.find(imageID)
         images.push(image)
       rescue Mongoid::Errors::DocumentNotFound
-        render json: {error: "image not found with id #{imageID}"}, status: :not_found
-        return
+        render json: {error: "image not found with id #{imageID}"}, status: :not_found and return
       rescue Exception => e
-        render json: {error: e.message}, status: :unprocessable_entity
-        return
+        render json: {error: e.message}, status: :unprocessable_entity and return
       end
       if (image.user_id!=current_user.id)
-        render json: {error: ""}, status: :unauthorized
-        return
+        render json: {error: ""}, status: :unauthorized and return
       end
     end
     images.each do |image|
@@ -231,7 +209,7 @@ class ImagesController < ApplicationController
     end
     @projects = current_user.projects
     @images = current_user.images
-    render :'projects/index', status: :ok
+    render :'projects/index', status: :ok and return
   end
 
 

@@ -55,7 +55,6 @@ module ControllerHelper
           "params": {
             "material": leaf.material,
             "type": leaf.type,
-            "attachment_method": leaf.attachment_method,
             "attached_above": leaf.attached_above,
             "attached_below": leaf.attached_below,
             "stub": leaf.stub,

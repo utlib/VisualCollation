@@ -9,6 +9,7 @@ import IconButton from 'material-ui/IconButton';
 import ImageViewer from "../global/ImageViewer";
 
 
+/** Dialog to export collation to JSON, XML or PNG */
 const Export = (props) => {
 
   const filename = props.projectTitle.replace(/\s/g, "_");

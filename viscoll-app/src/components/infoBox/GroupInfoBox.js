@@ -22,6 +22,7 @@ import SelectField from '../global/SelectField';
 import {btnBase} from '../../styles/button';
 import { checkboxStyle } from '../../styles/checkbox';
 
+/** Group infobox */
 export default class GroupInfoBox extends React.Component {
   constructor(props) {
     super(props);
@@ -46,8 +47,10 @@ export default class GroupInfoBox extends React.Component {
     return state;
   }
 
-  // Creates a dictionary of attributes and if its toggled on or off during batch edit
-  // This is used for the checkbox states
+  /**
+   *  Creates a dictionary of attributes and if its toggled on or off during batch edit
+   *  This is used for the checkbox states
+   */
   otherAttributeStates() {
     let state = {};
     for (var i in this.props.defaultAttributes) {
@@ -57,7 +60,9 @@ export default class GroupInfoBox extends React.Component {
     return state;
   }
 
-  // Creates a dictionary of attributes with no values
+  /**
+   * Creates a dictionary of attributes with no values
+   */  
   emptyAttributeState() {
     let state = {};
     for (var i in this.props.defaultAttributes) {
@@ -230,7 +235,6 @@ export default class GroupInfoBox extends React.Component {
     this.props.action.toggleVisualizationDrawing({type:"sewing", value: this.props.selectedGroups[0]});
     this.handleAddButtonRequestClose();
   }
-
 
   handleTacketSewingChange = (type, leafID, index) => {
     const targetGroup = this.props.Groups[this.props.selectedGroups[0]];

@@ -8,6 +8,7 @@ import CloneProject from './CloneProject';
 import NewProjectChoice from './NewProjectChoice';
 import ProjectOptions from './ProjectOptions';
 
+/** New Project dialog wrapper */
 export default class NewProjectContainer extends React.Component {
   constructor(props) {
     super(props);
@@ -22,6 +23,7 @@ export default class NewProjectContainer extends React.Component {
       conjoined: true,
       startFolioPageNumber: 1,
       generateFolioPageNumber: null,
+      startingTexture: "Hair",
       collationGroups: [],
       errors: {
         title: "",
@@ -207,6 +209,7 @@ export default class NewProjectContainer extends React.Component {
       groups: [],
       folioNumber: this.state.generateFolioPageNumber==="folio_number"? this.state.startFolioPageNumber : null,
       pageNumber: this.state.generateFolioPageNumber==="page_number"? this.state.startFolioPageNumber : null,
+      startingTexture: this.state.startingTexture,
     }
     this.state.collationGroups.forEach((group)=>request.groups.push(group));
     this.props.createProject(request, user);
@@ -243,6 +246,7 @@ export default class NewProjectContainer extends React.Component {
         content = <NewProjectChoice 
           previousStep={()=>this.set("step", 1)}
           nextStep={()=>this.set("step",3)}
+          finish={this.finish}
           />
       } else if (this.state.step===3) {
         content = <ProjectStructure 
@@ -267,6 +271,7 @@ export default class NewProjectContainer extends React.Component {
         content = <ProjectOptions
           startFolioPageNumber={this.state.startFolioPageNumber}
           generateFolioPageNumber={this.state.generateFolioPageNumber}
+          startingTexture={this.state.startingTexture}
           previousStep={()=>this.set("step", 3)}
           finish={this.finish}
           set={this.set}

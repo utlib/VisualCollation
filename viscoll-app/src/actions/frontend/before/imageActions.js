@@ -19,7 +19,6 @@ export function deleteImages(action, dashboard, active) {
   return { dashboard, active }
 }
 
-
 export function linkImagesFromProject(action, dashboard, active) {
   const imageIDs = action.payload.request.data.imageIDs
   for (let imageID of imageIDs) {
@@ -33,7 +32,6 @@ export function linkImagesFromProject(action, dashboard, active) {
     })
   }
 }
-
 
 export function unlinkImagesFromProject(action, dashboard, active) {
   const imageIDs = action.payload.request.data.imageIDs
@@ -53,7 +51,6 @@ export function unlinkImagesFromProject(action, dashboard, active) {
   }
 }
 
-
 export function linkImagesFromDashboard(action, dashboard) {
   const projectIDs = action.payload.request.data.projectIDs
   const imageIDs = action.payload.request.data.imageIDs
@@ -68,7 +65,6 @@ export function linkImagesFromDashboard(action, dashboard) {
   }
 }
 
-
 export function unlinkImagesFromDashboard(action, dashboard) {
   const projectIDs = action.payload.request.data.projectIDs
   const imageIDs = action.payload.request.data.imageIDs
@@ -82,7 +78,6 @@ export function unlinkImagesFromDashboard(action, dashboard) {
     }
   }
 }
-
 
 export function deleteImagesFromDashboard(action, dashboard) {
   const imageIDs = action.payload.request.data.imageIDs

@@ -482,16 +482,45 @@
   .notesManager .browse {
     height: 100%; }
     .notesManager .browse .notesList {
-      text-align: center; }
+      position: fixed;
+      top: 56px;
+      left: 18%;
+      width: 300px;
+      height: calc(100% - 56px);
+      overflow-y: auto;
+      text-align: center;
+      background: #e5e5e5; }
       .notesManager .browse .notesList .item {
         margin: 0.5em 0em 0em 0em;
         overflow: hidden;
         -webkit-transition: background 200ms ease-in-out;
         -ms-transition: background 200ms ease-in-out;
-        transition: background 200ms ease-in-out; }
+        transition: background 200ms ease-in-out;
+        width: 90%;
+        font-size: 1em;
+        background: #F2F2F2;
+        border: 0px;
+        -webkit-box-shadow: 0px 0px 5px 0px rgba(0, 0, 0, 0.2);
+        box-shadow: 0px 0px 5px 0px rgba(0, 0, 0, 0.2); }
+        .notesManager .browse .notesList .item:hover {
+          cursor: pointer;
+          background: #FFFFFF; }
+        .notesManager .browse .notesList .item .title {
+          padding-top: 10px;
+          font-weight: 500;
+          color: #4e4e4e; }
+        .notesManager .browse .notesList .item .type {
+          padding-top: 5px;
+          padding-bottom: 10px;
+          color: #727272;
+          font-style: italic;
+          font-size: 0.9em; }
+        .notesManager .browse .notesList .item.active {
+          background: #4ED6CB; }
     .notesManager .browse .details {
       position: relative;
-      width: 63%; }
+      width: calc(100% - 320px);
+      left: 300px; }
   .notesManager .noteType {
     padding: 1em 2em; }
     .notesManager .noteType .items {

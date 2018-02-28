@@ -83,7 +83,6 @@ export default class ViewingMode extends React.Component {
 
   /**
    * Draw canvas
-   * @public
    */
   drawOnCanvas = () => {
     // Create leaves through manager
@@ -92,7 +91,6 @@ export default class ViewingMode extends React.Component {
   }
   /**
    * Update canvas size based on current window size
-   * @public
    */
   updateCanvasSize = () => {
     // Resize the canvas
@@ -109,14 +107,12 @@ export default class ViewingMode extends React.Component {
     }
   }
     
-
   render() {
     let canvasAttr = {
       'data-paper-hidpi': 'off',
       'height': "99999999px",
       'width': this.props.imageViewerEnabled? window.innerWidth-window.innerWidth*0.75: window.innerWidth-window.innerWidth*0.46,
     };
-
 
     let leafID, leaf, recto, verso, isRectoDIY, isVersoDIY, rectoURL, versoURL;
     if (this.props.selectedObjects.type==="Leaf"){

@@ -9,7 +9,6 @@ export function updateSide(action, state) {
   return state
 }
 
-
 export function updateSides(action, state) {
   const updatedSides = action.payload.request.data.sides
   for (let updatedSide of updatedSides) {
@@ -21,7 +20,6 @@ export function updateSides(action, state) {
   }
   return state
 }
-
 
 export function mapSides(action, active, dashboard) {
   // SPEICAL CASE FOR DIY IMAGE MAPPING

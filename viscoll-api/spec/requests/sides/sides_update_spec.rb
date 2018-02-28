@@ -87,7 +87,7 @@ describe "PUT /sides/id", :type => :request do
       end
 
       it 'leaves the side alone' do
-        expect(@side3.texture).to eq "Hair"
+        expect(@side3.texture).to eq "None"
       end
     end
   end

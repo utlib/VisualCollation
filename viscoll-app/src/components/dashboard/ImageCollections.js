@@ -13,6 +13,7 @@ import RemoveImageConfirmation from '../imageManager/RemoveImageConfirmation';
 import UploadImages from '../imageManager/UploadImages';
 import { btnBase } from '../../styles/button';
 
+/** Image collection page in dashboard section */
 class ImageCollection extends Component {
   constructor(props) {
     super(props);
@@ -131,9 +132,6 @@ class ImageCollection extends Component {
 
   /**
    * Returns items in common
-   * @param {array} list1
-   * @param {array} list2
-   * @public
    */
   intersect = (list1, list2) => {
     if (list1.length >= list2.length)

@@ -9,10 +9,7 @@ import IconSubmit from 'material-ui/svg-icons/action/done';
 import IconClear from 'material-ui/svg-icons/content/clear';
 import Checkbox from 'material-ui/Checkbox';
 
-/**
- * Form to edit project information on the project panel in the dashboard
- */
-
+/** Form to edit project information on the project panel in the dashboard */
 class EditProjectForm extends React.Component {
   constructor(props) {
     super(props);
@@ -35,8 +32,6 @@ class EditProjectForm extends React.Component {
 
   /**
    * Update project pane if a new project was selected in the dashboard
-   * @param {object} nextProps
-   * @public
    */
   componentWillReceiveProps(nextProps) {
     if (nextProps.selectedProject) {
@@ -75,8 +70,6 @@ class EditProjectForm extends React.Component {
 
   /**
    * Validate user input and display appropriate error message
-   * @param {string} type text field name
-   * @public
    */
   checkValidationError = (type) => {
     const errors = {title:"", shelfmark:"", date:""};
@@ -101,7 +94,6 @@ class EditProjectForm extends React.Component {
 
   /**
    * Return true if any errors exist in the project form
-   * @public
    */
   ifErrorsExist = () => {
     if (this.state.errors.title)
@@ -113,10 +105,6 @@ class EditProjectForm extends React.Component {
 
   /**
    * Update state when user inputs new value in a text field 
-   * @param {string} event 
-   * @param {string} newValue new value 
-   * @param {string} type text field name
-   * @public
    */
   onInputChange = (event, newValue, type) => {
     this.setState({[type]: newValue, editing: {...this.state.editing, [type]:true}}, () => {
@@ -126,8 +114,6 @@ class EditProjectForm extends React.Component {
 
   /**
    * Toggle delete confirmation dialog
-   * @param {boolean} deleteDialog show dialog?
-   * @public
    */
   handleDeleteDialogToggle = (deleteDialog=false) => {
     this.props.togglePopUp(deleteDialog);
@@ -136,8 +122,6 @@ class EditProjectForm extends React.Component {
 
   /**
    * Toggle unsaved changes dialog
-   * @param {boolean} unsavedDialog show dialog?
-   * @public
    */
   handleUnsavedDialogToggle = (unsavedDialog=false) => {
     this.setState({ unsavedDialog });
@@ -145,9 +129,6 @@ class EditProjectForm extends React.Component {
 
   /**
    * Submit project update of a specific input field 
-   * @param {object} event
-   * @param {string} field text field name
-   * @public
    */
   handleProjectUpdate = (event, field) => {
     if (event) event.preventDefault();
@@ -168,7 +149,6 @@ class EditProjectForm extends React.Component {
   }
   /**
    * Submit project delete 
-   * @public
    */
   handleProjectDelete = () => {
     this.props.closeProjectPanel();
@@ -179,8 +159,6 @@ class EditProjectForm extends React.Component {
 
   /**
    * Close project panel
-   * @param {boolean} ignoreChanges show ignore changes dialog?
-   * @public
    */
   handleProjectPanelClose = (ignoreChanges=false) => {
     // Check for any unsaved changes before closing and show the warning dialog.
@@ -194,7 +172,6 @@ class EditProjectForm extends React.Component {
 
   /**
    * Return true if any input fields have been changed and not saved
-   * @public
    */
   isEditing = () => {
     return (this.state.editing.title||this.state.editing.shelfmark||this.state.editing.uri||this.state.editing.date);
@@ -202,9 +179,6 @@ class EditProjectForm extends React.Component {
 
   /**
    * Reset text field to original values
-   * @param {string} type "project"
-   * @param {string} field text field name
-   * @public
    */
   handleProjectCancelUpdate = (field) => {
     this.setState({
@@ -216,8 +190,6 @@ class EditProjectForm extends React.Component {
 
   /**
    * Return a generated HTML of submit and cancel buttons for a specific input name
-   * @param {string} field text field name
-   * @public
    */
   submitButtons = (field) => {
     if (this.state.editing[field]) {
@@ -392,7 +364,4 @@ class EditProjectForm extends React.Component {
     );
   }
 }
-
-
-
 export default EditProjectForm;

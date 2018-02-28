@@ -145,7 +145,6 @@ module ControllerHelper
           params: {
             material: "None",
             type: type,
-            attachment_method: "None",
             attached_above: "None",
             attached_below: "None",
             stub: stub,

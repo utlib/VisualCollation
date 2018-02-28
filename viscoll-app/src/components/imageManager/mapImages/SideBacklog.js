@@ -3,7 +3,7 @@ import IconButton from 'material-ui/IconButton';
 import Add from 'material-ui/svg-icons/content/add-circle-outline';
 import VirtualList from 'react-tiny-virtual-list';
 
-
+/** Panel for unmapped sides */
 export default class SideBacklog extends Component {
 
   renderSideItem = (index, style) => {

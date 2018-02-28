@@ -18,9 +18,6 @@ class ResetPassword extends Component {
 
   /**
    * Update state when user inputs new value in a text field 
-   * @param {string} v new value 
-   * @param {string} type text field name
-   * @public
    */
   onInputChange = (v, type) => {
     this.setState({ [type]: v });
@@ -28,7 +25,6 @@ class ResetPassword extends Component {
 
   /**
    * Validate password input and submit password change
-   * @public
    */
   submit = (e) => {
     if (e) e.preventDefault();
@@ -50,7 +46,6 @@ class ResetPassword extends Component {
     this.setState({ resetMessage })
   };
 
-
   render() {
     return (
       <form aria-label="reset password" onSubmit={this.submit}>
@@ -71,5 +66,4 @@ class ResetPassword extends Component {
     );
   }
 }
-
 export default ResetPassword;

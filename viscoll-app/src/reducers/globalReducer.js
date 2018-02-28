@@ -1,6 +1,5 @@
 import { initialState } from './initialStates/global';
 
-
 export default function globalReducer(state=initialState, action) {
   if (action.error && action.error.status===0) {
     state = {...state, serverError: true}

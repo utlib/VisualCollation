@@ -2,6 +2,7 @@ import React from 'react';
 import Dialog from 'material-ui/Dialog';
 import {API_URL} from '../../store/axiosConfig';
 
+/** Dialog to show disconnection from API */
 export default class NetworkErrorScreen extends React.Component {
   constructor(props) {
     super(props);

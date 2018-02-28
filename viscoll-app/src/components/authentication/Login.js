@@ -5,6 +5,7 @@ import RaisedButton from 'material-ui/RaisedButton';
 import FlatButton from 'material-ui/FlatButton';
 import { btnLg, btnAuthCancel } from '../../styles/button';
 import {floatFieldDark} from '../../styles/textfield';
+
 /**
  * Contains the login form that is used by the landing page component called `Landing`.
  */
@@ -32,16 +33,12 @@ class Login extends Component {
 
   /**
    * Update state when user inputs new value in a text field 
-   * @param {string} v new value 
-   * @param {string} type text field name
-   * @public
    */
   onInputChange(v, type) {
     this.setState({[type]: v});
   }
   /**
    * Submit login information and clear any message
-   * @public
    */
   submit = (e) => {
     if (e) e.preventDefault();
@@ -51,7 +48,6 @@ class Login extends Component {
 
   /**
    * Cancel button.  Resets local Login state.
-   * @public
    */
   cancel = () => {
     this.setState({email:"",password:"",error:""});

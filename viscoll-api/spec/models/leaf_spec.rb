@@ -5,7 +5,6 @@ RSpec.describe Leaf, type: :model do
   
   it { is_expected.to have_field(:material).of_type(String) }
   it { is_expected.to have_field(:type).of_type(String) }
-  it { is_expected.to have_field(:attachment_method).of_type(String) }
   it { is_expected.to have_field(:conjoined_to).of_type(String) }
   it { is_expected.to have_field(:attached_above).of_type(String) }
   it { is_expected.to have_field(:attached_below).of_type(String) }

@@ -20,9 +20,6 @@ class ResendConfirmation extends Component {
 
   /**
    * Update state when user inputs new value in a text field 
-   * @param {string} v new value 
-   * @param {string} type text field name
-   * @public
    */
   onChange(v, type) {
     this.setState({[type]: v});
@@ -30,13 +27,11 @@ class ResendConfirmation extends Component {
 
   /**
    * Send confirmation email 
-   * @public
    */
   resendConfirmation = () => {
     this.props.action.resendConfirmation(this.state.email);
     this.setState({submitted:true, message: "An email confirmation has been resent to " + this.state.email});
   }
-
 
   render() {
     let form = this.state.submitted? "": <form aria-label="resend confirmation" onSubmit={this.submit}>

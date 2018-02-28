@@ -13,6 +13,7 @@ import ImageViewer from "../global/ImageViewer";
 import SelectField from '../global/SelectField';
 import { checkboxStyle } from '../../styles/checkbox';
 
+/** Side infobox */
 export default class SideInfoBox extends React.Component {
   constructor(props) {
     super(props);
@@ -33,8 +34,10 @@ export default class SideInfoBox extends React.Component {
     return state;
   }
 
-  // Creates a dictionary of attributes and if its toggled on or off during batch edit
-  // This is used for the checkbox states
+  /**
+   *  Creates a dictionary of attributes and if its toggled on or off during batch edit
+   *  This is used for the checkbox states
+   */
   otherAttributeStates = () => {
     let state = {};
     for (var i in this.props.defaultAttributes) {
@@ -44,7 +47,9 @@ export default class SideInfoBox extends React.Component {
     return state;
   }
 
-  // Creates a dictionary of attributes with no values
+  /**
+   * Creates a dictionary of attributes with no values
+   */
   emptyAttributeState = () => {
     let state = {};
     for (var i in this.props.defaultAttributes) {
@@ -55,7 +60,7 @@ export default class SideInfoBox extends React.Component {
 
   hasActiveAttributes = () => {
     for (var i in this.props.defaultAttributes) {
-      if (this.props.defaultAttributes[i]["name"]==="folio_number" &&
+      if ((this.props.defaultAttributes[i]["name"]==="folio_number"|this.props.defaultAttributes[i]["name"]==="page_number") &&
           this.state["batch_" + this.props.defaultAttributes[i]["name"]] &&
           this.state[this.props.defaultAttributes[i]["name"]]!=="Keep same") {
           return true;
@@ -77,7 +82,6 @@ export default class SideInfoBox extends React.Component {
       this.setState({...this.emptyAttributeState()});
     }
   }
-
 
   dropDownChange = (value, attributeName) => {
     if (!this.state.isBatch) {
@@ -130,7 +134,9 @@ export default class SideInfoBox extends React.Component {
     this.setState({...newAttributeState,...newEditingState});
   }
 
-  // Handle checkbox toggling by updating relevant attribute state
+  /**
+   * Handle checkbox toggling by updating relevant attribute state
+   */
   toggleCheckbox = (target) => {
     let newToggleState = {};
     newToggleState["batch_"+target]=!this.state["batch_"+target];

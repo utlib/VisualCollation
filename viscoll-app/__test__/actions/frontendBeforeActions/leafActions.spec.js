@@ -45,7 +45,6 @@ describe('>>>A C T I O N --- Test leaf actions', () => {
       id: 'Leaf_111',
       attached_above: 'None',
       attached_below: 'None',
-      attachment_method: 'None',
       conjoined_to: null,
       material: 'None',
       stub: 'None',

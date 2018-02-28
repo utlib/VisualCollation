@@ -28,7 +28,6 @@ export default class EditNoteForm extends Component {
     };
   }
 
-
   componentWillReceiveProps(nextProps) {
     this.setState({
       id: nextProps.note.id,
@@ -45,12 +44,6 @@ export default class EditNoteForm extends Component {
     })
   }
 
-
-  /**
-   * Validates title
-   * @param {string} title
-   * @public
-   */
   validateTitle = (title) => {
     for (let noteID in this.props.Notes) {
       const note = this.props.Notes[noteID];
@@ -68,12 +61,6 @@ export default class EditNoteForm extends Component {
     }
   }
 
-  /**
-   * Update state on input change
-   * @param {string} name input name
-   * @param {string} value new value
-   * @public
-   */
   onChange = (name, value) => {
     this.setState({[name]:value, editing: {...this.state.editing, [name]: true}});
     if (name==="title") this.validateTitle(value.trim());
@@ -88,10 +75,6 @@ export default class EditNoteForm extends Component {
     }
   }
 
-  /**
-   * Update new note 
-   * @public
-   */
   update = (event, name) => {
     event.preventDefault();
     if (this.props.note) {
@@ -107,8 +90,6 @@ export default class EditNoteForm extends Component {
   
   /**
    * Reset input field to original value
-   * @param {string} name input field name
-   * @public
    */
   onCancelUpdate = (name) => {
     this.setState({
@@ -124,22 +105,10 @@ export default class EditNoteForm extends Component {
     });
   }
 
-
-  /**
-   * Mapping function to render one note type menu item 
-   * @param {string} name note type name
-   * @public
-   */
   renderNoteTypes = (name) => {
     return {value:name, text:name};
   }
 
-
-  /**
-   * Return a generated HTML of submit and cancel buttons for a specific input name
-   * @param {string} name name of input field
-   * @public
-   */
   renderSubmitButtons = (name) => {
     if (this.state.editing[name] && this.props.note!==null && this.props.note!==undefined) {
       return (

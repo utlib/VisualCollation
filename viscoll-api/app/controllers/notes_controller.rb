@@ -9,21 +9,18 @@ class NotesController < ApplicationController
     begin
       @project = Project.find(@note.project_id)
     rescue Mongoid::Errors::DocumentNotFound
-      render json: {project_id: "project not found with id "+@note.project_id}, status: :unprocessable_entity
-      return
+      render json: {project_id: "project not found with id "+@note.project_id}, status: :unprocessable_entity and return
     end
     if @project.user != current_user
-      render json: {error: ''}, status: :unauthorized
-      return
+      render json: {error: ''}, status: :unauthorized and return
     end
     if @note.save
       if not Project.find(@note.project_id).noteTypes.include?(@note.type)
-        render json: {type: "should be one of " +Project.find(@note.project_id).noteTypes.to_s}, status: :unprocessable_entity
         @note.delete
-        return
+        render json: {type: "should be one of " +Project.find(@note.project_id).noteTypes.to_s}, status: :unprocessable_entity and return
       end
     else
-      render json: @note.errors, status: :unprocessable_entity
+      render json: @note.errors, status: :unprocessable_entity and return
     end
   end
 
@@ -31,11 +28,10 @@ class NotesController < ApplicationController
   def update
     type = note_update_params.to_h[:type]
     if not Project.find(@note.project_id).noteTypes.include?(type)
-      render json: {type: "should be one of " +Project.find(@note.project_id).noteTypes.to_s}, status: :unprocessable_entity
-      return
+      render json: {type: "should be one of " +Project.find(@note.project_id).noteTypes.to_s}, status: :unprocessable_entity and return
     end
     if !@note.update(note_update_params)
-      render json: @note.errors, status: :unprocessable_entity
+      render json: @note.errors, status: :unprocessable_entity and return
     end
   end
 
@@ -63,16 +59,13 @@ class NotesController < ApplicationController
             @object = Side.find(id)
             authorized = @object.project.user_id == current_user.id
           else
-            render json: {type: "object not found with type "+type}, status: :unprocessable_entity
-            return
+            render json: {type: "object not found with type "+type}, status: :unprocessable_entity and return
           end
           unless authorized
-            render json: {error: ''}, status: :unauthorized
-            return
+            render json: {error: ''}, status: :unauthorized and return
           end
         rescue Mongoid::Errors::DocumentNotFound
-          render json: {id: type + " object not found with id "+id}, status: :unprocessable_entity
-          return
+          render json: {id: type + " object not found with id "+id}, status: :unprocessable_entity and return
         end
         @object.notes.push(@note)
         @object.save
@@ -82,8 +75,7 @@ class NotesController < ApplicationController
         @note.save
       end
     rescue Exception => e
-      render json: {error: e.message}, status: :unprocessable_entity
-      return
+      render json: {error: e.message}, status: :unprocessable_entity and return
     end
   end
 
@@ -106,16 +98,13 @@ class NotesController < ApplicationController
             @object = Side.find(id)
             authorized = @object.project.user_id == current_user.id
           else
-            render json: {type: "object not found with type "+type}, status: :unprocessable_entity
-            return
+            render json: {type: "object not found with type "+type}, status: :unprocessable_entity and return
           end
           unless authorized
-            render json: {error: ''}, status: :unauthorized
-            return
+            render json: {error: ''}, status: :unauthorized and return
           end
         rescue Mongoid::Errors::DocumentNotFound
-          render json: {id: type + " object not found with id "+id}, status: :unprocessable_entity
-          return
+          render json: {id: type + " object not found with id "+id}, status: :unprocessable_entity and return
         end
         @object.notes.delete(@note)
         @object.save
@@ -123,8 +112,7 @@ class NotesController < ApplicationController
         @note.save
       end
     rescue Exception => e
-      render json: {error: e.message}, status: :unprocessable_entity
-      return
+      render json: {error: e.message}, status: :unprocessable_entity and return
     end
   end
 
@@ -134,8 +122,7 @@ class NotesController < ApplicationController
   def createType
     type = note_type_params.to_h[:type]
     if @project.noteTypes.include?(type)
-      render json: {type: type+" type already exists in the project"}, status: :unprocessable_entity
-      return
+      render json: {type: type+" type already exists in the project"}, status: :unprocessable_entity and return
     else
       @project.noteTypes.push(type)
       @project.save
@@ -147,8 +134,7 @@ class NotesController < ApplicationController
   def deleteType
     type = note_type_params.to_h[:type]
     if not @project.noteTypes.include?(type)
-      render json: {type: type+" type doesn't exist in the project"}, status: :unprocessable_entity
-      return
+      render json: {type: type+" type doesn't exist in the project"}, status: :unprocessable_entity and return
     else
       @project.noteTypes.delete(type)
       @project.save
@@ -165,11 +151,9 @@ class NotesController < ApplicationController
     old_type = note_type_params.to_h[:old_type]
     type = note_type_params.to_h[:type]
     if not @project.noteTypes.include?(old_type)
-      render json: {old_type: old_type+" type doesn't exist in the project"}, status: :unprocessable_entity
-      return
+      render json: {old_type: old_type+" type doesn't exist in the project"}, status: :unprocessable_entity and return
     elsif @project.noteTypes.include?(type)
-      render json: {type: type+" already exists in the project"}, status: :unprocessable_entity
-      return
+      render json: {type: type+" already exists in the project"}, status: :unprocessable_entity and return
     else
       indexToEdit = @project.noteTypes.index(old_type)
       @project.noteTypes[indexToEdit] = type
@@ -190,13 +174,24 @@ class NotesController < ApplicationController
         @note = Note.find(params[:id])
         @project = Project.find(@note.project_id)
         if (@project.user_id!=current_user.id)
-          render json: {error: ""}, status: :unauthorized
-          return
+          render json: {error: ""}, status: :unauthorized and return
         end
       rescue Mongoid::Errors::DocumentNotFound
-        render json: {error: "note not found with id "+params[:id]}, status: :not_found
+        render json: {error: "note not found with id "+params[:id]}, status: :not_found and return
       rescue Exception => e
-        render json: {error: e.message}, status: :unprocessable_entity
+        render json: {error: e.message}, status: :unprocessable_entity and return
+      end
+    end
+    
+    def set_attached_project
+      project_id = note_type_params.to_h[:project_id]
+      begin
+        @project = Project.find(project_id)
+        if @project.user_id != current_user.id
+          render json: {error: ""}, status: :unauthorized and return
+        end
+      rescue Mongoid::Errors::DocumentNotFound
+        render json: {project_id: "project not found with id "+project_id}, status: :unprocessable_entity and return
       end
     end
     

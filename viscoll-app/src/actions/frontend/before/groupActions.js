@@ -75,7 +75,6 @@ export function updateGroup(action, state) {
   return state
 }
 
-
 export function updateGroups(action, state) {
   const updatedGroups = action.payload.request.data.groups
   for (let updatedGroup of updatedGroups) {
@@ -84,7 +83,6 @@ export function updateGroups(action, state) {
   }
   return state
 }
-
 
 export function deleteGroup(deletedGroupID, state) {
   const deletedGroup = state.project.Groups[deletedGroupID]
@@ -116,7 +114,6 @@ export function deleteGroup(deletedGroupID, state) {
   delete state.project.Groups[deletedGroupID]
   return state
 }
-
 
 export function deleteGroups(deletedGroupIDs, state) {
   for (let deletedGroupID of deletedGroupIDs) {

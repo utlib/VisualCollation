@@ -29,11 +29,6 @@ export default class FolioNumberDialog extends React.Component {
    /**
    * Increment a state's value by one, bounded by `max` and `min`. If the user previously 
    * entered an invalid value, the value is set to `min`.  
-   * 
-   * @param {string} name state name
-   * @param {number} min
-   * @param {number} max
-   * @public
    */
   incrementNumber = (name, min, max, e) => {
     if (e) e.preventDefault();
@@ -52,11 +47,6 @@ export default class FolioNumberDialog extends React.Component {
   /**
    * Decrement a state by one, bounded by `max` and `min`. If the user previously 
    * entered an invalid value, the value is set to min. 
-   * 
-   * @param {string} name state name
-   * @param {number} min
-   * @param {number} max
-   * @public
    */
   decrementNumber = (name, min, max, e) => {
     if (e) e.preventDefault();
@@ -69,10 +59,6 @@ export default class FolioNumberDialog extends React.Component {
 
   /**
    * Validate user input. If invalid, display error message, otherwise update relevant state 
-   * 
-   * @param {string} stateName state name
-   * @param {number} value new input value
-   * @public
    */
   onNumberChange = (stateName, value) => {
     let errorState = this.state.errorText;
@@ -192,5 +178,4 @@ export default class FolioNumberDialog extends React.Component {
     </div>
     </Dialog>);
   }
-
 }

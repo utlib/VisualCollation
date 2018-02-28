@@ -102,7 +102,6 @@ export default class VisualMode extends React.Component {
 
   /**
    * Update canvas size based on current window size
-   * @public
    */
   updateCanvasSize = () => {
     // Resize the canvas
@@ -113,7 +112,6 @@ export default class VisualMode extends React.Component {
   
   /**
    * Draw canvas
-   * @public
    */
   drawOnCanvas = () => {
       // Create leaves through manager

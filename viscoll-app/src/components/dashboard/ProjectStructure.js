@@ -16,13 +16,11 @@ import IconHelp from 'material-ui/svg-icons/action/help';
 import IconButton from 'material-ui/IconButton';
 import SelectField from '../global/SelectField';
 
+/** New Project dialog - panel to create initial collation structure */
 const ProjectStructure = (props) => {
 
   /**
    * Return a list of MenuItem's for the unconjoined drop down menu 
-   * @param {number} selectedValue
-   * @param {array} unconjoinLeafsList
-   * @public
    */
   let menuItems = (selectedValue, unconjoinLeafsList, isDisabled) => {
     if (isDisabled) {

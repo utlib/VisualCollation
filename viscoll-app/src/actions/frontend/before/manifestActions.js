@@ -5,7 +5,6 @@ export function updateManifest(action, state) {
   return state
 }
 
-
 export function deleteManifest(action, state) {
   const deletedManifest = action.payload.request.data.manifest
   // Delete the manifest with id deletedManifest.id from the active project's manifests

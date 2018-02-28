@@ -3,6 +3,7 @@ import AddIcon from 'material-ui/svg-icons/content/add';
 import CopyIcon from 'material-ui/svg-icons/content/content-copy';
 import ImportIcon from 'material-ui/svg-icons/action/system-update-alt';
 
+/** New Project dialog - select between creating new, importing and cloning project  */
 const NewProjectSelection = (props) => {
   return (
     <div role="menu" style={{width:"100%", margin:"auto"}} className="newProjectSelection">

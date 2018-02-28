@@ -13,7 +13,6 @@ import {Provider} from "react-redux";
 import AppLoadingScreen from "../components/global/AppLoadingScreen";
 import localForage from 'localforage'
 import PageNotFound from '../components/global/PageNotFound';
-
 import {
   BrowserRouter as Router,
   Route,

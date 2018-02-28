@@ -59,6 +59,7 @@ Rails.application.routes.draw do
   # DOCUMENTATION
   get '/docs' => redirect('/docs/index.html')
 
+  # ROOT ENPOINT
   get '/', to: proc { [200, {}, ['']] }
 
 

@@ -15,9 +15,9 @@ class UsersController < ApplicationController
     end
     if action
       @user = User.find(params[:id])
-      render :show, status: :ok
+      render :show, status: :ok and return
     else
-      render json: current_user.errors, status: :unprocessable_entity
+      render json: current_user.errors, status: :unprocessable_entity and return
     end
 
   end
@@ -33,12 +33,10 @@ class UsersController < ApplicationController
       begin
         @user = User.find(params[:id])
         if (@user!=current_user)
-          render json: {error: ""}, status: :unauthorized
-          return
+          render json: {error: ""}, status: :unauthorized and return
         end
       rescue Exception => e
-        render json: {error: "user not found with id "+params[:id]}, status: :not_found
-        return
+        render json: {error: "user not found with id "+params[:id]}, status: :not_found and return
       end
     end
 

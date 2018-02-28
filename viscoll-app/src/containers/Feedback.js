@@ -8,7 +8,7 @@ import ClientJS from 'clientjs';
 import { exportProjectBeforeFeedback } from "../actions/backend/projectActions";
 import { sendFeedback } from "../actions/backend/userActions";
 
-/** Feedback form that submits a JIRA ticket for each feedback */
+/** Feedback form that sends an email to admin for each feedback */
 class Feedback extends Component {
   constructor(props) {
     super(props);

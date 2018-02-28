@@ -1,14 +1,18 @@
 import React from 'react';
-import {floatFieldLight} from '../../styles/textfield';
 import TextField from 'material-ui/TextField';
 import RaisedButton from 'material-ui/RaisedButton';
 import FlatButton from 'material-ui/FlatButton';
 import {RadioButton, RadioButtonGroup} from 'material-ui/RadioButton';
+import SelectField from '../global/SelectField';
+import IconButton from 'material-ui/IconButton';
+import IconHelp from 'material-ui/svg-icons/action/help';
 
+/** New Project dialog - panel with additional options for project creation  */
 const ProjectOptions = (props) => {
   return (
     <div style={{width:"60%", margin: "auto"}}>
       <h1 style={{textAlign:"center"}}>Project Options</h1>
+      <h2>Generate page/folio numbers</h2>
       <div style={{display: "flex", justifyContent:"center"}}>
         <RadioButtonGroup 
           name="folioOrPage" 
@@ -27,8 +31,6 @@ const ProjectOptions = (props) => {
             label="Generate page numbers"
           /> 
         </RadioButtonGroup>
-
-
       </div>
 
       {props.generateFolioPageNumber?
@@ -48,6 +50,29 @@ const ProjectOptions = (props) => {
           </div>
         </div>
       :""}
+
+      <h2>Select starting texture 
+        <IconButton 
+          iconStyle={{fontSize:10, width:15, height:15}} 
+          tooltip="Texture of the first leaf's recto side">
+            <IconHelp />
+          </IconButton>
+      </h2>
+      <div style={{width: "100%", margin: "auto", display: "flex", justifyContent:"center", alignItems: "center",}}>
+        <SelectField 
+          id="selectStartingTexture"
+          label="Select starting texture" 
+          data={[{text:"Hair", value:"Hair"}, {text:"Flesh", value:"Flesh"}]}
+          value={props.startingTexture}
+          onChange={()=>{
+            if (props.startingTexture==="Hair"){
+              props.set("startingTexture", "Flesh")
+            }else{
+              props.set("startingTexture", "Hair")
+            }}}
+          width={250}
+        />
+      </div>
 
       <div style={{textAlign:"center",paddingTop:30}}>
         <FlatButton 

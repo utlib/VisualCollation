@@ -1,5 +1,4 @@
 import { cloneDeep } from 'lodash';
-
 import {
   updateImagesAfterUpload,
 } from '../../actions/frontend/after/imageActions';

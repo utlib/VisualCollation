@@ -37,42 +37,23 @@ class Landing extends Component {
       resendConfirmationSuccess: false,
     }
   }
-  /**
-   * Toggle the `Register` component
-   * @public
-   */
+
   toggleRegister = () => {
     this.setState({register: !this.state.register, message: ""});
   }
 
-  /**
-   * Toggle the `Login` component
-   * @public
-   */
   toggleLogin = () => {
     this.setState({login: !this.state.login, message: ""});
   }
 
-  /**
-   * Toggle the `ResetPassword` component
-   * @public
-   */
   toggleResetRequest = () => {
     this.setState({resetRequest: !this.state.resetRequest, message: ""});
   }
 
-  /**
-   * Unmount any mounted forms
-   * @public
-   */
   tapCancel = () => {
     this.setState({login: false, register: false, resetRequest: false, resendConfirmation: false, message: ""});
   }
 
-  /**
-   * Show message on reset password success
-   * @public
-   */
   handleResetPasswordSuccess = () => {
     this.setState({reset: false, message: "Your password has been successfully updated. Go ahead and login."});
   }
