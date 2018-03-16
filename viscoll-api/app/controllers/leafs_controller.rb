@@ -252,25 +252,6 @@ class LeafsController < ApplicationController
     end
   end
 
-  # PUT /leafs/generateFolio
-  def generateFolio
-    folioNumberCount = leaf_params_folio.to_h[:startNumber].to_i
-    rectoIDs = leaf_params_folio.to_h[:rectoIDs]
-    versoIDs = leaf_params_folio.to_h[:versoIDs]
-    rectoIDs.each_with_index do | rectoID, index | 
-      recto = Side.find(rectoID)
-      verso = Side.find(versoIDs[index])
-      recto.update_attribute(:folio_number, folioNumberCount.to_s+"R")
-      verso.update_attribute(:folio_number, folioNumberCount.to_s+"V")
-      folioNumberCount += 1
-      if index==0
-        @project = Project.find(recto.project_id)
-      end
-    end
-  end
-
-
-
 
 
 

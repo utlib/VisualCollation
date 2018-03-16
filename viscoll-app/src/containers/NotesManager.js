@@ -4,7 +4,7 @@ import TopBar from "./TopBar";
 import ManageNotes from "../components/notesManager/ManageNotes";
 import NoteType from "../components/notesManager/NoteType";
 import {Tabs, Tab} from 'material-ui/Tabs';
-import Panel from '../components/global/Panel';
+// import Panel from '../components/global/Panel';
 import topbarStyle from "../styles/topbar";
 import { 
   changeManagerMode,
@@ -21,6 +21,7 @@ import {
   unlinkNote 
 } from "../actions/backend/noteActions";
 import { sendFeedback } from "../actions/backend/userActions";
+import ManagersPanel from '../components/global/ManagersPanel';
 
 class NotesManager extends Component {
 
@@ -171,32 +172,11 @@ class NotesManager extends Component {
     const sidebar = (
       <div className={sidebarClasses} role="region" aria-label="sidebar">
         <hr />  
-        <Panel title="Managers" defaultOpen={true} noPadding={true} tabIndex={this.props.popUpActive?-1:0}>
-          <button
-            className={ this.props.managerMode==="collationManager" ? "manager active" : "manager" }        
-            onClick={() => this.props.changeManagerMode("collationManager")} 
-            aria-label="Collation Manager"
-            tabIndex={this.props.popUpActive?-1:0}
-          >
-            Collation
-          </button>
-          <button
-            className={ this.props.managerMode==="notesManager" ? "manager active" : "manager" }        
-            onClick={() => this.props.changeManagerMode("notesManager")} 
-            aria-label="Notes Manager"
-            tabIndex={this.props.popUpActive?-1:0}
-          >
-            Notes
-          </button>
-          <button
-            className={ this.props.managerMode==="imageManager" ? "manager active" : "manager" }        
-            onClick={() => this.props.changeManagerMode("imageManager")} 
-            tabIndex={this.props.popUpActive?-1:0}
-            aria-label="Image Manager"
-          >
-            Images
-          </button>
-        </Panel>
+        <ManagersPanel
+          popUpActive={this.props.popUpActive}
+          managerMode={this.props.managerMode}
+          changeManagerMode={this.props.changeManagerMode}
+        />
       </div>
     );
 

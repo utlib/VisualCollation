@@ -199,24 +199,32 @@ export default class MapImages extends Component {
   }
 
   automatchIsDisabled = () => {
+    let findFolioNumber = function(image) {
+      return this.folioNumber && image.label.includes(this.folioNumber.toLowerCase());
+    }
     for (const sideID of this.state.sideBacklog) {
       const side = sideID.charAt(0)==="R" ? this.props.Rectos[sideID] : this.props.Versos[sideID];
       // Return immediately if a match is found
-      if (this.state.imageBacklog.find(image => image.label.includes(side.folio_number))) return false;
+      if (this.state.imageBacklog.find(findFolioNumber, {folioNumber: side.folio_number})) return false;
     }
     return true;
   }
 
   automatch = () => {
+    let findByFolioNumber = function(image) {
+      let tokenizedLabel = image.label.split(".");
+      let label = tokenizedLabel[tokenizedLabel.length-2];
+      return label.endsWith(this.side.folio_number.toLowerCase())
+    }
     let sideItemsToMap = [];
     let imageItemsToMap = [];
     for (const sideID of this.state.sideBacklog) {
       const side = sideID.charAt(0)==="R" ? this.props.Rectos[sideID] : this.props.Versos[sideID];
-      const image = this.state.imageBacklog.find(image => image.label.endsWith(side.folio_number))
-      if (image){
+      const image = this.state.imageBacklog.find(findByFolioNumber, {side});
+      if (image) {
         sideItemsToMap.push(sideID);
         imageItemsToMap.push(image);
-      } 
+      }
     }
     this.moveItemsToMap(sideItemsToMap, "sideMapBoard", "sideBacklog");
     this.moveItemsToMap(imageItemsToMap, "imageMapBoard", "imageBacklog");
@@ -238,6 +246,36 @@ export default class MapImages extends Component {
     this.setState({
       initialMapping: {imageMapBoard: this.state.imageMapBoard, sideMapBoard: this.state.sideMapBoard, imageBacklog: this.state.imageBacklog, sideBacklog: this.state.sideBacklog}
     })
+  }
+
+  renderMoveUpButton = (target) => {
+    const mapboard = target + "MapBoard";
+    const backlog = target + "Backlog";
+    return (
+      <RaisedButton 
+        primary
+        label={this.props.windowWidth<=768?"▲":"▲ Move To Mapping"} 
+        onClick={()=>this.moveItemsToMap(undefined, mapboard, backlog)}
+        disabled={this.state.selectedObjects.members.length===0 || this.state.selectedObjects.type!==backlog}
+        {...btnBase()}
+        style={{...btnBase().style, marginRight:"0.2em"}}
+        tabIndex={this.props.tabIndex}
+      />
+    )
+  }
+  renderMoveDownButton = (target) => {
+    const mapboard = target + "MapBoard";
+    const backlog = target + "Backlog";
+    return (
+      <RaisedButton 
+        primary
+        label={this.props.windowWidth<=768?"▼":"▼ Move To Backlog"}
+        onClick={()=>this.moveItemsToBacklog(undefined, mapboard, backlog)}
+        disabled={this.state.selectedObjects.members.length===0 || this.state.selectedObjects.type!==mapboard}
+        tabIndex={this.props.tabIndex}
+        {...btnBase()}
+      />
+    )
   }
 
 
@@ -273,23 +311,8 @@ export default class MapImages extends Component {
     const middlePanel = (
       <div className="middleBar">
         <div>
-          <RaisedButton 
-            primary
-            label={this.props.windowWidth<=768?"▲":"▲ Move To Mapping"} 
-            onClick={()=>this.moveItemsToMap(undefined, "sideMapBoard", "sideBacklog")}
-            disabled={this.state.selectedObjects.members.length===0 || this.state.selectedObjects.type!=="sideBacklog"}
-            {...btnBase()}
-            style={{...btnBase().style, marginRight:"0.2em"}}
-            tabIndex={this.props.tabIndex}
-            />
-          <RaisedButton 
-            primary
-            label={this.props.windowWidth<=768?"▼":"▼ Move To Backlog"}
-            onClick={()=>this.moveItemsToBacklog(undefined, "sideMapBoard", "sideBacklog")}
-            disabled={this.state.selectedObjects.members.length===0 || this.state.selectedObjects.type!=="sideMapBoard"}
-            tabIndex={this.props.tabIndex}
-            {...btnBase()}
-          />
+          {this.renderMoveUpButton("side")}
+          {this.renderMoveDownButton("side")}
         </div>
         <div>
           <RaisedButton 
@@ -300,24 +323,9 @@ export default class MapImages extends Component {
           />
         </div>
         <div>
-          <RaisedButton 
-            primary
-            label={this.props.windowWidth<=768?"▲":"▲ Move To Mapping" }
-            onClick={()=>this.moveItemsToMap(undefined, "imageMapBoard", "imageBacklog")}
-            disabled={this.state.selectedObjects.members.length===0 || this.state.selectedObjects.type!=="imageBacklog"}
-            {...btnBase()}
-            style={{...btnBase().style, marginRight:"0.2em"}}
-            tabIndex={this.props.tabIndex}
-            />
-          <RaisedButton 
-            primary
-            label={this.props.windowWidth<=768?"▼":"▼ Move To Backlog"}
-            onClick={()=>this.moveItemsToBacklog(undefined, "imageMapBoard", "imageBacklog")}
-            disabled={this.state.selectedObjects.members.length===0 || this.state.selectedObjects.type!=="imageMapBoard"}
-            tabIndex={this.props.tabIndex}
-            {...btnBase()}
-            />
-          </div>
+          {this.renderMoveUpButton("image")}
+          {this.renderMoveDownButton("image")}
+        </div>
       </div>
     );
 

@@ -22,7 +22,7 @@ export default class NewNoteForm extends Component {
   validateTitle = (title) => {
     for (let noteID in this.props.Notes) {
       const note = this.props.Notes[noteID];
-      if (note.title===title && note.id!==this.state.id) {
+      if (note.title===title) {
         this.setState({errors:{title:"This note title already exists."}});
         return;
       };

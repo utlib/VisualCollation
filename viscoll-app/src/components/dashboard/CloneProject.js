@@ -1,5 +1,4 @@
 import React from 'react';
-import {floatFieldLight} from '../../styles/textfield';
 import RaisedButton from 'material-ui/RaisedButton';
 import FlatButton from 'material-ui/FlatButton';
 import SelectField from '../global/SelectField';

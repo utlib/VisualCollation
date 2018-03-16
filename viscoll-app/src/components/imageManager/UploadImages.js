@@ -43,6 +43,16 @@ class UploadImages extends Component {
   }
 
   handleFiles = (files) => {
+    let findIfExists = function(img) {
+      return img.label===this.filename+"."+this.fileExtension;
+    }
+    let that = this;
+    let onLoadEnd = function(filename, targetState) {
+      return function (event) {
+        const newImageList = update(that.state[targetState], {$push:[{filename, content:this.result}]});
+        that.setState({[targetState]: newImageList});
+      }
+    }
     this.setState({uploadedImages: []}, ()=>{
     let duplicatesToUpload = [];
     let filesizeExceeded = [];
@@ -57,19 +67,13 @@ class UploadImages extends Component {
           const reader = new FileReader();
           // Read file content
           reader.readAsDataURL(file);
-          if (this.props.images.findIndex((img)=>img.label===filename+"."+fileExtension)>=0) {
+          if (this.props.images.findIndex(findIfExists, {filename, fileExtension})>=0) {
             // Filename already exists, read file and store in 'uploadedDuplicates' state
             duplicatesToUpload.push(true);
-            reader.onloadend = ()=> {
-              const newImageList = update(this.state.uploadedDuplicates, {$push:[{filename, content:reader.result}]});
-              this.setState({uploadedDuplicates: newImageList});
-            }
+            reader.onloadend = onLoadEnd(filename,"uploadedDuplicates");
           } else {
             // Filename doesn't exist, read file and store in 'uploadedImages' state
-            reader.onloadend = ()=> {
-              const newImageList = update(this.state.uploadedImages, {$push:[{filename, content:reader.result}]});
-              this.setState({uploadedImages: newImageList});
-            }
+            reader.onloadend = onLoadEnd(filename, "uploadedImages");
           }
         }
       }

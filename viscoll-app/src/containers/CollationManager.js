@@ -44,6 +44,7 @@ import {
 import fileDownload from 'js-file-download';
 import NoteDialog from '../components/collationManager/dialog/NoteDialog';
 import {radioBtnDark} from "../styles/button";
+import ManagersPanel from '../components/global/ManagersPanel';
 
 /** Container for `TabularMode`, `VisualMode`, `InfoBox`, `TopBar`, `LoadingScreen`, and `Notification`. This container has the project sidebar embedded directly.  */
 class CollationManager extends Component {
@@ -174,10 +175,10 @@ class CollationManager extends Component {
   handleSelection = (selection) => {
     this.props.updateFilterSelection(
       selection, 
-      this.props.project.Groups,
-      this.props.project.Leafs,
-      this.props.project.Rectos,
-      this.props.project.Versos
+      this.props.project.groupIDs,
+      this.props.project.leafIDs,
+      this.props.project.rectoIDs,
+      this.props.project.versoIDs
     );
   }
 
@@ -255,6 +256,19 @@ class CollationManager extends Component {
   deleteNote = (noteID) => {
     this.closeNoteDialog();
     this.props.deleteNote(noteID, this.props.project.id, this.props.collationManager.filters);
+  }
+
+  renderRadioButton = (value, label) => {
+    return (
+      <RadioButton
+        value={value}
+        aria-label={label}
+        label={label}
+        selected={true}
+        tabIndex={this.props.popUpActive?-1:0}
+        {...radioBtnDark()}
+      />
+    )
   }
 
   render() {
@@ -338,41 +352,10 @@ class CollationManager extends Component {
         valueSelected={this.state.selectAll}
         onChange={(e,v)=>this.setState({selectAll: v}, ()=>{this.handleSelection(v+"_all")})}
       >
-        <RadioButton
-          value="Groups"
-          aria-label="Select All Groups"
-          label="Select All Groups"
-          selected={true}
-          tabIndex={this.props.popUpActive?-1:0}
-          {...radioBtnDark()}
-        />
-        <RadioButton
-          value="Leafs"
-          aria-label="Select All Leaves"
-          label="Select All Leaves"
-          labelStyle={{color:"#ffffff",fontSize:"0.9em"}}
-          iconStyle={{fill:"#4ED6CB"}}
-          tabIndex={this.props.popUpActive?-1:0}
-          {...radioBtnDark()}
-        />
-        <RadioButton
-          value="Rectos"
-          aria-label="Select All Rectos"
-          label="Select All Rectos"
-          labelStyle={{color:"#ffffff",fontSize:"0.9em"}}
-          iconStyle={{fill:"#4ED6CB"}}
-          tabIndex={this.props.popUpActive?-1:0}
-          {...radioBtnDark()}
-        />
-        <RadioButton
-          value="Versos"
-          aria-label="Select All Versos"
-          label="Select All Versos"
-          labelStyle={{color:"#ffffff",fontSize:"0.9em"}}
-          iconStyle={{fill:"#4ED6CB"}}
-          tabIndex={this.props.popUpActive?-1:0}
-          {...radioBtnDark()}
-        />
+       {this.renderRadioButton("Groups", "Select All Groups")}
+       {this.renderRadioButton("Leafs", "Select All Leaves")}
+       {this.renderRadioButton("Rectos", "Select All Rectos")}
+       {this.renderRadioButton("Versos", "Select All Versos")}
     </RadioButtonGroup>
     );
 
@@ -399,32 +382,11 @@ class CollationManager extends Component {
         <hr />
         {tipsDiv}
         { this.props.collationManager.viewMode !== "VIEWING"?
-          <Panel title="Managers" defaultOpen={true} noPadding={true} tabIndex={this.props.popUpActive?-1:0}>
-            <button
-              className={ this.props.managerMode==="collationManager" ? "manager active" : "manager" }        
-              onClick={() => this.props.changeManagerMode("collationManager")} 
-              tabIndex={this.props.popUpActive?-1:0}
-              aria-label="Collation Manager"
-            >
-              Collation
-            </button>
-            <button
-              className={ this.props.managerMode==="notesManager" ? "manager active" : "manager" }        
-              onClick={() => this.props.changeManagerMode("notesManager")} 
-              tabIndex={this.props.popUpActive?-1:0}
-              aria-label="Notes Manager"
-            >
-              Notes
-            </button>
-            <button
-              className={ this.props.managerMode==="imageManager" ? "manager active" : "manager" }        
-              onClick={() => this.props.changeManagerMode("imageManager")} 
-              tabIndex={this.props.popUpActive?-1:0}
-              aria-label="Image Manager"
-            >
-              Images
-            </button>
-          </Panel> : "" }
+        <ManagersPanel
+          popUpActive={this.props.popUpActive}
+          managerMode={this.props.managerMode}
+          changeManagerMode={this.props.changeManagerMode}
+        /> : "" }
         <Panel title="Selector" defaultOpen={true} tabIndex={this.props.popUpActive?-1:0}>
           {selectionRadioGroup}
           <FlatButton
@@ -582,7 +544,6 @@ class CollationManager extends Component {
           filterHeightChange={this.filterHeightChange}
           fullWidth={this.props.collationManager.viewMode==="VIEWING" && this.state.imageViewerEnabled}
           tabIndex={this.props.popUpActive||!this.props.filterPanelOpen?-1:0}
-          leafIDs={this.props.project.leafIDs}
         />
         {workspace}
         <NoteDialog
@@ -713,15 +674,15 @@ const mapDispatchToProps = (dispatch) => {
 
     updateFilterSelection: (
       selection, 
-      Groups,
-      Leafs,
-      Rectos,
-      Versos
+      GroupIDs,
+      LeafIDs,
+      RectoIDs,
+      VersoIDs
     ) => {
       dispatch(updateFilterSelection(
         selection, 
         [],
-        {Groups, Leafs, Rectos, Versos}
+        {GroupIDs, LeafIDs, RectoIDs, VersoIDs}
       ));
     },
 

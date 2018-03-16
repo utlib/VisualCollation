@@ -91,9 +91,9 @@ export function updateFilterSelection(selection, matchingFilterObjects, allObjec
     const select = selection.split("_")[1];
     let selectedObjects = { type: type? type.slice(0,-1) : type, members: [], lastSelected: "" };
     if (select==="all"){
-        selectedObjects.members = Object.keys(allObjects[type]);
-    } else if (select==="matching"){
-        selectedObjects.members = Object.keys(allObjects[type]).filter((id) => {
+        selectedObjects.members = allObjects[type.slice(0, type.length-1)+"IDs"];
+    } else if (select==="matching") {
+        selectedObjects.members = allObjects[type.slice(0, type.length-1)+"IDs"].filter((id) => {
             if (type==="Rectos" || type==="Versos")
                 return matchingFilterObjects.Sides.includes(id)
             else

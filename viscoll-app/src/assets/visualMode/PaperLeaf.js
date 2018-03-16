@@ -82,8 +82,12 @@ PaperLeaf.prototype = {
             // Other type of glueing exists
             textY -= this.spacing*0.7;
         } 
-        
         let that = this;
+        let clickListener = function(note) {
+            return function(event) {
+                that.openNoteDialog(note);
+            }
+        }
         // Draw recto note text
         for (let noteIndex = 0; noteIndex < rectoNotesToShow.length; noteIndex++) {
             const note = this.Notes[rectoNotesToShow[noteIndex]];
@@ -94,9 +98,7 @@ PaperLeaf.prototype = {
                 fillColor: this.strokeColor,
                 fontSize: fontSize,
             });
-            textNote.onClick = function(event) {
-                that.openNoteDialog(note);
-            };
+            textNote.onClick = clickListener(note);
             this.textNotes.addChild(textNote);
         }
         // Draw leaf note text
@@ -109,9 +111,7 @@ PaperLeaf.prototype = {
                 fillColor: this.strokeColor,
                 fontSize: fontSize,
             });
-            textNote.onClick = function(event) {
-                that.openNoteDialog(note);
-            };
+            textNote.onClick = clickListener(note);
             this.textNotes.addChild(textNote);
         }
         // Draw verso note text
@@ -124,9 +124,7 @@ PaperLeaf.prototype = {
                 fillColor: this.strokeColor,
                 fontSize: fontSize,
             });
-            textNote.onClick = function(event) {
-                that.openNoteDialog(note);
-            };
+            textNote.onClick = clickListener(note);
             this.textNotes.addChild(textNote);
         }
         this.textNotes.onMouseEnter = function(event) {
@@ -363,12 +361,7 @@ PaperLeaf.prototype = {
             // Leaf is conjoined and conjoiner has indent, so copy that conjoiner's indent
             this.indent = this.conjoinedLeaf().indent;
         } else if (this.isBelowAConjoined()) {
-            if (this.isConjoined()) {
-                this.indent = (this.prevPaperLeaf().indent+1);
-            } else {
-                // The previous leaf is conjoined, so add 1 indent
-                this.indent = (this.prevPaperLeaf().indent+1);
-            }
+            this.indent = (this.prevPaperLeaf().indent+1);
         } else if (this.order>1 && this.parentOrder === this.prevPaperLeaf().parentOrder){
             // Leaf is a sibling of previous leaf, so copy sibling's indent
             this.indent = this.prevPaperLeaf().indent;
