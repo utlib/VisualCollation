@@ -61,10 +61,10 @@ class SidesController < ApplicationController
             if newSideImage and !newSideImage.empty? and !previousSideImage.empty? and previousSideImage["manifestID"]=="DIYImages"
               imageID = previousSideImage["url"].split("/")[-1].split("_", 2)[0]
               begin
-                imageUnlikned = Image.find(imageID)
-                if !imageLinked or imageLinked.id.to_s != imageUnlikned.id.to_s
-                  imageUnlikned.sideIDs.include?(side.id.to_s) ? imageUnlikned.sideIDs.delete(side.id.to_s) : nil
-                  imageUnlikned.save
+                imageUnlinked = Image.find(imageID)
+                if !imageLinked or imageLinked.id.to_s != imageUnlinked.id.to_s
+                  imageUnlinked.sideIDs.include?(side.id.to_s) ? imageUnlinked.sideIDs.delete(side.id.to_s) : nil
+                  imageUnlinked.save
                 end
               rescue Exception => e
               end
@@ -84,43 +84,6 @@ class SidesController < ApplicationController
       end
     rescue Exception => e
       render json: {error: e.message}, status: :unprocessable_entity and return
-    end
-  end
-
-
-  # PUT /sides/generateFolio
-  def generateFolio
-    folioNumberCount = side_params_generate.to_h[:startNumber].to_i
-    rectoIDs = side_params_generate.to_h[:rectoIDs]
-    versoIDs = side_params_generate.to_h[:versoIDs]
-    rectoIDs.each_with_index do | rectoID, index | 
-      recto = Side.find(rectoID)
-      verso = Side.find(versoIDs[index])
-      recto.update_attribute(:folio_number, folioNumberCount.to_s+"R")
-      verso.update_attribute(:folio_number, folioNumberCount.to_s+"V")
-      folioNumberCount += 1
-      if index==0
-        @project = Project.find(recto.project_id)
-      end
-    end
-  end
-  
-  
-  # PUT /sides/generatePageNumber
-  def generatePageNumber
-    pageNumberCount = side_params_generate.to_h[:startNumber].to_i
-    rectoIDs = side_params_generate.to_h[:rectoIDs]
-    versoIDs = side_params_generate.to_h[:versoIDs]
-    rectoIDs.each_with_index do | rectoID, index | 
-      recto = Side.find(rectoID)
-      verso = Side.find(versoIDs[index])
-      recto.update_attribute(:page_number, pageNumberCount.to_s)
-      pageNumberCount += 1
-      verso.update_attribute(:page_number, pageNumberCount.to_s)
-      pageNumberCount += 1
-      if index==0
-        @project = Project.find(recto.project_id)
-      end
     end
   end
 

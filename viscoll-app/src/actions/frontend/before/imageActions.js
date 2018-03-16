@@ -33,13 +33,17 @@ export function linkImagesFromProject(action, dashboard, active) {
   }
 }
 
+function findByLabel (DIYImage) {
+  return DIYImage.label === this.label;
+}
+
 export function unlinkImagesFromProject(action, dashboard, active) {
-  const imageIDs = action.payload.request.data.imageIDs
+  const imageIDs = action.payload.request.data.imageIDs;
   for (let imageID of imageIDs) {
     // Remove image of imageID from the list of DIYImages in active project
     let imageIndex = dashboard.images.findIndex(image => image.id === imageID)
     const image = dashboard.images[imageIndex]
-    imageIndex = active.project.manifests.DIYImages.images.findIndex(DIYImage => DIYImage.label === image.label)
+    imageIndex = active.project.manifests.DIYImages.images.findIndex(findByLabel, {label:image.label})
     active.project.manifests.DIYImages.images.splice(imageIndex, 1)
     // Unlink all sides of this project if it was mapped to this image
     for (let sideID of image.sideIDs) {

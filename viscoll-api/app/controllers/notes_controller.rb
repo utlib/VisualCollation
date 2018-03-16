@@ -194,20 +194,6 @@ class NotesController < ApplicationController
         render json: {project_id: "project not found with id "+project_id}, status: :unprocessable_entity and return
       end
     end
-    
-    def set_attached_project
-      project_id = note_type_params.to_h[:project_id]
-      begin
-        @project = Project.find(project_id)
-        if @project.user_id != current_user.id
-          render json: {error: ""}, status: :unauthorized
-          return
-        end
-      rescue Mongoid::Errors::DocumentNotFound
-        render json: {project_id: "project not found with id "+project_id}, status: :unprocessable_entity
-        return
-      end
-    end
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def note_create_params

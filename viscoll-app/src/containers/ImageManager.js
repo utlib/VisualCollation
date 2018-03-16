@@ -29,7 +29,7 @@ import MapImages from '../components/imageManager/MapImages';
 import {RadioButton, RadioButtonGroup} from 'material-ui/RadioButton';
 import FlatButton from 'material-ui/FlatButton';
 import {radioBtnDark} from "../styles/button";
-
+import ManagersPanel from '../components/global/ManagersPanel';
 
 class ImageManager extends Component {
 
@@ -86,6 +86,20 @@ class ImageManager extends Component {
     this.props.deleteImages(imageIDs, this.props.manifests["DIYImages"]);
   }
 
+  renderRadioButton = (value, label) => {
+    return (
+      <RadioButton
+        value={value}
+        label={label}
+        aria-label={label}
+        labelStyle={{color:"#ffffff",fontSize:"0.9em"}}
+        iconStyle={{fill:"#4ED6CB"}}
+        tabIndex={this.props.popUpActive?-1:0}
+        {...radioBtnDark()}
+      />
+    )
+  }
+
   render() {
     let content = "";
     if (this.props.activeTab==="MANAGE") {
@@ -135,42 +149,10 @@ class ImageManager extends Component {
         valueSelected={this.state.selectAll}
         onChange={(e,v)=>this.setState({selectAll: v})}
       >
-        <RadioButton
-          value="sideMapBoard"
-          label="Select All Mapped Sides"
-          aria-label="Select All Mapped Sides"
-          labelStyle={{color:"#ffffff",fontSize:"0.9em"}}
-          iconStyle={{fill:"#4ED6CB"}}
-          tabIndex={this.props.popUpActive?-1:0}
-          {...radioBtnDark()}
-        />
-        <RadioButton
-          value="imageMapBoard"
-          label="Select All Mapped Images"
-          aria-label="Select All Mapped Images"
-          labelStyle={{color:"#ffffff",fontSize:"0.9em"}}
-          iconStyle={{fill:"#4ED6CB"}}
-          tabIndex={this.props.popUpActive?-1:0}
-          {...radioBtnDark()}
-        />
-        <RadioButton
-          value="sideBacklog"
-          label="Select All Backlog Sides"
-          aria-label="Select All Backlog Sides"
-          labelStyle={{color:"#ffffff",fontSize:"0.9em"}}
-          iconStyle={{fill:"#4ED6CB"}}
-          tabIndex={this.props.popUpActive?-1:0}
-          {...radioBtnDark()}
-        />
-        <RadioButton
-          value="imageBacklog"
-          label="Select All Backlog Images"
-          aria-label="Select All Backlog Images"
-          labelStyle={{color:"#ffffff",fontSize:"0.9em"}}
-          iconStyle={{fill:"#4ED6CB"}}
-          tabIndex={this.props.popUpActive?-1:0}
-          {...radioBtnDark()}
-        />
+        {this.renderRadioButton("sideMapBoard", "Select All Mapped Sides")}
+        {this.renderRadioButton("imageMapBoard", "Select All Mapped Images")}
+        {this.renderRadioButton("sideBacklog", "Select All Backlog Sides")}
+        {this.renderRadioButton("imageBacklog", "Select All Backlog Images")}
       </RadioButtonGroup>
     );
 
@@ -180,32 +162,11 @@ class ImageManager extends Component {
     const sidebar = (
       <div className={sidebarClasses} role="region" aria-label="sidebar">
         <hr />  
-        <Panel title="Managers" defaultOpen={true} noPadding={true} tabIndex={this.props.popUpActive?-1:0}>
-          <button
-            className={ this.props.managerMode==="collationManager" ? "manager active" : "manager" }        
-            onClick={() => this.props.changeManagerMode("collationManager")} 
-            aria-label="Collation Manager"
-            tabIndex={this.props.popUpActive?-1:0}
-          >
-            Collation
-          </button>
-          <button
-            className={ this.props.managerMode==="notesManager" ? "manager active" : "manager" }        
-            onClick={() => this.props.changeManagerMode("notesManager")} 
-            aria-label="Notes Manager"
-            tabIndex={this.props.popUpActive?-1:0}
-          >
-            Notes
-          </button>
-          <button
-            className={ this.props.managerMode==="imageManager" ? "manager active" : "manager" }        
-            onClick={() => this.props.changeManagerMode("imageManager")} 
-            aria-label="Images Manager"
-            tabIndex={this.props.popUpActive?-1:0}
-          >
-            Images
-          </button>
-        </Panel>
+        <ManagersPanel
+          popUpActive={this.props.popUpActive}
+          managerMode={this.props.managerMode}
+          changeManagerMode={this.props.changeManagerMode}
+        />
         {this.props.activeTab==="MAP" ? 
           <Panel title="Selector" defaultOpen={true} tabIndex={this.props.popUpActive?-1:0}>
             {selectionRadioGroup}

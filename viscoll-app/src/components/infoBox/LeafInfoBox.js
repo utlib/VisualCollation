@@ -6,7 +6,6 @@ import Checkbox from 'material-ui/Checkbox';
 import Visibility from 'material-ui/svg-icons/action/visibility';
 import VisibilityOff from 'material-ui/svg-icons/action/visibility-off';
 import {getLeafsOfGroup} from '../../helpers/getLeafsOfGroup';
-import Chip from 'material-ui/Chip';
 import Dialog from 'material-ui/Dialog';
 import AddNote from './dialog/AddNote';
 import ImageViewer from "../global/ImageViewer";
@@ -15,6 +14,7 @@ import { getMemberOrder } from '../../helpers/getMemberOrder';
 import { checkboxStyle } from '../../styles/checkbox';
 import { btnBase } from '../../styles/button';
 import FolioNumberDialog from '../infoBox/dialog/FolioNumberDialog';
+import { renderNoteChip } from '../../helpers/renderHelper';
 
 /** Leaf infobox */
 export default class LeafInfoBox extends React.Component {
@@ -172,19 +172,7 @@ export default class LeafInfoBox extends React.Component {
     let chips = [];
     for (let noteID of this.props.commonNotes) {
       const note = this.props.Notes[noteID];
-      let deleteFn = () => {this.props.action.unlinkNote(note.id)};
-      if (this.props.isReadOnly) deleteFn = null;
-      chips.push(
-        <Chip 
-          key={note.id}
-          style={{marginRight:4, marginBottom:4}}
-          onRequestDelete={deleteFn}
-          onClick={()=>this.props.openNoteDialog(note)}
-          tabIndex={this.props.tabIndex}
-          labelStyle={{fontSize:this.props.windowWidth<=1024?12:null}}
-        >
-          {note.title}
-        </Chip>);
+      chips.push(renderNoteChip(this.props, note));
     }
     return chips;
   }
@@ -237,8 +225,6 @@ export default class LeafInfoBox extends React.Component {
       // Generate eye toggle checkbox
       let eyeCheckbox = "";
       let eyeIsChecked = this.props.preferences.leaf && this.props.preferences.leaf[attributeDict.name]?this.props.preferences.leaf[attributeDict.name]:false;
-
-
 
       if (this.props.viewMode==="TABULAR" && this.state.isBatch) {
         eyeCheckbox = 

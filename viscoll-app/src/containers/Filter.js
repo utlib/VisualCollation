@@ -159,13 +159,8 @@ class Filter extends Component {
     // Check if correct values are being passed in auto-complete dropdown cases
     let toFilter = true;
     for (let query of this.state.queries){
-      if (query.type==="leaf" && query.attribute==="conjoined_leaf_order"){
-        if (!Array.isArray(query.values)){
-          toFilter = false;
-          break;
-        }
-      }
-      else if (query.type==="note" && query.attribute==="type"){
+      if ((query.type==="leaf" && query.attribute==="conjoined_leaf_order") ||
+        (query.type==="note" && query.attribute==="type")){
         if (!Array.isArray(query.values)){
           toFilter = false;
           break;
@@ -281,10 +276,10 @@ class Filter extends Component {
       this.props.updateFilterSelection(
         selection, 
         this.props.matchingFilterObjects,
-        this.props.Groups,
-        this.props.Leafs,
-        this.props.Rectos,
-        this.props.Versos
+        this.props.groupIDs,
+        this.props.leafIDs,
+        this.props.rectoIDs,
+        this.props.versoIDs
       );
   }
 
@@ -435,6 +430,10 @@ const mapStateToProps = (state) => {
     sideMatches: state.active.collationManager.filters.Sides,
     noteMatches: state.active.collationManager.filters.Notes,
     matchingFilterObjects: state.active.collationManager.filters,
+    leafIDs: state.active.project.leafIDs,
+    groupIDs: state.active.project.groupIDs,
+    rectoIDs: state.active.project.rectoIDs,
+    versoIDs: state.active.project.versoIDs,
   };
 };
 const mapDispatchToProps = (dispatch) => {
@@ -454,15 +453,15 @@ const mapDispatchToProps = (dispatch) => {
     updateFilterSelection: (
       selection, 
       matchingFilterObjects,
-      Groups,
-      Leafs,
-      Rectos,
-      Versos
+      GroupIDs,
+      LeafIDs,
+      RectoIDs,
+      VersoIDs
     ) => {
       dispatch(updateFilterSelection(
         selection, 
         matchingFilterObjects,
-        {Groups, Leafs, Rectos, Versos}
+        {GroupIDs, LeafIDs, RectoIDs, VersoIDs}
       ));
     }
   };

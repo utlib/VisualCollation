@@ -6,12 +6,12 @@ import IconSubmit from 'material-ui/svg-icons/action/done';
 import IconClear from 'material-ui/svg-icons/content/clear';
 import Visibility from 'material-ui/svg-icons/action/visibility';
 import VisibilityOff from 'material-ui/svg-icons/action/visibility-off';
-import Chip from 'material-ui/Chip';
 import AddNote from './dialog/AddNote';
 import Dialog from 'material-ui/Dialog';
 import ImageViewer from "../global/ImageViewer";
 import SelectField from '../global/SelectField';
 import { checkboxStyle } from '../../styles/checkbox';
+import { renderNoteChip } from '../../helpers/renderHelper';
 
 /** Side infobox */
 export default class SideInfoBox extends React.Component {
@@ -60,7 +60,7 @@ export default class SideInfoBox extends React.Component {
 
   hasActiveAttributes = () => {
     for (var i in this.props.defaultAttributes) {
-      if ((this.props.defaultAttributes[i]["name"]==="folio_number"|this.props.defaultAttributes[i]["name"]==="page_number") &&
+      if ((this.props.defaultAttributes[i]["name"]==="folio_number"||this.props.defaultAttributes[i]["name"]==="page_number") &&
           this.state["batch_" + this.props.defaultAttributes[i]["name"]] &&
           this.state[this.props.defaultAttributes[i]["name"]]!=="Keep same") {
           return true;
@@ -199,18 +199,7 @@ export default class SideInfoBox extends React.Component {
     let chips = [];
     for (let noteID of this.props.commonNotes) {
       const note = this.props.Notes[noteID];
-      let deleteFn = () => {this.props.action.unlinkNote(note.id)};
-      if (this.props.isReadOnly) deleteFn = null;
-      chips.push(
-        <Chip 
-          key={note.id}
-          style={{marginRight:4, marginBottom:4}}
-          onRequestDelete={deleteFn}
-          onClick={()=>this.props.openNoteDialog(note)}
-          tabIndex={this.props.tabIndex}
-        >
-          {note.title}
-        </Chip>);
+      chips.push(renderNoteChip(this.props, note));
     }
     return chips;
   }
@@ -229,6 +218,16 @@ export default class SideInfoBox extends React.Component {
     }
   }
 
+  renderTooltip = (eyeIsChecked, eyeStyle, attributeDict) => {
+    return (
+      <div className={this.state["visibility_hover_"+attributeDict.name]?"text active":"text"} style={Object.keys(eyeStyle).length>0?{display:"none"}:{}}>
+        {eyeIsChecked?
+          "Hide attribute in the collation"
+          : "Show attribute in the collation"
+        }
+      </div>
+    )
+  }
   render() {
     let attributeDivs = [];
     let sideAttributes = this.getAttributeValues();
@@ -263,12 +262,7 @@ export default class SideInfoBox extends React.Component {
               onMouseOut={()=>{this.setState({["visibility_hover_"+attributeDict.name]:false})}}
               tabIndex={this.props.tabIndex}
             />
-            <div className={this.state["visibility_hover_"+attributeDict.name]?"text active":"text"} style={Object.keys(eyeStyle).length>0?{display:"none"}:{}}>
-              {eyeIsChecked?
-                "Hide attribute in the collation"
-                : "Show attribute in the collation"
-              }
-            </div>
+            {this.renderTooltip(eyeIsChecked, eyeStyle, attributeDict)}
           </div>
         label = <Checkbox
           aria-label={"Select '" + attributeDict.displayName + "' to batch edit"}
@@ -299,12 +293,7 @@ export default class SideInfoBox extends React.Component {
               onMouseOut={()=>{this.setState({["visibility_hover_"+attributeDict.name]:false})}}
               tabIndex={this.props.tabIndex}
             />
-            <div className={this.state["visibility_hover_"+attributeDict.name]?"text active":"text"} style={Object.keys(eyeStyle).length>0?{display:"none"}:{}}>
-              {eyeIsChecked?
-                "Hide attribute in the collation"
-                : "Show attribute in the collation"
-              }
-            </div>
+            {this.renderTooltip(eyeIsChecked, eyeStyle, attributeDict)}
           </div>
       }
       // Generate dropdown or text box depending on the current attribute 

@@ -359,7 +359,8 @@ class InfoBox extends React.Component {
           />
         </div>
       );
-    } else if (this.props.selectedObjects.type === "Recto") {
+    } else if (this.props.selectedObjects.type === "Recto"||this.props.selectedObjects.type === "Verso") {
+      const sideIndex = this.props.selectedObjects.type === "Recto"? 0 : 1;
       return (
         <div role="region" aria-label="infobox">
           {leafSideTabs} 
@@ -380,7 +381,7 @@ class InfoBox extends React.Component {
             Leafs={this.props.Leafs}
             Rectos={this.props.Rectos}
             Versos={this.props.Versos}
-            Sides={this.props.Rectos}
+            Sides={this.props[this.props.selectedObjects.type+"s"]}
             Notes={this.props.Notes}
             noteTypes={this.props.noteTypes}
             commonNotes={this.props.commonNotes}
@@ -389,45 +390,7 @@ class InfoBox extends React.Component {
             selectedSides={this.props.collationManager.selectedObjects.members}
             defaultAttributes={this.props.collationManager.defaultAttributes.side}
             notesManager={this.props.notesManager}
-            sideIndex={0}
-            isReadOnly={this.props.collationManager.viewMode==="VIEWING"}
-            togglePopUp={this.props.togglePopUp}
-            tabIndex={this.props.tabIndex}
-            windowWidth={this.props.windowWidth}
-          />
-        </div>
-      );
-    } else if (this.props.selectedObjects.type === "Verso") {
-      return (
-        <div role="region" aria-label="infobox">
-          {leafSideTabs} 
-          <SideInfoBox 
-            action={{
-              updateSides: this.updateSides, 
-              updateSide: this.updateSide, 
-              updatePreferences: this.updatePreferences,
-              ...noteActions
-            }} 
-            projectID={this.props.projectID}
-            preferences={this.props.preferences}
-            groupIDs={this.props.groupIDs}
-            leafIDs={this.props.leafIDs}
-            rectoIDs={this.props.rectoIDs}
-            versoIDs={this.props.versoIDs}
-            Groups={this.props.Groups}
-            Leafs={this.props.Leafs}
-            Rectos={this.props.Rectos}
-            Versos={this.props.Versos}
-            Sides={this.props.Versos}
-            Notes={this.props.Notes}
-            noteTypes={this.props.noteTypes}
-            commonNotes={this.props.commonNotes}
-            openNoteDialog={this.props.openNoteDialog}
-            viewMode={this.props.collationManager.viewMode}
-            selectedSides={this.props.collationManager.selectedObjects.members}
-            defaultAttributes={this.props.collationManager.defaultAttributes.side}
-            notesManager={this.props.notesManager}
-            sideIndex={1}
+            sideIndex={sideIndex}
             isReadOnly={this.props.collationManager.viewMode==="VIEWING"}
             togglePopUp={this.props.togglePopUp}
             tabIndex={this.props.tabIndex}
