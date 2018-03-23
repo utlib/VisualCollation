@@ -1,4 +1,4 @@
-# VisColl
+<img src="https://digitaltoolsmss.library.utoronto.ca/sites/digitaltoolsmss.library.utoronto.ca/files/viscoll-dark.svg" width="500px" />
 
 ## Introduction
 
@@ -20,7 +20,7 @@ VisColl is for building models of the physical collation of manuscripts, and the
 
 ### Viscoll API (Rails)
 
-This is the the Rails-driven back-end for Viscoll.
+Rails-driven back-end for Viscoll
 
 #### System Requirements
 
@@ -44,13 +44,13 @@ Set the admin email address in two locations:
 `viscoll-api/app/mailers/mailer.rb` on line 18: 
 
 ```
-toEmail = Rails.application.secrets.admin_email || "example@mail.com"
+toEmail = Rails.application.secrets.admin_email || "dummy-admin@library.utoronto.ca"
 ```
 
 and `viscoll-api/app/mailers/feedback_mailer.rb` on line 10:
 
 ```
-to:"example@mail.com",
+to:"utlviscoll@library.utoronto.ca",
 ```
 
 Then run this to start the API server:
@@ -75,9 +75,9 @@ Alternatively, run this command to test continually while monitoring for changes
 guard
 ```
 
-### Viscoll APP (React-Redux)
+### Viscoll App (React-Redux)
 
-This is the the Redux-driven user interface for Viscoll.
+Redux-driven user interface for Viscoll
 
 #### System Requirements
 
