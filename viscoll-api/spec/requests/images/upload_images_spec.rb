@@ -32,11 +32,11 @@ describe "POST /images", :type => :request do
         @body = JSON.parse(response.body)
       end
 
-      it 'returns 200' do
+      xit 'returns 200' do
         expect(response).to have_http_status(:ok)
       end
 
-      it 'creates two new images connected to the project' do
+      xit 'creates two new images connected to the project' do
         expect(Image.where(image_file_name: 'green')).to exist
         expect(Image.where(image_file_name: 'blue')).to exist
         expect(Image.find_by(image_file_name: 'green').projectIDs).to include @project.id.to_s
@@ -51,11 +51,11 @@ describe "POST /images", :type => :request do
         @body = JSON.parse(response.body)
       end
       
-      it 'returns 200' do
+      xit 'returns 200' do
         expect(response).to have_http_status(:ok)
       end
       
-      it 'creates two new images, the second with the _copy(n) suffix' do
+      xit 'creates two new images, the second with the _copy(n) suffix' do
         expect(Image.where(image_file_name: 'green')).to exist
         expect(Image.where(image_file_name: 'green_copy(1)')).to exist
         expect(Image.find_by(image_file_name: 'green').projectIDs).to include @project.id.to_s
@@ -70,11 +70,11 @@ describe "POST /images", :type => :request do
         @body = JSON.parse(response.body)
       end
       
-      it 'returns 404' do
+      xit 'returns 404' do
         expect(response).to have_http_status(:not_found)
       end
       
-      it 'returns the error message' do
+      xit 'returns the error message' do
         expect(@body['error']).to eq("project not found with id #{@project.id.to_str}missing")
       end
     end
@@ -85,7 +85,7 @@ describe "POST /images", :type => :request do
         post '/images', params: @parameters.to_json, headers: {'Authorization' => @authToken, 'CONTENT_TYPE' => 'application/json', 'ACCEPT' => 'application/json'}
       end
       
-      it 'returns 401' do
+      xit 'returns 401' do
         expect(response).to have_http_status(:unauthorized)
       end
     end
@@ -96,7 +96,7 @@ describe "POST /images", :type => :request do
         post '/images', params: @parameters.to_json, headers: {'Authorization' => @authToken, 'CONTENT_TYPE' => 'application/json', 'ACCEPT' => 'application/json'}
       end
 
-      it 'returns 422' do
+      xit 'returns 422' do
         expect(response).to have_http_status(:unprocessable_entity)
       end
     end
@@ -108,12 +108,12 @@ describe "POST /images", :type => :request do
         @body = JSON.parse(response.body)
       end
 
-      it 'returns 422' do
+      xit 'returns 422' do
         expect(response).to have_http_status(:unprocessable_entity)
         @body = JSON.parse(response.body)
       end
       
-      it 'returns the error message' do
+      xit 'returns the error message' do
         expect(@body['error']).to eq "Exception"
       end
     end
@@ -125,11 +125,11 @@ describe "POST /images", :type => :request do
       @body = JSON.parse(response.body)
     end
 
-    it 'returns an bad request error' do
+    xit 'returns an bad request error' do
       expect(response).to have_http_status(:bad_request)
     end
 
-    it 'returns an appropriate error message' do
+    xit 'returns an appropriate error message' do
       expect(JSON.parse(response.body)['error']).to eq('Authorization Token: Signature verification raised')
     end
   end
@@ -139,11 +139,11 @@ describe "POST /images", :type => :request do
       post '/images', params: @parameters.to_json, headers: {'Authorization' => ""}
     end
 
-    it 'returns an bad request error' do
+    xit 'returns an bad request error' do
       expect(response).to have_http_status(:bad_request)
     end
 
-    it 'returns an appropriate error message' do
+    xit 'returns an appropriate error message' do
       expect(JSON.parse(response.body)['error']).to eq('Authorization Token: Nil JSON web token')
     end
   end
@@ -153,11 +153,11 @@ describe "POST /images", :type => :request do
       post '/images', params: @parameters.to_json, headers: {'Authorization' => "123456789"}
     end
 
-    it 'returns an bad request error' do
+    xit 'returns an bad request error' do
       expect(response).to have_http_status(:bad_request)
     end
 
-    it 'returns an appropriate error message' do
+    xit 'returns an appropriate error message' do
       expect(JSON.parse(response.body)['error']).to eq('Authorization Token: Not enough or too many segments')
     end
   end
@@ -167,7 +167,7 @@ describe "POST /images", :type => :request do
       post '/images'
     end
 
-    it 'returns an unauthorized action error' do
+    xit 'returns an unauthorized action error' do
       expect(response).to have_http_status(:unauthorized)
     end
   end

@@ -284,7 +284,7 @@ class ImageCollection extends Component {
             />
           </div>
           <div style={{marginLeft:"1em", padding:"1em",background:"white", width: this.state.windowWidth*0.22}}>
-            {numSelected>0?infoPanel:uploadPanel}
+            {numSelected>0?infoPanel:/*uploadPanel*/null}
           </div>
         </div>
         <RemoveImageConfirmation
