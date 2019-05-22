@@ -6,6 +6,7 @@ describe "GET /images/zip/:imageid_:projectid", :type => :request do
     put '/confirmation', params: {:confirmation_token => @user.confirmation_token}
     post '/session', params: {:session => { :email => @user.email, :password => "user" }}
     @authToken = JSON.parse(response.body)['session']['jwt']
+    @zipPath = "#{Rails.root}/public/uploads"
   end
 
   before :each do
@@ -17,11 +18,12 @@ describe "GET /images/zip/:imageid_:projectid", :type => :request do
   context 'and valid authorization' do
     context 'and valid image' do
       before do
-        File.open("#{@image1.image.path.split('/')[0..-2].join('/')}/#{@project.id}_images.zip", 'w+') { |file| file.write('testcontent') }
-        get "/images/zip/#{@image1.id}_#{@project.id}", headers: {'Authorization' => @authToken, 'CONTENT_TYPE' => 'application/json'}
+
+        File.open("#{@zipPath}/#{@project.id}_images.zip", 'w+') { |file| file.write('testcontent') }
+        get "/images/zip/#{@project.id}", headers: {'Authorization' => @authToken, 'CONTENT_TYPE' => 'application/json'}
       end
       after do
-        File.delete("#{@image1.image.path.split('/')[0..-2].join('/')}/#{@project.id}_images.zip")
+        File.delete("#{@zipPath}/#{@project.id}_images.zip")
       end
 
       it 'returns 200' do
@@ -57,7 +59,7 @@ describe "GET /images/zip/:imageid_:projectid", :type => :request do
       end
       
       it 'returns the error message' do
-        expect(@body['error']).to eq "Exception"
+        expect(@body['error']).to include "Cannot read file"
       end
     end
   end

@@ -10,8 +10,8 @@ describe "DELETE /images", :type => :request do
 
   before :each do
     @project = FactoryGirl.create(:codex_project, user: @user, quire_structure: [[1, 2]])
-    @image1 = FactoryGirl.create(:pixel, user: @user)
-    @image2 = FactoryGirl.create(:pixel, user: @user)
+    @image1 = FactoryGirl.create(:image, user: @user)
+    @image2 = FactoryGirl.create(:image, user: @user)
     @parameters = {
       "imageIDs": [@image1.id.to_s]
     }

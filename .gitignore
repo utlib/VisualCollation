@@ -63,3 +63,4 @@ test.log
 
 # DIY images
 viscoll-api/uploads/*
+viscoll-api/public/uploads*

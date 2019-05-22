@@ -12,7 +12,7 @@ RSpec.describe Image, type: :model do
   before(:each) do
     @user = FactoryGirl.create(:user)
     @project = FactoryGirl.create(:codex_project, user: @user, quire_structure: [[1, 2]])
-    @image = FactoryGirl.create(:pixel, user: @user)
+    @image = FactoryGirl.create(:image, user: @user)
   end
   
   describe 'Validations' do
@@ -21,7 +21,7 @@ RSpec.describe Image, type: :model do
     end
     
     it 'should not be valid with a duplicate file name' do
-      duplicate_image = FactoryGirl.build(:shiba_inu, user: @user, filename: @image.filename)
+      duplicate_image = FactoryGirl.build(:image, user: @user, filename: @image.filename)
       expect(duplicate_image).not_to be_valid
     end
   end
@@ -31,7 +31,7 @@ RSpec.describe Image, type: :model do
       @side = @project.sides[1]
       @side.update(image: {
         manifestID: 'DIYImages',
-        label: 'pixel.png',
+        label: 'hello.png',
         url: 'http://127.0.0.1:3001/pixel.png'
       })
       @image.update(sideIDs: [@side.id.to_s])

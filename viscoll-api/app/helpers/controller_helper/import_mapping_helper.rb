@@ -2,24 +2,37 @@ require 'zip'
 
 module ControllerHelper
   module ImportMappingHelper
-
-    def handleMappingImport(newProject, imageData, current_user)     
+    def decodeZip(imageData)
+      # Get the zip
+      tempzip = Tempfile.new('images.zip')
+      tempzip.binmode
+      regexp = /\Adata:([-\w]+\/[-\w\+\.]+)?;base64,(.*)/m
+      parts = imageData.match(regexp)
+      data = StringIO.new(Base64.decode64(parts[-1] || ""))
+      while part = data.read(16*1024)
+        tempzip.write(part)
+      end
+      tempzip.rewind
+      return tempzip
+    end
+    
+    def handleMappingImport(newProject, imageData, current_user)
       begin
         uploadedImages = {}
-        if imageData!=""
-          zipFile = Paperclip.io_adapters.for(imageData) 
-          Zip::File.open(zipFile.path) do |zip_file|
+        if imageData.present?
+          tempzip = decodeZip(imageData)
+          Zip::File.open(tempzip.path) do |zip_file|
             zip_file.each do |file|
-              # Go through each file and check if it exists in the user directory and link them.
-              # If it doesn't exist, create a new Image and link it to newProject and its Side.
-              tempfile = Tempfile.new([File.basename(file.name).split("_", 2)[1].split('.', 2)[0], File.basename(file.name).split("_", 2)[1].split('.', 2)[1]])
+              # Go through each file and collect its info
+              # The exported filename structure is: userGivenFilename_fileID.fileExtension
+              filename = file.name.rpartition('_')[0]
+              fileID = file.name.rpartition('_')[2].split('.')[0]
+              extension = file.name.split('.')[1]
+              tempfile = Tempfile.new("#{filename}")
               tempfile.binmode
               tempfile.write file.get_input_stream.read
               tempfile.rewind
-              imageID = File.basename(file.name).split("_", 2)[0]
-              filename = File.basename(file.name).split("_", 2)[1]
-              newImage = Image.new(user: current_user, filename: filename, image: tempfile, projectIDs: [newProject.id.to_s])
-              uploadedImages[filename] = {:image => newImage, :file => file}
+              uploadedImages["#{filename}.#{extension}"] = {:fileID => fileID, :file => tempfile, :extension => extension}
             end
           end
         end
@@ -31,16 +44,15 @@ module ControllerHelper
             filename = side.image["url"].split("/")[-1].split("_", 2)[1]
             image = current_user.images.where(:id => imageID).first
             if not image
-              # No Image exists in the current_user direcroty.
+              # Image object doesn't exist for current_user
               # Check if any Image with 'filename' was uploaded during import.
               if uploadedImages.key?(filename)
-                newImage = uploadedImages[filename][:image]
-                # Check if uploaded Image Filename already exists in the current_user directory
+                # Check if filename already exists for current_user 
                 existingImage = current_user.images.where(:filename => filename).first
                 if existingImage
                   # Check if this new Image is different from the existing Image
-                  if newImage.image_fingerprint==existingImage.image_fingerprint
-                    # Same Image. So Link this Image to the this Side
+                  if uploadedImages[filename][:fileID] == existingImage.fileID
+                    # Same Image, so link this Image to the Side
                     side.image["url"]=@base_api_url+"/images/"+existingImage.id.to_s+"_"+existingImage.filename
                     side.save
                     !(existingImage.sideIDs.include?(side.id.to_s)) ? existingImage.sideIDs.push(side.id.to_s) : nil
@@ -48,12 +60,17 @@ module ControllerHelper
                     existingImage.save
                   else
                     # Different Image, but with already existing filename. Rename the newImage and link to this Side.
-                    newFilename = "#{newImage.filename.split('.', 2)[0]}(copy).#{newImage.filename.split('.', 2)[1]}"
-                    tempfile = Tempfile.new([newFilename.split(".", 2)[0], newFilename.split(".", 2)[1]])
-                    tempfile.binmode
-                    tempfile.write uploadedImages[filename][:file].get_input_stream.read
-                    tempfile.rewind
-                    newImage = Image.new(user: current_user, filename: newFilename, image: tempfile, projectIDs: [newProject.id.to_s])
+                    filenameOnly = filename.rpartition(".")[0]
+                    newFilename = "#{filenameOnly}(copy).#{uploadedImages[filename][:extension]}"
+                    # check if filename already exists, if it does, add another "(copy)"
+                    imageWithFilename = current_user.images.where(:filename => newFilename).first
+                    while imageWithFilename
+                      newFilename = "#{newFilename.rpartition(".")[0]}(copy).#{uploadedImages[filename][:extension]}"
+                      imageWithFilename = current_user.images.where(:filename => newFilename).first
+                    end
+                    uploader = Shrine.new(:store)
+                    uploaded_file = uploader.upload(uploadedImages[filename][:file], metadata: {"filename"=>newFilename, "mime_type": "image/#{uploadedImages[filename][:extension]}"})
+                    newImage = Image.new(user: current_user, filename: newFilename, fileID: uploaded_file.id, metadata: uploaded_file.metadata, projectIDs: [newProject.id.to_s])
                     side.image["url"]=@base_api_url+"/images/"+newImage.id.to_s+"_"+newFilename
                     side.save
                     !(newImage.sideIDs.include?(side.id.to_s)) ? newImage.sideIDs.push(side.id.to_s) : nil
@@ -61,7 +78,11 @@ module ControllerHelper
                     newImage.save
                   end
                 else
-                  # New Image
+                  # Image object doesn't exist with filename
+                  # Create Image
+                  uploader = Shrine.new(:store)
+                  uploaded_file = uploader.upload(uploadedImages[filename][:file], metadata: {"filename"=>"#{filename}", "mime_type": "image/#{uploadedImages[filename][:extension]}"})
+                  newImage = Image.new(user: current_user, filename: filename, fileID: uploaded_file.id, metadata: uploaded_file.metadata, projectIDs: [newProject.id.to_s])
                   side.image["url"]=@base_api_url+"/images/"+newImage.id.to_s+"_"+newImage.filename
                   side.save
                   !(newImage.sideIDs.include?(side.id.to_s)) ? newImage.sideIDs.push(side.id.to_s) : nil
