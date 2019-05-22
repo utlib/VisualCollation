@@ -146,7 +146,6 @@ const ProjectStructure = (props) => {
               aria-label="Add"
               onClick={() => props.addCollationRows()}
               primary
-              keyboardFocused
             />
           </div>
         </div>

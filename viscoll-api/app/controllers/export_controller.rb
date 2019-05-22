@@ -16,17 +16,17 @@ class ExportController < ApplicationController
         end
       end
       if !images.empty?
-        basePath = images[0].image.path.split("/")
-        basePath.pop
-        basePath = basePath.join("/")
-        zipFilename = basePath+'/'+@project.id.to_s+'_images.zip'
+        basePath = "#{Rails.root}/public/uploads/"
+        zipFilename = "#{basePath}#{@project.id.to_s}_images.zip"
         File.delete(zipFilename) if File.exist?(zipFilename)
-        ::Zip::File.open(zipFilename, Zip::File::CREATE) do |zip_file|
+        ::Zip::File.open(zipFilename, Zip::File::CREATE) do |zipFile|
           images.each do |image|
-            zip_file.add(image.id.to_s+"_"+image.filename, image.image.path)
+            fileExtension = image.metadata['mime_type'].split('/')[1]
+            filenameOnly = image.filename.rpartition(".")[0]
+            zipFile.add("#{filenameOnly}_#{image.fileID}.#{fileExtension}", "#{basePath}#{image.fileID}")
           end
         end
-        @zipFilePath = @base_api_url+"/images/zip/"+images[0].id.to_s+"_"+@project.id.to_s
+        @zipFilePath = "#{@base_api_url}/images/zip/#{@project.id.to_s}"
       end
     rescue Exception => e
     end

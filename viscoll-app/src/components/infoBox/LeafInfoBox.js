@@ -227,6 +227,7 @@ export default class LeafInfoBox extends React.Component {
       let eyeIsChecked = this.props.preferences.leaf && this.props.preferences.leaf[attributeDict.name]?this.props.preferences.leaf[attributeDict.name]:false;
 
       if (this.props.viewMode==="TABULAR" && this.state.isBatch) {
+
         eyeCheckbox = 
         <div className="tooltip eyeToggle">
           <Checkbox

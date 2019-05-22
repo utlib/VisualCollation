@@ -41,6 +41,19 @@ describe "GET /projects/:id/export/:format", :type => :request do
     @format = 'json'
   end
   
+  before :all do
+    imagePath = "#{Rails.root}/public/uploads"
+    File.new(imagePath+'/pixel', 'w')
+  end
+
+  after :all do
+    imagePath = "#{Rails.root}/public/uploads"
+    if File.file?(imagePath+'/pixel')
+      File.delete(imagePath+'/pixel')
+    end
+    Dir.glob(imagePath+'/*.zip').each { |file| File.delete(file) }
+  end
+
   context 'with valid authorization' do
     context 'for JSON export' do
       before do
@@ -95,7 +108,7 @@ describe "GET /projects/:id/export/:format", :type => :request do
         expect(export_result['Notes']).to eq({
           '1' => {'params'=>{'title'=>"Test Note", 'type'=>"Ink", 'description'=>"This is a test", 'show'=>true}, 'objects'=>{'Group'=>[1], 'Leaf'=>[5], 'Recto'=>[5], 'Verso'=>[5]}}
         })
-        expect(image_result['exportedImages']).to eq("https://dummy.library.utoronto.ca/api/images/zip/#{@testimage.id}_#{@project.id}")
+        expect(image_result['exportedImages']).to eq("https://dummy.library.utoronto.ca/api/images/zip/#{@project.id}")
       end
     end
     
@@ -112,7 +125,7 @@ describe "GET /projects/:id/export/:format", :type => :request do
       
       it 'should have expected content' do
         expect(@body['type']).to eq 'xml'
-        expect(@body['Images']['exportedImages']).to eq("https://dummy.library.utoronto.ca/api/images/zip/#{@testimage.id}_#{@project.id}")
+        expect(@body['Images']['exportedImages']).to eq("https://dummy.library.utoronto.ca/api/images/zip/#{@project.id}")
         result = Nokogiri::XML(@body['data'])
         # Metadata elements
         expect(result.css("manuscript title").text).to eq 'Sample project'

@@ -87,7 +87,7 @@ export default class AddManifest extends Component {
           />
         </div>
         <div>
-          <h2>Import images from a IIIF manifest</h2>
+          <h2>Import images from a IIIF mancifest</h2>
             <form className="form" onSubmit={(e)=>this.onSubmit(e)}>
               <div className="row">
                 <div className="input">

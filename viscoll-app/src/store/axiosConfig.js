@@ -21,7 +21,12 @@ export const clientOptions = {
     ],
     response: [{
       success: function ({getState, dispatch, getSourceAction}, response) {
-        if (getState().global.loading) dispatch({ type: "HIDE_LOADING" });
+        if (getState().global.loading) {
+          if (getState().global.loadingRequestCount>0)
+            dispatch({type:"UPDATE_LOADING_COUNT", payload:getState().global.loadingRequestCount-1})
+          if (getState().global.loadingRequestCount<=1)
+            dispatch({ type: "HIDE_LOADING" });
+        }
         return Promise.resolve(response.data);
       },
       error: function ({getState, dispatch, getSourceAction}, error) {

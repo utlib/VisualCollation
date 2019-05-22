@@ -6,14 +6,20 @@ RSpec.describe ControllerHelper::ImportMappingHelper, type: :helper do
     @user = FactoryGirl.create(:user)
     @project = FactoryGirl.create(:codex_project, user: @user, quire_structure: [[1,3]])
   end
+
+  after do
+    Image.where(:projectIDs => @project.id.to_s).each do | image |
+      image.destroy
+    end
+  end
   
   describe 'handleMappingImport' do
     it 'should run properly with images in various attachment situations' do
       # Prep user with preloaded images
       preloads = [
-        FactoryGirl.create(:pixel, user: @user, projectIDs: [@project.id.to_s], filename: '1V.png'),
-        FactoryGirl.create(:shiba_inu, user: @user, projectIDs: [@project.id.to_s], filename: '2R.png', id: '5a28221ec199860e7a2f5fd1shibainu'),
-        FactoryGirl.create(:viscoll_logo, user: @user, projectIDs: [@project.id.to_s], filename: '2V.png', id: '5a28221ec199860e7a2f5fd1waahoo')
+        FactoryGirl.create(:image, user: @user, projectIDs: [@project.id.to_s], filename: '1V.png', fileID: '5a28221ec199860e7a2f5fd1'),
+        FactoryGirl.create(:image, user: @user, projectIDs: [@project.id.to_s], filename: '2R.png', fileID: '5a28221ec199860e7a1shibainu', id: '5a28221ec199860e7a2f5fd1shibainu'),
+        FactoryGirl.create(:image, user: @user, projectIDs: [@project.id.to_s], filename: '2V.png', fileID: '0e7a2f5fd1waahoo', id: '5a28221ec199860e7a2f5fd1waahoo')
       ]
       @user.images = preloads
       @user.save
@@ -27,7 +33,7 @@ RSpec.describe ControllerHelper::ImportMappingHelper, type: :helper do
       @project.sides[1].update(image: {
         manifestID: 'DIYImages',
         label: '1V',
-        url: 'http://www.foobar.net/images/5a28221ec199860e7a2f5fd1pixel_1V.png'
+        url: 'http://www.foobar.net/images/5a28221ec199860e7a2f5fd1_1V.png'
       })
       # Situation 3: Uploaded image same name but different content from existing image
       @project.sides[2].update(image: {
@@ -47,7 +53,8 @@ RSpec.describe ControllerHelper::ImportMappingHelper, type: :helper do
         label: '3R',
         url: 'http://www.foobar.net/images/5a28221ec199860e7a2f5fd1_3R.png'
       })
-      handleMappingImport(@project, File.new(File.dirname(__FILE__) + '/../../fixtures/dots_exported.zip', 'rb'), @user)
+      zipData = File.open("#{Rails.root}/spec/fixtures/base64zip.txt", "rb").read
+      handleMappingImport(@project, zipData, @user)
       @project.reload
       expect(@project.sides[0].image).to include('manifestID' => 'DIYImages')
       expect(@project.sides[0].image['url']).to match(/http:\/\/127\.0\.0\.1:12345\/images\/[\w]+_1R\.png/)

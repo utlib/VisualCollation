@@ -23,7 +23,13 @@ describe "POST /images", :type => :request do
          }
   	  ]
     }
+  end
+
+  after do
+    Image.where(:projectIDs => @project.id.to_s).each do | image |
+      image.destroy
     end
+  end
 
   context 'and valid authorization' do
     context 'and standard group' do
@@ -37,10 +43,10 @@ describe "POST /images", :type => :request do
       end
 
       it 'creates two new images connected to the project' do
-        expect(Image.where(image_file_name: 'green')).to exist
-        expect(Image.where(image_file_name: 'blue')).to exist
-        expect(Image.find_by(image_file_name: 'green').projectIDs).to include @project.id.to_s
-        expect(Image.find_by(image_file_name: 'blue').projectIDs).to include @project.id.to_s
+        expect(Image.where(filename: 'green.png')).to exist
+        expect(Image.where(filename: 'blue.png')).to exist
+        expect(Image.find_by(filename: 'green.png').projectIDs).to include @project.id.to_s
+        expect(Image.find_by(filename: 'blue.png').projectIDs).to include @project.id.to_s
       end
     end
     
@@ -56,10 +62,10 @@ describe "POST /images", :type => :request do
       end
       
       it 'creates two new images, the second with the _copy(n) suffix' do
-        expect(Image.where(image_file_name: 'green')).to exist
-        expect(Image.where(image_file_name: 'green_copy(1)')).to exist
-        expect(Image.find_by(image_file_name: 'green').projectIDs).to include @project.id.to_s
-        expect(Image.find_by(image_file_name: 'green_copy(1)').projectIDs).to include @project.id.to_s
+        expect(Image.where(filename: 'green.png')).to exist
+        expect(Image.where(filename: 'green_copy(1).png')).to exist
+        expect(Image.find_by(filename: 'green.png').projectIDs).to include @project.id.to_s
+        expect(Image.find_by(filename: 'green_copy(1).png').projectIDs).to include @project.id.to_s
       end
     end
     

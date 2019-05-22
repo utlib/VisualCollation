@@ -20,12 +20,12 @@ class ImagesController < ApplicationController
     newImages = []
     allImages = image_create_params.to_h[:images]
     allImages.each do |image_data|
-      image = Paperclip.io_adapters.for(image_data[:content]) 
       filename = image_data[:filename].parameterize.underscore
-      image.original_filename = filename
-      image = Image.new(user: current_user, filename: filename, image: image, projectIDs: projectIDs)
-      image.filename = "#{image.filename}.#{image.image_content_type.split('/')[1]}"
-      image.image_file_name = filename
+      extension = image_data[:content].split("image/").last.split(";base64").first
+      imageIO = Shrine.data_uri(image_data[:content])
+      uploader = Shrine.new(:store)
+      uploaded_file = uploader.upload(imageIO, metadata: {"filename"=>"#{filename}.#{extension}"})
+      image = Image.new(user: current_user, filename: "#{filename}.#{extension}", fileID: uploaded_file.id, metadata: uploaded_file.metadata, projectIDs: projectIDs)
       if image.valid?
         image.save
       else
@@ -33,14 +33,11 @@ class ImagesController < ApplicationController
         while !image.save do
           if image.errors.key?("filename") and image.errors[:filename][0].include?("Image with filename")
             # Duplicate filename. Create Image with new filename+"_copy(copyCounter)"
-            image = Paperclip.io_adapters.for(image_data[:content]) 
             filename = "#{image_data[:filename].parameterize.underscore}_copy(#{copyCounter})"
-            image.original_filename = filename
-            image = Image.new(user: current_user, filename: filename, image: image, projectIDs: projectIDs)
-            image.filename = "#{image.filename}.#{image.image_content_type.split('/')[1]}"
-            image.image_file_name = filename
+            image = Image.new(user: current_user, filename: "#{filename}.#{extension}", fileID: uploaded_file.id, metadata: uploaded_file.metadata, projectIDs: projectIDs)
             copyCounter += 1
           else
+            image.destroy
             render json: image.errors, status: :unprocessable_entity and return
           end 
         end
@@ -64,24 +61,23 @@ class ImagesController < ApplicationController
     rescue Exception => e
       render json: {error: e.message}, status: :unprocessable_entity and return
     end
-    send_file @image.image.path, :type => @image.image_content_type, :disposition => 'inline'
+    # Get image file
+    path = "#{Rails.root}/public/uploads/#{@image.fileID}"
+    File.open(path, 'rb') do |image|
+      send_file image, :type => @image.metadata['mime_type'], :disposition => 'inline'
+    end
   end
 
 
   # GET /images/zip/:imageID_projectID
   def getZipImages
     begin
-      imageID = params[:id].split("_")[0]
-      projectID = params[:id].split("_")[1]
-      @image = Image.find(imageID)
-      imagePath = @image.image.path.split("/")
-      imagePath.pop
-      imagePath = imagePath.join("/")
-      zipFilePath = imagePath+"/"+projectID+"_images.zip"
+      projectID = params[:id]
+      zipFilePath = "#{Rails.root}/public/uploads/#{projectID}_images.zip"
+      send_file zipFilePath, :type => 'application/zip', :disposition => 'inline'
     rescue Exception => e
       render json: {error: e.message}, status: :unprocessable_entity and return
     end
-    send_file zipFilePath, :type => 'application/zip', :disposition => 'inline'
   end
 
 

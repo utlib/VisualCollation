@@ -14,6 +14,16 @@ describe "GET /images/:id", :type => :request do
     @image2 = FactoryGirl.create(:shiba_inu, user: @user)
   end
 
+  before :all do
+    imagePath = "#{Rails.root}/public/uploads"
+    File.new(imagePath+'/pixel', 'w')
+  end
+
+  after :all do
+    imagePath = "#{Rails.root}/public/uploads"
+    File.delete(imagePath+'/pixel')
+  end
+
   context 'and valid authorization' do
     context 'and valid image' do
       before do
@@ -25,7 +35,7 @@ describe "GET /images/:id", :type => :request do
       end
 
       it 'shows the right image' do
-        expect(response.body).to eq(File.open(File.dirname(__FILE__) + '/../../fixtures/pixel.png', 'rb') { |file| file.read })
+        expect(response.body).to eq(File.open("#{Rails.root}/public/uploads/pixel", 'rb') { |file| file.read })
       end
     end
     

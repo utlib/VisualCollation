@@ -291,8 +291,4 @@ class LeafsController < ApplicationController
       params.permit(:leafs => [])
     end
 
-    def leaf_params_folio
-      params.permit(:startNumber, :rectoIDs => [], :versoIDs => [])
-    end
-
 end

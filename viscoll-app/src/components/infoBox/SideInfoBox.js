@@ -184,14 +184,6 @@ export default class SideInfoBox extends React.Component {
         }
       }
     }
-    for (let sideID of selectedSides) {
-      const side = this.props.Sides[sideID];
-      if (sideAttributes["generated_folio_number"]===undefined) {
-        sideAttributes["generated_folio_number"]=side.generated_folio_number;
-      } else {
-        sideAttributes["generated_folio_number"]=null;
-      }
-    }
     return sideAttributes;
   }
 
@@ -356,8 +348,6 @@ export default class SideInfoBox extends React.Component {
             value = this.state[attributeDict.name];
           } else if (sideAttributes[attributeDict.name]!==null) {
             value = sideAttributes[attributeDict.name];
-          } else if (attributeDict.name==="folio_number" && sideAttributes["generated_folio_number"]!==null) {
-            value = sideAttributes["generated_folio_number"];
           }
           input = (<div>
             <form onSubmit={(e)=>this.textSubmit(e,attributeDict.name)}>
