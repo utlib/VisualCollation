@@ -361,6 +361,7 @@ class CollationManager extends Component {
 
     const exportDialog = (
       <Export 
+        projectID={this.props.project.id}
         label={this.state.export.label}
         exportOpen={this.state.export.open}
         handleExportToggle={this.handleExportToggle}

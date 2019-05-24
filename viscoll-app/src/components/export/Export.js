@@ -7,6 +7,8 @@ import IconCopy from 'material-ui/svg-icons/content/content-copy';
 import IconDownload from 'material-ui/svg-icons/file/file-download';
 import IconButton from 'material-ui/IconButton';
 import ImageViewer from "../global/ImageViewer";
+import JSZip from 'jszip';
+import saveAs from 'file-saver';
 
 
 /** Dialog to export collation to JSON, XML or PNG */
@@ -25,7 +27,7 @@ const Export = (props) => {
       label={"Download " + props.exportedType + " + images"}
       icon={<IconDownload />}
       style={props.exportedImages&&props.exportedType!=="png"?{marginRight:10}:{display:"none"}}
-      onClick={()=>{window.location=props.exportedImages;fileDownload(props.exportedData, `${filename}.${props.exportedType}`)}}
+      onClick={()=>{downloadZip();fileDownload(props.exportedData, `${filename}.${props.exportedType}`)}}
     />,
     <FlatButton
       label={"Download " + props.exportedType}
@@ -40,6 +42,25 @@ const Export = (props) => {
       keyboardFocused
     />,
   ];
+
+  const downloadZip = () => {
+    fetch(props.exportedImages)
+    .then(function (response) {
+      if (response.status === 200 || response.status === 0) {
+          return Promise.resolve(response.blob());
+      } else {
+          return Promise.reject(new Error(response.statusText));
+      }
+    })
+    .then(JSZip.loadAsync)
+    .then(function (zip) {
+          zip.generateAsync({type:"blob"}).then(function (blob) {
+            saveAs(blob, `${props.projectID}_images.zip`); 
+          }, function (err) {
+            console.log("error saving zip file!");
+          });
+    })
+  }
 
   const exportedData = props.exportedType!=="png"? 
     <div style={{maxHeight: 500, overflow: "scroll", background:"#f5f5f5"}}>
