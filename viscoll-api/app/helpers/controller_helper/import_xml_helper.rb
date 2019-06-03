@@ -23,7 +23,11 @@ module ControllerHelper
       }
       # Grab project Title
       projectTitleNode = xml.xpath("//x:title", "x" => "http://schoenberginstitute.org/schema/collation")
-      @projectInformation[:title] = projectTitleNode.text
+      if projectTitleNode.text.empty?
+        @projectInformation[:title] =  "No title" 
+      else 
+        @projectInformation[:title] = projectTitleNode.text
+      end
       if not @projectInformation[:title]
         @projectInformation[:title] = "XML_Import_@_" + Time.now.to_s
       end
