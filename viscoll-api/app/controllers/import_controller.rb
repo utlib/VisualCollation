@@ -14,11 +14,13 @@ class ImportController < ApplicationController
       when "xml"
         xml = Nokogiri::XML(importData)
         schema = Nokogiri::XML::RelaxNG(File.open("public/viscoll-datamodel2.rng"))
+        schema2 = Nokogiri::XML::RelaxNG(File.open("public/viscoll-datamodel2.0.rng"))
         errors = schema.validate(xml)
-        if errors.empty?
+        errors2 = schema2.validate(xml)
+        if errors.empty? || errors2.empty?
           handleXMLImport(xml)
         else
-          render json: {error: errors}, status: :unprocessable_entity and return
+          render json: {error: errors+errors2}, status: :unprocessable_entity and return
         end
       end
       newProject = current_user.projects.order_by(:updated_at => 'desc').first
