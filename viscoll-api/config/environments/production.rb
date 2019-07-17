@@ -50,7 +50,7 @@ Rails.application.configure do
   config.action_mailer.perform_caching = false
   config.action_mailer.default_url_options = { :host => "utlviscoll.library.utoronto.ca" }
   config.action_mailer.smtp_settings = {
-    address: 'mailer.library.utoronto.ca',
+    address: 'smtp.library.utoronto.ca',
     port: 25,
     enable_starttls_auto: false
   }
