@@ -72,14 +72,12 @@ node('harmonic-agent2') {
                 sh 'sed -i "21 s/dummy/viscoll/" RAILS/config/initializers/rails_jwt_auth.rb'
                 sh 'sed -i "24 s/dummy/viscoll/" RAILS/config/initializers/rails_jwt_auth.rb'
                 sh 'sed -i "30 s/dummy/viscoll/" RAILS/config/initializers/rails_jwt_auth.rb'
-                sh 'sed -i "18 s/dummy/viscoll/" RAILS/app/mailers/mailer.rb'
                 sh 'sed -i "4 s/dummy/viscoll/" RAILS/app/controllers/application_controller.rb'
               }
               if (isUsabilityBranch()){
                 sh 'sed -i "21 s/dummy/utlviscoll/" RAILS/config/initializers/rails_jwt_auth.rb'
                 sh 'sed -i "24 s/dummy/utlviscoll/" RAILS/config/initializers/rails_jwt_auth.rb'
                 sh 'sed -i "30 s/dummy/utlviscoll/" RAILS/config/initializers/rails_jwt_auth.rb'
-                sh 'sed -i "18 s/dummy/utlviscoll/" RAILS/app/mailers/mailer.rb'
                 sh 'sed -i "4 s/dummy/utlviscoll/" RAILS/app/controllers/application_controller.rb'
               }
             } catch (e) {
