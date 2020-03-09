@@ -1,0 +1,50 @@
+version: '3.7'
+
+services:
+  api:
+    build: .
+    image: viscoll
+    container_name: viscoll-api
+    volumes:
+      - ./viscoll-api:/app
+    working_dir: /app
+    command: bash -c "rm -f tmp/pids/server.pid && bundle i && bundle exec rails s -p 3001 -b '0.0.0.0'"
+    ports:
+      - 3001:3001
+    depends_on:
+      - mongo
+      - mongo-express
+
+  app:
+    build: .
+    image: viscoll
+    container_name: viscoll-app
+    volumes:
+      - ./viscoll-app:/app
+    working_dir: /app
+    command: bash -c "npm install && npm start"
+    ports:
+      - 3000:3000
+    depends_on:
+      - api
+
+  mongo:
+    container_name: viscoll-mongo
+    image: mongo:4.0
+    volumes:
+      - mongo:/data/db
+
+  mongo-express:
+    image: mongo-express
+    container_name: viscoll-mongo-express
+    ports:
+      - 127.0.0.1:3002:8081
+    depends_on:
+      - mongo
+    environment:
+     ME_CONFIG_MONGODB_SERVER: mongo
+    depends_on:
+      - mongo
+
+volumes:
+  mongo:
