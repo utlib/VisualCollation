@@ -43,7 +43,7 @@ build-app-prod:
     - cd REACT
     - tar zcf viscoll-app.tar.gz * --transform "s,^,viscoll-app/,S"
   only:
-    - usability
+    - master
 
 .build-api:
   before_script:
