@@ -15,7 +15,7 @@ RUN git clone https://github.com/sstephenson/ruby-build.git && cd ruby-build && 
 
 # Install ruby 2.4.1
 ENV CONFIGURE_OPTS --disable-install-rdoc
-RUN ruby-build 2.4.1 /usr/local
+RUN ruby-build 2.6.4 /usr/local
 RUN gem install bundler
 RUN gem install tzinfo-data
 

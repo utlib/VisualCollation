@@ -200,8 +200,8 @@ class CollationManager extends Component {
 
   numRootGroups = () => {
     let numRootGroups = 0;
-    for (let [i, [groupID, group]] of Object.entries(this.props.project.Groups).entries()) {
-      if (group.nestLevel == 1) {
+    for (let [, [, group]] of Object.entries(this.props.project.Groups).entries()) {
+      if (group.nestLevel === 1) {
         numRootGroups++;
       }
     }

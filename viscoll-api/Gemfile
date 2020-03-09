@@ -7,7 +7,7 @@ end
 
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
-gem 'rails', '~> 5.1', '>= 5.1.6'
+gem 'rails', '5.2.4.1'
 # Use Puma as the app server
 gem 'puma', '~> 3.0'
 # Build JSON APIs with ease. Read more: https://github.com/rails/jbuilder
@@ -48,7 +48,7 @@ gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]
 gem 'mongoid', '~> 6.2'
 gem 'rails_jwt_auth', '0.16.1'
 gem "shrine"
-gem 'rubyzip', '~> 1.2.2'
+gem 'rubyzip', '1.3.0'
 
 # Use Rack CORS for handling Cross-Origin Resource Sharing (CORS), making cross-origin AJAX possible
-gem 'rack-cors', '~> 0.4.1'
+gem 'rack-cors', '1.1.1'

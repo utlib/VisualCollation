@@ -6,7 +6,6 @@ import copy from 'copy-to-clipboard';
 import IconCopy from 'material-ui/svg-icons/content/content-copy';
 import IconDownload from 'material-ui/svg-icons/file/file-download';
 import IconButton from 'material-ui/IconButton';
-import ImageViewer from "../global/ImageViewer";
 import JSZip from 'jszip';
 import saveAs from 'file-saver';
 import TextField from 'material-ui/TextField';

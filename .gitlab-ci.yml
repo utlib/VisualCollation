@@ -1,0 +1,182 @@
+include:
+  - project: "utl-its/gitlab-ci-templates"
+    file: "/templates/brickyard-upload.gitlab-ci.yml"
+  - project: "utl-its/gitlab-ci-templates"
+    file: "/templates/deploy-via-chef.gitlab-ci.yml"
+
+stages:
+  - build
+  - test
+  - publish
+  - deploy
+
+.build-app:
+  before_script:
+    - cd viscoll-app
+    - npm i
+    - npm run build
+    - cd -
+    - mkdir -p REACT
+    - cp viscoll-app/build/* ./REACT/ -f -r
+
+build-app-dev:
+  stage: build
+  image: node:10.19.0
+  artifacts:
+    paths:
+    - REACT/utlviscoll-app.tar.gz
+  extends: .build-app
+  script:
+    - cd REACT
+    - tar zcf utlviscoll-app.tar.gz * --transform "s,^,utlviscoll-app/,S"
+  only:
+    - usability
+
+build-app-prod:
+  stage: build
+  image: node:10.19.0
+  artifacts:
+    paths:
+    - REACT/viscoll-app.tar.gz
+  extends: .build-app
+  script:
+    - cd REACT
+    - tar zcf viscoll-app.tar.gz * --transform "s,^,viscoll-app/,S"
+  only:
+    - usability
+
+.build-api:
+  before_script:
+    - mkdir -p RAILS RAILS_TEST
+    - cp viscoll-api/* ./RAILS/ -f -r
+    - cp viscoll-api/* ./RAILS_TEST/ -f -r
+    - cd RAILS_TEST
+    - mongo_URI="mongodb://mongo/viscoll_test"
+    - sed -i "151 s#mongodb://localhost:27017/viscoll_test#${mongo_URI}#" config/mongoid.yml
+    - cd ..
+
+build-api-dev:
+  stage: build
+  image: ruby:2.6
+  services:
+    - mongo:4
+  artifacts:
+    paths:
+      - RAILS_TEST
+      - RAILS/utlviscoll-api.tar.gz
+  extends: .build-api
+  script:
+    - cd RAILS
+    - sed -i "21 s/dummy/utlviscoll/" config/initializers/rails_jwt_auth.rb
+    - sed -i "24 s/dummy/utlviscoll/" config/initializers/rails_jwt_auth.rb
+    - sed -i "30 s/dummy/utlviscoll/" config/initializers/rails_jwt_auth.rb
+    - sed -i "18 s/dummy/utlviscoll/" app/mailers/mailer.rb
+    - sed -i "4 s/dummy/utlviscoll/" app/controllers/application_controller.rb
+    - tar zcf utlviscoll-api.tar.gz * --transform "s,^,utlviscoll-api/,S"
+  only:
+    - usability
+
+build-api-prod:
+  stage: build
+  image: ruby:2.6
+  services:
+    - mongo:4
+  artifacts:
+    paths:
+      - RAILS_TEST
+      - RAILS/viscoll-api.tar.gz
+  extends: .build-api
+  script:
+    - cd RAILS
+    - sed -i "21 s/dummy/viscoll/" config/initializers/rails_jwt_auth.rb
+    - sed -i "24 s/dummy/viscoll/" config/initializers/rails_jwt_auth.rb
+    - sed -i "30 s/dummy/viscoll/" config/initializers/rails_jwt_auth.rb
+    - sed -i "18 s/dummy@library.utoronto.ca/rachel.dicresce@utoronto.ca/" app/mailers/mailer.rb
+    - sed -i "4 s/dummy/viscoll/" app/controllers/application_controller.rb
+    - tar zcf viscoll-api.tar.gz * --transform "s,^,viscoll-api/,S"
+  only:
+    - master
+
+test-api:
+  image: ruby:2.6
+  stage: test
+  services:
+    - mongo:4
+  dependencies:
+    - build-api-dev
+    - build-api-prod
+  script:
+    - cd RAILS_TEST
+    - gem install bundler
+    - gem install tzinfo-data
+    - bundle install
+    - bundle exec rspec
+  only:
+    - usability
+    - master
+
+publish-api-dev:
+  extends: .brickyard-upload
+  stage: publish
+  dependencies:
+    - build-api-dev
+  variables:
+    BRICKYARD_GROUP_ID: "ca.utoronto.library"
+    BRICKYARD_ARTIFACT_ID: "utlviscoll-api"
+    BRICKYARD_FILE: "RAILS/utlviscoll-api.tar.gz"
+  only:
+    - usability
+
+publish-api-prod:
+  extends: .brickyard-upload
+  stage: publish
+  dependencies:
+    - build-api-prod
+  variables:
+    BRICKYARD_GROUP_ID: "ca.utoronto.library"
+    BRICKYARD_ARTIFACT_ID: "viscoll-api"
+    BRICKYARD_FILE: "RAILS/viscoll-api.tar.gz"
+  only:
+    - master
+
+publish-app-dev:
+  extends: .brickyard-upload
+  stage: publish
+  dependencies:
+    - build-app-dev
+  variables:
+    BRICKYARD_GROUP_ID: "ca.utoronto.library"
+    BRICKYARD_ARTIFACT_ID: "utlviscoll-app"
+    BRICKYARD_FILE: "REACT/utlviscoll-app.tar.gz"
+  only:
+    - usability
+
+publish-app-prod:
+  extends: .brickyard-upload
+  stage: publish
+  dependencies:
+    - build-app-prod
+  variables:
+    BRICKYARD_GROUP_ID: "ca.utoronto.library"
+    BRICKYARD_ARTIFACT_ID: "viscoll-app"
+    BRICKYARD_FILE: "REACT/viscoll-app.tar.gz"
+  only:
+    - master
+
+deploy-app:
+  extends: .deploy-via-chef
+  stage: deploy
+  variables:
+    DEPLOY_VIA_CHEF_SEARCH: "recipe:app-viscoll"
+  only:
+    - usability
+    - master
+
+deploy-api:
+  extends: .deploy-via-chef
+  stage: deploy
+  variables:
+    DEPLOY_VIA_CHEF_SEARCH: "recipe:app-viscoll-api"
+  only:
+    - usability
+    - master
