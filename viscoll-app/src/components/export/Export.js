@@ -6,15 +6,17 @@ import copy from 'copy-to-clipboard';
 import IconCopy from 'material-ui/svg-icons/content/content-copy';
 import IconDownload from 'material-ui/svg-icons/file/file-download';
 import IconButton from 'material-ui/IconButton';
-import ImageViewer from "../global/ImageViewer";
 import JSZip from 'jszip';
 import saveAs from 'file-saver';
-
+import TextField from 'material-ui/TextField';
+import Checkbox from 'material-ui/Checkbox';
 
 /** Dialog to export collation to JSON, XML or PNG */
 const Export = (props) => {
 
   const filename = props.projectTitle.replace(/\s/g, "_");
+
+  const isValidExport = props.exportCols > 0 && props.exportCols <= props.numRootGroups;
 
   const actions = [
     <FlatButton
@@ -22,6 +24,7 @@ const Export = (props) => {
       icon={<IconDownload />}
       style={props.exportedType==="png"?{marginRight:10}:{display:"none"}}
       onClick={()=>props.downloadImage()}
+      disabled={!isValidExport}
     />,
     <FlatButton
       label={"Download " + props.exportedType + " + images"}
@@ -80,11 +83,29 @@ const Export = (props) => {
     </div>
     :
     <div>
-      <ImageViewer
-        isRectoDIY={true}
-        rectoURL={document.getElementById("myCanvas").toDataURL()}
-        backgroundColor="#F2F2F2"
+      <TextField 
+        floatingLabelText="Number of quires per line"
+        id="exportCols"
+        value={props.exportCols}
+        type="number"
+        onChange={(event, newValue) => props.setExport("exportCols", newValue)}
+        style={{width: 180}}
+        errorText={isValidExport? '': `Must be between 1 and ${props.numRootGroups}`}
+        aria-invalid={!isValidExport}
+        min={1}
+        max={props.numRootGroups}
       />
+      <br /><br />
+      <Checkbox
+        label="Show notes in exported image"
+        id="exportNotes"
+        checked={props.exportNotes}
+        onCheck={()=>props.setExport('exportNotes', !props.exportNotes)}
+      />
+
+      <div style={{width:1,height:1,overflow:'hidden'}}>
+        <canvas id="exportCanvas" width="1" height="1" />
+      </div>
     </div>
     ;
 

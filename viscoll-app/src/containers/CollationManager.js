@@ -3,6 +3,7 @@ import {Tabs, Tab} from 'material-ui/Tabs';
 import FlatButton from 'material-ui/FlatButton';
 import TabularMode from '../components/collationManager/TabularMode';
 import VisualMode from '../components/collationManager/VisualMode';
+import ExportMode from '../components/collationManager/ExportMode';
 import ViewingMode from '../components/collationManager/ViewingMode';
 import Panel from '../components/global/Panel';
 import Export from '../components/export/Export';
@@ -52,6 +53,7 @@ class CollationManager extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      
       windowWidth: window.innerWidth,
       contentStyle: {  
         transition: 'top 450ms cubic-bezier(0.23, 1, 0.32, 1)',
@@ -63,7 +65,9 @@ class CollationManager extends Component {
       export: {
         open: false,
         label: "",
-        type: ""
+        type: "",
+        exportCols: 1,
+        exportNotes: true
       },
       selectAll: "",
       leftSideBarOpen: true,
@@ -182,8 +186,8 @@ class CollationManager extends Component {
     );
   }
 
-  handleExportToggle = (open, type, label) => {
-    this.setState({export: {open, type, label}}, ()=>{
+  handleExportToggle = (open, type, label, exportCols, exportNotes) => {
+    this.setState({export: {open, type, label, exportCols, exportNotes}}, ()=>{
       if (this.state.export.open && type!=="png")
         this.props.exportProject(this.props.project.id, type);
     });
@@ -194,8 +198,65 @@ class CollationManager extends Component {
     this.props.showCopyToClipboardNotification();
   }
 
+  numRootGroups = () => {
+    let numRootGroups = 0;
+    for (let [, [, group]] of Object.entries(this.props.project.Groups).entries()) {
+      if (group.nestLevel === 1) {
+        numRootGroups++;
+      }
+    }
+    return numRootGroups;
+  }
+
+  combineDiagram = () => {
+    // Resize export canvas
+    let finalCanvas = document.getElementById("exportCanvas");
+    let canvasIDs = Array(this.numRootGroups()).fill().map((v,i)=>'canvas'+i);
+    let canvases = [];
+    for (let id of canvasIDs) {
+      canvases.push(document.getElementById(id));
+    }
+    let rows = [];
+    let numCols = parseInt(this.state.export.exportCols);
+    for (let i=0; i<canvases.length; i+=numCols) {
+      rows.push(canvases.slice(i, i+numCols));
+    }
+    let exportWidth = 0;
+    for (let i=0; i<numCols; i++) {
+      exportWidth += canvases[i].width;
+    }
+    let exportHeight = 0;
+    for (let i=0; i<rows.length; i++) {
+      let row = rows[i];
+      let maxRowHeight = 0;
+      for (let j=0; j<row.length; j++) {
+        maxRowHeight = Math.max(maxRowHeight, row[j].height);
+      }
+      exportHeight += maxRowHeight;
+    }
+    finalCanvas.width = exportWidth;
+    finalCanvas.height = exportHeight;
+
+    // Combine canvases
+    let finalContext = finalCanvas.getContext('2d');
+    let globalY = 0;
+    for (let i=0; i<rows.length; i++) {
+      let row = rows[i];
+      let x = 0;
+      let currentY = globalY;
+      let currentLargestY =0; 
+      for (let j=0; j<row.length; j++) {
+        let canvas = row[j];
+        finalContext.drawImage(canvas, x, currentY);
+        x += canvas.width;
+        currentLargestY = Math.max(currentLargestY, canvas.height);
+      }
+      globalY += currentLargestY;
+    }
+  }
+
   handleDownloadCollationDiagram = () => {
-    let canvas = document.getElementById("myCanvas");
+    let canvas = document.getElementById("exportCanvas");
     canvas.toBlob((blob)=>{
       const filename = this.props.project.title.replace(/\s/g, "_");
       fileDownload(blob, `${filename}.PNG`)
@@ -269,6 +330,10 @@ class CollationManager extends Component {
         {...radioBtnDark()}
       />
     )
+  }
+
+  setExport = (name, value) => {
+    this.setState({export: {...this.state.export, [name]: value}});
   }
 
   render() {
@@ -370,7 +435,11 @@ class CollationManager extends Component {
         exportedType={this.state.export.type}
         projectTitle={this.props.project.title}
         showCopyToClipboardNotification={this.showCopyToClipboardNotification}
-        downloadImage={this.handleDownloadCollationDiagram}
+        downloadImage={()=>{this.combineDiagram();this.handleDownloadCollationDiagram();}}
+        numRootGroups={this.numRootGroups()}
+        setExport={this.setExport}
+        exportCols={this.state.export.exportCols}
+        exportNotes={this.state.export.exportNotes}
       />
     );
 
@@ -433,7 +502,7 @@ class CollationManager extends Component {
               labelStyle={this.props.collationManager.viewMode==="TABULAR"||this.props.project.leafIDs.length===0?{color:"#a5a5a5", cursor:"not-allowed",fontSize:this.state.windowWidth<=768?"0.75em":null} : {color:"#ffffff",fontSize:this.state.windowWidth<=768?"0.75em":null}}
               backgroundColor="rgba(255, 255, 255, 0.05)"
               style={{width: "100%"}}
-              onClick={()=>{this.handleExportToggle(true, "png", "PNG")}}
+              onClick={()=>{this.handleExportToggle(true, "png", "PNG", 1, true)}}
               disabled={this.props.collationManager.viewMode==="TABULAR"||this.props.project.leafIDs.length===0}
               tabIndex={this.props.popUpActive?-1:0}
             />
@@ -533,6 +602,29 @@ class CollationManager extends Component {
             </h3>
           </div>
           {infobox}
+        </div>
+      );
+    }
+    if (this.state.export.open && this.state.export.label==="PNG") {
+      workspace = (
+        <div role="main">
+          <div className="projectWorkspace" style={this.state.contentStyle}>
+            <h1>{this.props.project.title}</h1>
+            <ExportMode 
+              project={this.props.project}
+              collationManager={this.props.collationManager}
+              handleObjectClick={this.handleObjectClick}
+              tacketed={this.props.collationManager.visualizations.tacketed}
+              sewing={this.props.collationManager.visualizations.sewing}
+              toggleVisualizationDrawing={this.props.toggleVisualizationDrawing}
+              updateGroup={this.updateGroup}
+              openNoteDialog={(note)=>this.openNoteDialog(note, true)}
+              tabIndex={this.props.popUpActive?-1:0}
+              showNotes={this.state.export.exportNotes}
+            />
+          </div>
+          {infobox}
+          {exportDialog}
         </div>
       );
     }
