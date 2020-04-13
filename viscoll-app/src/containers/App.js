@@ -7,6 +7,7 @@ import '../styles/App.css';
 import Authentication from './Authentication';
 import Dashboard from './Dashboard';
 import Project from './Project';
+import ProjectViewOnly from './ProjectViewOnly'
 import {persistStore} from 'redux-persist'
 import store from "../store/store";
 import {Provider} from "react-redux";
@@ -52,7 +53,8 @@ class App extends Component {
               <Route path="/confirmation" component={Authentication} />
               <Route path="/password" component={Authentication} />
               <Route path="/dashboard" component={Dashboard} />
-              <Route path="/project/:id" component={Project} />
+              <Route exact path="/project/:id" component={Project} />
+              <Route exact path="/project/:id/viewOnly" component={ProjectViewOnly} />
               <Route component={PageNotFound} />
             </Switch>
           </MuiThemeProvider>

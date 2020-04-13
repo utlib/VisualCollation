@@ -35,7 +35,7 @@ const Export = (props) => {
     <FlatButton
       label={"Download " + props.exportedType}
       icon={<IconDownload />}
-      style={props.exportedImages||props.exportedType==="png"?{display:"none"}:{marginRight:10}}
+      style={props.exportedImages||props.exportedType==="png"||props.exportedType==="share"?{display:"none"}:{marginRight:10}}
       onClick={()=>fileDownload(props.exportedData, `${filename}.${props.exportedType}`)}
     />,
     <FlatButton
@@ -71,14 +71,17 @@ const Export = (props) => {
         style={{position:"fixed", right:"40px"}} 
         tooltip="Copy to clipboard"
         onClick={()=>{
-          copy(props.exportedData);
+          copy(props.exportedType==="share"? window.location.href + "/viewOnly" : props.exportedData);
           props.showCopyToClipboardNotification();
         }}
       >
         <IconCopy />
       </IconButton>
       <pre>
-        {props.exportedData}
+        {props.exportedType==="share"? 
+        window.location.href + "/viewOnly"
+        :
+        props.exportedData}
       </pre>
     </div>
     :
@@ -122,6 +125,11 @@ const Export = (props) => {
       <p>
         <strong>Note:</strong> custom folio numbers and page numbers will be lost when exporting to XML format.  
         If you wish to preserve all collation data, please choose JSON export.
+      </p>
+      :""}
+      {props.label==="Share this project"?
+      <p>
+        The URL below shows the view-only mode of your project.
       </p>
       :""}
       {exportedData}

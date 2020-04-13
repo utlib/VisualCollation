@@ -1,5 +1,5 @@
 class ProjectsController < ApplicationController
-  before_action :authenticate!
+  before_action :authenticate!, except: [:viewOnly]
   before_action :set_project, only: [:show, :update, :destroy, :createManifest, :updateManifest, :deleteManifest, :clone]
   
 
@@ -14,6 +14,13 @@ class ProjectsController < ApplicationController
     @data = generateResponse()
     @projects = current_user.projects
     @images = current_user.images
+  end
+
+  # GET /projects/1/viewOnly
+  def viewOnly
+    @project = Project.find(params[:id])
+    @data = generateResponse()
+    render json: @data, status: :ok and return
   end
 
   # POST /projects

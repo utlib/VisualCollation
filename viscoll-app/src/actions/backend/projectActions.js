@@ -12,6 +12,20 @@ export function loadProject(projectID, showLoading='SHOW_LOADING') {
     };
 }
 
+export function loadProjectViewOnly(projectID, showLoading = 'SHOW_LOADING') {
+    return {
+        types: [showLoading, 'LOAD_PROJECT_VIEW_ONLY_SUCCESS', 'LOAD_PROJECT_VIEW_ONLY_FAILED'],
+        payload: {
+            request: {
+                url: `/projects/${projectID}/viewOnly`,
+                method: 'get',
+                successMessage: "",
+                errorMessage: "Ooops! Something went wrong",
+            },
+        }
+    };
+}
+
 
 export function createProject(newProject) {
     return {

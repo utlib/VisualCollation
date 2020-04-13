@@ -188,7 +188,7 @@ class CollationManager extends Component {
 
   handleExportToggle = (open, type, label, exportCols, exportNotes) => {
     this.setState({export: {open, type, label, exportCols, exportNotes}}, ()=>{
-      if (this.state.export.open && type!=="png")
+      if (this.state.export.open && type!=="png" && type !== "share")
         this.props.exportProject(this.props.project.id, type);
     });
     this.props.togglePopUp(open);
@@ -470,6 +470,19 @@ class CollationManager extends Component {
             labelStyle={this.state.windowWidth<=768?{fontSize:"0.75em",padding:2}:{}}
           />
         </Panel>
+        <Panel title="Share" defaultOpen={false} tabIndex={this.props.popUpActive?-1:0}>
+          <div className="export">
+            <FlatButton 
+              label={"GET SHAREABLE URL" } 
+              aria-label={ "Get URL for sharing online" } 
+              labelStyle={{color:"#ffffff",fontSize:this.state.windowWidth<=768?"0.75em":null}}
+              backgroundColor="rgba(255, 255, 255, 0.05)"
+              style={{width: "100%"}}
+              onClick={()=>{this.handleExportToggle(true, "share", "Share this project", 1, true)}}
+              tabIndex={this.props.popUpActive?-1:0}
+            />
+          </div>
+        </Panel>
         <Panel title="Export" defaultOpen={false} tabIndex={this.props.popUpActive?-1:0}>
           <h2>Export Collation Data</h2>
           <div className="export">
@@ -497,7 +510,7 @@ class CollationManager extends Component {
           <h2>Export Collation Diagram</h2>
           <div className="export">
             <FlatButton 
-              label={this.props.collationManager.viewMode==="TABULAR"? "Available in visual/viewing mode" : "PNG" } 
+              label={this.props.collationManager.viewMode==="TABULAR"? "In Visual mode only" : "PNG" } 
               aria-label={this.props.collationManager.viewMode==="TABULAR"? "Export to PNG only available in visual and viewing modes" : "Export to PNG" } 
               labelStyle={this.props.collationManager.viewMode==="TABULAR"||this.props.project.leafIDs.length===0?{color:"#a5a5a5", cursor:"not-allowed",fontSize:this.state.windowWidth<=768?"0.75em":null} : {color:"#ffffff",fontSize:this.state.windowWidth<=768?"0.75em":null}}
               backgroundColor="rgba(255, 255, 255, 0.05)"
@@ -508,7 +521,6 @@ class CollationManager extends Component {
             />
           </div>
         </Panel>
-        
       </div>
     );
 

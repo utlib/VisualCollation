@@ -16,7 +16,29 @@ VisColl is for building models of the physical collation of manuscripts, and the
 - [`mailcatcher`](https://mailcatcher.me/) (>= 0.6.5)
 - [Redux DevTools for Firefox or Chrome](https://github.com/zalmoxisus/redux-devtools-extension) (>= 2.15.1)
 
+## Development setup with Docker
+
+Instead of manually installing the dependencies locally on your machine for development, you can use Docker with the provided Dockerfile and docker-compose.yml. 
+
+Update the mongo host name on line 12 in `viscoll-api/config/mongoid.yml` from `localhost` to `mongo` (this is the Docker service name defined in docker-compose.yml).
+
+Bring up the containers with:
+
+```
+docker-compose up
+```
+
+To access emails being sent by the app (for user account activation, password reset, etc), set up Ethereal with the following credentials:
+
+```
+:user_name => 'libby.corkery17@ethereal.email',
+:password => 'RP4P6zMm3rVW9adMZF'
+```
+This configuration is located at `viscoll-api/config/environments/development.rb`.
+
 ## Installation and Setup
+
+Skip this section if you are using Docker for development.
 
 ### Viscoll API (Rails)
 
@@ -127,9 +149,10 @@ npm build
 ```
 
 
+
 ## Copyright and License
 
-Copyright 2018 University of Toronto Libraries
+Copyright 2020 University of Toronto Libraries
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
