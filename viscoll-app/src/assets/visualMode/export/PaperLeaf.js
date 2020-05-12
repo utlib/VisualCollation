@@ -99,7 +99,7 @@ PaperLeaf.prototype = {
                     fillColor: this.strokeColor,
                     fontSize: fontSize,
                 });
-                textNote.onClick = clickListener(note);
+                textNote.onClick = !this.viewingMode && clickListener(note);
                 this.textNotes.addChild(textNote);
             }
             // Draw leaf note text
@@ -112,7 +112,7 @@ PaperLeaf.prototype = {
                     fillColor: this.strokeColor,
                     fontSize: fontSize,
                 });
-                textNote.onClick = clickListener(note);
+                textNote.onClick = !this.viewingMode && clickListener(note);
                 this.textNotes.addChild(textNote);
             }
             // Draw verso note text
@@ -125,7 +125,7 @@ PaperLeaf.prototype = {
                     fillColor: this.strokeColor,
                     fontSize: fontSize,
                 });
-                textNote.onClick = clickListener(note);
+                textNote.onClick = !this.viewingMode && clickListener(note);
                 this.textNotes.addChild(textNote);
             }
             this.textNotes.onMouseEnter = function(event) {

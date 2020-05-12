@@ -13,6 +13,17 @@ export default function editCollationReducer(state=initialState, action) {
     case "LOAD_PROJECT_SUCCESS":
       state.project = action.payload.active
       break;
+    case "LOAD_PROJECT_VIEW_ONLY_SUCCESS":
+      state.project = {
+        ...action.payload.project,
+        ...action.payload,
+        Groups: action.payload.groups,
+        Leafs: action.payload.leafs,
+        Rectos: action.payload.rectos,
+        Versos: action.payload.versos,
+        Notes: action.payload.notes
+      }
+      break;
     case "CREATE_MANIFEST_SUCCESS":
       state.project = action.payload.active
       state.imageManager.manageSources.error = ""

@@ -20,6 +20,7 @@ Rails.application.routes.draw do
   post '/projects/:id/manifests', to: 'projects#createManifest', defaults: {format: :json}
   put '/projects/:id/manifests', to: 'projects#updateManifest', defaults: {format: :json}
   delete '/projects/:id/manifests', to: 'projects#deleteManifest', defaults: {format: :json}
+  get '/projects/:id/viewOnly', to: 'projects#viewOnly', defaults: {format: :json}
   resources :projects, defaults: {format: :json}, only: [:index, :show, :update, :destroy, :create]
 
   # DIY IMAGE ENDPOINTS 

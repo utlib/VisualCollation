@@ -298,18 +298,23 @@ export default class EditNoteForm extends Component {
               {this.renderSubmitButtons("description")}
             </form>}
           </div>
-          <div className="label" id="noteShowLabel">
-            Show in diagram
-          </div>
-          <div className="input">
-            <Checkbox
-              aria-labelledby="noteShowLabel"
-              checked={this.props.note.show}
-              style={{paddingTop:20}}
-              onClick={()=>this.props.action.updateNote(this.props.note.id, {title:this.state.title,type:this.state.type,description:this.state.description,show:!this.props.note.show})}
-              tabIndex={this.props.tabIndex}
-            />
-          </div>
+          {!this.props.isReadOnly &&
+            <div>
+              <div className="label" id="noteShowLabel">
+                Show in diagram
+              </div>
+              <div className="input">
+                <Checkbox
+                  aria-labelledby="noteShowLabel"
+                  checked={this.props.note.show}
+                  style={{ paddingTop: 20 }}
+                  onClick={() => this.props.action.updateNote(this.props.note.id, { title: this.state.title, type: this.state.type, description: this.state.description, show: !this.props.note.show })}
+                  tabIndex={this.props.tabIndex}
+                />
+              </div>
+            </div>
+          }
+
           {linkedObjects}
           {deleteButton}
         </div>
