@@ -1,8 +1,6 @@
-<img src="https://digitaltoolsmss.library.utoronto.ca/sites/digitaltoolsmss.library.utoronto.ca/files/viscoll-dark.svg" width="500px" />
-
 ## Introduction
 
-VisColl is for building models of the physical collation of manuscripts, and then visualizing them in various ways. The VisColl project is led by Dot Porter at the [Schoenberg Institute for Manuscript Studies](https://schoenberginstitute.org/) at the University of Pennsylvania, in collaboration with the [University of Toronto Libraries](https://onesearch.library.utoronto.ca/about) and the [Old Books New Science lab](https://oldbooksnewscience.com/). Collaborators include Alexandra Gillespie, Alberto Campagnolo, and Conal Tuohy.
+VisCodex is for building models of the physical collation of manuscripts, and then visualizing them in various ways. The VisCodex project is led by Dot Porter at the [Schoenberg Institute for Manuscript Studies](https://schoenberginstitute.org/) at the University of Pennsylvania, in collaboration with the [University of Toronto Libraries](https://onesearch.library.utoronto.ca/about) and the [Old Books New Science lab](https://oldbooksnewscience.com/). Collaborators include Alexandra Gillespie, Alberto Campagnolo, and Conal Tuohy.
 
 ## System Requirements
 
@@ -40,9 +38,9 @@ This configuration is located at `viscoll-api/config/environments/development.rb
 
 Skip this section if you are using Docker for development.
 
-### Viscoll API (Rails)
+### VisCodex API (Rails)
 
-Rails-driven back-end for Viscoll
+Rails-driven back-end for VisCodex
 
 #### System Requirements
 
@@ -97,9 +95,9 @@ Alternatively, run this command to test continually while monitoring for changes
 guard
 ```
 
-### Viscoll App (React-Redux)
+### VisCodex App (React-Redux)
 
-Redux-driven user interface for Viscoll
+Redux-driven user interface for VisCodex
 
 #### System Requirements
 
@@ -136,7 +134,7 @@ npm test -- --watch
 
 #### Building
 
-Before building the app, edit line 3 in `viscoll-app/src/store/axiosConfig.js` to contain the correct root endpoint of the VisColl API: 
+Before building the app, edit line 3 in `viscoll-app/src/store/axiosConfig.js` to contain the correct root endpoint of the VisCodex API: 
 
 ```Javascript
 export let API_URL = '/api';
