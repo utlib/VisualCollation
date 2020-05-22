@@ -4,7 +4,8 @@ export default function userReducer(state=initialState, action) {
   try {
     if (action.error) action = {type: action.type, payload: action.error.response.data}
   } catch (e) {}
-
+  let errorMessage = "";
+  state.notification = "";
   switch(action.type) {
     case "persist/REHYDRATE":
       state = {...state, ...action.payload.user, errors: initialState.errors}
@@ -23,7 +24,6 @@ export default function userReducer(state=initialState, action) {
         }
       break;
     case "LOGIN_FAILED":
-      let errorMessage = "";
       if (action.payload && action.payload.errors) errorMessage = action.payload.errors.session;
       if (action.error) errorMessage = [action.error.data];
       state = {
@@ -72,6 +72,11 @@ export default function userReducer(state=initialState, action) {
       state = initialState
       break;
     case "CONFIRM_SUCCESS":
+      state = {
+        ...state,
+        notification: "Successfully confirmed your account!",
+      }
+      break; 
     case "REQUEST_RESET_SUCCESS":
     case "REQUEST_RESET_FAILED":
     case "RESET_SUCCESS":
