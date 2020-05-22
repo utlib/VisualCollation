@@ -62,7 +62,7 @@ class Landing extends Component {
     if (nextProps.user.errors.confirmation.length>0) {
       this.setState({resendConfirmation: true});
     }
-    if (nextProps.notification.includes("successfully confirmed your account")) {
+    if (nextProps.notification.includes("Successfully confirmed your account")) {
       this.setState({message: nextProps.notification, resendConfirmationSuccess: true});
     }
   }
@@ -85,7 +85,6 @@ class Landing extends Component {
 
   render() {
     const message = this.state.message? <p>{this.state.message}</p> : "";
-
     let resetPassword = "";
     let resetPasswordRequest = "";
     let resendConfirmation = "";
@@ -186,7 +185,7 @@ class Landing extends Component {
 const mapStateToProps = (state) => {
   return {
     user: state.user,
-    notification: state.global.notification,
+    notification: 'notification' in state.user? state.user.notification : state.global.notification
   };
 };
 

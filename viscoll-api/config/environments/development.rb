@@ -35,8 +35,8 @@ Rails.application.configure do
   config.action_mailer.smtp_settings = {
     :address => 'smtp.ethereal.email',
     :port => 587,
-    :user_name => 'libby.corkery17@ethereal.email',
-    :password => 'RP4P6zMm3rVW9adMZF'
+    :user_name => 'gonzalo.hahn@ethereal.email',
+    :password => 'yK6He1aP38xCrEEarn'
   }
 
   # Print deprecation notices to the Rails logger.
@@ -53,7 +53,7 @@ Rails.application.configure do
   config.middleware.insert_before 0, Rack::Cors do
     allow do
       origins '*'
-      resource '*', :headers => :any, :methods => [:get, :post, :options]
+      resource '*', :headers => :any, :methods => [:get, :post, :put, :patch, :options, :delete]
     end
   end
 
