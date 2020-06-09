@@ -88,11 +88,11 @@ build-api-prod:
   extends: .build-api
   script:
     - cd RAILS
-    - sed -i "21 s/dummy/viscoll/" config/initializers/rails_jwt_auth.rb
-    - sed -i "24 s/dummy/viscoll/" config/initializers/rails_jwt_auth.rb
-    - sed -i "30 s/dummy/viscoll/" config/initializers/rails_jwt_auth.rb
+    - sed -i "21 s/dummy/viscodex/" config/initializers/rails_jwt_auth.rb
+    - sed -i "24 s/dummy/viscodex/" config/initializers/rails_jwt_auth.rb
+    - sed -i "30 s/dummy/viscodex/" config/initializers/rails_jwt_auth.rb
     - sed -i "18 s/dummy@library.utoronto.ca/rachel.dicresce@utoronto.ca/" app/mailers/mailer.rb
-    - sed -i "4 s/dummy/viscoll/" app/controllers/application_controller.rb
+    - sed -i "4 s/dummy/viscodex/" app/controllers/application_controller.rb
     - tar zcf viscoll-api.tar.gz * --transform "s,^,viscoll-api/,S"
   only:
     - master
