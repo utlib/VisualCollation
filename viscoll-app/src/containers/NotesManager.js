@@ -33,7 +33,7 @@ class NotesManager extends Component {
         title: true,
         type: true,
         description: true,
-        // TODO: add URI
+        // TODO: add URI?
       },
       windowWidth: window.innerWidth,
     };

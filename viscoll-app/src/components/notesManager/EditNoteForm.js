@@ -382,6 +382,7 @@ export default class EditNoteForm extends Component {
                   aria-labelledby="noteURILabel"
                   name="URI"
                   value={this.state.URI}
+                  //value="URI"
                   onChange={(e, v) => this.onChange('URI', v)}
                   multiLine
                   fullWidth
