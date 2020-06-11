@@ -67,6 +67,7 @@ export default class NewNoteForm extends Component {
       title: this.state.title,
       type: this.state.type,
       description: this.state.description,
+      URI: this.state.URI, // added URI to create method
       show: this.state.show,
     };
     this.props.action.addNote(note);

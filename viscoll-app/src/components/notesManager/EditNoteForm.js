@@ -34,7 +34,7 @@ export default class EditNoteForm extends Component {
       title: nextProps.note.title,
       type: nextProps.note.type,
       description: nextProps.note.description,
-      URI: props.note.URI, // added URI
+      URI: nextProps.note.URI, // added URI
       editing: {
         title: false,
         description: false,
