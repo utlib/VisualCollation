@@ -6,7 +6,7 @@ class Note
   field :title, type: String, default: "None"
   field :type, type: String, default: ""
   field :description, type: String, default: ""
-  field :URI, type: String, default: "" #added URI to note model
+  field :uri, type: String, default: "" #added URI to note model
   field :objects, type: Hash, default: {Group: [], Leaf: [], Recto: [], Verso: []}
   field :show, type: Boolean, default: false
 

@@ -214,7 +214,7 @@ module ControllerHelper
           "title": note.title,
           "type": note.type,
           "description": note.description,
-          "uri": note.URI,
+          "uri": note.uri,
           "show": note.show,
           "objects": note.objects,
         }

@@ -206,7 +206,7 @@ class InfoBox extends React.Component {
     );
   };
 
-  createAndAttachNote = (noteTitle, noteType, description, URI, show) => {
+  createAndAttachNote = (noteTitle, noteType, description, uri, show) => {
     let objects = [];
     let type = this.props.selectedObjects.type;
     if (type === 'Recto' || type === 'Verso') type = 'Side';
@@ -223,7 +223,7 @@ class InfoBox extends React.Component {
       title: noteTitle,
       type: noteType,
       description: description,
-      URI: URI,
+      uri: uri,
       show: show,
     };
     this.props.createAndAttachNote(

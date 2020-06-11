@@ -17,7 +17,7 @@ export default class EditNoteForm extends Component {
       title: props.note.title,
       type: props.note.type,
       description: props.note.description,
-      URI: props.note.URI, // added URI
+      uri: props.note.uri, // added URI
       editing: {
         title: false,
         description: false,
@@ -34,7 +34,7 @@ export default class EditNoteForm extends Component {
       title: nextProps.note.title,
       type: nextProps.note.type,
       description: nextProps.note.description,
-      URI: nextProps.note.URI, // added URI
+      uri: nextProps.note.uri, // added URI
       editing: {
         title: false,
         description: false,
@@ -75,7 +75,7 @@ export default class EditNoteForm extends Component {
         title: this.state.title,
         type: value,
         description: this.state.description,
-        URI: this.state.URI, // added URI
+        uri: this.state.uri, // added URI
       };
       if (this.props.note)
         this.props.action.updateNote(this.props.note.id, editing);
@@ -89,7 +89,7 @@ export default class EditNoteForm extends Component {
         title: this.state.title,
         type: this.state.type,
         description: this.state.description,
-        URI: this.state.URI, // added URI
+        uri: this.state.uri, // added URI
       };
       this.setState({ editing: { ...this.state.editing, [name]: false } });
       this.props.action.updateNote(this.props.note.id, editing);
@@ -375,20 +375,20 @@ export default class EditNoteForm extends Component {
           </div>
           <div className="input">
             {this.props.isReadOnly ? (
-              <div className="textOnly">{this.state.URI}</div>
+              <div className="textOnly">{this.state.uri}</div>
             ) : (
-              <form onSubmit={e => this.update(e, 'URI')}>
+              <form onSubmit={e => this.update(e, 'uri')}>
                 <TextField
                   aria-labelledby="noteURILabel"
-                  name="URI"
-                  value={this.state.URI}
+                  name="uri"
+                  value={this.state.uri}
                   //value="URI"
-                  onChange={(e, v) => this.onChange('URI', v)}
+                  onChange={(e, v) => this.onChange('uri', v)}
                   multiLine
                   fullWidth
                   tabIndex={this.props.tabIndex}
                 />
-                {this.renderSubmitButtons('URI')}
+                {this.renderSubmitButtons('uri')}
               </form>
             )}
           </div>

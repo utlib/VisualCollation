@@ -198,11 +198,11 @@ class NotesController < ApplicationController
     # Never trust parameters from the scary internet, only allow the white list through.
     # Added URI
     def note_create_params
-      params.require(:note).permit(:project_id, :id, :title, :type, :description, :URI, :show)
+      params.require(:note).permit(:project_id, :id, :title, :type, :description, :uri, :show)
     end
 
     def note_update_params
-      params.require(:note).permit(:title, :type, :description, :URI, :show)
+      params.require(:note).permit(:title, :type, :description, :uri, :show)
     end
 
     def note_object_link_params

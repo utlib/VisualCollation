@@ -13,7 +13,7 @@ export default class NewNoteForm extends Component {
       title: '', //this is why a class component was used
       type: '',
       description: '',
-      URI: '', //included URI in initial state
+      uri: '', //included URI in initial state
       show: false,
       errors: {
         title: '',
@@ -67,7 +67,7 @@ export default class NewNoteForm extends Component {
       title: this.state.title,
       type: this.state.type,
       description: this.state.description,
-      URI: this.state.URI, // added URI to create method
+      uri: this.state.uri, // added URI to create method
       show: this.state.show,
     };
     this.props.action.addNote(note);
@@ -76,7 +76,7 @@ export default class NewNoteForm extends Component {
       title: '',
       type: '',
       description: '',
-      URI: '', //included URI in initial state
+      uri: '', //included URI in initial state
       show: false,
       errors: {
         title: '',
@@ -93,12 +93,12 @@ export default class NewNoteForm extends Component {
       title: '',
       type: '',
       description: '',
-      URI: '', //included URI in initial state
+      uri: '', //included URI in initial state
       errors: {
         title: '',
         type: '',
         description: '',
-        URI: '', //included URI in initial state
+        uri: '', //included URI in initial state
         show: false,
       },
     });
@@ -199,9 +199,9 @@ export default class NewNoteForm extends Component {
           <div className="input">
             <TextField
               aria-labelledby="newNoteURI"
-              name="URI"
-              value={this.state.URI}
-              onChange={(e, v) => this.onChange('URI', v)}
+              name="uri"
+              value={this.state.uri}
+              onChange={(e, v) => this.onChange('uri', v)}
               multiLine
               fullWidth
             />
