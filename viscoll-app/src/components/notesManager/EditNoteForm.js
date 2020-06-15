@@ -17,7 +17,7 @@ export default class EditNoteForm extends Component {
       title: props.note.title,
       type: props.note.type,
       description: props.note.description,
-      uri: props.note.uri, // added URI
+      uri: props.note.uri,
       editing: {
         title: false,
         description: false,

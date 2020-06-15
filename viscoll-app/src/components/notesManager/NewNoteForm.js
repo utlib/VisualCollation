@@ -13,7 +13,7 @@ export default class NewNoteForm extends Component {
       title: '', //this is why a class component was used
       type: '',
       description: '',
-      uri: '', //included URI in initial state
+      uri: '',
       show: false,
       errors: {
         title: '',
@@ -67,7 +67,7 @@ export default class NewNoteForm extends Component {
       title: this.state.title,
       type: this.state.type,
       description: this.state.description,
-      uri: this.state.uri, // added URI to create method
+      uri: this.state.uri,
       show: this.state.show,
     };
     this.props.action.addNote(note);
@@ -76,7 +76,7 @@ export default class NewNoteForm extends Component {
       title: '',
       type: '',
       description: '',
-      uri: '', //included URI in initial state
+      uri: '',
       show: false,
       errors: {
         title: '',
@@ -93,12 +93,12 @@ export default class NewNoteForm extends Component {
       title: '',
       type: '',
       description: '',
-      uri: '', //included URI in initial state
+      uri: '',
       errors: {
         title: '',
         type: '',
         description: '',
-        uri: '', //included URI in initial state
+        uri: '',
         show: false,
       },
     });
@@ -192,7 +192,6 @@ export default class NewNoteForm extends Component {
               fullWidth
             />
           </div>
-          {/*input for the URI */}
           <div className="label" id="newNoteURI">
             URI
           </div>
