@@ -125,10 +125,16 @@ module ControllerHelper
             "title": note.title,
             "type": note.type,
             "description": note.description,
+            # added uri to JSON build
+            # "uri": (note.uri if note.uri),
             "show": note.show
           },
           "objects": {}
         }
+        unless note.uri.empty?
+          @notes[index + 1][:params]["uri"] = note.uri
+        end
+
         @notes[index + 1][:objects][:Group] = note.objects["Group"].map { |groupID| @groupIDs.index(groupID)+1 }
         @notes[index + 1][:objects][:Leaf] = note.objects["Leaf"].map { |leafID| @leafIDs.index(leafID)+1 }
         @notes[index + 1][:objects][:Recto] = note.objects["Recto"].map { |rectoID| @rectoIDs.index(rectoID)+1 }
@@ -542,6 +548,8 @@ module ControllerHelper
               project.notes.each_with_index do |note, index| 
                 noteAttributes = {}
                 noteAttributes["xml:id"] = idPrefix+"-n-"+(index+1).to_s
+                #added URI
+                noteAttributes["ref"] = note.uri
                 noteAttributes[:type] = note.type
                 xml.note noteAttributes do
                   xml.text note.description
