@@ -131,7 +131,7 @@ module ControllerHelper
           },
           "objects": {}
         }
-        unless note.uri.empty?
+        if note.uri.present?
           @notes[index + 1][:params]["uri"] = note.uri
         end
 
@@ -162,10 +162,6 @@ module ControllerHelper
         end
       end
     end
-
-
-
-
 
     def buildDotModel(project)
       @groupIDs = project.groupIDs
@@ -549,13 +545,18 @@ module ControllerHelper
                 noteAttributes = {}
                 noteAttributes["xml:id"] = idPrefix+"-n-"+(index+1).to_s
                 #added URI
-                noteAttributes["ref"] = note.uri
+                if note.uri.present?
+                  noteAttributes["ref"] = note.uri
+                end
+                #noteAttributes["ref"] = note.uri
                 noteAttributes[:type] = note.type
                 xml.note noteAttributes do
                   xml.text note.description
                 end
                 @notes[note.id.to_s] = {}
                 @notes[note.id.to_s]["xml:id"] = "#"+noteAttributes["xml:id"]
+                #added URI
+                #@notes[note.id.to_s]["ref"] = noteAttributes["ref"]
                 @notes[note.id.to_s][:note] = note
               end
             end
