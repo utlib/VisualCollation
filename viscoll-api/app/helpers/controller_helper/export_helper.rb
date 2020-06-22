@@ -194,7 +194,7 @@ module ControllerHelper
           # Creating taxonomies from note types
           if not project.notes.empty?
             project.noteTypes.each do |noteType|
-              taxAtt = {'xml:id': 'tax_' + noteType.parameterize.underscore}
+              taxAtt = {'xml:id': 'TAX_' + noteType.parameterize.underscore}
               xml.taxonomy taxAtt do 
                 xml.label do 
                   xml.text 'Taxonomy ' + noteType
@@ -202,7 +202,7 @@ module ControllerHelper
                 # here, we want to loop through all notes and add terms
                 # that have the current note type as their type
                 xml.term do
-                  xml.text 'test'
+                  xml.text 'children of current note type'
                 end
               end
             end
