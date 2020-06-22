@@ -191,6 +191,23 @@ module ControllerHelper
         xml.viscoll :xmlns => "http://schoenberginstitute.org/schema/collation" do
           idPrefix = project.shelfmark.parameterize.underscore
 
+          # Creating taxonomies from note types
+          if not project.notes.empty?
+            project.noteTypes.each do |noteType|
+              taxAtt = {'xml:id': 'tax_' + noteType.parameterize.underscore}
+              xml.taxonomy taxAtt do 
+                xml.label do 
+                  xml.text 'Taxonomy ' + noteType
+                end
+                # here, we want to loop through all notes and add terms
+                # that have the current note type as their type
+                xml.term do
+                  xml.text 'test'
+                end
+              end
+            end
+          end
+
           # Project Attributes Taxonomy
           ['preferences'].each do |attribute|
             manuscriptAttribute = {"xml:id": 'manuscript_'+attribute}
