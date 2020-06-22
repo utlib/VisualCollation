@@ -125,14 +125,12 @@ module ControllerHelper
             "title": note.title,
             "type": note.type,
             "description": note.description,
-            # added uri to JSON build
-            # "uri": (note.uri if note.uri),
             "show": note.show
           },
           "objects": {}
         }
         if note.uri.present?
-          @notes[index + 1][:params]["uri"] = note.uri
+          @notes[index + 1][:params][:uri] = note.uri
         end
 
         @notes[index + 1][:objects][:Group] = note.objects["Group"].map { |groupID| @groupIDs.index(groupID)+1 }

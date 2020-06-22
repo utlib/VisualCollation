@@ -21,7 +21,7 @@ RSpec.describe ControllerHelper::ExportHelper, type: :helper do
     @project.add_groupIDs([@testgroup.id.to_s, @testmidgroup.id.to_s], 0)
     @testgroup.add_members([@upleafs[0].id.to_s, @upleafs[1].id.to_s, @testmidgroup.id.to_s, @botleafs[0].id.to_s, @botleafs[1].id.to_s], 0)
     @testmidgroup.add_members([@midleafs[0].id.to_s, @midleafs[1].id.to_s], 0)
-    @testnote = FactoryGirl.create(:note, project: @project, title: 'Test Note', type: 'Ink', description: 'This is a test', show: true, objects: {Group: [@testgroup.id.to_s], Leaf: [@botleafs[0].id.to_s], Recto: [@botleafs[0].rectoID], Verso: [@botleafs[0].versoID]})
+    @testnote = FactoryGirl.create(:note, project: @project, title: 'Test Note', type: 'Ink', description: 'This is a test', uri: 'https://www.test.com/', show: true, objects: {Group: [@testgroup.id.to_s], Leaf: [@botleafs[0].id.to_s], Recto: [@botleafs[0].rectoID], Verso: [@botleafs[0].versoID]})
   end
   
   it 'builds the right JSON' do
@@ -63,7 +63,7 @@ RSpec.describe ControllerHelper::ExportHelper, type: :helper do
       6 => {:params=>{:folio_number=>"", :page_number=>"", :texture=>"None", :image=>{}, :script_direction=>"None"}, :parentOrder=>6}
     })
     expect(result[:notes]).to eq({
-      1 => {:params=>{:title=>"Test Note", :type=>"Ink", :description=>"This is a test", :show=>true}, :objects=>{:Group=>[1], :Leaf=>[5], :Recto=>[5], :Verso=>[5]}}
+      1 => {:params=>{:title=>"Test Note", :type=>"Ink", :description=>"This is a test", :uri=>"https://www.test.com/", :show=>true}, :objects=>{:Group=>[1], :Leaf=>[5], :Recto=>[5], :Verso=>[5]}}
     })
   end
   
