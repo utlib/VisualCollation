@@ -39,7 +39,7 @@ export function createNote(action, state) {
     title: newNote.title,
     type: newNote.type,
     description: newNote.description,
-    URI: newNote.URI,
+    uri: newNote.uri,
     show: newNote.show,
     objects: { Group: [], Leaf: [], Recto: [], Verso: [] },
   };

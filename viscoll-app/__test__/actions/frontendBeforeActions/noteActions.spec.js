@@ -152,6 +152,8 @@ describe('>>>A C T I O N --- Test note actions', () => {
     expectedState.project.Notes['5a57825a4cfad13070870df8'].type = 'Ink';
     expectedState.project.Notes['5a57825a4cfad13070870df8'].description =
       'Some lot of black ink over here';
+    expectedState.project.Notes['5a57825a4cfad13070870df8'].uri =
+      'https://www.test2.com/';
     let gotState = updateNote(notePayload, beforeState);
     expect(gotState).toEqual(expectedState);
   });
