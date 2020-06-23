@@ -567,19 +567,12 @@ module ControllerHelper
               project.notes.each_with_index do |note, index| 
                 noteAttributes = {}
                 noteAttributes["xml:id"] = idPrefix+"-n-"+(index+1).to_s
-                #added URI
-                if note.uri.present?
-                  noteAttributes["ref"] = note.uri
-                end
-                #noteAttributes["ref"] = note.uri
                 noteAttributes[:type] = note.type
                 xml.note noteAttributes do
                   xml.text note.description
                 end
                 @notes[note.id.to_s] = {}
                 @notes[note.id.to_s]["xml:id"] = "#"+noteAttributes["xml:id"]
-                #added URI
-                #@notes[note.id.to_s]["ref"] = noteAttributes["ref"]
                 @notes[note.id.to_s][:note] = note
               end
             end
