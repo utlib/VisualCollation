@@ -201,8 +201,12 @@ module ControllerHelper
                 end
                 # here, we want to loop through all notes and add terms
                 # that have the current note type as their type
-                xml.term do
-                  xml.text 'children of current note type'
+                children = project.notes.select {|note| note.type == noteType}
+                
+                children.each do |childNote|
+                  xml.term do
+                    xml.text childNote.title
+                  end
                 end
               end
             end
