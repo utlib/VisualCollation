@@ -126,7 +126,7 @@ export default class NewNoteForm extends Component {
   };
 
   render() {
-    let title = 'Create a new note';
+    let title = 'Create a new term';
     let createButtons = (
       <div className="buttons">
         <RaisedButton

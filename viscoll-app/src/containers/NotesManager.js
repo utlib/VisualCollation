@@ -215,13 +215,13 @@ class NotesManager extends Component {
             onChange={v => this.props.changeNotesTab(v)}
           >
             <Tab
-              label="Manage notes"
+              label="Manage Terms"
               value="MANAGE"
               buttonStyle={topbarStyle().tab}
               tabIndex={this.props.popUpActive ? -1 : 0}
             />
             <Tab
-              label="Edit note types"
+              label="Edit Taxonomies"
               value="TYPES"
               buttonStyle={topbarStyle().tab}
               tabIndex={this.props.popUpActive ? -1 : 0}
