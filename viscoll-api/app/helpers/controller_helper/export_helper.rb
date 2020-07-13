@@ -194,7 +194,7 @@ module ControllerHelper
           # Creating taxonomies from note types
           if not project.notes.empty?
             project.noteTypes.each do |noteType|
-              taxAtt = {'xml:id': noteType.parameterize.underscore}
+              taxAtt = {'xml:id': "taxonomy_#{noteType.parameterize.underscore}"}
               xml.taxonomy taxAtt do 
                 xml.label do 
                   xml.text noteType
@@ -204,7 +204,7 @@ module ControllerHelper
                 
                 # add proper attributes and crete term elements
                 children.each do |childNote|
-                  termAttributes = {'xml:id': childNote.title.parameterize.underscore}
+                  termAttributes = {'xml:id': "term_#{childNote._id}"}
                   if childNote.uri.present?
                     termAttributes['ref'] = childNote.uri
                   end
