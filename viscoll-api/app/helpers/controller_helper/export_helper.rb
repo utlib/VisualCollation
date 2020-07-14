@@ -495,11 +495,22 @@ module ControllerHelper
                       xml.text rectoSide.folio_number.to_s
                     end
                   end
+                  if rectoSide.page_number
+                    xml.pageNumber folioNumber do
+                      xml.text rectoSide.page_number.to_s
+                    end
+                  end
 
                   if versoSide.folio_number
                     folioNumber[:val] = "verso"
                     xml.folioNumber folioNumber do
                       xml.text versoSide.folio_number.to_s
+                    end
+                  end
+                  if versoSide.page_number
+                    folioNumber[:val] = "verso"
+                    xml.pageNumber folioNumber do
+                      xml.text versoSide.page_number.to_s
                     end
                   end
                   
