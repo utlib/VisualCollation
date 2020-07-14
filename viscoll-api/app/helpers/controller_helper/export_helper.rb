@@ -474,90 +474,92 @@ module ControllerHelper
                 @groups[groupID]["xmlID"] = quireAttributes["xml:id"]
               end
             end
-            @leafIDs.each_with_index do |leafID, index|
-              leaf = project.leafs.find(leafID)
-              parents = parentsOrders(leafID, project)
-              leafemberOrder = parents.pop
-              idPostfix = parents.join("-")+"-"+leafemberOrder.to_s
-              leafAttributes = {}
-              leafAttributes["xml:id"] = idPrefix+"-"+idPostfix
-              leafAttributes["stub"] = "yes" if leaf.stubType != "None"
-              xml.leaf leafAttributes do
-                folioNumber = {}
-                folioNumber[:val] = @leafIDs.index(leafID)+1
-                folioNumber[:certainty] = 1
-                xml.folioNumber folioNumber do
-                  xml.text folioNumber[:val].to_s
-                end
-
-                mode = {}
-                if ['original', 'added', 'replaced', 'false', 'missing'].include? leaf.type.downcase
-                  mode[:val] = leaf.type.downcase
-                  mode[:certainty] = 1
-                end
-                xml.mode mode
-
-                qAttributes = {}
-                qAttributes[:position] = project.groups.find(leaf.parentID).memberIDs.index(leafID)+1
-                qAttributes[:leafno] = leafemberOrder
-                qAttributes[:certainty] = 1
-                qAttributes[:target] = "#"+idPrefix+"-q-"+parents.join("-")
-                qAttributes[:n] = parents[-1]
-                xml.q qAttributes do
-                  if leaf.conjoined_to
-                    idPostfix = parents.join("-")+"-"+@leafs[leaf.conjoined_to][:memberOrder].to_s
-                    xml.conjoin :certainty => 1, :target => "#"+idPrefix+"-"+idPostfix
+            xml.leaves do
+              @leafIDs.each_with_index do |leafID, index|
+                leaf = project.leafs.find(leafID)
+                parents = parentsOrders(leafID, project)
+                leafemberOrder = parents.pop
+                idPostfix = parents.join("-")+"-"+leafemberOrder.to_s
+                leafAttributes = {}
+                leafAttributes["xml:id"] = idPrefix+"-"+idPostfix
+                leafAttributes["stub"] = "yes" if leaf.stubType != "None"
+                xml.leaf leafAttributes do
+                  folioNumber = {}
+                  folioNumber[:val] = @leafIDs.index(leafID)+1
+                  folioNumber[:certainty] = 1
+                  xml.folioNumber folioNumber do
+                    xml.text folioNumber[:val].to_s
                   end
-                end
 
-                if not leaf.conjoined_to
-                  xml.single :val => "yes"
-                end
+                  mode = {}
+                  if ['original', 'added', 'replaced', 'false', 'missing'].include? leaf.type.downcase
+                    mode[:val] = leaf.type.downcase
+                    mode[:certainty] = 1
+                  end
+                  xml.mode mode
 
-                rectoSide = project.sides.find(leaf.rectoID)
-                rectoAttributes = {}
-                rectoAttributes["xml:id"] = leafAttributes["xml:id"]
-                rectoAttributes[:type] = "Recto"
-                if rectoSide.folio_number
-                  rectoAttributes[:folioNumber] = rectoSide.folio_number
-                else
-                  rectoAttributes[:folioNumber] = folioNumber[:val].to_s+"R"
+                  qAttributes = {}
+                  qAttributes[:position] = project.groups.find(leaf.parentID).memberIDs.index(leafID)+1
+                  qAttributes[:leafno] = leafemberOrder
+                  qAttributes[:certainty] = 1
+                  qAttributes[:target] = "#"+idPrefix+"-q-"+parents.join("-")
+                  qAttributes[:n] = parents[-1]
+                  xml.q qAttributes do
+                    if leaf.conjoined_to
+                      idPostfix = parents.join("-")+"-"+@leafs[leaf.conjoined_to][:memberOrder].to_s
+                      xml.conjoin :certainty => 1, :target => "#"+idPrefix+"-"+idPostfix
+                    end
+                  end
+
+                  if not leaf.conjoined_to
+                    xml.single :val => "yes"
+                  end
+
+                  rectoSide = project.sides.find(leaf.rectoID)
+                  rectoAttributes = {}
+                  rectoAttributes["xml:id"] = leafAttributes["xml:id"]
+                  rectoAttributes[:type] = "Recto"
+                  if rectoSide.folio_number
+                    rectoAttributes[:folioNumber] = rectoSide.folio_number
+                  else
+                    rectoAttributes[:folioNumber] = folioNumber[:val].to_s+"R"
+                  end
+                  if rectoSide.page_number
+                    rectoAttributes[:page_number] = rectoSide.page_number
+                  else 
+                    rectoAttributes[:page_number] = "EMPTY"
+                  end
+                  rectoAttributes[:texture] = rectoSide.texture unless rectoSide.texture == "None"
+                  rectoAttributes[:script_direction] = rectoSide.script_direction unless rectoSide.script_direction == "None"
+                  rectoAttributes[:image] = rectoSide.image[:url] unless rectoSide.image.empty?
+                  rectoAttributes[:target] = "#"+leafAttributes["xml:id"]
+                  # xml.side rectoAttributes
+                  @rectos[leaf.rectoID] = rectoAttributes
+                  @rectos[leaf.rectoID]["recto"] = rectoSide
+                  versoSide = project.sides.find(leaf.versoID)
+                  versoAttributes = {}
+                  versoAttributes["xml:id"] = leafAttributes["xml:id"]
+                  versoAttributes[:type] = "Verso"
+                  if versoSide.folio_number
+                    versoAttributes[:folioNumber] = versoSide.folio_number
+                  else
+                    versoAttributes[:folioNumber] = folioNumber[:val].to_s+"R"
+                  end
+                  if versoSide.page_number
+                    versoAttributes[:page_number] = versoSide.page_number
+                  else 
+                    versoAttributes[:page_number] = "EMPTY"
+                  end
+                  versoAttributes[:texture] = versoSide.texture unless versoSide.texture == "None"
+                  versoAttributes[:script_direction] = versoSide.script_direction unless versoSide.script_direction == "None"
+                  versoAttributes[:image] = versoSide.image[:url] unless versoSide.image.empty?
+                  versoAttributes[:target] = "#"+leafAttributes["xml:id"]
+                  # xml.side versoAttributes
+                  @versos[leaf.versoID] = versoAttributes
+                  @versos[leaf.versoID]["verso"] = versoSide
                 end
-                if rectoSide.page_number
-                  rectoAttributes[:page_number] = rectoSide.page_number
-                else 
-                  rectoAttributes[:page_number] = "EMPTY"
-                end
-                rectoAttributes[:texture] = rectoSide.texture unless rectoSide.texture == "None"
-                rectoAttributes[:script_direction] = rectoSide.script_direction unless rectoSide.script_direction == "None"
-                rectoAttributes[:image] = rectoSide.image[:url] unless rectoSide.image.empty?
-                rectoAttributes[:target] = "#"+leafAttributes["xml:id"]
-                # xml.side rectoAttributes
-                @rectos[leaf.rectoID] = rectoAttributes
-                @rectos[leaf.rectoID]["recto"] = rectoSide
-                versoSide = project.sides.find(leaf.versoID)
-                versoAttributes = {}
-                versoAttributes["xml:id"] = leafAttributes["xml:id"]
-                versoAttributes[:type] = "Verso"
-                if versoSide.folio_number
-                  versoAttributes[:folioNumber] = versoSide.folio_number
-                else
-                  versoAttributes[:folioNumber] = folioNumber[:val].to_s+"R"
-                end
-                if versoSide.page_number
-                  versoAttributes[:page_number] = versoSide.page_number
-                else 
-                  versoAttributes[:page_number] = "EMPTY"
-                end
-                versoAttributes[:texture] = versoSide.texture unless versoSide.texture == "None"
-                versoAttributes[:script_direction] = versoSide.script_direction unless versoSide.script_direction == "None"
-                versoAttributes[:image] = versoSide.image[:url] unless versoSide.image.empty?
-                versoAttributes[:target] = "#"+leafAttributes["xml:id"]
-                # xml.side versoAttributes
-                @versos[leaf.versoID] = versoAttributes
-                @versos[leaf.versoID]["verso"] = versoSide
+                @leafs[leafID]["xmlID"] = leafAttributes["xml:id"]
               end
-              @leafs[leafID]["xmlID"] = leafAttributes["xml:id"]
             end
           end
 
