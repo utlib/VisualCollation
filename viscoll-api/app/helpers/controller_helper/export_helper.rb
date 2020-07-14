@@ -485,17 +485,31 @@ module ControllerHelper
                 leafAttributes["stub"] = "yes" if leaf.stubType != "None"
                 xml.leaf leafAttributes do
                   folioNumber = {}
-                  folioNumber[:val] = @leafIDs.index(leafID)+1
+                  folioNumber[:val] = "verso"
                   folioNumber[:certainty] = 1
-                  xml.folioNumber folioNumber do
-                    xml.text folioNumber[:val].to_s
+
+                  rectoSide = project.sides.find(leaf.rectoID)
+                  versoSide = project.sides.find(leaf.versoID)
+                  if rectoSide.folio_number
+                    xml.folioNumber folioNumber do
+                      xml.text rectoSide.folio_number.to_s
+                    end
                   end
+
+                  if versoSide.folio_number
+                    folioNumber[:val] = "recto"
+                    xml.folioNumber folioNumber do
+                      xml.text versoSide.folio_number.to_s
+                    end
+                  end
+                  
 
                   mode = {}
                   if ['original', 'added', 'replaced', 'false', 'missing'].include? leaf.type.downcase
                     mode[:val] = leaf.type.downcase
                     mode[:certainty] = 1
                   end
+                  #TODO add mode
                   xml.mode mode
 
                   qAttributes = {}
