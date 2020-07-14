@@ -485,7 +485,7 @@ module ControllerHelper
                 leafAttributes["stub"] = "yes" if leaf.stubType != "None"
                 xml.leaf leafAttributes do
                   folioNumber = {}
-                  folioNumber[:val] = "verso"
+                  folioNumber[:val] = "recto"
                   folioNumber[:certainty] = 1
 
                   rectoSide = project.sides.find(leaf.rectoID)
@@ -497,7 +497,7 @@ module ControllerHelper
                   end
 
                   if versoSide.folio_number
-                    folioNumber[:val] = "recto"
+                    folioNumber[:val] = "verso"
                     xml.folioNumber folioNumber do
                       xml.text versoSide.folio_number.to_s
                     end
@@ -509,7 +509,6 @@ module ControllerHelper
                     mode[:val] = leaf.type.downcase
                     mode[:certainty] = 1
                   end
-                  #TODO add mode
                   xml.mode mode
 
                   qAttributes = {}
