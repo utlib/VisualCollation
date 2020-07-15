@@ -484,36 +484,26 @@ module ControllerHelper
                 leafAttributes["xml:id"] = idPrefix+"-"+idPostfix
                 leafAttributes["stub"] = "yes" if leaf.stubType != "None"
                 xml.leaf leafAttributes do
-                  folioNumber = {}
-                  folioNumber[:val] = "recto"
-                  folioNumber[:certainty] = 1
+                  folioNumberAttr = {}
+                  folioNumberAttr[:certainty] = 1
 
                   rectoSide = project.sides.find(leaf.rectoID)
                   versoSide = project.sides.find(leaf.versoID)
                   if rectoSide.folio_number
-                    xml.folioNumber folioNumber do
-                      xml.text rectoSide.folio_number.to_s
-                    end
-                  end
-                  if rectoSide.page_number
-                    xml.pageNumber folioNumber do
-                      xml.text rectoSide.page_number.to_s
+                    folioNumber = @leafIDs.index(leafID)+1
+                    folioNumberAttr[:val] = folioNumber
+                    xml.folioNumber folioNumberAttr do
+                      xml.text folioNumber
                     end
                   end
 
-                  if versoSide.folio_number
-                    folioNumber[:val] = "verso"
-                    xml.folioNumber folioNumber do
-                      xml.text versoSide.folio_number.to_s
+                  if rectoSide.page_number
+                    pageNumber = "#{rectoSide.page_number.to_s}-#{versoSide.page_number.to_s}"
+                    folioNumberAttr[:val] = pageNumber
+                    xml.folioNumber folioNumberAttr do
+                      xml.text pageNumber
                     end
                   end
-                  if versoSide.page_number
-                    folioNumber[:val] = "verso"
-                    xml.pageNumber folioNumber do
-                      xml.text versoSide.page_number.to_s
-                    end
-                  end
-                  
 
                   mode = {}
                   if ['original', 'added', 'replaced', 'false', 'missing'].include? leaf.type.downcase
@@ -546,7 +536,7 @@ module ControllerHelper
                   if rectoSide.folio_number
                     rectoAttributes[:folioNumber] = rectoSide.folio_number
                   else
-                    rectoAttributes[:folioNumber] = folioNumber[:val].to_s+"R"
+                    rectoAttributes[:folioNumber] = folioNumberAttr[:val].to_s+"R"
                   end
                   if rectoSide.page_number
                     rectoAttributes[:page_number] = rectoSide.page_number
@@ -567,7 +557,7 @@ module ControllerHelper
                   if versoSide.folio_number
                     versoAttributes[:folioNumber] = versoSide.folio_number
                   else
-                    versoAttributes[:folioNumber] = folioNumber[:val].to_s+"R"
+                    versoAttributes[:folioNumber] = folioNumberAttr[:val].to_s+"R"
                   end
                   if versoSide.page_number
                     versoAttributes[:page_number] = versoSide.page_number
