@@ -94,6 +94,14 @@ export const initialState = {
           options: ['None', 'Original', 'Added'],
           isDropdown: true,
         },
+        {
+          name: 'folio_number',
+          displayName: 'Folio Number',
+        },
+        {
+          name: 'page_number',
+          displayName: 'Page Number',
+        },
       ],
       group: [
         {
@@ -113,14 +121,6 @@ export const initialState = {
           displayName: 'Texture',
           options: ['None', 'Hair', 'Flesh', 'Felt', 'Wire'],
           isDropdown: true,
-        },
-        {
-          name: 'folio_number',
-          displayName: 'Folio Number',
-        },
-        {
-          name: 'page_number',
-          displayName: 'Page Number',
         },
         {
           name: 'script_direction',

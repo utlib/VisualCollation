@@ -412,9 +412,11 @@ export default class LeafInfoBox extends React.Component {
         } else {
           // Populate drop down items
           let menuItems = [];
-          attributeDict.options.forEach((option, index) => {
-            menuItems.push({ value: option, text: option });
-          });
+          if (attributeDict.options) {
+            attributeDict.options.forEach((option, index) => {
+              menuItems.push({ value: option, text: option });
+            });
+          }
           if (leafAttributes[attributeDict.name] === null) {
             menuItems.push({ value: 'keep', text: 'Keep same' });
           }
