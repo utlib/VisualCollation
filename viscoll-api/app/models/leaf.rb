@@ -3,6 +3,8 @@ class Leaf
   include Mongoid::Timestamps
 
   # Fields
+  field :folio_number, type: String, default: nil
+  field :page_number, type: String, default: nil
   field :material, type: String, default: "None"
   field :type, type: String, default: "Original"
   field :conjoined_to, type: String
