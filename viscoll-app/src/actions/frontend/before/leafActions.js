@@ -313,21 +313,27 @@ export function deleteLeaves(deletedLeafIDs, state) {
   return state;
 }
 
-export function generateFolioPageNumbers(action, state, folioOrPage) {
+export function generatePageNumbers(action, state) {
   let numberCount = action.payload.request.data.startNumber;
   let rectoIDs = action.payload.request.data.rectoIDs;
   let versoIDs = action.payload.request.data.versoIDs;
   for (const index in rectoIDs) {
     const recto = state.project.Rectos[rectoIDs[index]];
     const verso = state.project.Versos[versoIDs[index]];
-    if (folioOrPage === 'folio_number') {
-      recto[folioOrPage] = numberCount + recto.id[0];
-      verso[folioOrPage] = numberCount + verso.id[0];
-    } else {
-      recto[folioOrPage] = numberCount;
-      numberCount++;
-      verso[folioOrPage] = numberCount;
-    }
+    recto['page_number'] = numberCount;
+    numberCount++;
+    verso['page_number'] = numberCount;
+    numberCount++;
+  }
+  return state;
+}
+
+export function generateFolioNumbers(action, state) {
+  let numberCount = action.payload.request.data.startNumber;
+  let leafIDs = action.payload.request.data.leafIDs;
+  for (const index in leafIDs) {
+    const leaf = state.project.Leafs[leafIDs[index]];
+    leaf['folio_number'] = numberCount + leaf.id[0];
     numberCount++;
   }
   return state;
