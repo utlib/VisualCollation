@@ -3,7 +3,6 @@ class Side
   include Mongoid::Timestamps
 
   # Fields
-  field :folio_number, type: String, default: nil
   field :page_number, type: String, default: nil
   field :texture, type: String, default: "None"
   field :script_direction, type: String, default: "None"
