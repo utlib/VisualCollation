@@ -63,8 +63,7 @@ export default class SideInfoBox extends React.Component {
   hasActiveAttributes = () => {
     for (var i in this.props.defaultAttributes) {
       if (
-        (this.props.defaultAttributes[i]['name'] === 'folio_number' ||
-          this.props.defaultAttributes[i]['name'] === 'page_number') &&
+        this.props.defaultAttributes[i]['name'] === 'page_number' &&
         this.state['batch_' + this.props.defaultAttributes[i]['name']] &&
         this.state[this.props.defaultAttributes[i]['name']] !== 'Keep same'
       ) {
