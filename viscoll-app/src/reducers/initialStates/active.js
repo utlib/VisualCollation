@@ -98,10 +98,6 @@ export const initialState = {
           name: 'folio_number',
           displayName: 'Folio Number',
         },
-        {
-          name: 'page_number',
-          displayName: 'Page Number',
-        },
       ],
       group: [
         {
@@ -127,6 +123,10 @@ export const initialState = {
           displayName: 'Script Direction',
           options: ['None', 'Left-to-Right', 'Right-To-Left', 'Top-To-Bottom'],
           isDropdown: true,
+        },
+        {
+          name: 'page_number',
+          displayName: 'Page Number',
         },
         {
           name: 'uri',
