@@ -582,7 +582,7 @@ export default class SideInfoBox extends React.Component {
               tabIndex={this.props.tabIndex}
             >
               <img
-                alt={side.folio_number}
+                alt={side.id}
                 src={
                   side.image.manifestID.includes('DIY')
                     ? side.image.url
