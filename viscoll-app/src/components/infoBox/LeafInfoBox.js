@@ -77,6 +77,7 @@ export default class LeafInfoBox extends React.Component {
   hasActiveAttributes = () => {
     for (var i in this.props.defaultAttributes) {
       if (
+        this.props.defaultAttributes[i]['name'] === 'folio_number' &&
         this.state['batch_' + this.props.defaultAttributes[i]['name']] &&
         this.state[this.props.defaultAttributes[i]['name']] !== 'keep' &&
         this.state[this.props.defaultAttributes[i]['name']] !== ''
