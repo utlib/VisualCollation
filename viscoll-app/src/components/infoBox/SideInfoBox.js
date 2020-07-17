@@ -497,8 +497,6 @@ export default class SideInfoBox extends React.Component {
           <div className="input">{input}</div>
         </div>
       );
-      //console.log(attributeDivs);
-      console.log(attributeDict);
     }
     const notes = this.renderNotes();
     let notesDiv = [];
