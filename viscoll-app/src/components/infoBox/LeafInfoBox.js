@@ -15,6 +15,7 @@ import { checkboxStyle } from '../../styles/checkbox';
 import { btnBase } from '../../styles/button';
 import FolioNumberDialog from '../infoBox/dialog/FolioNumberDialog';
 import { renderNoteChip } from '../../helpers/renderHelper';
+import TextField from 'material-ui/TextField/TextField';
 
 /** Leaf infobox */
 export default class LeafInfoBox extends React.Component {
@@ -410,9 +411,15 @@ export default class LeafInfoBox extends React.Component {
               value={value}
             ></SelectField>
           );
+        } else if (attributeDict.name === 'folio_number') {
+          let value = leafAttributes[attributeDict.name];
+          input = (
+            <TextField name={attributeDict.name} value={value}></TextField>
+          );
         } else {
-          // Populate drop down items
           let menuItems = [];
+          let value = 'keep';
+          // Populate drop down items
           if (attributeDict.options) {
             attributeDict.options.forEach((option, index) => {
               menuItems.push({ value: option, text: option });
@@ -421,7 +428,6 @@ export default class LeafInfoBox extends React.Component {
           if (leafAttributes[attributeDict.name] === null) {
             menuItems.push({ value: 'keep', text: 'Keep same' });
           }
-          let value = 'keep';
           if (this.state[attributeDict.name] !== '' && this.state.isBatch) {
             value = this.state[attributeDict.name];
           } else if (leafAttributes[attributeDict.name] !== null) {
@@ -463,6 +469,8 @@ export default class LeafInfoBox extends React.Component {
         } else {
           input = 'None';
         }
+      } else if (attributeDict.name === 'folio_number') {
+        input = 'test';
       }
       attributeDivs.push(
         <div className="row" key={attributeDict.name}>
