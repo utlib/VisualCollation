@@ -95,7 +95,7 @@ RSpec.describe ControllerHelper::ProjectsHelper, type: :helper do
       @project.add_groupIDs([@testgroup.id.to_s, @testmidgroup.id.to_s], 0)
       @testgroup.add_members([@upleafs[0].id.to_s, @upleafs[1].id.to_s, @testmidgroup.id.to_s, @botleafs[0].id.to_s, @botleafs[1].id.to_s], 0)
       @testmidgroup.add_members([@midleafs[0].id.to_s, @midleafs[1].id.to_s], 0)
-      @testnote = FactoryGirl.create(:note, project: @project, title: 'Test Note', type: 'Ink', description: 'This is a test', show: true, objects: {Group: [@testgroup.id.to_s], Leaf: [@botleafs[0].id.to_s], Recto: [@botleafs[0].rectoID], Verso: [@botleafs[0].versoID]})
+      @testnote = FactoryGirl.create(:note, project: @project, title: 'Test Note', type: 'Ink', description: 'This is a test', uri: 'https://www.test.com/', show: true, objects: {Group: [@testgroup.id.to_s], Leaf: [@botleafs[0].id.to_s], Recto: [@botleafs[0].rectoID], Verso: [@botleafs[0].versoID]})
     end
     
     it 'returns the right output for the given sample' do
@@ -123,6 +123,7 @@ RSpec.describe ControllerHelper::ProjectsHelper, type: :helper do
         title: 'Test Note',
         type: 'Ink',
         description: 'This is a test',
+        uri: 'https://www.test.com/',
         show: true,
         objects: {'Group' => [@testgroup.id.to_s], 'Leaf' => [@botleafs[0].id.to_s], 'Recto' => [@botleafs[0].rectoID], 'Verso' => [@botleafs[0].versoID]}
       }})

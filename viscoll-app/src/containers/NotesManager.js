@@ -1,39 +1,39 @@
-import React, {Component} from 'react';
-import { connect } from "react-redux";
-import TopBar from "./TopBar";
-import ManageNotes from "../components/notesManager/ManageNotes";
-import NoteType from "../components/notesManager/NoteType";
-import {Tabs, Tab} from 'material-ui/Tabs';
+import React, { Component } from 'react';
+import { connect } from 'react-redux';
+import TopBar from './TopBar';
+import ManageNotes from '../components/notesManager/ManageNotes';
+import NoteType from '../components/notesManager/NoteType';
+import { Tabs, Tab } from 'material-ui/Tabs';
 // import Panel from '../components/global/Panel';
-import topbarStyle from "../styles/topbar";
-import { 
+import topbarStyle from '../styles/topbar';
+import {
   changeManagerMode,
-  changeNotesTab, 
-} from "../actions/backend/interactionActions";
-import {  
-  addNote, 
-  updateNote, 
-  deleteNote, 
-  createNoteType, 
-  updateNoteType, 
-  deleteNoteType, 
-  linkNote, 
-  unlinkNote 
-} from "../actions/backend/noteActions";
-import { sendFeedback } from "../actions/backend/userActions";
+  changeNotesTab,
+} from '../actions/backend/interactionActions';
+import {
+  addNote,
+  updateNote,
+  deleteNote,
+  createNoteType,
+  updateNoteType,
+  deleteNoteType,
+  linkNote,
+  unlinkNote,
+} from '../actions/backend/noteActions';
+import { sendFeedback } from '../actions/backend/userActions';
 import ManagersPanel from '../components/global/ManagersPanel';
 
 class NotesManager extends Component {
-
   constructor(props) {
     super(props);
     this.state = {
       Notes: props.Notes,
-      value: "",
+      value: '',
       filterTypes: {
         title: true,
         type: true,
         description: true,
+        // TODO: add URI?
       },
       windowWidth: window.innerWidth,
     };
@@ -44,134 +44,149 @@ class NotesManager extends Component {
   }
 
   componentWillUnmount() {
-    window.removeEventListener("resize", this.resizeHandler);
+    window.removeEventListener('resize', this.resizeHandler);
   }
 
   componentWillReceiveProps(nextProps) {
-    this.setState({Notes: nextProps.Notes}, ()=>this.applyFilter())
+    this.setState({ Notes: nextProps.Notes }, () => this.applyFilter());
   }
 
   resizeHandler = () => {
-    this.setState({windowWidth:window.innerWidth});
-  }
+    this.setState({ windowWidth: window.innerWidth });
+  };
 
   applyFilter = () => {
     this.filterNotes(this.state.value, this.state.filterTypes);
-  }
+  };
 
   onValueChange = (e, value) => {
-    this.setState({value}, ()=>this.applyFilter())
-  }
+    this.setState({ value }, () => this.applyFilter());
+  };
 
   onTypeChange = (type, checked) => {
-    this.setState({filterTypes: {...this.state.filterTypes, [type]: checked}}, () => this.applyFilter())
-  }
+    this.setState(
+      { filterTypes: { ...this.state.filterTypes, [type]: checked } },
+      () => this.applyFilter()
+    );
+  };
 
-  handleAddNote = (note) => {
+  handleAddNote = note => {
     const userID = this.props.user.id;
     const date = Date.now().toString();
     const IDHash = userID + date;
-    note["id"] = IDHash.substr(IDHash.length - 24);
-    this.props.addNote(note)
-  }
+    note['id'] = IDHash.substr(IDHash.length - 24);
+    this.props.addNote(note);
+  };
 
   filterNotes = (value, filterTypes) => {
-    if (value==="") {
-      this.setState({Notes: this.props.Notes});
+    if (value === '') {
+      this.setState({ Notes: this.props.Notes });
     } else {
       let filteredNotes = {};
       let isNoneSelected = true;
       for (let type of Object.keys(filterTypes)) {
-        if (filterTypes[type]){
+        if (filterTypes[type]) {
           isNoneSelected = false;
           break;
         }
       }
       if (isNoneSelected)
-        filterTypes = {title: true, type: true, description: true};
+        filterTypes = { title: true, type: true, description: true };
       for (let noteID in this.props.Notes) {
-        const note = this.props.Notes[noteID]
+        const note = this.props.Notes[noteID];
         for (let type of Object.keys(filterTypes)) {
-          if (filterTypes[type] && note[type].toUpperCase().includes(value.toUpperCase()))
-            if (filteredNotes[noteID])
-              break;
-            else
-              filteredNotes[noteID] = note;
+          if (
+            filterTypes[type] &&
+            note[type].toUpperCase().includes(value.toUpperCase())
+          )
+            if (filteredNotes[noteID]) break;
+            else filteredNotes[noteID] = note;
         }
-      };
-      this.setState({Notes: filteredNotes});
+      }
+      this.setState({ Notes: filteredNotes });
     }
-  }
+  };
 
   toggleFilterDrawer = () => {
-    this.setState({filterOpen: !this.state.filterOpen});
-  }
+    this.setState({ filterOpen: !this.state.filterOpen });
+  };
 
   updateNote = (noteID, note) => {
     this.props.updateNote(noteID, note, this.props);
-  }
+  };
 
   linkNote = (noteID, object) => {
     this.props.linkNote(noteID, object, this.props);
-  }
+  };
 
   unlinkNote = (noteID, object) => {
     this.props.unlinkNote(noteID, object, this.props);
-  }
+  };
 
   linkAndUnlinkNotes = (noteID, linkObjects, unlinkObjects) => {
-    this.props.linkAndUnlinkNotes(noteID, linkObjects, unlinkObjects, this.props);
-  }
+    this.props.linkAndUnlinkNotes(
+      noteID,
+      linkObjects,
+      unlinkObjects,
+      this.props
+    );
+  };
 
   render() {
-    let content = "";
+    let content = '';
 
-    if (this.props.activeTab==="MANAGE") {
-      content = <ManageNotes 
-                  action={{ 
-                    updateNote: this.updateNote, 
-                    addNote: this.handleAddNote, 
-                    deleteNote: this.props.deleteNote, 
-                    linkNote: this.linkNote, 
-                    unlinkNote: this.unlinkNote, 
-                    linkAndUnlinkNotes: this.linkAndUnlinkNotes 
-                  }} 
-                  projectID={this.props.projectID} 
-                  notification={this.props.notification}
-                  noteTypes={this.props.noteTypes}
-                  Notes={this.state.Notes}
-                  Groups={this.props.Groups}
-                  Leafs={this.props.Leafs}
-                  Rectos={this.props.Rectos}
-                  Versos={this.props.Versos}
-                  groupIDs={this.props.groupIDs}
-                  leafIDs={this.props.leafIDs}
-                  rectoIDs={this.props.rectoIDs}
-                  versoIDs={this.props.versoIDs}
-                  togglePopUp={this.props.togglePopUp} 
-                  tabIndex={this.props.popUpActive?-1:0}
-                  windowWidth={this.state.windowWidth}
-                />
-    } else if (this.props.activeTab==="TYPES") {
-      content = <NoteType 
-                  Notes={this.state.Notes}
-                  projectID={this.props.projectID} 
-                  noteTypes={this.props.noteTypes}
-                  action={{
-                    createNoteType: this.props.createNoteType, 
-                    updateNoteType: this.props.updateNoteType, 
-                    deleteNoteType: (noteTypes)=>this.props.deleteNoteType(noteTypes, this.props) }}
-                  togglePopUp={this.props.togglePopUp} 
-                  tabIndex={this.props.popUpActive?-1:0}
-                />
+    if (this.props.activeTab === 'MANAGE') {
+      content = (
+        <ManageNotes
+          action={{
+            updateNote: this.updateNote,
+            addNote: this.handleAddNote,
+            deleteNote: this.props.deleteNote,
+            linkNote: this.linkNote,
+            unlinkNote: this.unlinkNote,
+            linkAndUnlinkNotes: this.linkAndUnlinkNotes,
+          }}
+          projectID={this.props.projectID}
+          notification={this.props.notification}
+          noteTypes={this.props.noteTypes}
+          Notes={this.state.Notes}
+          Groups={this.props.Groups}
+          Leafs={this.props.Leafs}
+          Rectos={this.props.Rectos}
+          Versos={this.props.Versos}
+          groupIDs={this.props.groupIDs}
+          leafIDs={this.props.leafIDs}
+          rectoIDs={this.props.rectoIDs}
+          versoIDs={this.props.versoIDs}
+          togglePopUp={this.props.togglePopUp}
+          tabIndex={this.props.popUpActive ? -1 : 0}
+          windowWidth={this.state.windowWidth}
+        />
+      );
+    } else if (this.props.activeTab === 'TYPES') {
+      content = (
+        <NoteType
+          Notes={this.state.Notes}
+          projectID={this.props.projectID}
+          noteTypes={this.props.noteTypes}
+          action={{
+            createNoteType: this.props.createNoteType,
+            updateNoteType: this.props.updateNoteType,
+            deleteNoteType: noteTypes =>
+              this.props.deleteNoteType(noteTypes, this.props),
+          }}
+          togglePopUp={this.props.togglePopUp}
+          tabIndex={this.props.popUpActive ? -1 : 0}
+        />
+      );
     }
 
-    let sidebarClasses = "sidebar";
-    if (this.props.popUpActive) sidebarClasses += " lowerZIndex";
+    let sidebarClasses = 'sidebar';
+    if (this.props.popUpActive) sidebarClasses += ' lowerZIndex';
 
     const sidebar = (
       <div className={sidebarClasses} role="region" aria-label="sidebar">
-        <hr />  
+        <hr />
         <ManagersPanel
           popUpActive={this.props.popUpActive}
           managerMode={this.props.managerMode}
@@ -182,36 +197,44 @@ class NotesManager extends Component {
 
     return (
       <div className="notesManager">
-        <TopBar 
-          notesFilter={this.props.activeTab==="MANAGE"} 
+        <TopBar
+          notesFilter={this.props.activeTab === 'MANAGE'}
           filterNotes={this.filterNotes}
           onValueChange={this.onValueChange}
           onTypeChange={this.onTypeChange}
           filterTypes={this.state.filterTypes}
           history={this.props.history}
-          tabIndex={this.props.popUpActive?-1:0}
+          tabIndex={this.props.popUpActive ? -1 : 0}
           popUpActive={this.props.popUpActive}
           windowWidth={this.state.windowWidth}
           showUndoRedo={true}
         >
-          <Tabs 
-            tabItemContainerStyle={{backgroundColor: '#ffffff'}}
-            value={this.props.activeTab} 
-            onChange={(v)=>this.props.changeNotesTab(v)}
+          <Tabs
+            tabItemContainerStyle={{ backgroundColor: '#ffffff' }}
+            value={this.props.activeTab}
+            onChange={v => this.props.changeNotesTab(v)}
           >
-            <Tab label="Manage notes" value="MANAGE" buttonStyle={topbarStyle().tab} tabIndex={this.props.popUpActive?-1:0} />
-            <Tab label="Edit note types" value="TYPES" buttonStyle={topbarStyle().tab} tabIndex={this.props.popUpActive?-1:0} />
+            <Tab
+              label="Manage Terms"
+              value="MANAGE"
+              buttonStyle={topbarStyle().tab}
+              tabIndex={this.props.popUpActive ? -1 : 0}
+            />
+            <Tab
+              label="Edit Taxonomies"
+              value="TYPES"
+              buttonStyle={topbarStyle().tab}
+              tabIndex={this.props.popUpActive ? -1 : 0}
+            />
           </Tabs>
         </TopBar>
         {sidebar}
-        <div className="notesWorkspace">
-          {content}
-        </div>
+        <div className="notesWorkspace">{content}</div>
       </div>
-    )
+    );
   }
 }
-const mapStateToProps = (state) => {
+const mapStateToProps = state => {
   return {
     user: state.user,
     projectID: state.active.project.id,
@@ -230,49 +253,49 @@ const mapStateToProps = (state) => {
     managerMode: state.active.managerMode,
   };
 };
-const mapDispatchToProps = (dispatch) => {
+const mapDispatchToProps = dispatch => {
   return {
-    changeManagerMode: (managerMode) => {
+    changeManagerMode: managerMode => {
       dispatch(changeManagerMode(managerMode));
     },
-    changeNotesTab: (tabName) => {
+    changeNotesTab: tabName => {
       dispatch(changeNotesTab(tabName));
     },
-    addNote: (note) => {
-      dispatch(addNote(note))
+    addNote: note => {
+      dispatch(addNote(note));
     },
     updateNote: (noteID, note, props) => {
-      dispatch(updateNote(noteID, note))
+      dispatch(updateNote(noteID, note));
     },
-    deleteNote: (noteID) => {
+    deleteNote: noteID => {
       dispatch(deleteNote(noteID));
     },
-    createNoteType: (noteType) => {
+    createNoteType: noteType => {
       dispatch(createNoteType(noteType));
     },
-    updateNoteType: (noteType) => {
+    updateNoteType: noteType => {
       dispatch(updateNoteType(noteType));
     },
     deleteNoteType: (noteType, props) => {
-      dispatch(deleteNoteType(noteType))
+      dispatch(deleteNoteType(noteType));
     },
     linkNote: (noteID, object, props) => {
-      dispatch(linkNote(noteID, object))
+      dispatch(linkNote(noteID, object));
     },
     unlinkNote: (noteID, object, props) => {
-      dispatch(unlinkNote(noteID, object))
+      dispatch(unlinkNote(noteID, object));
     },
     linkAndUnlinkNotes: (noteID, linkObjects, unlinkObjects, props) => {
       if (linkObjects.length > 0) {
-        dispatch(linkNote(noteID, linkObjects))
+        dispatch(linkNote(noteID, linkObjects));
       }
       if (unlinkObjects.length > 0) {
-        dispatch(unlinkNote(noteID, unlinkObjects))
+        dispatch(unlinkNote(noteID, unlinkObjects));
       }
     },
     sendFeedback: (title, message, userID) => {
-      dispatch(sendFeedback(title, message, userID))
-    }
+      dispatch(sendFeedback(title, message, userID));
+    },
   };
 };
 export default connect(mapStateToProps, mapDispatchToProps)(NotesManager);

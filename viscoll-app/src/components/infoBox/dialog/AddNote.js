@@ -10,7 +10,6 @@ import MenuItem from 'material-ui/MenuItem';
 import TextField from 'material-ui/TextField';
 import Checkbox from 'material-ui/Checkbox';
 
-
 /** Dialog to add a note to an object (leaf, side, or group).  This component is used in the visual and tabular edit modes.  */
 export default class AddNote extends React.Component {
   constructor(props) {
@@ -18,7 +17,7 @@ export default class AddNote extends React.Component {
     this.state = {
       open: false,
       type: '',
-      description:'',
+      description: '',
       show: false,
       searchText: '',
       noteID: null,
@@ -30,7 +29,7 @@ export default class AddNote extends React.Component {
     this.setState({
       open: true,
       type: '',
-      description:'',
+      description: '',
       show: false,
       searchText: '',
       noteID: null,
@@ -40,75 +39,84 @@ export default class AddNote extends React.Component {
 
   /** Close this modal component */
   handleClose = () => {
-    this.setState({open: false});
+    this.setState({ open: false });
     this.props.togglePopUp(false);
   };
 
-  handleUpdateInput = (searchText) => {
+  handleUpdateInput = searchText => {
     this.setState({
       searchText: searchText,
-      noteID: null
+      noteID: null,
     });
   };
 
-  handleNewRequest = (request) => {
+  handleNewRequest = request => {
     // User pressed enter instead of selecting a note in drop down
     // Look for key associated with user input
     let noteID = null;
-    for (let id in this.props.Notes){
+    for (let id in this.props.Notes) {
       const note = this.props.Notes[id];
-      if (note.title===request) { noteID = note.id;}
+      if (note.title === request) {
+        noteID = note.id;
+      }
     }
-    this.setState({noteID}, ()=>{
-      if (noteID) this.submit()
+    this.setState({ noteID }, () => {
+      if (noteID) this.submit();
     });
   };
 
   submit = () => {
-    if (this.state.noteID!==null) {
+    if (this.state.noteID !== null) {
       // Attach existing note to selected objects
       this.props.action.linkNote(this.state.noteID);
     } else {
       // Check if note exists (in case user types and did not press enter)
       let noteID = null;
-      for (let id in this.props.Notes){
+      for (let id in this.props.Notes) {
         const note = this.props.Notes[id];
-        if (note.title===this.state.searchText) noteID = note.id;
+        if (note.title === this.state.searchText) noteID = note.id;
       }
       if (noteID) {
         this.props.action.linkNote(noteID);
       } else {
         // Did not find note, so create and attach new note to object
-        this.props.action.createAndAttachNote(this.state.searchText, this.state.type, this.state.description, this.state.show);
+        this.props.action.createAndAttachNote(
+          this.state.searchText,
+          this.state.type,
+          this.state.description,
+          this.state.show
+        );
       }
     }
     this.handleClose();
-  }
-  
+  };
+
   noteExists = () => {
     for (let noteID in this.props.Notes) {
       const note = this.props.Notes[noteID];
-      if (note.title===this.state.searchText) {
+      if (note.title === this.state.searchText) {
         return true;
       }
     }
     return false;
-  }
+  };
 
   /**
-   * Mapping function to render one note type menu item 
+   * Mapping function to render one note type menu item
    */
-  renderNoteTypes = (name) => {
+  renderNoteTypes = name => {
     return <MenuItem key={name} value={name} primaryText={name} />;
-  }
+  };
 
   onChange = (name, value) => {
-    this.setState({[name]:value});
-  }
+    this.setState({ [name]: value });
+  };
 
   getFilteredNoteTitlesDropDown = () => {
-    return Object.keys(this.props.Notes).filter((noteID) => {return !this.props.commonNotes.includes(noteID)})
-  }
+    return Object.keys(this.props.Notes).filter(noteID => {
+      return !this.props.commonNotes.includes(noteID);
+    });
+  };
 
   render() {
     const dataSourceConfig = {
@@ -120,28 +128,32 @@ export default class AddNote extends React.Component {
       <FlatButton
         label="Cancel"
         onClick={this.handleClose}
-        style={{width:"49%", marginRight:"1%",border:"1px solid #ddd"}}
+        style={{ width: '49%', marginRight: '1%', border: '1px solid #ddd' }}
         keyboardFocused
       />,
       <RaisedButton
-        label={(this.noteExists()||this.state.searchText.length===0)? "Attach note" : "Create & attach note"}
+        label={
+          this.noteExists() || this.state.searchText.length === 0
+            ? 'Attach term'
+            : 'Create & attach term'
+        }
         primary
         onClick={this.submit}
-        style={{width:"49%"}}
-        disabled={!this.noteExists()&&this.state.type===''}
+        style={{ width: '49%' }}
+        disabled={!this.noteExists() && this.state.type === ''}
       />,
     ];
 
     let newNoteForm = <div></div>;
-    if (!this.noteExists() && this.state.searchText.length>1) {
+    if (!this.noteExists() && this.state.searchText.length > 1) {
       newNoteForm = (
         <div>
           <SelectField
             value={this.state.type}
-            onChange={(e,i,v)=>this.onChange("type",v)}
-            floatingLabelText="Note type"
+            onChange={(e, i, v) => this.onChange('type', v)}
+            floatingLabelText="Taxonomy"
             fullWidth
-            style={{marginTop:-20}}
+            style={{ marginTop: -20 }}
           >
             {this.props.noteTypes.map(this.renderNoteTypes)}
           </SelectField>
@@ -149,12 +161,12 @@ export default class AddNote extends React.Component {
             floatingLabelText="Description"
             name="description"
             value={this.state.description}
-            onChange={(e,v)=>this.onChange("description",v)}
+            onChange={(e, v) => this.onChange('description', v)}
             multiLine
             fullWidth
-            style={{marginTop:-20}}
+            style={{ marginTop: -20 }}
           />
-          <div className="label" style={{paddingTop:20}}>
+          <div className="label" style={{ paddingTop: 20 }}>
             Show in diagram
           </div>
           <div className="input">
@@ -162,51 +174,61 @@ export default class AddNote extends React.Component {
               name="show"
               value={this.state.show}
               checked={this.state.show}
-              style={{paddingTop:20}}
-              onClick={()=>this.onChange("show",!this.state.show)}
+              style={{ paddingTop: 20 }}
+              onClick={() => this.onChange('show', !this.state.show)}
             />
           </div>
         </div>
       );
     }
 
-    let dialog = (<Dialog
-        title={"Attach Note"}
+    let dialog = (
+      <Dialog
+        title={'Attach Term'}
         actions={actions}
         modal={false}
         open={this.state.open}
         onRequestClose={this.handleClose}
         autoScrollBodyContent
-        contentStyle={{width:"450px", height:"500px"}}
-        titleStyle={{textAlign:"center"}}
+        contentStyle={{ width: '450px', height: '500px' }}
+        titleStyle={{ textAlign: 'center' }}
         paperClassName="addDialog"
       >
-      <AutoComplete
-        floatingLabelText={"Search for note title" }
-        searchText={this.state.searchText}
-        onUpdateInput={this.handleUpdateInput}
-        onNewRequest={this.handleNewRequest}
-        dataSource={
-          this.getFilteredNoteTitlesDropDown().map((noteID)=>{return {textKey: this.props.Notes[noteID].title, valueKey: noteID}})}
-        filter={(searchText, key) => (key.indexOf(searchText) !== -1)}
-        openOnFocus={true}
-        dataSourceConfig={dataSourceConfig}
-        fullWidth
-        listStyle={{ maxHeight: 300, overflow: 'auto' }}
-        errorText={(!this.noteExists()&&this.state.searchText.length>0)?"This note doesn't exist. To create and attach it, fill out its note type and description.":""}
-        errorStyle={{color:"#727272"}}
-        floatingLabelFocusStyle={{color:"#3A4B55"}}
-      />
-      {newNoteForm}
-    </Dialog>)
+        <AutoComplete
+          floatingLabelText={'Search for term title'}
+          searchText={this.state.searchText}
+          onUpdateInput={this.handleUpdateInput}
+          onNewRequest={this.handleNewRequest}
+          dataSource={this.getFilteredNoteTitlesDropDown().map(noteID => {
+            return {
+              textKey: this.props.Notes[noteID].title,
+              valueKey: noteID,
+            };
+          })}
+          filter={(searchText, key) => key.indexOf(searchText) !== -1}
+          openOnFocus={true}
+          dataSourceConfig={dataSourceConfig}
+          fullWidth
+          listStyle={{ maxHeight: 300, overflow: 'auto' }}
+          errorText={
+            !this.noteExists() && this.state.searchText.length > 0
+              ? "This term doesn't exist. To create and attach it, fill out its taxonomy and description."
+              : ''
+          }
+          errorStyle={{ color: '#727272' }}
+          floatingLabelFocusStyle={{ color: '#3A4B55' }}
+        />
+        {newNoteForm}
+      </Dialog>
+    );
 
     return (
-      <div style={{float:'right'}}>
-        <IconButton 
-          tooltip="Attach a note"
+      <div style={{ float: 'right' }}>
+        <IconButton
+          tooltip="Attach a term"
           tabIndex={this.props.tabIndex}
           onClick={this.handleOpen}
-        > 
+        >
           <IconAdd />
         </IconButton>
         {dialog}

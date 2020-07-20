@@ -6,6 +6,7 @@ RSpec.describe Note, type: :model do
   it { is_expected.to have_field(:title).of_type(String) }
   it { is_expected.to have_field(:type).of_type(String) }
   it { is_expected.to have_field(:description).of_type(String) }
+  it { is_expected.to have_field(:uri).of_type(String) }
   it { is_expected.to have_field(:objects).of_type(Hash) }
   it { is_expected.to have_field(:show).of_type(Mongoid::Boolean) }
   

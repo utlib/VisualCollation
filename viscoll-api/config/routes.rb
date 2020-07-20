@@ -37,13 +37,13 @@ Rails.application.routes.draw do
   delete '/groups', to: 'groups#destroyMultiple', defaults: {format: :json}, only: [:destroy]
 
   # LEAF ENDPOINTS 
+  put '/leafs/generateFolio', to: 'leafs#generateFolio', defaults: {format: :json}, only: [:update]
   put '/leafs/conjoin', to: 'leafs#conjoinLeafs', defaults: {format: :json}, only: [:update]
   put '/leafs', to: 'leafs#updateMultiple', defaults: {format: :json}, only: [:update]
   delete '/leafs', to: 'leafs#destroyMultiple', defaults: {format: :json}, only: [:destroy]
   resources :leafs, defaults: {format: :json}, only: [:update, :destroy, :create]
   
   # SIDE ENDPOINTS 
-  put '/sides/generateFolio', to: 'sides#generateFolio', defaults: {format: :json}, only: [:update]
   put '/sides/generatePageNumber', to: 'sides#generatePageNumber', defaults: {format: :json}, only: [:update]
   put '/sides/:id', to: 'sides#update', defaults: {format: :json}, only: [:update]
   put '/sides', to: 'sides#updateMultiple', defaults: {format: :json}, only: [:update]

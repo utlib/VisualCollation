@@ -86,25 +86,6 @@ class SidesController < ApplicationController
       render json: {error: e.message}, status: :unprocessable_entity and return
     end
   end
-
-
-  # PUT /sides/generateFolio
-  def generateFolio
-    folioNumberCount = side_params_generate.to_h[:startNumber].to_i
-    rectoIDs = side_params_generate.to_h[:rectoIDs]
-    versoIDs = side_params_generate.to_h[:versoIDs]
-    rectoIDs.each_with_index do | rectoID, index | 
-      recto = Side.find(rectoID)
-      verso = Side.find(versoIDs[index])
-      recto.update_attribute(:folio_number, folioNumberCount.to_s+"R")
-      verso.update_attribute(:folio_number, folioNumberCount.to_s+"V")
-      folioNumberCount += 1
-      if index==0
-        @project = Project.find(recto.project_id)
-      end
-    end
-  end
-  
   
   # PUT /sides/generatePageNumber
   def generatePageNumber
@@ -141,15 +122,11 @@ class SidesController < ApplicationController
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def side_params
-      params.require(:side).permit(:folio_number, :page_number, :texture, :script_direction, :image=>[:manifestID, :label, :url])
+      params.require(:side).permit(:page_number, :texture, :script_direction, :image=>[:manifestID, :label, :url])
     end
 
     def side_params_batch_update
-      params.permit(:sides => [:id, :attributes=>[:folio_number, :page_number, :texture, :script_direction, :image=>[:manifestID, :label, :url]]])
-    end
-
-    def side_params_generate
-      params.permit(:startNumber, :rectoIDs => [], :versoIDs => [])
+      params.permit(:sides => [:id, :attributes=>[:page_number, :texture, :script_direction, :image=>[:manifestID, :label, :url]]])
     end
 
 end

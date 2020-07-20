@@ -209,6 +209,11 @@
             <attribute>
               <name ns="http://www.w3.org/XML/1998/namespace">id</name>
             </attribute>
+            <optional>
+              <attribute name="ref">
+                <text/>
+              </attribute>
+            </optional>
             <text/>
           </element>
           </oneOrMore>

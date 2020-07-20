@@ -27,10 +27,7 @@ module ControllerHelper
         # Add folio numbers 
         if folioNumber
           newlyAddedLeafs.each do |leaf|
-            recto = Side.find(leaf.rectoID)
-            verso = Side.find(leaf.versoID)
-            recto.update_attribute(:folio_number, folioNumber.to_s+"R")
-            verso.update_attribute(:folio_number, folioNumber.to_s+"V")
+            leaf.update_attribute(:folio_number, folioNumber.to_s)
             folioNumber += 1
           end
         elsif pageNumber
@@ -164,6 +161,7 @@ module ControllerHelper
       @project.leafs.each do | leaf |
         @leafs[leaf.id.to_s] = {
           "id": leaf.id.to_s,
+          "folio_number": leaf.folio_number,
           "material": leaf.material,
           "type": leaf.type,
           "conjoined_to": leaf.conjoined_to,
@@ -186,7 +184,6 @@ module ControllerHelper
         obj = {
           "id": side.id.to_s,
           "parentID": side.parentID,
-          "folio_number": side.folio_number,
           "page_number": side.page_number,
           "texture": side.texture, 
           "image": side.image,
@@ -214,6 +211,7 @@ module ControllerHelper
           "title": note.title,
           "type": note.type,
           "description": note.description,
+          "uri": note.uri,
           "show": note.show,
           "objects": note.objects,
         }

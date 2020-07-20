@@ -1,18 +1,18 @@
 export const initialState = {
   project: {
-    id: "",
-    title: "",
-    shelfmark: "",
-    uri: "",
+    id: '',
+    title: '',
+    shelfmark: '',
+    uri: '',
     metadata: {
-      date: ""
+      date: '',
     },
     manifests: {
-      "DIYImages": {
-        id: "DIYImages",
-        name: "Uploaded Images",
+      DIYImages: {
+        id: 'DIYImages',
+        name: 'Uploaded Images',
         images: [],
-      }
+      },
     },
     groupIDs: [],
     leafIDs: [],
@@ -25,24 +25,32 @@ export const initialState = {
     noteTypes: [],
     Notes: {},
     preferences: {
-      showTips: true
-    }
+      showTips: true,
+    },
   },
 
-  managerMode: "collationManager",
+  managerMode: 'collationManager',
   collationManager: {
-    selectedObjects: { 
-      type: "", 
-      members: [], 
-      lastSelected: "" 
+    selectedObjects: {
+      type: '',
+      members: [],
+      lastSelected: '',
     },
-    viewMode: "VISUAL",
+    viewMode: 'VISUAL',
     defaultAttributes: {
       leaf: [
         {
           name: 'type',
           displayName: 'Type',
-          options: ['None', 'Original', 'Added', 'Missing', 'Hook', 'Endleaf', 'Replaced'],
+          options: [
+            'None',
+            'Original',
+            'Added',
+            'Missing',
+            'Hook',
+            'Endleaf',
+            'Replaced',
+          ],
           isDropdown: true,
         },
         {
@@ -59,13 +67,25 @@ export const initialState = {
         {
           name: 'attached_above',
           displayName: 'Attached Above',
-          options: ['None', 'Glued (Partial)', 'Glued (Complete)', 'Glued (Drumming)', 'Other'],
+          options: [
+            'None',
+            'Glued (Partial)',
+            'Glued (Complete)',
+            'Glued (Drumming)',
+            'Other',
+          ],
           isDropdown: true,
         },
         {
           name: 'attached_below',
           displayName: 'Attached Below',
-          options: ['None', 'Glued (Partial)', 'Glued (Complete)', 'Glued (Drumming)', 'Other'],
+          options: [
+            'None',
+            'Glued (Partial)',
+            'Glued (Complete)',
+            'Glued (Drumming)',
+            'Other',
+          ],
           isDropdown: true,
         },
         {
@@ -73,6 +93,10 @@ export const initialState = {
           displayName: 'Stub',
           options: ['None', 'Original', 'Added'],
           isDropdown: true,
+        },
+        {
+          name: 'folio_number',
+          displayName: 'Folio Number',
         },
       ],
       group: [
@@ -95,18 +119,14 @@ export const initialState = {
           isDropdown: true,
         },
         {
-          name: 'folio_number',
-          displayName: 'Folio Number',
-        },
-        {
-          name: 'page_number',
-          displayName: 'Page Number',
-        },
-        {
           name: 'script_direction',
           displayName: 'Script Direction',
           options: ['None', 'Left-to-Right', 'Right-To-Left', 'Top-To-Bottom'],
           isDropdown: true,
+        },
+        {
+          name: 'page_number',
+          displayName: 'Page Number',
         },
         {
           name: 'uri',
@@ -114,20 +134,24 @@ export const initialState = {
         },
       ],
       note: [
-        {  
+        {
           name: 'title',
           displayName: 'Title',
         },
-        {  
+        {
           name: 'type',
           displayName: 'Type',
           isDropdown: true,
         },
-        {  
+        {
           name: 'description',
           displayName: 'Description',
         },
-      ]
+        {
+          name: 'uri',
+          displayName: 'URI',
+        },
+      ],
     },
     filters: {
       filterPanelOpen: false,
@@ -146,36 +170,35 @@ export const initialState = {
       queries: [
         {
           type: null,
-          attribute: "",
-          attributeIndex: "",
+          attribute: '',
+          attributeIndex: '',
           values: [],
-          condition: "",
-          conjunction: "",
-        }
+          condition: '',
+          conjunction: '',
+        },
       ],
-      selection: ""
+      selection: '',
     },
-    flashItems: { 
+    flashItems: {
       leaves: [],
-      groups: []
+      groups: [],
     },
     visualizations: {
-      tacketed: "",
-      sewing: "",
-    }
+      tacketed: '',
+      sewing: '',
+    },
   },
   notesManager: {
-    activeTab: "MANAGE",
+    activeTab: 'MANAGE',
   },
   imageManager: {
-    activeTab: "MANAGE",
+    activeTab: 'MANAGE',
     manageSources: {
-      error: ""
-    }
+      error: '',
+    },
   },
-  exportedData: "",
-  exportedImages: ""
+  exportedData: '',
+  exportedImages: '',
 };
-
 
 export default initialState;

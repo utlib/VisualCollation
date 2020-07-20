@@ -86,6 +86,20 @@ class LeafsController < ApplicationController
 
   end
 
+  # PUT /leafs/generateFolio
+  def generateFolio
+    folioNumberCount = leaf_params_generate.to_h[:startNumber].to_i
+    leafIDs = additional_params.to_h[:leafIDs]
+    leafIDs.each_with_index do | leafID, index | 
+      leaf = Leaf.find(leafID)
+      leaf.update_attribute(:folio_number, folioNumberCount.to_s)
+      folioNumberCount += 1
+      if index==0
+        @project = Project.find(leaf.project_id)
+      end
+    end
+  end
+
 
   # PATCH/PUT /leafs/1
   def update
@@ -272,7 +286,7 @@ class LeafsController < ApplicationController
     end
     # Never trust parameters from the scary internet, only allow the white list through.
     def leaf_params
-      params.require(:leaf).permit(:id, :project_id, :parentID, :material, :type, :conjoined_to, :stub, :attached_above, :attached_below)
+      params.require(:leaf).permit(:folio_number, :id, :project_id, :parentID, :material, :type, :conjoined_to, :stub, :attached_above, :attached_below)
     end
 
     def additional_params
@@ -280,7 +294,7 @@ class LeafsController < ApplicationController
     end
 
     def leaf_params_batch_update
-      params.permit(:project_id, :leafs => [:id, :attributes=>[:conjoined_to, :type, :material, :stub, :attached_above, :attached_below]])
+      params.permit(:project_id, :leafs => [:id, :attributes=>[:folio_number, :conjoined_to, :type, :material, :stub, :attached_above, :attached_below]])
     end
 
     def leaf_params_batch_delete
@@ -289,6 +303,10 @@ class LeafsController < ApplicationController
 
     def leaf_params_conjoin
       params.permit(:leafs => [])
+    end
+
+    def leaf_params_generate
+      params.permit(:startNumber, :rectoIDs => [], :versoIDs => [])
     end
 
 end
