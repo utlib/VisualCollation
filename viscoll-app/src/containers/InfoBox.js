@@ -236,16 +236,8 @@ class InfoBox extends React.Component {
 
   generateFolioNumbers = startNumber => {
     let leafIDs = this.props.collationManager.selectedObjects.members;
-    let rectoIDs = [];
-    let versoIDs = [];
 
-    for (const leafID of leafIDs) {
-      const leaf = this.props.Leafs[leafID];
-      rectoIDs.push(leaf.rectoID);
-      versoIDs.push(leaf.versoID);
-    }
-
-    this.props.generateFolioNumbers(startNumber, rectoIDs, versoIDs);
+    this.props.generateFolioNumbers(startNumber, leafIDs);
   };
 
   generatePageNumbers = startNumber => {
