@@ -53,6 +53,7 @@ module ControllerHelper
         leaf = @project.leafs.find(leafID)
         @leafs[index + 1] = {
           "params": {
+            "folio_number": leaf.folio_number ? leaf.folio_number : '',
             "material": leaf.material,
             "type": leaf.type,
             "attached_above": leaf.attached_above,
@@ -94,7 +95,6 @@ module ControllerHelper
         parentOrder =  @leafIDs.index(recto.parentID) + 1
         @rectos[index + 1] = {
           "params": {
-            "folio_number": recto.folio_number ? recto.folio_number : "",
             "page_number": recto.page_number ? recto.page_number : "",
             "texture": recto.texture, 
             "image": recto.image,
@@ -109,7 +109,6 @@ module ControllerHelper
         parentOrder =  @leafIDs.index(verso.parentID) + 1
         @versos[index + 1] = {
           "params": {
-            "folio_number": verso.folio_number ? verso.folio_number : "",
             "page_number": verso.page_number ? verso.page_number : "",
             "texture": verso.texture, 
             "image": verso.image,
