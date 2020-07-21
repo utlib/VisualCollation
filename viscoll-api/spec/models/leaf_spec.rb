@@ -3,6 +3,7 @@ require 'rails_helper'
 RSpec.describe Leaf, type: :model do
   it { is_expected.to be_mongoid_document }
   
+  it { is_expected.to have_field(:folio_number).of_type(String) }
   it { is_expected.to have_field(:material).of_type(String) }
   it { is_expected.to have_field(:type).of_type(String) }
   it { is_expected.to have_field(:conjoined_to).of_type(String) }

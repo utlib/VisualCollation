@@ -27,28 +27,28 @@ RSpec.describe ControllerHelper::StubbedImportHelper, type: :helper do
           "2" => {"params" => {"type" => "Quire", "title" => "Quire 2", "nestLevel" => 2}, "tacketed" => [], "sewing" => [], "parentOrder" => 1, "memberOrders" => ["Leaf_3", "Leaf_4"]}
         },
         "Leafs" => {
-          "1" => {"params" => {"material" => "Paper", "type" => "Original", "attached_above" => "None", "attached_below" => "None", "stub" => "None", "nestLevel" => 1}, "conjoined_leaf_order" => nil, "parentOrder" => 1, "rectoOrder" => 1, "versoOrder" => 1},
-          "2" => {"params" => {"material" => "Paper", "type" => "Original", "attached_above" => "None", "attached_below" => "None", "stub" => "None", "nestLevel" => 1}, "conjoined_leaf_order" => nil, "parentOrder" => 1, "rectoOrder" => 2, "versoOrder" => 2},
-          "3" => {"params" => {"material" => "Paper", "type" => "Original", "attached_above" => "None", "attached_below" => "None", "stub" => "None", "nestLevel" => 2}, "conjoined_leaf_order" => nil, "parentOrder" => 2, "rectoOrder" => 3, "versoOrder" => 3},
-          "4" => {"params" => {"material" => "Paper", "type" => "Original", "attached_above" => "None", "attached_below" => "None", "stub" => "None", "nestLevel" => 2}, "conjoined_leaf_order" => nil, "parentOrder" => 2, "rectoOrder" => 4, "versoOrder" => 4},
-          "5" => {"params" => {"material" => "Paper", "type" => "Original", "attached_above" => "None", "attached_below" => "None", "stub" => "None", "nestLevel" => 1}, "conjoined_leaf_order" => nil, "parentOrder" => 1, "rectoOrder" => 5, "versoOrder" => 5},
-          "6" => {"params" => {"material" => "Paper", "type" => "Endleaf", "attached_above" => "None", "attached_below" => "None", "stub" => "None", "nestLevel" => 1}, "conjoined_leaf_order" => nil, "parentOrder" => 1, "rectoOrder" => 6, "versoOrder" => 6}
+          "1" => {"params" => {"folio_number" => "1", "material" => "Paper", "type" => "Original", "attached_above" => "None", "attached_below" => "None", "stub" => "None", "nestLevel" => 1}, "conjoined_leaf_order" => nil, "parentOrder" => 1, "rectoOrder" => 1, "versoOrder" => 1},
+          "2" => {"params" => {"folio_number" => "2", "material" => "Paper", "type" => "Original", "attached_above" => "None", "attached_below" => "None", "stub" => "None", "nestLevel" => 1}, "conjoined_leaf_order" => nil, "parentOrder" => 1, "rectoOrder" => 2, "versoOrder" => 2},
+          "3" => {"params" => {"folio_number" => "3", "material" => "Paper", "type" => "Original", "attached_above" => "None", "attached_below" => "None", "stub" => "None", "nestLevel" => 2}, "conjoined_leaf_order" => nil, "parentOrder" => 2, "rectoOrder" => 3, "versoOrder" => 3},
+          "4" => {"params" => {"folio_number" => "4", "material" => "Paper", "type" => "Original", "attached_above" => "None", "attached_below" => "None", "stub" => "None", "nestLevel" => 2}, "conjoined_leaf_order" => nil, "parentOrder" => 2, "rectoOrder" => 4, "versoOrder" => 4},
+          "5" => {"params" => {"folio_number" => "5", "material" => "Paper", "type" => "Original", "attached_above" => "None", "attached_below" => "None", "stub" => "None", "nestLevel" => 1}, "conjoined_leaf_order" => nil, "parentOrder" => 1, "rectoOrder" => 5, "versoOrder" => 5},
+          "6" => {"params" => {"folio_number" => "6", "material" => "Paper", "type" => "Endleaf", "attached_above" => "None", "attached_below" => "None", "stub" => "None", "nestLevel" => 1}, "conjoined_leaf_order" => nil, "parentOrder" => 1, "rectoOrder" => 6, "versoOrder" => 6}
         },
         "Rectos" => {
-          "1" => {"params" => {"folio_number" => "1R", "texture" => "Hair", "image" => {}, "script_direction" => "None"}, "parentOrder" => 1},
-          "2" => {"params" => {"folio_number" => "2R", "texture" => "Hair", "image" => {}, "script_direction" => "None"}, "parentOrder" => 2},
-          "3" => {"params" => {"folio_number" => "3R", "texture" => "Hair", "image" => {}, "script_direction" => "None"}, "parentOrder" => 3},
-          "4" => {"params" => {"folio_number" => "4R", "texture" => "Hair", "image" => {}, "script_direction" => "None"}, "parentOrder" => 4},
-          "5" => {"params" => {"folio_number" => "5R", "texture" => "Hair", "image" => {}, "script_direction" => "None"}, "parentOrder" => 5},
-          "6" => {"params" => {"folio_number" => "6R", "texture" => "Hair", "image" => {}, "script_direction" => "None"}, "parentOrder" => 6}
+          "1" => {"params" => {"texture" => "Hair", "image" => {}, "script_direction" => "None"}, "parentOrder" => 1},
+          "2" => {"params" => {"texture" => "Hair", "image" => {}, "script_direction" => "None"}, "parentOrder" => 2},
+          "3" => {"params" => {"texture" => "Hair", "image" => {}, "script_direction" => "None"}, "parentOrder" => 3},
+          "4" => {"params" => {"texture" => "Hair", "image" => {}, "script_direction" => "None"}, "parentOrder" => 4},
+          "5" => {"params" => {"texture" => "Hair", "image" => {}, "script_direction" => "None"}, "parentOrder" => 5},
+          "6" => {"params" => {"texture" => "Hair", "image" => {}, "script_direction" => "None"}, "parentOrder" => 6}
         },
         "Versos" => {
-          "1" => {"params" => {"folio_number" => "1V", "texture" => "Flesh", "image" => {}, "script_direction" => "None"}, "parentOrder" => 1},
-          "2" => {"params" => {"folio_number" => "2V", "texture" => "Flesh", "image" => {}, "script_direction" => "None"}, "parentOrder" => 2},
-          "3" => {"params" => {"folio_number" => "3V", "texture" => "Flesh", "image" => {}, "script_direction" => "None"}, "parentOrder" => 3},
-          "4" => {"params" => {"folio_number" => "4V", "texture" => "Flesh", "image" => {}, "script_direction" => "None"}, "parentOrder" => 4},
-          "5" => {"params" => {"folio_number" => "5V", "texture" => "Flesh", "image" => {}, "script_direction" => "None"}, "parentOrder" => 5},
-          "6" => {"params" => {"folio_number" => "6V", "texture" => "Flesh", "image" => {}, "script_direction" => "None"}, "parentOrder" => 6}
+          "1" => {"params" => {"texture" => "Flesh", "image" => {}, "script_direction" => "None"}, "parentOrder" => 1},
+          "2" => {"params" => {"texture" => "Flesh", "image" => {}, "script_direction" => "None"}, "parentOrder" => 2},
+          "3" => {"params" => {"texture" => "Flesh", "image" => {}, "script_direction" => "None"}, "parentOrder" => 3},
+          "4" => {"params" => {"texture" => "Flesh", "image" => {}, "script_direction" => "None"}, "parentOrder" => 4},
+          "5" => {"params" => {"texture" => "Flesh", "image" => {}, "script_direction" => "None"}, "parentOrder" => 5},
+          "6" => {"params" => {"texture" => "Flesh", "image" => {}, "script_direction" => "None"}, "parentOrder" => 6}
         },
         "Notes" => {
           "1" => {"params" => {"title" => "Test Note", "type" => "Ink", "description" => "This is a test", "show" => true}, "objects" => {"Group" => [1], "Leaf" => [5], "Recto" => [5], "Verso" => [5]}}

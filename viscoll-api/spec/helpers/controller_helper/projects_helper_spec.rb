@@ -28,10 +28,8 @@ RSpec.describe ControllerHelper::ProjectsHelper, type: :helper do
         { 'leaves' => 4, 'conjoin' => true },
         { 'leaves' => 3, 'conjoin' => true, 'oddLeaf' => 2 }
       ], 2, nil, "Hair")
-      expect(Side.find(Leaf.find(project.groups[0].memberIDs[0]).rectoID).folio_number).to eq "2R"
-      expect(Side.find(Leaf.find(project.groups[0].memberIDs[0]).versoID).folio_number).to eq "2V"
-      expect(Side.find(Leaf.find(project.groups[0].memberIDs[1]).rectoID).folio_number).to eq "3R"
-      expect(Side.find(Leaf.find(project.groups[0].memberIDs[1]).versoID).folio_number).to eq "3V"
+      expect((Leaf.find(project.groups[0].memberIDs[0])).folio_number).to eq "2"
+      expect((Leaf.find(project.groups[0].memberIDs[1])).folio_number).to eq "3"
     end
     it 'should generate page numbers' do
       project = FactoryGirl.create(:project)
