@@ -411,6 +411,7 @@ export default class LeafInfoBox extends React.Component {
               value={value}
             ></SelectField>
           );
+          // folio number should be a text box, not a dropdown
         } else if (attributeDict.name === 'folio_number') {
           let value = leafAttributes[attributeDict.name];
           input = (
