@@ -153,14 +153,6 @@ describe "GET /projects/:id/export/:format", :type => :request do
         expect(result.css("taxonomy[xml|id='leaf_material'] term").collect { |t| [t['xml:id'], t.text] }).to include(
           ['leaf_material_paper', 'Paper']
         )
-        expect(result.css("manuscript leaf").collect { |t| [t['xml:id'], t.css('folioNumber').text, t.css('q').first['target'], t.css('q').first['n']] }).to include(
-          ['ravenna_384_2339-1-1', '1', '#ravenna_384_2339-q-1', '1'],
-          ['ravenna_384_2339-1-2', '2', '#ravenna_384_2339-q-1', '1'],
-          ['ravenna_384_2339-1-2-3', '3', '#ravenna_384_2339-q-1-2', '2'],
-          ['ravenna_384_2339-1-2-4', '4', '#ravenna_384_2339-q-1-2', '2'],
-          ['ravenna_384_2339-1-3', '5', '#ravenna_384_2339-q-1', '1'],
-          ['ravenna_384_2339-1-4', '6', '#ravenna_384_2339-q-1', '1']
-        )
         # Sides and Notes
 
         expect(result.css("mapping map").collect { |t| [t['target'], t['side'], t.css('term').first['target']]}).to include(
