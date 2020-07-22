@@ -518,14 +518,14 @@ describe "PUT /projects/:id/filter", :type => :request do
       
       context 'contains one' do
         before do
-          @project1.sides[9].update(folio_number: 'FN0')
+          @project1.sides[9].update(page_number: 'PN0')
           @parameters = {
             "queries": [
               {
                 "type": "side",
-                "attribute": "folio_number",
+                "attribute": "page_number",
                 "condition": "contains",
-                "values": [ 'FN' ]
+                "values": [ 'PN' ]
               }
             ]
           }
@@ -544,16 +544,16 @@ describe "PUT /projects/:id/filter", :type => :request do
       
       context 'contains multiple' do
         before do
-          @project1.sides[6].update(folio_number: 'FN0')
-          @project1.sides[11].update(folio_number: 'QR1')
-          @project2.sides[7].update(folio_number: 'FN0')
+          @project1.sides[6].update(page_number: 'PN0')
+          @project1.sides[11].update(page_number: 'QR1')
+          @project2.sides[7].update(page_number: 'PN0')
           @parameters = {
             "queries": [
               {
                 "type": "side",
-                "attribute": "folio_number",
+                "attribute": "page_number",
                 "condition": "contains",
-                "values": [ 'FN', 'QR' ]
+                "values": [ 'PN', 'QR' ]
               }
             ]
           }
@@ -574,14 +574,14 @@ describe "PUT /projects/:id/filter", :type => :request do
       
       context 'not contains one' do
         before do
-          @project1.sides[9].update(folio_number: 'FN0')
+          @project1.sides[9].update(page_number: 'PN0')
           @parameters = {
             "queries": [
               {
                 "type": "side",
-                "attribute": "folio_number",
+                "attribute": "page_number",
                 "condition": "not contains",
-                "values": [ 'FN' ]
+                "values": [ 'PN' ]
               }
             ]
           }
@@ -601,16 +601,16 @@ describe "PUT /projects/:id/filter", :type => :request do
       
       context 'not contains multiple' do
         before do
-          @project1.sides[6].update(folio_number: 'FN0')
-          @project1.sides[11].update(folio_number: 'QR1')
-          @project2.sides[7].update(folio_number: 'FN0')
+          @project1.sides[6].update(page_number: 'PN0')
+          @project1.sides[11].update(page_number: 'QR1')
+          @project2.sides[7].update(page_number: 'PN0')
           @parameters = {
             "queries": [
               {
                 "type": "side",
-                "attribute": "folio_number",
+                "attribute": "page_number",
                 "condition": "not contains",
-                "values": [ 'FN', 'QR' ]
+                "values": [ 'PN', 'QR' ]
               }
             ]
           }
