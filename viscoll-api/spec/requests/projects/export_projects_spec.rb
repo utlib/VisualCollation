@@ -153,8 +153,8 @@ describe "GET /projects/:id/export/:format", :type => :request do
         expect(result.css("taxonomy[xml|id='leaf_material'] term").collect { |t| [t['xml:id'], t.text] }).to include(
           ['leaf_material_paper', 'Paper']
         )
+        #TODO test for folio_number generation
         # Sides and Notes
-
         expect(result.css("mapping map").collect { |t| [t['target'], t['side'], t.css('term').first['target']]}).to include(
           ['#ravenna_384_2339-1-1', 'recto', '#side_page_number_EMPTY https://dummy.library.utoronto.ca/images/'+@testimage.id.to_s+'_pixel.png #manifest_DIYImages'],
           ['#ravenna_384_2339-1-2', 'recto', '#side_page_number_EMPTY'],
