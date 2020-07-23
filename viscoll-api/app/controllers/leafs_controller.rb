@@ -306,7 +306,7 @@ class LeafsController < ApplicationController
     end
 
     def leaf_params_generate
-      params.permit(:startNumber, :rectoIDs => [], :versoIDs => [])
+      params.permit(:startNumber, :leafIDs)
     end
 
 end
