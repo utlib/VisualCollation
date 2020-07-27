@@ -52,8 +52,7 @@ export default class NewProjectContainer extends React.Component {
       quireNo: 1,
       leafNo: 10,
       conjoined: true,
-      startFolioNumber: 1,
-      startPageNumber: 1,
+      startFolioPageNumber: 1,
       generateFolioNumber: null,
       generatePageNumber: null,
       collationGroups: [],
@@ -220,11 +219,11 @@ export default class NewProjectContainer extends React.Component {
       groups: [],
       folioNumber:
         this.state.generateFolioNumber === 'folio_number'
-          ? this.state.startFolioNumber
+          ? this.state.startFolioPageNumber
           : null,
       pageNumber:
         this.state.generateFolioNumber === 'page_number'
-          ? this.state.startPageNumber
+          ? this.state.startFolioPageNumber
           : null,
       startingTexture: this.state.startingTexture,
     };
@@ -300,7 +299,8 @@ export default class NewProjectContainer extends React.Component {
         content = (
           <ProjectOptions
             startFolioPageNumber={this.state.startFolioPageNumber}
-            generateFolioPageNumber={this.state.generateFolioPageNumber}
+            generateFolioNumber={this.state.generateFolioNumber}
+            generatePageNumber={this.state.generatePageNumber}
             startingTexture={this.state.startingTexture}
             previousStep={() => this.set('step', 3)}
             finish={this.finish}
