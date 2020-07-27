@@ -489,7 +489,7 @@ module ControllerHelper
                   rectoSide = project.sides.find(leaf.rectoID)
                   versoSide = project.sides.find(leaf.versoID)
                   if leaf.folio_number
-                    folioNumber = @leafIDs.index(leafID)+1
+                    folioNumber = leaf.folio_number
                     folioNumberAttr[:val] = folioNumber
                     xml.folioNumber folioNumberAttr do
                       xml.text folioNumber

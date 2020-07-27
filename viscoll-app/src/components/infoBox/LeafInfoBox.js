@@ -16,6 +16,8 @@ import { btnBase } from '../../styles/button';
 import FolioNumberDialog from '../infoBox/dialog/FolioNumberDialog';
 import { renderNoteChip } from '../../helpers/renderHelper';
 import TextField from 'material-ui/TextField/TextField';
+import IconSubmit from 'material-ui/svg-icons/action/done';
+import IconClear from 'material-ui/svg-icons/content/clear';
 
 /** Leaf infobox */
 export default class LeafInfoBox extends React.Component {
@@ -110,11 +112,11 @@ export default class LeafInfoBox extends React.Component {
   singleSubmit = (attributeName, value) => {
     let attributes = {};
     attributes[attributeName] = value;
-    let sideID = this.props.selectedSides[0];
-    let side = {
+    let leafID = this.props.selectedLeaves[0];
+    let leaf = {
       ...attributes,
     };
-    this.props.action.updateSide(sideID, side);
+    this.props.action.updateLeaf(leafID, leaf);
   };
 
   textCancel = (e, attributeName) => {
@@ -451,9 +453,69 @@ export default class LeafInfoBox extends React.Component {
           );
           // folio number should be a text box, not a dropdown
         } else if (attributeDict.name === 'folio_number') {
-          let value = leafAttributes[attributeDict.name];
+          // Text box
+          let textboxButtons = '';
+          if (
+            !this.state.isBatch &&
+            this.state['editing_' + attributeDict.name]
+          ) {
+            textboxButtons = (
+              <div>
+                <RaisedButton
+                  aria-label="Submit"
+                  primary
+                  icon={<IconSubmit />}
+                  style={{
+                    minWidth: this.props.windowWidth <= 1024 ? '35px' : '60px',
+                    marginLeft: '5px',
+                  }}
+                  onClick={e => this.textSubmit(e, attributeDict.name)}
+                  tabIndex={this.props.tabIndex}
+                />
+                <RaisedButton
+                  aria-label="Cancel"
+                  secondary
+                  icon={<IconClear />}
+                  style={{
+                    minWidth: this.props.windowWidth <= 1024 ? '35px' : '60px',
+                    marginLeft: '5px',
+                  }}
+                  onClick={e => this.textCancel(e, attributeDict.name)}
+                  tabIndex={this.props.tabIndex}
+                />
+              </div>
+            );
+          }
+          let value = '';
+          if (this.state['editing_' + attributeDict.name]) {
+            value = this.state[attributeDict.name];
+          } else if (leafAttributes[attributeDict.name] !== null) {
+            value = leafAttributes[attributeDict.name];
+          }
           input = (
-            <TextField name={attributeDict.name} value={value}></TextField>
+            <div>
+              <form onSubmit={e => this.textSubmit(e, attributeDict.name)}>
+                <TextField
+                  aria-label={
+                    attributeDict.displayName + ' attribute textfield'
+                  }
+                  name={attributeDict.name}
+                  value={value}
+                  onChange={(e, v) =>
+                    this.onTextboxChange(v, attributeDict.name)
+                  }
+                  disabled={
+                    this.state.isBatch &&
+                    !this.state['batch_' + attributeDict.name]
+                  }
+                  tabIndex={this.props.tabIndex}
+                  inputStyle={{
+                    fontSize: this.props.windowWidth <= 768 ? '12px' : '16px',
+                  }}
+                />
+                {textboxButtons}
+              </form>
+            </div>
           );
         } else {
           let menuItems = [];
