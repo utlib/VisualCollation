@@ -89,6 +89,44 @@ export default class LeafInfoBox extends React.Component {
     return false;
   };
 
+  onTextboxChange = (value, attributeName) => {
+    let newAttributeState = {};
+    newAttributeState[attributeName] = value;
+    let newEditingState = {};
+    newEditingState['editing_' + attributeName] = true;
+    this.setState({ ...newAttributeState, ...newEditingState });
+  };
+
+  textSubmit = (e, attributeName) => {
+    e.preventDefault();
+    let newEditingState = {};
+    newEditingState['editing_' + attributeName] = false;
+    this.setState({ ...newEditingState });
+    if (!this.state.isBatch) {
+      this.singleSubmit(attributeName, this.state[attributeName]);
+    }
+  };
+
+  singleSubmit = (attributeName, value) => {
+    let attributes = {};
+    attributes[attributeName] = value;
+    let sideID = this.props.selectedSides[0];
+    let side = {
+      ...attributes,
+    };
+    this.props.action.updateSide(sideID, side);
+  };
+
+  textCancel = (e, attributeName) => {
+    let newAttributeState = {};
+    newAttributeState[attributeName] = this.props.Sides[
+      this.props.selectedSides[0]
+    ][attributeName];
+    let newEditingState = {};
+    newEditingState['editing_' + attributeName] = false;
+    this.setState({ ...newAttributeState, ...newEditingState });
+  };
+
   dropDownChange = (value, attributeName) => {
     if (this.props.selectedLeaves.length === 1) {
       // In single edit - we submit change immediately
