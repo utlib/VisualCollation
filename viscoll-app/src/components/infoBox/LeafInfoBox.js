@@ -245,6 +245,7 @@ export default class LeafInfoBox extends React.Component {
   };
 
   render() {
+    //this.clickVisibility('folio_number', 'test');
     let leafAttributes = this.getAttributeValues();
     let attributeDivs = [];
     const activeLeaf = this.props.Leafs[this.props.selectedLeaves[0]];
