@@ -325,7 +325,23 @@ export function undoAutoconjoin(action, state) {
 }
 
 // TODO split the undo into two separate methods; one for folio, one for page
-export function undoFolioPageNumbers(action, state, folioOrPage) {
+export function undoFolioNumbers(action, state) {
+  const leafIDs = action.payload.request.data.leafIDs;
+  const leaves = [];
+  for (const leafID of leafIDs) {
+    const item = {
+      id: leafID,
+      attributes: {
+        folio_number: state.project['Leafs'][leafID]['folio_number'],
+      },
+    };
+    leaves.push(item);
+  }
+  const historyActions = updateLeafs(leaves);
+  return [historyActions];
+}
+
+export function undoPageNumbers(action, state) {
   const sideIDs = action.payload.request.data.rectoIDs.concat(
     action.payload.request.data.versoIDs
   );
@@ -335,7 +351,7 @@ export function undoFolioPageNumbers(action, state, folioOrPage) {
     const item = {
       id: sideID,
       attributes: {
-        [folioOrPage]: state.project[sideType][sideID][folioOrPage],
+        page_number: state.project[sideType][sideID]['page_number'],
       },
     };
     sides.push(item);
