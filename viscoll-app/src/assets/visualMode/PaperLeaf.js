@@ -467,29 +467,23 @@ PaperLeaf.prototype = {
     this.showAttributes();
   },
   showAttributes: function () {
-    // ? do we need leafValues if we're only displaying 3v/3r?
-    const leafValues = [];
     const rectoValues = [];
     const versoValues = [];
-    if (this.visibleAttributes.leaf) {
-      if (this.visibleAttributes.leaf.folio_number) {
-        if (this.leaf.folio_number) leafValues.push(this.leaf.folio_number);
-      }
-    }
     if (this.visibleAttributes.side) {
       if (this.visibleAttributes.side.page_number) {
         if (this.recto.page_number) rectoValues.push(this.recto.page_number);
         if (this.verso.page_number) versoValues.push(this.verso.page_number);
       }
-      if (this.visibleAttributes.leaf.folio_number) {
-        if (this.leaf.folio_number)
-          rectoValues.push(this.leaf.folio_number + 'r');
-        if (this.leaf.folio_number)
-          versoValues.push(this.leaf.folio_number + 'v');
-      }
       if (this.visibleAttributes.side.texture) {
         rectoValues.push(this.recto.texture);
         versoValues.push(this.verso.texture);
+      }
+    }
+    if (this.visibleAttributes.leaf) {
+      if (this.visibleAttributes.leaf.folio_number) {
+        if (this.leaf.folio_number)
+          rectoValues.push(this.leaf.folio_number + 'r');
+        versoValues.push(this.leaf.folio_number + 'v');
       }
     }
     let rectoContent = '';
@@ -503,10 +497,12 @@ PaperLeaf.prototype = {
 
     const reducer = (acc, key) => {
       if (this.visibleAttributes.side[key]) return acc + 1;
+      if (this.visibleAttributes.leaf[key]) return acc + 1;
       return acc;
     };
     const visibleAttributeCount = this.visibleAttributes.side
-      ? Object.keys(this.visibleAttributes.side).reduce(reducer, 0)
+      ? Object.keys(this.visibleAttributes.side).reduce(reducer, 0) +
+        Object.keys(this.visibleAttributes.leaf).reduce(reducer, 0)
       : 0;
 
     if (visibleAttributeCount === 3) {
