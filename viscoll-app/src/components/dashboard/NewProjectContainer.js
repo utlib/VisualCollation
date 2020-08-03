@@ -25,6 +25,7 @@ export default class NewProjectContainer extends React.Component {
       generateFolioNumber: null,
       generatePageNumber: null,
       startingTexture: 'Hair',
+      startingSideStyle: 'r-v',
       collationGroups: [],
       errors: {
         title: '',

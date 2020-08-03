@@ -113,6 +113,39 @@ const ProjectOptions = props => {
           width={250}
         />
       </div>
+      <h2>
+        Select side notation style
+        <IconButton
+          iconStyle={{ fontSize: 10, width: 15, height: 15 }}
+          tooltip="Style of notation"
+        >
+          <IconHelp />
+        </IconButton>
+      </h2>
+      <div
+        style={{
+          width: '100%',
+          margin: 'auto',
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+        }}
+      >
+        <SelectField
+          id="selectSideStyle"
+          label="Select side notation style"
+          data={[
+            { text: 'r-v', value: 'r-v' },
+            { text: 'recto-verso', value: 'recto-verso' },
+            { text: 'a-b', value: 'a-b' },
+          ]}
+          value={props.startingSideStyle}
+          onChange={e => {
+            console.log(e);
+          }}
+          width={250}
+        />
+      </div>
 
       <div style={{ textAlign: 'center', paddingTop: 30 }}>
         <FlatButton
