@@ -324,7 +324,6 @@ export function undoAutoconjoin(action, state) {
   return [historyAction];
 }
 
-// TODO split the undo into two separate methods; one for folio, one for page
 export function undoFolioNumbers(action, state) {
   const leafIDs = action.payload.request.data.leafIDs;
   const leaves = [];
