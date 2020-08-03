@@ -395,6 +395,59 @@ export default class LeafInfoBox extends React.Component {
             </div>
           </div>
         );
+      } else if (
+        this.props.viewMode === 'VISUAL' &&
+        attributeDict.name === 'folio_number'
+      ) {
+        // In single edit tabular mode - display eye icon with label
+        label = (
+          <div className="tooltip eyeToggle">
+            <Checkbox
+              aria-label={
+                eyeIsChecked
+                  ? "Hide '" +
+                    attributeDict.displayName +
+                    "' attribute in collation"
+                  : "Show '" +
+                    attributeDict.displayName +
+                    "' attribute in collation"
+              }
+              key={'single_' + attributeDict.displayName}
+              label={attributeDict.displayName}
+              checkedIcon={<Visibility />}
+              uncheckedIcon={<VisibilityOff />}
+              onClick={() =>
+                this.clickVisibility(attributeDict.name, !eyeIsChecked)
+              }
+              style={{ display: 'inline-block', width: '25px' }}
+              checked={eyeIsChecked}
+              iconStyle={{ ...checkboxStyle().iconStyle, color: 'gray' }}
+              labelStyle={{ ...checkboxStyle().labelStyle }}
+              onMouseEnter={() => {
+                this.setState({
+                  ['visibility_hover_' + attributeDict.name]: true,
+                });
+              }}
+              onMouseOut={() => {
+                this.setState({
+                  ['visibility_hover_' + attributeDict.name]: false,
+                });
+              }}
+              tabIndex={this.props.tabIndex}
+            />
+            <div
+              className={
+                this.state['visibility_hover_' + attributeDict.name] === true
+                  ? 'text active'
+                  : 'text'
+              }
+            >
+              {eyeIsChecked
+                ? 'Hide attribute in the collation'
+                : 'Show attribute in the collation'}
+            </div>
+          </div>
+        );
       }
       if (this.state.isBatch && !this.props.isReadOnly) {
         // In batch edit for either edit modes
