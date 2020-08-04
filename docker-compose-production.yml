@@ -1,0 +1,23 @@
+version: '3.2'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile.production
+    image: viscoll
+    container_name: viscoll-app
+    command: server -b 0.0.0.0
+    ports:
+      - 3000:3000
+    depends_on:
+      - mongo
+
+  mongo:
+    container_name: viscoll-mongo
+    image: mongo:4.0
+    volumes:
+      - data:/data/db
+
+volumes:
+  data:
