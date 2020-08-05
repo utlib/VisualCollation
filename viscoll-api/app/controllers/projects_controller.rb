@@ -207,7 +207,7 @@ class ProjectsController < ApplicationController
 
   # Never trust parameters from the scary Internet, only allow the white list through.
   def project_params
-    params.require(:project).permit(:title, :shelfmark, :metadata=>{}, :noteTypes=>[], :preferences=>{})
+    params.require(:project).permit(:title, :shelfmark,:notationStyle, :metadata=>{}, :noteTypes=>[], :preferences=>{})
   end
 
   def project_delete_params
