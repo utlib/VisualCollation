@@ -17,6 +17,7 @@ export default class NewProjectContainer extends React.Component {
       step: 1,
       title: '',
       shelfmark: '',
+      notationStyle: '',
       date: '',
       quireNo: 2,
       leafNo: 10,
@@ -49,6 +50,7 @@ export default class NewProjectContainer extends React.Component {
       step: 1,
       title: '',
       shelfmark: '',
+      notationStyle: '',
       date: '',
       quireNo: 1,
       leafNo: 10,
@@ -202,6 +204,7 @@ export default class NewProjectContainer extends React.Component {
       project: {
         title: this.state.title,
         shelfmark: this.state.shelfmark,
+        notationStyle: this.state.notationStyle,
         metadata: {
           date: this.state.date,
         },
@@ -229,6 +232,7 @@ export default class NewProjectContainer extends React.Component {
       startingTexture: this.state.startingTexture,
     };
     this.state.collationGroups.forEach(group => request.groups.push(group));
+    console.log(request);
     this.props.createProject(request, user);
     this.reset();
     this.props.close();

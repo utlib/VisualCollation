@@ -17,8 +17,8 @@ class Side
   # Callbacks
   before_destroy :unlink_notes, :unlink_image
 
-  def folio_number
-    Leaf.find(parentID).folio_number
+  def parent_leaf
+    Leaf.find(parentID)
   end
 
   protected

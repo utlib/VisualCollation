@@ -4,12 +4,7 @@ export const initialState = {
     title: '',
     shelfmark: '',
     uri: '',
-    side_style: {
-      name: 'side_style',
-      displayName: 'Side Notation Style',
-      options: ['r-v', 'recto-verso', 'a-b'],
-      isDropdown: true,
-    },
+    notationStyle: 'test',
     metadata: {
       date: '',
     },

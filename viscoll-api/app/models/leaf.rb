@@ -23,6 +23,11 @@ class Leaf
   before_create :edit_ID, :create_sides
   before_destroy :unlink_notes, :destroy_sides, :update_parent_group
 
+  def parent_project
+    group = Group.find(self.parentID)
+    Project.find(group.parentID)
+  end
+
 
   # Remove itself from its parent group
   def remove_from_group
