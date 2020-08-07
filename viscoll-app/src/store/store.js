@@ -20,9 +20,14 @@ if (process.env.NODE_ENV === 'development') {
       frontendBeforeActionsMiddleware,
       frontendAfterActionsMiddleware
     ),
-    autoRehydrate(),
-    window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__()
+    autoRehydrate()
   );
+  if (window.__REDUX_DEVTOOLS_EXTENSION__) {
+    storeEnhancers = compose(
+      storeEnhancers,
+      window.__REDUX_DEVTOOLS_EXTENSION__()
+    );
+  }
 } else {
   storeEnhancers = compose(
     applyMiddleware(
