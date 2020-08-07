@@ -17,7 +17,7 @@ export default class NewProjectContainer extends React.Component {
       step: 1,
       title: '',
       shelfmark: '',
-      notationStyle: '',
+      notationStyle: props.notationStyle,
       date: '',
       quireNo: 2,
       leafNo: 10,
