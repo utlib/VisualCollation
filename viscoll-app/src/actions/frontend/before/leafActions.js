@@ -331,7 +331,6 @@ export function generatePageNumbers(action, state) {
 export function generateFolioNumbers(action, state) {
   let numberCount = action.payload.request.data.startNumber;
   let leafIDs = action.payload.request.data.leafIDs;
-  console.log(leafIDs);
   for (const index in leafIDs) {
     const leaf = state.project.Leafs[leafIDs[index]];
     leaf['folio_number'] = `${numberCount}`;

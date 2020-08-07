@@ -10,7 +10,6 @@ export default function dashboardReducer(state = initialState, action) {
   switch (action.type) {
     case 'LOAD_PROJECT_SUCCESS':
       state = action.payload.dashboard;
-      console.log(state);
       break;
     case 'LOAD_PROJECTS_SUCCESS':
     case 'CREATE_PROJECT_SUCCESS':

@@ -17,7 +17,6 @@ export const clientOptions = {
       ({ getState, dispatch, getSourceAction }, request) => {
         if (getState().user.token)
           request.headers['Authorization'] = getState().user.token;
-        console.log(request);
         return request;
       },
     ],
@@ -33,7 +32,6 @@ export const clientOptions = {
             if (getState().global.loadingRequestCount <= 1)
               dispatch({ type: 'HIDE_LOADING' });
           }
-          console.log(response);
           return Promise.resolve(response.data);
         },
         error: function ({ getState, dispatch, getSourceAction }, error) {
