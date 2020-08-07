@@ -106,11 +106,13 @@ module ControllerHelper
         "id": @project.id.to_s,
         "title": @project.title,
         "shelfmark": @project.shelfmark,
+        "notationStyle": @project.notationStyle,
         "metadata": @project.metadata,
         "preferences": @project.preferences,
         "manifests": @project.manifests,
         "noteTypes": @project.noteTypes
       }
+      puts "Project Information: #{@projectInformation}"
       @project.manifests.each do |manifestID, manifest|
         manifestInformation = getManifestInformation(manifest[:url])
         manifestName = manifest[:name] ? manifest[:name] : manifestInformation[:name]

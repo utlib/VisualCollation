@@ -4,7 +4,7 @@ export const initialState = {
     title: '',
     shelfmark: '',
     uri: '',
-    notationStyle: 'test',
+    notationStyle: 'coming from active.js',
     metadata: {
       date: '',
     },

@@ -232,8 +232,8 @@ export default class NewProjectContainer extends React.Component {
       startingTexture: this.state.startingTexture,
     };
     this.state.collationGroups.forEach(group => request.groups.push(group));
-    console.log(request);
     this.props.createProject(request, user);
+    console.log(request);
     this.reset();
     this.props.close();
   };
