@@ -12,12 +12,13 @@ import ProjectOptions from './ProjectOptions';
 export default class NewProjectContainer extends React.Component {
   constructor(props) {
     super(props);
+    console.log(props);
     this.state = {
       projectType: '',
       step: 1,
       title: '',
       shelfmark: '',
-      notationStyle: props.notationStyle,
+      notationStyle: '',
       date: '',
       quireNo: 2,
       leafNo: 10,
@@ -307,6 +308,7 @@ export default class NewProjectContainer extends React.Component {
             generateFolioNumber={this.state.generateFolioNumber}
             generatePageNumber={this.state.generatePageNumber}
             startingTexture={this.state.startingTexture}
+            notationStyle={this.state.notationStyle}
             previousStep={() => this.set('step', 3)}
             finish={this.finish}
             set={this.set}

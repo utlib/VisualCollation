@@ -18,6 +18,7 @@ const ProjectOptions = props => {
       console.log(e, v);
     }
   };
+
   return (
     <div style={{ width: '60%', margin: 'auto' }}>
       <h1 style={{ textAlign: 'center' }}>Project Options</h1>
@@ -137,8 +138,9 @@ const ProjectOptions = props => {
             { text: 'recto-verso', value: 'recto-verso' },
             { text: 'a-b', value: 'a-b' },
           ]}
-          value={props.startingSideStyle}
+          value={'r-v'}
           onChange={e => {
+            props.set('notationStyle', e);
             console.log(e);
           }}
           width={250}

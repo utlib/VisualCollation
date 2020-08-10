@@ -112,7 +112,6 @@ module ControllerHelper
         "manifests": @project.manifests,
         "noteTypes": @project.noteTypes
       }
-      puts "Project Information: #{@projectInformation}"
       @project.manifests.each do |manifestID, manifest|
         manifestInformation = getManifestInformation(manifest[:url])
         manifestName = manifest[:name] ? manifest[:name] : manifestInformation[:name]

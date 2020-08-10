@@ -4,7 +4,12 @@ export const initialState = {
     title: '',
     shelfmark: '',
     uri: '',
-    notationStyle: 'coming from active.js',
+    notationStyle: {
+      name: 'notationStyle',
+      displayName: 'Notation Style',
+      options: ['r-v', 'recto-verso', 'a-b'],
+      isDropdown: true,
+    },
     metadata: {
       date: '',
     },
