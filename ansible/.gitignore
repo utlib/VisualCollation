@@ -1,0 +1,6 @@
+.vagrant/
+
+.python-version
+
+roles/*.*
+vault-password
