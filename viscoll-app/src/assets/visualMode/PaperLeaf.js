@@ -481,9 +481,11 @@ PaperLeaf.prototype = {
     }
     if (this.visibleAttributes.leaf) {
       if (this.visibleAttributes.leaf.folio_number) {
+        let notationStyles = this.notationStyle.split('-');
+        console.log(notationStyles);
         if (this.leaf.folio_number)
-          rectoValues.push(this.leaf.folio_number + 'r');
-        versoValues.push(this.leaf.folio_number + 'v');
+          rectoValues.push(this.leaf.folio_number + notationStyles[0]);
+        versoValues.push(this.leaf.folio_number + notationStyles[1]);
       }
     }
     let rectoContent = '';
@@ -640,6 +642,7 @@ function PaperLeaf(args) {
   this.attachment = new paper.Group();
   this.textNotes = new paper.Group();
   this.openNoteDialog = args.openNoteDialog;
+  this.notationStyle = args.notationStyle;
 
   this.textLeafOrder = new paper.PointText({
     point: [this.width, this.y + 5],

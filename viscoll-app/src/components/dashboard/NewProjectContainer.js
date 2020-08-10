@@ -12,7 +12,6 @@ import ProjectOptions from './ProjectOptions';
 export default class NewProjectContainer extends React.Component {
   constructor(props) {
     super(props);
-    console.log(props);
     this.state = {
       projectType: '',
       step: 1,

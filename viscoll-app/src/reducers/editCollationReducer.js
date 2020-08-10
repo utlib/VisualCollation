@@ -17,7 +17,6 @@ export default function editCollationReducer(state = initialState, action) {
     // MODIFICATIONS
     case 'LOAD_PROJECT_SUCCESS':
       state.project = action.payload.active;
-      console.log(action.payload.active);
       break;
     case 'LOAD_PROJECT_VIEW_ONLY_SUCCESS':
       state.project = {
