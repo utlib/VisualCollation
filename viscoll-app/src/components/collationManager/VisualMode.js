@@ -65,7 +65,6 @@ export default class VisualMode extends React.Component {
       },
       () => {
         this.drawOnCanvas();
-        console.log(this.state.paperManager);
       }
     );
   }

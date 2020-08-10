@@ -135,7 +135,6 @@ PaperManager.prototype = {
     }
     // Draw all leaves and set mouse event handlers
     this.paperLeaves.forEach(leaf => {
-      console.log(leaf);
       leaf.draw();
       leaf.setMouseEventHandlers();
     });

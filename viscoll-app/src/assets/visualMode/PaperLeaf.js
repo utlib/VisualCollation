@@ -482,7 +482,6 @@ PaperLeaf.prototype = {
     if (this.visibleAttributes.leaf) {
       if (this.visibleAttributes.leaf.folio_number) {
         let notationStyles = this.notationStyle.split('-');
-        console.log(notationStyles);
         if (this.leaf.folio_number)
           rectoValues.push(this.leaf.folio_number + notationStyles[0]);
         versoValues.push(this.leaf.folio_number + notationStyles[1]);

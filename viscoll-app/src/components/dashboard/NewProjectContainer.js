@@ -233,7 +233,6 @@ export default class NewProjectContainer extends React.Component {
     };
     this.state.collationGroups.forEach(group => request.groups.push(group));
     this.props.createProject(request, user);
-    console.log(request);
     this.reset();
     this.props.close();
   };
