@@ -25,7 +25,7 @@ services:
       dockerfile: Dockerfile.idrovora
     volumes:
       - xproc:/docs
-    command: --http 2000 --http-doc-root /docs /xpl
+    command: --http 2000 --http-context-path /xproc --http-doc-root /docs /xpl
     ports:
       - 2000:2000
 volumes:
