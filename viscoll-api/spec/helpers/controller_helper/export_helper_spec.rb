@@ -113,8 +113,9 @@ RSpec.describe ControllerHelper::ExportHelper, type: :helper do
       ['#ravenna_384_2339-1-3', 'verso', '#side_page_number_EMPTY'],
       ['#ravenna_384_2339-1-4', 'verso', '#side_page_number_EMPTY']
     )
-    expect(result.css("mapping map").collect { |t| [t['target'], t.css('term').first['target']]}).to include(
-      ['#ravenna_384_2339-n-1', '#note_title_test_note #note_show'],
-    )
+    # temporarily disabling note functionality
+    # expect(result.css("mapping map").collect { |t| [t['target'], t.css('term').first['target']]}).to include(
+    #   ['#ravenna_384_2339-n-1', '#note_title_test_note #note_show'],
+    # )
   end
 end
