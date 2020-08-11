@@ -38,6 +38,7 @@ class ProjectsController < ApplicationController
       end
       # Instantiate a new project with the given params
       @project = Project.new(project_params)
+      puts @project.inspect
       # If the project contains noteTypes, add the 'Unknown' type if its not present
       if (not @project.noteTypes.empty? and not @project.noteTypes.include?('Unknown'))
         @project.noteTypes.push('Unknown')
@@ -197,7 +198,7 @@ class ProjectsController < ApplicationController
   def set_project
     begin
       @project = Project.find(params[:id])
-      if (@project.user_id!=current_user.id)
+      if (@project.user_id != current_user.id)
         render json: {error: ""}, status: :unauthorized and return
       end
     rescue Exception => e
@@ -207,7 +208,7 @@ class ProjectsController < ApplicationController
 
   # Never trust parameters from the scary Internet, only allow the white list through.
   def project_params
-    params.require(:project).permit(:title, :shelfmark, :metadata=>{}, :noteTypes=>[], :preferences=>{})
+    params.require(:project).permit(:title, :shelfmark, :notationStyle, :metadata=>{}, :noteTypes=>[], :preferences=>{})
   end
 
   def project_delete_params

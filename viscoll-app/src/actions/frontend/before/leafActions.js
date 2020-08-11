@@ -333,7 +333,7 @@ export function generateFolioNumbers(action, state) {
   let leafIDs = action.payload.request.data.leafIDs;
   for (const index in leafIDs) {
     const leaf = state.project.Leafs[leafIDs[index]];
-    leaf['folio_number'] = numberCount + leaf.id[0];
+    leaf['folio_number'] = `${numberCount}`;
     numberCount++;
   }
   return state;

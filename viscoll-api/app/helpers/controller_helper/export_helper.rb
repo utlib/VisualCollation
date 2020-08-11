@@ -53,6 +53,7 @@ module ControllerHelper
         leaf = @project.leafs.find(leafID)
         @leafs[index + 1] = {
           "params": {
+            "folio_number": leaf.folio_number ? leaf.folio_number : '',
             "material": leaf.material,
             "type": leaf.type,
             "attached_above": leaf.attached_above,
@@ -94,7 +95,6 @@ module ControllerHelper
         parentOrder =  @leafIDs.index(recto.parentID) + 1
         @rectos[index + 1] = {
           "params": {
-            "folio_number": recto.folio_number ? recto.folio_number : "",
             "page_number": recto.page_number ? recto.page_number : "",
             "texture": recto.texture, 
             "image": recto.image,
@@ -109,7 +109,6 @@ module ControllerHelper
         parentOrder =  @leafIDs.index(verso.parentID) + 1
         @versos[index + 1] = {
           "params": {
-            "folio_number": verso.folio_number ? verso.folio_number : "",
             "page_number": verso.page_number ? verso.page_number : "",
             "texture": verso.texture, 
             "image": verso.image,
@@ -489,8 +488,8 @@ module ControllerHelper
 
                   rectoSide = project.sides.find(leaf.rectoID)
                   versoSide = project.sides.find(leaf.versoID)
-                  if rectoSide.folio_number
-                    folioNumber = @leafIDs.index(leafID)+1
+                  if leaf.folio_number
+                    folioNumber = leaf.folio_number
                     folioNumberAttr[:val] = folioNumber
                     xml.folioNumber folioNumberAttr do
                       xml.text folioNumber
@@ -533,11 +532,6 @@ module ControllerHelper
                   rectoAttributes = {}
                   rectoAttributes["xml:id"] = leafAttributes["xml:id"]
                   rectoAttributes[:type] = "Recto"
-                  if rectoSide.folio_number
-                    rectoAttributes[:folioNumber] = rectoSide.folio_number
-                  else
-                    rectoAttributes[:folioNumber] = folioNumberAttr[:val].to_s+"R"
-                  end
                   if rectoSide.page_number
                     rectoAttributes[:page_number] = rectoSide.page_number
                   else 
@@ -554,11 +548,6 @@ module ControllerHelper
                   versoAttributes = {}
                   versoAttributes["xml:id"] = leafAttributes["xml:id"]
                   versoAttributes[:type] = "Verso"
-                  if versoSide.folio_number
-                    versoAttributes[:folioNumber] = versoSide.folio_number
-                  else
-                    versoAttributes[:folioNumber] = folioNumberAttr[:val].to_s+"R"
-                  end
                   if versoSide.page_number
                     versoAttributes[:page_number] = versoSide.page_number
                   else 

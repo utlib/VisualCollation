@@ -4,6 +4,12 @@ export const initialState = {
     title: '',
     shelfmark: '',
     uri: '',
+    notationStyle: {
+      name: 'notationStyle',
+      displayName: 'Notation Style',
+      options: ['r-v', 'recto-verso', 'a-b'],
+      isDropdown: true,
+    },
     metadata: {
       date: '',
     },
