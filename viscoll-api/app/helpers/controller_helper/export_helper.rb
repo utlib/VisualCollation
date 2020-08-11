@@ -55,6 +55,7 @@ module ControllerHelper
           "params": {
             "material": leaf.material,
             "type": leaf.type,
+            "folio_number": leaf.folio_number ? leaf.folio_number : "",
             "attached_above": leaf.attached_above,
             "attached_below": leaf.attached_below,
             "stub": leaf.stub,
@@ -94,7 +95,6 @@ module ControllerHelper
         parentOrder =  @leafIDs.index(recto.parentID) + 1
         @rectos[index + 1] = {
           "params": {
-            "folio_number": recto.folio_number ? recto.folio_number : "",
             "page_number": recto.page_number ? recto.page_number : "",
             "texture": recto.texture, 
             "image": recto.image,
