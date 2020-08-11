@@ -23,8 +23,8 @@ export default class NewProjectContainer extends React.Component {
       leafNo: 10,
       conjoined: true,
       startFolioPageNumber: 1,
-      generateFolioNumber: null,
-      generatePageNumber: null,
+      generateFolioNumber: 'folio_number',
+      generatePageNumber: 'page_number',
       startingTexture: 'Hair',
       startingSideStyle: 'r-v',
       collationGroups: [],
@@ -235,6 +235,7 @@ export default class NewProjectContainer extends React.Component {
     this.props.createProject(request, user);
     this.reset();
     this.props.close();
+    console.log(request);
   };
 
   handleRequestClose = () => {
