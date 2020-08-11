@@ -63,3 +63,6 @@ test.log
 
 # DIY images
 viscoll-api/uploads/*
+
+# secret scan
+secrets_scan.json
