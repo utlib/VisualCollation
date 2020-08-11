@@ -245,7 +245,6 @@ export default class LeafInfoBox extends React.Component {
   };
 
   render() {
-    //this.clickVisibility('folio_number', 'test');
     let leafAttributes = this.getAttributeValues();
     let attributeDivs = [];
     const activeLeaf = this.props.Leafs[this.props.selectedLeaves[0]];
@@ -550,6 +549,7 @@ export default class LeafInfoBox extends React.Component {
             <div>
               <form onSubmit={e => this.textSubmit(e, attributeDict.name)}>
                 <TextField
+                  id={'LIB_' + attributeDict.name}
                   aria-label={
                     attributeDict.displayName + ' attribute textfield'
                   }
