@@ -17,9 +17,7 @@ describe "PUT /leafs/generateFolio", :type => :request do
     @defaultGroup.add_members([@leaf1.id.to_s, @leaf2.id.to_s], 1)   
     @parameters = {
       startNumber: 9,
-      "additional": {
-        leafIDs: [@leaf1.id, @leaf2.id],
-      }
+      leafIDs: [@leaf1.id, @leaf2.id],
     }
   end
 

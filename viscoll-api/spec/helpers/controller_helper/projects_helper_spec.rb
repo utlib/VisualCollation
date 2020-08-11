@@ -102,6 +102,7 @@ RSpec.describe ControllerHelper::ProjectsHelper, type: :helper do
         'id': @project.id.to_s,
         'title': 'Sample project',
         'shelfmark': 'Ravenna 384.2339',
+        'notationStyle': 'r-v',
         'metadata': { 'date' => '18th century' },
         'preferences': { 'showTips' => true },
         'noteTypes': [ 'Hand', 'Ink', 'Unknown' ],
