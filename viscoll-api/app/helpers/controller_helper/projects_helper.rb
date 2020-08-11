@@ -106,6 +106,7 @@ module ControllerHelper
         "id": @project.id.to_s,
         "title": @project.title,
         "shelfmark": @project.shelfmark,
+        "notationStyle": @project.notationStyle,
         "metadata": @project.metadata,
         "preferences": @project.preferences,
         "manifests": @project.manifests,

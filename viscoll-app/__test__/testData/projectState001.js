@@ -5279,6 +5279,10 @@ export const projectState001 = {
           isDropdown: true,
         },
         {
+          name: 'folio_number',
+          displayName: 'Folio Number',
+        },
+        {
           name: 'material',
           displayName: 'Material',
           options: ['None', 'Parchment', 'Paper', 'Other'],
@@ -5338,10 +5342,6 @@ export const projectState001 = {
           displayName: 'Texture',
           options: ['None', 'Hair', 'Flesh', 'Felt', 'Wire'],
           isDropdown: true,
-        },
-        {
-          name: 'folio_number',
-          displayName: 'Folio Number',
         },
         {
           name: 'script_direction',

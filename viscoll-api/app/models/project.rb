@@ -5,6 +5,7 @@ class Project
   # Fields
   field :title, type: String
   field :shelfmark, type: String # (eg) "MS 1754"
+  field :notationStyle, type: String, default: "r-v" # (eg) "r-v"
   field :metadata, type: Hash, default: lambda { { } } # (eg) {date: "19th century"}
   field :manifests, type: Hash, default: lambda { { } } # (eg) { "1234556": { id: "123456, url: ""} }
   field :noteTypes, type: Array, default: ["Unknown"] # custom notetypes

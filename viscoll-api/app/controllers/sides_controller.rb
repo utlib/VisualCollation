@@ -129,4 +129,8 @@ class SidesController < ApplicationController
       params.permit(:sides => [:id, :attributes=>[:page_number, :texture, :script_direction, :image=>[:manifestID, :label, :url]]])
     end
 
+    def side_params_generate
+      params.permit(:startNumber, :rectoIDs => [], :versoIDs => [])
+    end
+
 end

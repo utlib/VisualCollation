@@ -1,6 +1,6 @@
 json.set! "projects" do
   json.array!(@projects.desc(:updated_at)) do | project |
-    json.extract! project, :id, :title, :shelfmark, :metadata, :created_at, :updated_at
+    json.extract! project, :id, :title, :shelfmark, :notationStyle, :metadata, :created_at, :updated_at
   end
 end
 

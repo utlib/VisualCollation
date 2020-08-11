@@ -1,6 +1,7 @@
 json.set! "active" do
   json.id @data[:project][:id]
   json.title @data[:project][:title]
+  json.notationStyle @data[:project][:notationStyle]
   json.shelfmark @data[:project][:shelfmark]
   json.metadata @data[:project][:metadata]
   json.preferences @data[:project][:preferences]
