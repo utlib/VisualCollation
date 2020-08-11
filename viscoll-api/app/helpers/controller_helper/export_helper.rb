@@ -269,9 +269,9 @@ module ControllerHelper
                     end
                   end
 
-                  if not leaf.conjoined_to
-                    xml.single :val => "yes"
-                  end
+                  # if not leaf.conjoined_to
+                  #   xml.single :val => "yes"
+                  # end
 
                   rectoSide = project.sides.find(leaf.rectoID)
                   rectoAttributes = {}
@@ -314,22 +314,24 @@ module ControllerHelper
           # Creating taxonomies from note types
           if not project.notes.empty?
             project.noteTypes.each do |noteType|
-              taxAtt = {'xml:id': "taxonomy_#{noteType.parameterize.underscore}"}
-              xml.taxonomy taxAtt do 
-                xml.label do 
-                  xml.text noteType
-                end
-                # grab an array of notes with the current noteType
-                children = project.notes.select {|note| note.type == noteType}
-                
-                # add proper attributes and crete term elements
-                children.each do |childNote|
-                  termAttributes = {'xml:id': "term_#{childNote._id}"}
-                  if childNote.uri.present?
-                    termAttributes['ref'] = childNote.uri
+              unless noteType = 'Unknown'
+                taxAtt = {'xml:id': "taxonomy_#{noteType.parameterize.underscore}"}
+                xml.taxonomy taxAtt do 
+                  xml.label do 
+                    xml.text noteType
                   end
-                  xml.term termAttributes do
-                    xml.text childNote.title
+                  # grab an array of notes with the current noteType
+                  children = project.notes.select {|note| note.type == noteType}
+                  
+                  # add proper attributes and crete term elements
+                  children.each do |childNote|
+                    termAttributes = {'xml:id': "term_#{childNote._id}"}
+                    if childNote.uri.present?
+                      termAttributes['ref'] = childNote.uri
+                    end
+                    xml.term termAttributes do
+                      xml.text childNote.title
+                    end
                   end
                 end
               end
@@ -567,21 +569,21 @@ module ControllerHelper
           end
 
           # NOTES
-          if not project.notes.empty?
-            xml.notes do
-              project.notes.each_with_index do |note, index| 
-                noteAttributes = {}
-                noteAttributes["xml:id"] = idPrefix+"-n-"+(index+1).to_s
-                noteAttributes[:type] = note.type
-                xml.note noteAttributes do
-                  xml.text note.description
-                end
-                @notes[note.id.to_s] = {}
-                @notes[note.id.to_s]["xml:id"] = "#"+noteAttributes["xml:id"]
-                @notes[note.id.to_s][:note] = note
-              end
-            end
-          end
+          # if not project.notes.empty?
+          #   xml.notes do
+          #     project.notes.each_with_index do |note, index| 
+          #       noteAttributes = {}
+          #       noteAttributes["xml:id"] = idPrefix+"-n-"+(index+1).to_s
+          #       noteAttributes[:type] = note.type
+          #       xml.note noteAttributes do
+          #         xml.text note.description
+          #       end
+          #       @notes[note.id.to_s] = {}
+          #       @notes[note.id.to_s]["xml:id"] = "#"+noteAttributes["xml:id"]
+          #       @notes[note.id.to_s][:note] = note
+          #     end
+          #   end
+          # end
 
           # MAPPING
           xml.mapping do 

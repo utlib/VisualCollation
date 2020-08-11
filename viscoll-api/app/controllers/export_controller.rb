@@ -38,6 +38,7 @@ class ExportController < ApplicationController
         xml = Nokogiri::XML(exportData)
         schema = Nokogiri::XML::RelaxNG(File.open("public/viscoll-datamodel81120.rng"))
         errors = schema.validate(xml)
+        puts errors
         if errors.empty?
           render json: {data: exportData, type: @format, Images: {exportedImages:@zipFilePath ? @zipFilePath : false}}, status: :ok and return
         else
