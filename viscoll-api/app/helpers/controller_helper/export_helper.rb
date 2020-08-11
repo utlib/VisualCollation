@@ -17,6 +17,7 @@ module ControllerHelper
       @projectInformation = {
         "title": @project.title,
         "shelfmark": @project.shelfmark,
+        "notationStyle": @project.notationStyle,
         "metadata": @project.metadata,
         "preferences": @project.preferences,
         "manifests": @project.manifests,
