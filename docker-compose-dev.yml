@@ -12,6 +12,7 @@ services:
     depends_on:
       - api
   api:
+    env_file: ./.env
     container_name: viscoll_api
     image: viscoll-api
     build:
