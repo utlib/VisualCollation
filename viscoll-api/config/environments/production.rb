@@ -48,12 +48,12 @@ Rails.application.configure do
   # config.active_job.queue_adapter     = :resque
   # config.active_job.queue_name_prefix = "viscoll-api_#{Rails.env}"
   config.action_mailer.perform_caching = false
-  config.action_mailer.default_url_options = { :host => "utlviscoll.library.utoronto.ca" }
-  config.action_mailer.smtp_settings = {
-    address: 'mailer.library.utoronto.ca',
-    port: 25,
-    enable_starttls_auto: false
-  }
+  # config.action_mailer.default_url_options = { :host => "utlviscoll.library.utoronto.ca" }
+  # config.action_mailer.smtp_settings = {
+  #   address: 'mailer.library.utoronto.ca',
+  #   port: 25,
+  #   enable_starttls_auto: false
+  # }
 
   # Ignore bad email addresses and do not raise email delivery errors.
   # Set this to true and configure the email server for immediate delivery to raise delivery errors.
