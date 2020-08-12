@@ -1,21 +1,18 @@
 version: "3.4"
 services:
   app:
-    container_name: viscoll_web
     image: 'quay.io/upennlibraries/vceditor_web:staging'
     command: server -b 0.0.0.0
     ports:
-      - 3000:3000
+      - 80:3000
     depends_on:
       - mongo
       - xproc
   mongo:
-    container_name: viscoll_mongo
     image: mongo:4.0
     volumes:
       - db:/data/db
   xproc:
-    container_name: viscoll_xproc
     image: 'quay.io/upennlibraries/vceditor_idrovora:staging'
     volumes:
       - xproc:/docs
@@ -24,6 +21,6 @@ services:
       - 2000:2000
 volumes:
   db:
-    name: viscoll_db
+    name: db
   xproc:
-    name: viscoll_xproc
+    name: xproc
