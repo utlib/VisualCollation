@@ -314,7 +314,7 @@ module ControllerHelper
           # Creating taxonomies from note types
           if not project.notes.empty?
             project.noteTypes.each do |noteType|
-              unless noteType = 'Unknown'
+              unless noteType == 'Unknown'
                 taxAtt = {'xml:id': "taxonomy_#{noteType.parameterize.underscore}"}
                 xml.taxonomy taxAtt do 
                   xml.label do 
