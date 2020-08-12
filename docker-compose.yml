@@ -15,8 +15,8 @@ services:
     volumes:
       - db:/data/db
   xproc:
-    container_name: 'quay.io/upennlibraries/vceditor_idrovora:staging'
-    image: viscoll-xproc
+    container_name: viscoll_xproc
+    image: 'quay.io/upennlibraries/vceditor_idrovora:staging'
     volumes:
       - xproc:/docs
     command: --http 2000 --http-context-path /xproc --http-doc-root /docs /xpl
