@@ -17,7 +17,7 @@ export default class NewProjectContainer extends React.Component {
       step: 1,
       title: '',
       shelfmark: '',
-      notationStyle: '',
+      notationStyle: 'r-v',
       date: '',
       quireNo: 2,
       leafNo: 10,
@@ -26,7 +26,6 @@ export default class NewProjectContainer extends React.Component {
       generateFolioNumber: 'folio_number',
       generatePageNumber: 'page_number',
       startingTexture: 'Hair',
-      startingSideStyle: 'r-v',
       collationGroups: [],
       errors: {
         title: '',
