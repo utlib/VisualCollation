@@ -65,4 +65,7 @@ test.log
 viscoll-api/uploads/*
 
 # Idrovora job data
-xproc/docs
+xproc/docsMAILER_HOST=mailrelay.library.upenn.int
+MAILER_DEFAULT_FROM=emeryr@upenn.edu
+MAILER_DOMAIN=localhost
+APPLICATION_HOST=localhost
