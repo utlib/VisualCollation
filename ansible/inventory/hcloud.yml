@@ -1,0 +1,6 @@
+---
+hcloud:
+  children:
+    vceditor:
+      hosts:
+        vceditor.middell.com:

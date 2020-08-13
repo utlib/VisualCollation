@@ -1,23 +1,31 @@
-FROM ubuntu:16.04
+FROM node:14 as app
 
-# Install tools & libs to compile everything
-RUN apt-get update && \
-    apt-get install -y curl tzdata build-essential libssl-dev libreadline-dev wget && \
-    apt-get clean
+WORKDIR /app
 
-# Install nodejs
-RUN curl -sL https://deb.nodesource.com/setup_10.x  | bash -
-RUN apt-get install -y nodejs && apt-get clean
+ENV PATH /app/node_modules/.bin:$PATH
 
-# Install ruby-build
-RUN apt-get install -y git-core && apt-get clean
-RUN git clone https://github.com/sstephenson/ruby-build.git && cd ruby-build && ./install.sh
+COPY viscoll-app/package.json ./
+COPY viscoll-app/package-lock.json ./
 
-# Install ruby 2.4.1
-ENV CONFIGURE_OPTS --disable-install-rdoc
-RUN ruby-build 2.6.4 /usr/local
-RUN gem install bundler
-RUN gem install tzinfo-data
+RUN npm ci --silent
 
-# Clean up downloaded packages
-RUN apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+COPY viscoll-app .
+
+RUN npm run build
+
+FROM ruby:2.7
+
+# throw errors if Gemfile has been modified since Gemfile.lock
+RUN bundle config --global frozen 1
+
+WORKDIR /usr/src/app
+
+COPY viscoll-api/Gemfile viscoll-api/Gemfile.lock ./
+RUN bundle install
+
+COPY viscoll-api .
+
+COPY --from=app /app/build /usr/src/app/public
+
+ENTRYPOINT ["bundle", "exec", "rails"]
+CMD []

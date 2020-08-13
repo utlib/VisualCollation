@@ -1,0 +1,17 @@
+---
+- hosts: vceditor
+  tasks:
+    - name: Retrieve sources from GitHub
+      git:
+        repo: "https://github.com/KislakCenter/VisualCollation.git"
+        dest: "/usr/src/vceditor"
+        version: "feature/production-setup"
+        depth: 1
+    - name: Deploy Docker services
+      docker_compose:
+        project_src: "/usr/src/vceditor"
+        build: True
+        nocache: True
+        recreate: always
+        restarted: True
+

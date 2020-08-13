@@ -1,0 +1,56 @@
+version: '3.5'
+services:
+  app:
+    container_name: viscoll_app
+    image: node:14
+    volumes:
+      - ./viscoll-app:/app
+    working_dir: /app
+    command: ["bash", "-c", "npm install && npm start"]
+    ports:
+      - 3000:3000
+    depends_on:
+      - api
+  api:
+    env_file: ./.env
+    container_name: viscoll_api
+    image: viscoll-api
+    build:
+      context: .
+      dockerfile: Dockerfile.api
+    volumes:
+      - ./viscoll-api:/app
+    command: bundle exec rails server -p 3001 -b 0.0.0.0
+    ports:
+      - 3001:3001
+    depends_on:
+      - mongo
+      - idrovora
+  idrovora:
+    container_name: viscoll_idrovora
+    image: gremid/idrovora:0.0.2020080316
+    volumes:
+      - ./xproc/xpl:/xpl
+      - ./xproc/docs:/docs
+    command: --http 2000 --http-doc-root /docs /xpl
+    ports:
+      - 2000:2000
+  mongo:
+    container_name: viscoll_mongo
+    image: mongo:4.0
+    volumes:
+      - mongo:/data/db
+  mongo-express:
+    container_name: viscoll_mongo_express
+    image: mongo-express:0.54
+    ports:
+      - 127.0.0.1:3002:8081
+    depends_on:
+      - mongo
+    environment:
+      ME_CONFIG_MONGODB_SERVER: mongo
+    depends_on:
+      - mongo
+volumes:
+  mongo:
+    name: "viscoll_mongo"

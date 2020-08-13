@@ -1,0 +1,39 @@
+---
+nginx_remove_default_vhost: true
+nginx_extra_http_options: |
+  proxy_set_header X-Real-IP $remote_addr;
+  proxy_set_header X-Scheme $scheme;
+  proxy_set_header X-Forwarded-Proto $scheme;
+  proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+  proxy_set_header Host $http_host;
+  proxy_set_header Upgrade $http_upgrade;
+  proxy_set_header Connection "upgrade";
+
+nginx_upstreams:
+  - name: vceditor-app
+    servers: ["localhost:3000"]
+  - name: vceditor-idrovora
+    servers: ["localhost:2000"]
+
+nginx_vhosts:
+  - listen: "80 default_server"
+    server_name: "vceditor.middell.com"
+    filename: "vceditor.middell.com.conf"
+    root: "/var/www"
+    extra_parameters: |
+      return 301 https://vceditor.middell.com$request_uri;
+  - listen: "443 ssl"
+    server_name: "vceditor.middell.com"
+    filename: "vceditor.middell.com-ssl.conf"
+    root: "/var/www"
+    extra_parameters: |
+      ssl_certificate "/etc/letsencrypt/live/vceditor.middell.com/fullchain.pem";
+      ssl_certificate_key "/etc/letsencrypt/live/vceditor.middell.com/privkey.pem";
+
+      location /xproc {
+        proxy_pass http://vceditor-idrovora/xproc;
+      }
+
+      location / {
+        proxy_pass http://vceditor-app/;
+      }

@@ -1,0 +1,9 @@
+---
+- geerlingguy.certbot,3.1.0
+- geerlingguy.docker,2.5.3
+- geerlingguy.firewall,2.4.1
+- geerlingguy.git,2.1.0
+- geerlingguy.nginx,2.7.0
+- geerlingguy.pip,1.3.0
+- geerlingguy.security,1.8.0
+- oefenweb.postfix,v2.6.1
