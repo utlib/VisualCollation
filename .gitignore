@@ -68,7 +68,7 @@ viscoll-api/uploads/*
 secrets_scan.json
 # Idrovora job data
 xproc/docsMAILER_HOST=mailrelay.library.upenn.int
-MAILER_DEFAULT_FROM=emeryr@upenn.edu
+MAILER_DEFAULT_FROM=vceditor@upenn.edu
 MAILER_DOMAIN=localhost
 APPLICATION_HOST=localhost
 .env
