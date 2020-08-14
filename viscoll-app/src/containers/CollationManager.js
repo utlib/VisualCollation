@@ -709,6 +709,23 @@ class CollationManager extends Component {
               tabIndex={this.props.popUpActive ? -1 : 0}
             />
           </div>
+          <h2>Export SVG Diagram</h2>
+          <div className="export">
+            <FlatButton
+              label="SVG"
+              aria-label="Export to SVG"
+              labelStyle={{
+                color: '#ffffff',
+                fontSize: this.state.windowWidth <= 768 ? '0.75em' : null,
+              }}
+              backgroundColor="rgba(255, 255, 255, 0.05)"
+              style={{ width: '100%' }}
+              onClick={e => {
+                console.log(e);
+              }}
+              tabIndex={this.props.popUpActive ? -1 : 0}
+            />
+          </div>
         </Panel>
       </div>
     );
