@@ -33,6 +33,8 @@ group :development, :test do
   gem 'guard-rspec'
   gem 'rspec_junit_formatter', '~> 0.3.0'
   gem 'webmock', '~> 3.1.0'
+  gem 'dotenv-rails', '~> 2.7.6'
+  gem 'pry'
 end
 
 group :development do
