@@ -219,6 +219,9 @@ class CollationManager extends Component {
     this.props.togglePopUp(open);
   };
 
+  handleSVG = () => {
+    this.props.exportProject(this.props.project.id, 'xml');
+  };
   showCopyToClipboardNotification = () => {
     this.props.showCopyToClipboardNotification();
   };
@@ -720,8 +723,8 @@ class CollationManager extends Component {
               }}
               backgroundColor="rgba(255, 255, 255, 0.05)"
               style={{ width: '100%' }}
-              onClick={e => {
-                console.log(e);
+              onClick={() => {
+                this.handleSVG();
               }}
               tabIndex={this.props.popUpActive ? -1 : 0}
             />
