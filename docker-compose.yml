@@ -1,24 +1,44 @@
-version: "3.4"
+version: "3.7"
+
 services:
   app:
-    image: 'quay.io/upennlibraries/vceditor_web:staging'
+    image: "quay.io/upennlibraries/vceditor_web:staging"
     command: server -b 0.0.0.0
-    ports:
-      - 80:3000
     depends_on:
       - mongo
       - xproc
+    deploy:
+      labels:
+        - "traefik.enable=true"
+        - "traefik.http.routers.staging-app.rule=Host(`${PROJECT_URL}`)"
+        - "traefik.http.routers.staging-app.entrypoints=web"
+        - "traefik.http.services.staging-app.loadbalancer.server.port=3000"
+    networks:
+      - traefik
+
   mongo:
     image: mongo:4.0
     volumes:
       - db:/data/db
+
   xproc:
-    image: 'quay.io/upennlibraries/vceditor_idrovora:staging'
+    image: "quay.io/upennlibraries/vceditor_idrovora:staging"
+    command: --http 2000 --http-context-path /xproc --http-doc-root /docs /xpl
+    deploy:
+      labels:
+        - "traefik.enable=true"
+        - "traefik.http.routers.staging-xproc.rule=Host(`${PROJECT_URL}`) && PathPrefix(`/xproc`)"
+        - "traefik.http.routers.staging-xproc.entrypoints=web"
+        - "traefik.http.services.staging-xproc.loadbalancer.server.port=2000"
+    networks:
+      - traefik
     volumes:
       - xproc:/docs
-    command: --http 2000 --http-context-path /xproc --http-doc-root /docs /xpl
-    ports:
-      - 2000:2000
+
+networks:
+  traefik:
+    external: true
+
 volumes:
   db:
     name: db

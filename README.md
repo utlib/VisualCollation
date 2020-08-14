@@ -16,7 +16,7 @@ VisCodex is for building models of the physical collation of manuscripts, and th
 
 ## Development setup with Docker
 
-Instead of manually installing the dependencies locally on your machine for development, you can use Docker with the provided Dockerfile and docker-compose.yml. 
+Instead of manually installing the dependencies locally on your machine for development, you can use Docker with the provided Dockerfile and docker-compose.yml.
 
 Update the mongo host name on line 12 in `viscoll-api/config/mongoid.yml` from `localhost` to `mongo` (this is the Docker service name defined in docker-compose.yml).
 
@@ -32,7 +32,22 @@ To access emails being sent by the app (for user account activation, password re
 :user_name => 'libby.corkery17@ethereal.email',
 :password => 'RP4P6zMm3rVW9adMZF'
 ```
+
 This configuration is located at `viscoll-api/config/environments/development.rb`.
+
+## Deploying with Docker Swarm and Traefik
+
+To deploy the application with Docker Swarm using Traefik, first deploy the Traefik stack by running the following command:
+
+```
+docker stack deploy -c docker-compose.traefik.yml traefik
+```
+
+Before running the project you will need to set the environment variable `PROJECT_URL` to the URL you are using (e.g. `export PROJECT_URL=my-viscoll-url.com`). Then deploy the project:
+
+```
+docker stack deploy -c docker-compose.yml viscoll
+```
 
 ## Installation and Setup
 
@@ -54,6 +69,7 @@ Rails-driven back-end for VisCodex
 #### Setup
 
 Run the following commands to install the dependencies:
+
 ```
 rvm --ruby-version use 2.4.1@viscollobns
 bundle install
@@ -61,7 +77,7 @@ bundle install
 
 Set the admin email address in two locations:
 
-`viscoll-api/app/mailers/mailer.rb` on line 18: 
+`viscoll-api/app/mailers/mailer.rb` on line 18:
 
 ```
 toEmail = Rails.application.secrets.admin_email || "dummy-admin@library.utoronto.ca"
@@ -74,11 +90,13 @@ to:"utlviscoll@library.utoronto.ca",
 ```
 
 Then run this to start the API server:
+
 ```
 rails s -p 3001
 ```
 
 If you wish to receive confirmation and password reset emails while developing, also start the mailcatcher daemon:
+
 ```
 mailcatcher
 ```
@@ -86,11 +104,13 @@ mailcatcher
 #### Testing
 
 Run this command to test once:
+
 ```
 rspec
 ```
 
 Alternatively, run this command to test continually while monitoring for changes:
+
 ```
 guard
 ```
@@ -111,11 +131,13 @@ Redux-driven user interface for VisCodex
 #### Setup
 
 Run this to install the dependencies:
+
 ```
 npm install
 ```
 
-Then run the dev server which brings up a browser window serving the user interface: 
+Then run the dev server which brings up a browser window serving the user interface:
+
 ```
 npm start
 ```
@@ -123,18 +145,20 @@ npm start
 #### Testing
 
 Run this command to test once:
+
 ```
 npm test
 ```
 
 Alternatively, run this command to test continually while monitoring for changes:
+
 ```
 npm test -- --watch
 ```
 
 #### Building
 
-Before building the app, edit line 3 in `viscoll-app/src/store/axiosConfig.js` to contain the correct root endpoint of the VisCodex API: 
+Before building the app, edit line 3 in `viscoll-app/src/store/axiosConfig.js` to contain the correct root endpoint of the VisCodex API:
 
 ```Javascript
 export let API_URL = '/api';
@@ -142,11 +166,10 @@ export let API_URL = '/api';
 ```
 
 Build the app with:
+
 ```
 npm build
 ```
-
-
 
 ## Copyright and License
 
