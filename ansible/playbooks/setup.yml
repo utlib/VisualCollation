@@ -1,0 +1,33 @@
+---
+- hosts: all
+  pre_tasks:
+    - name: Update package cache
+      apt:
+        update_cache: yes
+#    - name: Remove python-configparser (incompatible with docker-py via pip)
+#      apt:
+#        pkg: python-configparser
+#        state: absent
+  roles:
+    - geerlingguy.git
+    - geerlingguy.pip
+    - geerlingguy.firewall
+    - geerlingguy.security
+    - geerlingguy.certbot
+    - geerlingguy.nginx
+    - geerlingguy.docker
+    - oefenweb.postfix
+
+- hosts: all
+  tasks:
+    - name: Install unattended upgrades package.
+      package: name=unattended-upgrades state=present
+
+    - name: Copy unattended-upgrades configuration files in place.
+      template:
+        src: "templates/99unattended-upgrades.j2"
+        dest: "/etc/apt/apt.conf.d/99unattended-upgrades"
+        owner: root
+        group: root
+        mode: 0644
+

@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-export let API_URL = '/api';
+export let API_URL = '';
 
 // IN DEVELOPMENT
 if (process.env.NODE_ENV === 'development') {

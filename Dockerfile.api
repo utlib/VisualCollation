@@ -1,0 +1,4 @@
+FROM ruby:2.7
+WORKDIR /app
+COPY viscoll-api/Gemfile viscoll-api/Gemfile.lock ./
+RUN bundle install

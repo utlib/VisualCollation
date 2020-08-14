@@ -1,0 +1,4 @@
+---
+postfix_aliases:
+  - user: "root"
+    alias: "gregor@middell.net"

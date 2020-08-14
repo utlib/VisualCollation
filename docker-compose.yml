@@ -1,50 +1,26 @@
-version: '3.7'
-
+version: "3.4"
 services:
-  api:
-    build: .
-    image: viscoll
-    container_name: viscoll-api
-    volumes:
-      - ./viscoll-api:/app
-    working_dir: /app
-    command: bash -c "rm -f tmp/pids/server.pid && bundle i && bundle exec rails s -p 3001 -b '0.0.0.0'"
+  app:
+    image: 'quay.io/upennlibraries/vceditor_web:staging'
+    command: server -b 0.0.0.0
     ports:
-      - 3001:3001
+      - 80:3000
     depends_on:
       - mongo
-      - mongo-express
-
-  app:
-    build: .
-    image: viscoll
-    container_name: viscoll-app
-    volumes:
-      - ./viscoll-app:/app
-    working_dir: /app
-    command: bash -c "npm install && npm start"
-    ports:
-      - 3000:3000
-    depends_on:
-      - api
-
+      - xproc
   mongo:
-    container_name: viscoll-mongo
     image: mongo:4.0
     volumes:
-      - mongo:/data/db
-
-  mongo-express:
-    image: mongo-express
-    container_name: viscoll-mongo-express
+      - db:/data/db
+  xproc:
+    image: 'quay.io/upennlibraries/vceditor_idrovora:staging'
+    volumes:
+      - xproc:/docs
+    command: --http 2000 --http-context-path /xproc --http-doc-root /docs /xpl
     ports:
-      - 127.0.0.1:3002:8081
-    depends_on:
-      - mongo
-    environment:
-     ME_CONFIG_MONGODB_SERVER: mongo
-    depends_on:
-      - mongo
-
+      - 2000:2000
 volumes:
-  mongo:
+  db:
+    name: db
+  xproc:
+    name: xproc
