@@ -220,7 +220,7 @@ class CollationManager extends Component {
   };
 
   handleSVG = () => {
-    this.props.exportProject(this.props.project.id, 'xml');
+    this.props.exportProject(this.props.project.id, 'svg');
   };
   showCopyToClipboardNotification = () => {
     this.props.showCopyToClipboardNotification();
