@@ -50,7 +50,6 @@ class ExportController < ApplicationController
         @data = buildJSON(@project)
         render :'exports/show', status: :ok and return
       when 'svg'
-        puts 'svg selected'
         exportData = buildDotModel(@project)
         xml = Nokogiri::XML(exportData)
         schema = Nokogiri::XML::RelaxNG(File.open("public/viscoll-datamodel81120.rng"))
@@ -68,7 +67,8 @@ class ExportController < ApplicationController
           response = Net::HTTP.start(uri.hostname, uri.port) do |http|
             http.request(req)
           end
-          puts "Response: #{response.body}"
+          response_hash = JSON.parse(response.body) 
+          job_url = response_hash["_links"]["job"]["href"]
           render json: {data: exportData, type: @format, Images: {exportedImages:@zipFilePath ? @zipFilePath : false}}, status: :ok and return
         else
           render json: {data: errors, type: @format}, status: :unprocessable_entity and return
