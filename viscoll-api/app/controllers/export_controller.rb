@@ -61,14 +61,25 @@ class ExportController < ApplicationController
         # TODO: Send get request to job ID URL with `accept: application/zip' to Idrovora to get zip of SVG
         # TODO: return the SVG to the user
         if errors.empty?
-          uri = URI.parse 'http://idrovora:2000/xproc/viscoll2svg/'
-          req = Net::HTTP::Post.new(uri)
-          req.set_form([['input', StringIO.new(xml.to_xml)]], 'multipart/form-data')
-          response = Net::HTTP.start(uri.hostname, uri.port) do |http|
-            http.request(req)
+
+          xproc_uri = URI.parse 'http://idrovora:2000/xproc/viscoll2svg/'
+          xproc_req = Net::HTTP::Post.new(xproc_uri)
+          xproc_req.set_form([['input', StringIO.new(xml.to_xml)]], 'multipart/form-data')
+          xproc_response = Net::HTTP.start(xproc_uri.hostname, xproc_uri.port) do |http|
+            http.request(xproc_req)
           end
-          response_hash = JSON.parse(response.body) 
+          response_hash = JSON.parse(xproc_response.body) 
+          puts response_hash
+
           job_url = response_hash["_links"]["job"]["href"]
+          job_uri = URI.parse job_url
+          job_req = Net::HTTP::Get.new(job_uri)
+          job_req["Accept"] = 'application/zip'
+          job_response = Net::HTTP.start(job_uri.hostname, job_uri.port) do |http|
+            http.request(job_req)
+          end
+          puts "Job response: #{job_response.body}"
+
           render json: {data: exportData, type: @format, Images: {exportedImages:@zipFilePath ? @zipFilePath : false}}, status: :ok and return
         else
           render json: {data: errors, type: @format}, status: :unprocessable_entity and return
