@@ -56,12 +56,6 @@ class ExportController < ApplicationController
         errors = schema.validate(xml)
         puts errors
 
-        uri = URI.parse 'http://idrovora:2000/xproc/viscoll2svg/'
-        req = Net::HTTP::Post.new(uri)
-        req.set_form([['input', StringIO.new(xml.to_xml)]], 'multipart/form-data')
-        response = Net::HTTP.start(uri.hostname, uri.port) do |http|
-          http.request(req)
-        end
 
         # TODO: get a valid response from Idrovora -- update vceditor_idrovora/xproc/xpl/rng/viscoll-2.0.rng with latest version
         # TODO: update vceditor_idrovora/xproc/xpl/xsl/viscoll2svg.xsl with latest version
@@ -69,14 +63,19 @@ class ExportController < ApplicationController
         # TODO: Send get request to job ID URL with `accept: application/zip' to Idrovora to get zip of SVG
         # TODO: return the SVG to the user
         # TODO: remove next line when working
-        puts response
         if errors.empty?
-          render json: {data: exportData, type: @format, Images: {exportedImages:@zipFilePath ? @zipFilePath : false}}, status: :ok and return
+          uri = URI.parse 'http://idrovora:2000/xproc/viscoll2svg/'
+          req = Net::HTTP::Post.new(uri)
+          req.set_form([['input', StringIO.new(xml.to_xml)]], 'multipart/form-data')
+          response = Net::HTTP.start(uri.hostname, uri.port) do |http|
+            http.request(req)
+          end
+          puts response
         else
           render json: {data: errors, type: @format}, status: :unprocessable_entity and return
         end
       else
-        render json: {error: "Export format must be one of [json, xml]"}, status: :unprocessable_entity and return
+        render json: {error: "Export format must be one of [json, xml, svg]"}, status: :unprocessable_entity and return
       end
     rescue Exception => e
       render json: {error: e.message}, status: :internal_server_error and return
