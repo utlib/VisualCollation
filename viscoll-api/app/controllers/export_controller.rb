@@ -50,19 +50,17 @@ class ExportController < ApplicationController
         @data = buildJSON(@project)
         render :'exports/show', status: :ok and return
       when 'svg'
+        puts 'svg selected'
         exportData = buildDotModel(@project)
         xml = Nokogiri::XML(exportData)
         schema = Nokogiri::XML::RelaxNG(File.open("public/viscoll-datamodel81120.rng"))
         errors = schema.validate(xml)
-        puts errors
+        puts "Errors: #{errors.inspect}"
 
 
-        # TODO: get a valid response from Idrovora -- update vceditor_idrovora/xproc/xpl/rng/viscoll-2.0.rng with latest version
-        # TODO: update vceditor_idrovora/xproc/xpl/xsl/viscoll2svg.xsl with latest version
         # TODO: Get response job ID URL from Idrovora
         # TODO: Send get request to job ID URL with `accept: application/zip' to Idrovora to get zip of SVG
         # TODO: return the SVG to the user
-        # TODO: remove next line when working
         if errors.empty?
           uri = URI.parse 'http://idrovora:2000/xproc/viscoll2svg/'
           req = Net::HTTP::Post.new(uri)
@@ -70,7 +68,8 @@ class ExportController < ApplicationController
           response = Net::HTTP.start(uri.hostname, uri.port) do |http|
             http.request(req)
           end
-          puts response
+          puts "Response: #{response.body}"
+          render json: {data: exportData, type: @format, Images: {exportedImages:@zipFilePath ? @zipFilePath : false}}, status: :ok and return
         else
           render json: {data: errors, type: @format}, status: :unprocessable_entity and return
         end

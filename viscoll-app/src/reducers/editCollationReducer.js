@@ -112,6 +112,7 @@ export default function editCollationReducer(state = initialState, action) {
       state.collationManager.flashItems.leaves = [];
       break;
     case 'EXPORT_SUCCESS':
+      console.log(action.payload);
       state.exportedData =
         action.payload.type === 'xml'
           ? action.payload.data
