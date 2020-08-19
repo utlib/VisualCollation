@@ -37,7 +37,7 @@
     <xsl:variable name="Ox" select="0"/>
     <xsl:variable name="Oy" select="0"/>
 
-    <!-- Cx does not need to be parametric, so it can be established at this level, 
+    <!-- Cx does not need to be parametric, so it can be established at this level,
         but it is called in the Cx template to keep Cx and Cy together -->
     <xsl:variable name="CxMain" select="$Ox + 20"/>
 
@@ -104,7 +104,7 @@
         <xsl:param name="shelfmark"/>
         <xsl:param name="textblock"/>
         <!-- quires are formed by grouping leaves according to the quire to which the are listed as belonging to;
-        if there are subquires, these are listed a quire-number.subquire-number.etc: this code will group all leaves 
+        if there are subquires, these are listed a quire-number.subquire-number.etc: this code will group all leaves
         in the same quire regardless of subquires -->
         <xsl:for-each-group select="leaves/leaf"
             group-by="
@@ -183,7 +183,7 @@
                 </xsl:for-each-group>
             </xsl:variable>
             <!-- Variable to count the number of singletons in the quire -->
-            <!-- Singletons are folios with the following pattern: /viscoll/textblock/leaves/leaf/q/single/@val="yes" 
+            <!-- Singletons are folios with the following pattern: /viscoll/textblock/leaves/leaf/q/single/@val="yes"
             Whilst folios whose cognate has @mode with value 'missing' are technically singletons they are not counted here as they do not alter the symmetry of the diagram.-->
             <xsl:variable name="countSingletons">
                 <xsl:value-of select="count(current-group()/.[q[1]/single/@val = 'yes'])"/>
@@ -206,7 +206,7 @@
                 />
             </xsl:variable>
             <!-- Variable to count how many bifolia should be drawn -->
-            <!-- if the total number of positions is an even number the components are the total number of positions/2, 
+            <!-- if the total number of positions is an even number the components are the total number of positions/2,
             if odd = (the total number of positions - total number of singletons)/2 -->
             <xsl:variable name="countRegularBifolia"
                 select="
@@ -230,7 +230,7 @@
                                 satisfies $leaf/q[1]/single[@val = 'yes']">
                         <xsl:value-of select="count(current-group())"/>
                     </xsl:when>
-                    <!-- For normal and complex quires, the variable returns the position of the last leaf 
+                    <!-- For normal and complex quires, the variable returns the position of the last leaf
                 to be drawn in the left (upper) part of the quire -->
                     <xsl:otherwise>
                         <xsl:for-each
@@ -329,7 +329,7 @@
         <xsl:param name="centralLeftLeafPos"/>
         <xsl:param name="extraCentralSubquireLeft"/>
         <!-- Each quire is drawn on a different SVG file -->
-        <xsl:result-document href="{concat('../SVG/', $tbID, '-', $quireNumber, '.svg')}"
+        <xsl:result-document href="{concat($tbID, '-', $quireNumber, '.svg')}"
             method="xml" indent="yes" encoding="utf-8" doctype-public="-//W3C//DTD SVG 1.1//EN"
             doctype-system="http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
             <!-- Record date and time of transformation -->
@@ -1135,7 +1135,7 @@
                                                         $textblock/vc:textblock/vc:leaves/vc:leaf[@xml:id = $attachmentTargetID]/vc:q[1]/@n"
                                                 />
                                             </xsl:variable>
-                                            <!-- Checks the deviation between the leaf and its attachment target: 
+                                            <!-- Checks the deviation between the leaf and its attachment target:
                                                 usually this would be the leaf before or after -->
                                             <xsl:variable name="attachmentDeviation">
                                                 <xsl:variable name="attachmentDeviationValue">
@@ -2342,12 +2342,12 @@
     <xsl:template name="defs">
         <defs xmlns="http://www.w3.org/2000/svg">
             <style type="text/css">
-            <xsl:choose>                        
+            <xsl:choose>
                 <xsl:when test="$embedCSS = 1">
                     <!-- copy the CSS file content into the SVG -->
-                    <xsl:text disable-output-escaping="yes">&lt;![CDATA[</xsl:text>    
+                    <xsl:text disable-output-escaping="yes">&lt;![CDATA[</xsl:text>
                     <xsl:copy-of select="unparsed-text($pathToCSS)"/>
-                    <xsl:text disable-output-escaping="yes">]]&gt;</xsl:text>                
+                    <xsl:text disable-output-escaping="yes">]]&gt;</xsl:text>
                 </xsl:when>
                 <xsl:otherwise>
                     <xsl:value-of select="concat('@import url(', $pathToCSS, ')')"/>

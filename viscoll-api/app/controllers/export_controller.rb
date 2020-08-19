@@ -68,7 +68,7 @@ class ExportController < ApplicationController
           xproc_response = Net::HTTP.start(xproc_uri.hostname, xproc_uri.port) do |http|
             http.request(xproc_req)
           end
-          response_hash = JSON.parse(xproc_response.body) 
+          response_hash = JSON.parse(xproc_response.body)
           puts response_hash
 
           job_url = response_hash["_links"]["job"]["href"]
@@ -78,7 +78,19 @@ class ExportController < ApplicationController
           job_response = Net::HTTP.start(job_uri.hostname, job_uri.port) do |http|
             http.request(job_req)
           end
-          puts "Job response: #{job_response.body}"
+          # outfile = File.join Rails.root, 'output.zip'
+          # File.open outfile, 'wb' do |f|
+          #   f.puts job_response.body
+          # end
+          # puts "Wrote: #{outfile}"
+
+          Zip::File.open_buffer job_response.body do |zip|
+            zip.each do |entry|
+              puts "Zip entry #name: '#{entry.name}'"
+              puts "Entry content: #{entry.get_input_stream.read}"
+            end
+          end
+          # puts "Job response: #{job_response.body}"
 
           render json: {data: exportData, type: @format, Images: {exportedImages:@zipFilePath ? @zipFilePath : false}}, status: :ok and return
         else
