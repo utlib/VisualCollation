@@ -10,7 +10,7 @@ RSpec.describe FeedbackMailer, type: :mailer do
     
     it "should send email" do
       expect(mail.subject).to eq("Title of feedback")
-      expect(mail.to).to eq(["utlviscoll@library.utoronto.ca"])
+      expect(mail.to).to eq(["vceditor@upenn.edu"])
     end
 
     it "should render body" do

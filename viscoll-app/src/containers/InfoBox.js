@@ -603,8 +603,8 @@ const mapDispatchToProps = dispatch => {
         .then(() => dispatch(reapplyFilterProject(projectID, filters)));
     },
 
-    generateFolioNumbers: (startNumber, rectoIDs, versoIDs) => {
-      dispatch(generateFolioNumbers(startNumber, rectoIDs, versoIDs));
+    generateFolioNumbers: (startNumber, leafIDs) => {
+      dispatch(generateFolioNumbers(startNumber, leafIDs));
     },
 
     generatePageNumbers: (startNumber, rectoIDs, versoIDs) => {

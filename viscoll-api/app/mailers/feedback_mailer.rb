@@ -7,7 +7,7 @@ class FeedbackMailer < ApplicationMailer
     @user = User.find(current_user)
     mail(
       subject: title,
-      to: 'emeryr@upenn.edu',
+      to: 'vceditor@upenn.edu'
     )
   end
 end

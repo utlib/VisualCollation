@@ -5,6 +5,7 @@ RSpec.describe Project, type: :model do
   
   it { is_expected.to have_field(:title).of_type(String) }
   it { is_expected.to have_field(:shelfmark).of_type(String) }
+  it { is_expected.to have_field(:notationStyle).of_type(String) }
   it { is_expected.to have_field(:metadata).of_type(Hash) }
   it { is_expected.to have_field(:manifests).of_type(Hash) }
   it { is_expected.to have_field(:noteTypes).of_type(Array) }

@@ -89,7 +89,7 @@ class LeafsController < ApplicationController
   # PUT /leafs/generateFolio
   def generateFolio
     folioNumberCount = leaf_params_generate.to_h[:startNumber].to_i
-    leafIDs = additional_params.to_h[:leafIDs]
+    leafIDs = leaf_params_generate.to_h[:leafIDs]
     leafIDs.each_with_index do | leafID, index | 
       leaf = Leaf.find(leafID)
       leaf.update_attribute(:folio_number, folioNumberCount.to_s)
@@ -306,7 +306,7 @@ class LeafsController < ApplicationController
     end
 
     def leaf_params_generate
-      params.permit(:startNumber, :rectoIDs => [], :versoIDs => [])
+      params.permit(:startNumber, :leafIDs => [])
     end
 
 end

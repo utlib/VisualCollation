@@ -3,7 +3,6 @@ require 'rails_helper'
 RSpec.describe Side, type: :model do
   it { is_expected.to be_mongoid_document }
   
-  it { is_expected.to have_field(:folio_number).of_type(String) }
   it { is_expected.to have_field(:texture).of_type(String) }
   it { is_expected.to have_field(:script_direction).of_type(String) }
   it { is_expected.to have_field(:image).of_type(Hash) }

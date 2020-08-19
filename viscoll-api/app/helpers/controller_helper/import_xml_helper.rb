@@ -147,6 +147,7 @@ module ControllerHelper
         end
         @leafs[leafOrder] = {
           params: {
+            folio_number: nil,
             material: "None",
             type: type,
             attached_above: "None",
@@ -162,7 +163,6 @@ module ControllerHelper
         }
         @rectos[leafOrder] = {
           params: {
-            folio_number: nil,
             page_number: nil,
             texture: "None",
             image: {},
@@ -173,7 +173,6 @@ module ControllerHelper
         }
         @versos[leafOrder] = {
           params: {
-            folio_number: nil,
             page_number: nil,
             texture: "None",
             image: {},

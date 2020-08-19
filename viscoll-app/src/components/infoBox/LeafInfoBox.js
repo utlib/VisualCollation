@@ -16,6 +16,8 @@ import { btnBase } from '../../styles/button';
 import FolioNumberDialog from '../infoBox/dialog/FolioNumberDialog';
 import { renderNoteChip } from '../../helpers/renderHelper';
 import TextField from 'material-ui/TextField/TextField';
+import IconSubmit from 'material-ui/svg-icons/action/done';
+import IconClear from 'material-ui/svg-icons/content/clear';
 
 /** Leaf infobox */
 export default class LeafInfoBox extends React.Component {
@@ -87,6 +89,44 @@ export default class LeafInfoBox extends React.Component {
       }
     }
     return false;
+  };
+
+  onTextboxChange = (value, attributeName) => {
+    let newAttributeState = {};
+    newAttributeState[attributeName] = value;
+    let newEditingState = {};
+    newEditingState['editing_' + attributeName] = true;
+    this.setState({ ...newAttributeState, ...newEditingState });
+  };
+
+  textSubmit = (e, attributeName) => {
+    e.preventDefault();
+    let newEditingState = {};
+    newEditingState['editing_' + attributeName] = false;
+    this.setState({ ...newEditingState });
+    if (!this.state.isBatch) {
+      this.singleSubmit(attributeName, this.state[attributeName]);
+    }
+  };
+
+  singleSubmit = (attributeName, value) => {
+    let attributes = {};
+    attributes[attributeName] = value;
+    let leafID = this.props.selectedLeaves[0];
+    let leaf = {
+      ...attributes,
+    };
+    this.props.action.updateLeaf(leafID, leaf);
+  };
+
+  textCancel = (e, attributeName) => {
+    let newAttributeState = {};
+    newAttributeState[attributeName] = this.props.Sides[
+      this.props.selectedSides[0]
+    ][attributeName];
+    let newEditingState = {};
+    newEditingState['editing_' + attributeName] = false;
+    this.setState({ ...newAttributeState, ...newEditingState });
   };
 
   dropDownChange = (value, attributeName) => {
@@ -354,6 +394,59 @@ export default class LeafInfoBox extends React.Component {
             </div>
           </div>
         );
+      } else if (
+        this.props.viewMode === 'VISUAL' &&
+        attributeDict.name === 'folio_number'
+      ) {
+        // In single edit tabular mode - display eye icon with label
+        label = (
+          <div className="tooltip eyeToggle">
+            <Checkbox
+              aria-label={
+                eyeIsChecked
+                  ? "Hide '" +
+                    attributeDict.displayName +
+                    "' attribute in collation"
+                  : "Show '" +
+                    attributeDict.displayName +
+                    "' attribute in collation"
+              }
+              key={'single_' + attributeDict.displayName}
+              label={attributeDict.displayName}
+              checkedIcon={<Visibility />}
+              uncheckedIcon={<VisibilityOff />}
+              onClick={() =>
+                this.clickVisibility(attributeDict.name, !eyeIsChecked)
+              }
+              style={{ display: 'inline-block', width: '25px' }}
+              checked={eyeIsChecked}
+              iconStyle={{ ...checkboxStyle().iconStyle, color: 'gray' }}
+              labelStyle={{ ...checkboxStyle().labelStyle }}
+              onMouseEnter={() => {
+                this.setState({
+                  ['visibility_hover_' + attributeDict.name]: true,
+                });
+              }}
+              onMouseOut={() => {
+                this.setState({
+                  ['visibility_hover_' + attributeDict.name]: false,
+                });
+              }}
+              tabIndex={this.props.tabIndex}
+            />
+            <div
+              className={
+                this.state['visibility_hover_' + attributeDict.name] === true
+                  ? 'text active'
+                  : 'text'
+              }
+            >
+              {eyeIsChecked
+                ? 'Hide attribute in the collation'
+                : 'Show attribute in the collation'}
+            </div>
+          </div>
+        );
       }
       if (this.state.isBatch && !this.props.isReadOnly) {
         // In batch edit for either edit modes
@@ -411,10 +504,72 @@ export default class LeafInfoBox extends React.Component {
               value={value}
             ></SelectField>
           );
+          // folio number should be a text box, not a dropdown
         } else if (attributeDict.name === 'folio_number') {
-          let value = leafAttributes[attributeDict.name];
+          // Text box
+          let textboxButtons = '';
+          if (
+            !this.state.isBatch &&
+            this.state['editing_' + attributeDict.name]
+          ) {
+            textboxButtons = (
+              <div>
+                <RaisedButton
+                  aria-label="Submit"
+                  primary
+                  icon={<IconSubmit />}
+                  style={{
+                    minWidth: this.props.windowWidth <= 1024 ? '35px' : '60px',
+                    marginLeft: '5px',
+                  }}
+                  onClick={e => this.textSubmit(e, attributeDict.name)}
+                  tabIndex={this.props.tabIndex}
+                />
+                <RaisedButton
+                  aria-label="Cancel"
+                  secondary
+                  icon={<IconClear />}
+                  style={{
+                    minWidth: this.props.windowWidth <= 1024 ? '35px' : '60px',
+                    marginLeft: '5px',
+                  }}
+                  onClick={e => this.textCancel(e, attributeDict.name)}
+                  tabIndex={this.props.tabIndex}
+                />
+              </div>
+            );
+          }
+          let value = '';
+          if (this.state['editing_' + attributeDict.name]) {
+            value = this.state[attributeDict.name];
+          } else if (leafAttributes[attributeDict.name] !== null) {
+            value = leafAttributes[attributeDict.name];
+          }
           input = (
-            <TextField name={attributeDict.name} value={value}></TextField>
+            <div>
+              <form onSubmit={e => this.textSubmit(e, attributeDict.name)}>
+                <TextField
+                  id={'LIB_' + attributeDict.name}
+                  aria-label={
+                    attributeDict.displayName + ' attribute textfield'
+                  }
+                  name={attributeDict.name}
+                  value={value}
+                  onChange={(e, v) =>
+                    this.onTextboxChange(v, attributeDict.name)
+                  }
+                  disabled={
+                    this.state.isBatch &&
+                    !this.state['batch_' + attributeDict.name]
+                  }
+                  tabIndex={this.props.tabIndex}
+                  inputStyle={{
+                    fontSize: this.props.windowWidth <= 768 ? '12px' : '16px',
+                  }}
+                />
+                {textboxButtons}
+              </form>
+            </div>
           );
         } else {
           let menuItems = [];
