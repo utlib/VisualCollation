@@ -72,3 +72,4 @@ MAILER_DEFAULT_FROM=vceditor@upenn.edu
 MAILER_DOMAIN=localhost
 APPLICATION_HOST=localhost
 .env
+vceditor_idrovora/xproc/docs/
