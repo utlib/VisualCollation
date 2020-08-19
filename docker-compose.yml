@@ -2,7 +2,7 @@ version: "3.7"
 
 services:
   app:
-    image: "quay.io/upennlibraries/vceditor_web:staging"
+    image: "quay.io/upennlibraries/vceditor_web:${RELEASE_TAG}"
     command: server -b 0.0.0.0
     depends_on:
       - mongo
@@ -22,7 +22,7 @@ services:
       - db:/data/db
 
   xproc:
-    image: "quay.io/upennlibraries/vceditor_idrovora:staging"
+    image: "quay.io/upennlibraries/vceditor_idrovora:${RELEASE_TAG}"
     command: --http 2000 --http-context-path /xproc --http-doc-root /docs /xpl
     deploy:
       labels:
