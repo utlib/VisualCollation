@@ -49,6 +49,24 @@ Before running the project you will need to set the environment variable `PROJEC
 docker stack deploy -c docker-compose.yml viscoll
 ```
 
+#### Other required environment variables
+
+Set in the ENV the following:
+
+* `MAILER_USR` -- the SMTP account to use (if needed)
+* `MAILER_PWD` -- the password of of the SMTP account (if needed)
+* `MAILER_DEFAULT_FROM` -- the default mail from account
+* `MAILER_HOST` -- the SMTP host
+* `MAILER_DOMAIN` -- the application host (e.g., `my-app.com`)
+* `PROJECT_URL` -- the application host; used by Traefik
+* `RELEASE_TAG` -- the release tag of the docker image (e.g., `lastest`)
+* `ADMIN_EMAIL` -- the mailto address for admin emails
+* `APPLICATION_HOST` -- the application host; used by VCEditor
+* `SECRET_KEY_BASE` -- the Rails secrect key base
+* `RAILS_ENV` -- 'production', if deploying to staging or production
+                  environments
+
+
 ## Installation and Setup
 
 Skip this section if you are using Docker for development.
