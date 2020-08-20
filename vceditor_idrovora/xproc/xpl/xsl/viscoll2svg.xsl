@@ -27,11 +27,8 @@
         </xd:desc>
     </xd:doc>
 
-    <!-- Embed CSS in SVG file? 0 = no 1 = yes -->
-    <xsl:param name="embedCSS" select="0"/>
-
-    <!-- Relative path to CSS file -->
-    <xsl:variable name="pathToCSS" select="'../CSS/collation.css'"/>
+    <!-- Path to CSS file -->
+    <xsl:param name="css" select="'collation.css'"/>
 
     <!-- X and Y reference values - i.e. the registration for the whole diagram, changing these values, the whole diagram can be moved -->
     <xsl:variable name="Ox" select="0"/>
@@ -2342,17 +2339,8 @@
     <xsl:template name="defs">
         <defs xmlns="http://www.w3.org/2000/svg">
             <style type="text/css">
-            <xsl:choose>
-                <xsl:when test="$embedCSS = 1">
-                    <!-- copy the CSS file content into the SVG -->
-                    <xsl:text disable-output-escaping="yes">&lt;![CDATA[</xsl:text>
-                    <xsl:copy-of select="unparsed-text($pathToCSS)"/>
-                    <xsl:text disable-output-escaping="yes">]]&gt;</xsl:text>
-                </xsl:when>
-                <xsl:otherwise>
-                    <xsl:value-of select="concat('@import url(', $pathToCSS, ')')"/>
-                </xsl:otherwise>
-            </xsl:choose>
+            <!-- copy the CSS file content into the SVG -->
+            <xsl:value-of select="$css"/>
             </style>
             <!-- Uncertainty can have three values: 1 = very certain, 2 = fairly certain, 3 = not certain -->
             <filter id="f1" filterUnits="userSpaceOnUse">
