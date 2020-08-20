@@ -7,7 +7,7 @@ class FeedbackMailer < ApplicationMailer
     @user = User.find(current_user)
     mail(
       subject: title,
-      to: 'vceditor@upenn.edu'
+      to: ENV['ADMIN_EMAIL']
     )
   end
 end

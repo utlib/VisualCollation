@@ -15,7 +15,7 @@ if defined?(ActionMailer)
       end
       subject = I18n.t('rails_jwt_auth.mailer.confirmation_instructions.subject')
       # mail(to: @user.unconfirmed_email || @user.email, subject: subject)
-      toEmail = Rails.application.secrets.admin_email || "dummy-admin@library.utoronto.ca"
+      toEmail = Rails.application.secrets.admin_email || ENV['ADMIN_EMAIL']
       mail(to: toEmail, subject: subject)
     end
 
