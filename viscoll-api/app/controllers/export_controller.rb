@@ -78,20 +78,15 @@ class ExportController < ApplicationController
           job_response = Net::HTTP.start(job_uri.hostname, job_uri.port) do |http|
             http.request(job_req)
           end
-          # outfile = File.join Rails.root, 'output.zip'
-          # File.open outfile, 'wb' do |f|
-          #   f.puts job_response.body
-          # end
-          # puts "Wrote: #{outfile}"
 
-          Zip::File.open_buffer job_response.body do |zip|
-            zip.each do |entry|
-              puts "Zip entry #name: '#{entry.name}'"
-              puts "Entry content: #{entry.get_input_stream.read}"
-            end
+          job_id  = response_hash['id']
+          outfile = "#{Rails.root}/public/xproc/#{job_id}.zip"
+          File.open outfile, 'wb' do |f|
+            f.puts job_response.body
           end
-          # puts "Job response: #{job_response.body}"
+          @zipFilePath = "#{@base_api_url}/xproc/zip/#{job_id}"
 
+          # send_file outfile, :type => 'application/zip', :disposition => 'inline'
           render json: {data: exportData, type: @format, Images: {exportedImages:@zipFilePath ? @zipFilePath : false}}, status: :ok and return
         else
           render json: {data: errors, type: @format}, status: :unprocessable_entity and return
