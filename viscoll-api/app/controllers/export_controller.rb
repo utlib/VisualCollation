@@ -56,12 +56,7 @@ class ExportController < ApplicationController
         errors = schema.validate(xml)
         puts "Errors: #{errors.inspect}"
 
-
-        # TODO: Get response job ID URL from Idrovora
-        # TODO: Send get request to job ID URL with `accept: application/zip' to Idrovora to get zip of SVG
-        # TODO: return the SVG to the user
         if errors.empty?
-
           xproc_uri = URI.parse 'http://idrovora:2000/xproc/viscoll2svg/'
           xproc_req = Net::HTTP::Post.new(xproc_uri)
           xproc_req.set_form([['input', StringIO.new(xml.to_xml)]], 'multipart/form-data')
