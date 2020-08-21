@@ -49,7 +49,7 @@ class ExportController < ApplicationController
       when "json"
         @data = buildJSON(@project)
         render :'exports/show', status: :ok and return
-      when 'svg'
+      when 'svg', 'svg2'
         exportData = buildDotModel(@project)
         xml = Nokogiri::XML(exportData)
         schema = Nokogiri::XML::RelaxNG(File.open("public/viscoll-datamodel81120.rng"))
@@ -59,7 +59,9 @@ class ExportController < ApplicationController
         if errors.empty?
           xproc_uri = URI.parse 'http://idrovora:2000/xproc/viscoll2svg/'
           xproc_req = Net::HTTP::Post.new(xproc_uri)
-          xproc_req.set_form([['input', StringIO.new(xml.to_xml)]], 'multipart/form-data')
+          form = [['input', StringIO.new(xml.to_xml)]]
+          form << ['css', 'css/collation2.css'] if @format == 'svg2'
+          xproc_req.set_form(form, 'multipart/form-data')
           xproc_response = Net::HTTP.start(xproc_uri.hostname, xproc_uri.port) do |http|
             http.request(xproc_req)
           end
