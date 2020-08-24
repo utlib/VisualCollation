@@ -31,14 +31,19 @@ Rails.application.configure do
 
   config.action_mailer.perform_caching = false
   config.action_mailer.delivery_method = :smtp
-  # config.action_mailer.default_url_options = { :host => "localhost", :port => 3000 }
+  config.action_mailer.default_url_options = { :host => "localhost", :port => 3000 }
   # config.action_mailer.smtp_settings = {
   #   :address => 'smtp.ethereal.email',
   #   :port => 587,
-  #   :user_name => 'korey33@ethereal.email',
-  #   :password => 'NJZhrZYbDCeZu2JUB3'
+  #   :user_name => 'brady.wiegand@ethereal.email',
+  #   :password => '2DzDyRf6Q22n21FV2q'
   # }
-
+  config.action_mailer.smtp_settings = {
+    :address => ENV['MAILER_HOST'],
+    :port => ENV['MAILER_PORT'],
+    :user_name => ENV['MAILER_USR'],
+    :password => ENV['MAILER_PWD']
+  }
   # Print deprecation notices to the Rails logger.
   config.active_support.deprecation = :log
 

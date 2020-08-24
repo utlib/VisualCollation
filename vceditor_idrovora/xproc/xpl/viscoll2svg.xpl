@@ -3,6 +3,8 @@
                 xmlns:c="http://www.w3.org/ns/xproc-step"
                 version="1.0">
   <p:option name="job-dir" required="true"/>
+  <p:variable name="css-base" select="'../css/'"/>
+
   <p:load name="read-from-input">
     <p:with-option name="href" select="concat($job-dir,'input.xml')"/>
   </p:load>
@@ -13,9 +15,7 @@
   </p:validate-with-relax-ng>
   <p:xslt name="xslt">
     <p:with-option name="output-base-uri" select="$job-dir"/>
-    <p:with-param name="css" select="c:data/text()">
-      <p:data href="css/collation.css"/>
-    </p:with-param>
+    <p:with-param name="css-base" select="$css-base"/>
     <p:input port="stylesheet">
       <p:document href="xsl/viscoll2svg.xsl"/>
     </p:input>

@@ -219,6 +219,13 @@ class CollationManager extends Component {
     this.props.togglePopUp(open);
   };
 
+  handleSVG = (open, type, label) => {
+    this.setState({ export: { open, type, label } }, () => {
+      this.props.exportProject(this.props.project.id, type);
+    });
+    this.props.togglePopUp(open);
+  };
+
   showCopyToClipboardNotification = () => {
     this.props.showCopyToClipboardNotification();
   };
@@ -706,6 +713,39 @@ class CollationManager extends Component {
                 this.props.collationManager.viewMode === 'TABULAR' ||
                 this.props.project.leafIDs.length === 0
               }
+              tabIndex={this.props.popUpActive ? -1 : 0}
+            />
+          </div>
+          <h2>Export SVG Diagram</h2>
+          <div className="export">
+            <FlatButton
+              label="SVG"
+              aria-label="Export to SVG"
+              labelStyle={{
+                color: '#ffffff',
+                fontSize: this.state.windowWidth <= 768 ? '0.75em' : null,
+              }}
+              backgroundColor="rgba(255, 255, 255, 0.05)"
+              style={{ width: '100%' }}
+              onClick={() => {
+                this.handleSVG(true, 'svg', 'SVG');
+              }}
+              tabIndex={this.props.popUpActive ? -1 : 0}
+            />
+          </div>
+          <div className="export">
+            <FlatButton
+              label="SVG2"
+              aria-label="Export to SVG2"
+              labelStyle={{
+                color: '#ffffff',
+                fontSize: this.state.windowWidth <= 768 ? '0.75em' : null,
+              }}
+              backgroundColor="rgba(255, 255, 255, 0.05)"
+              style={{ width: '100%' }}
+              onClick={() => {
+                this.handleSVG(true, 'svg2', 'SVG2');
+              }}
               tabIndex={this.props.popUpActive ? -1 : 0}
             />
           </div>

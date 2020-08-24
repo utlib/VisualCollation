@@ -48,7 +48,7 @@ module ViscollApi
       :from                 => ENV['MAILER_DEFAULT_FROM'],
       :domain               => ENV['MAILER_DOMAIN'],
       :address              => ENV['MAILER_HOST'],
-      :port                 => 587,
+      :port                 => ENV['MAILER_PORT'] || 587,
       :authentication       => :plain,
       :enable_starttls_auto => true
     }
