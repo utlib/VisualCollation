@@ -28,7 +28,8 @@
     </xd:doc>
 
     <!-- Path to CSS file -->
-    <xsl:param name="css" select="'collation.css'"/>
+    <xsl:param name="css-base" select="'./'"/>
+    <xsl:variable name="css" select="unparsed-text(concat($css-base, document('config.xml#css')))"/>
 
     <!-- X and Y reference values - i.e. the registration for the whole diagram, changing these values, the whole diagram can be moved -->
     <xsl:variable name="Ox" select="0"/>
