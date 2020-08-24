@@ -59,9 +59,10 @@ class ExportController < ApplicationController
         if errors.empty?
           xproc_uri = URI.parse 'http://idrovora:2000/xproc/viscoll2svg/'
           xproc_req = Net::HTTP::Post.new(xproc_uri)
+          collation_file = @format == 'svg2' ? 'collation2.css' : 'collation.css'
+          config_xml = %Q{<config><css xml:id="css">#{collation_file}</css></config>}
           form = [['input', StringIO.new(xml.to_xml)],
-                  ['config', StringIO.new('<config><css xml:id="css">collation2.css</css></config>')]]
-          form << ['css', 'css/collation2.css'] if @format == 'svg2'
+                  ['config', StringIO.new(config_xml)]]
           xproc_req.set_form(form, 'multipart/form-data')
           xproc_response = Net::HTTP.start(xproc_uri.hostname, xproc_uri.port) do |http|
             http.request(xproc_req)
