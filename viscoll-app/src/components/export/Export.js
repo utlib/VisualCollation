@@ -30,9 +30,7 @@ const Export = props => {
     />,
     <FlatButton
       label={
-        props.exportedType === 'svg'
-          ? 'Download ' + props.exportedType
-          : 'Download ' + props.exportedType + ' + images'
+         'Download ' + props.exportedType
       }
       icon={<IconDownload />}
       style={
@@ -42,7 +40,6 @@ const Export = props => {
       }
       onClick={() => {
         downloadZip();
-        fileDownload(props.exportedData, `${filename}.${props.exportedType}`);
       }}
     />,
     <FlatButton
