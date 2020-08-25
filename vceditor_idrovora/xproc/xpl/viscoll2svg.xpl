@@ -15,6 +15,7 @@
   </p:validate-with-relax-ng>
   <p:xslt name="xslt">
     <p:with-option name="output-base-uri" select="$job-dir"/>
+    <p:with-param name="config-xml" select="concat($job-dir, 'config.xml')"/>
     <p:with-param name="css-base" select="$css-base"/>
     <p:input port="stylesheet">
       <p:document href="xsl/viscoll2svg.xsl"/>

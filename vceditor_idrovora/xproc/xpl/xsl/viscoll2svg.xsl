@@ -27,9 +27,33 @@
         </xd:desc>
     </xd:doc>
 
-    <!-- Path to CSS file -->
+    <!--
+        CSS
+        ===
+
+        Get the location of the css file and read it into the $css variable.
+
+        Parameters and variables
+        ~~~~~~~~~~~~~~~~~~~~~~~~
+
+        `css-base`      path to the css file directory, relative to this file.
+
+        `config-xml`    path the config.xml file containing css filename
+
+        `css`           css text to be inserted in the output SVG
+
+        config.xml should have the following format, with an element with @xml:id='css'.
+
+        <config>
+          <css xml:id="css">collation2.css</css>
+        </config>
+
+        The content of the tag should be the name of a css file in the $css-base directory.
+
+    -->
     <xsl:param name="css-base" select="'./'"/>
-    <xsl:variable name="css" select="unparsed-text(concat($css-base, document('config.xml#css')))"/>
+    <xsl:param name="config-xml"/>
+    <xsl:variable name="css" select="unparsed-text(concat($css-base, document(concat($config-xml, '#css'))))"/>
 
     <!-- X and Y reference values - i.e. the registration for the whole diagram, changing these values, the whole diagram can be moved -->
     <xsl:variable name="Ox" select="0"/>
