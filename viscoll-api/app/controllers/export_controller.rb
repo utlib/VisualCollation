@@ -57,7 +57,7 @@ class ExportController < ApplicationController
         puts "Errors: #{errors.inspect}"
 
         if errors.empty?
-          xproc_uri = URI.parse 'http://idrovora:2000/xproc/viscoll2svg/'
+          xproc_uri = URI.parse 'http://xproc:2000/xproc/viscoll2svg/'
           xproc_req = Net::HTTP::Post.new(xproc_uri)
           collation_file = @format == 'svg2' ? 'collation2.css' : 'collation.css'
           config_xml = %Q{<config><css xml:id="css">#{collation_file}</css></config>}

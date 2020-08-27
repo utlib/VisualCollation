@@ -25,8 +25,8 @@ services:
       - 3001:3001
     depends_on:
       - mongo
-      - idrovora
-  idrovora:
+      - xproc
+  xproc:
     container_name: viscoll_idrovora
     image: gremid/idrovora:0.0.2020080316
     volumes:
@@ -49,8 +49,6 @@ services:
       - mongo
     environment:
       ME_CONFIG_MONGODB_SERVER: mongo
-    depends_on:
-      - mongo
 volumes:
   mongo:
     name: "viscoll_mongo"
