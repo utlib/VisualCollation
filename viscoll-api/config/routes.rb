@@ -65,7 +65,7 @@ Rails.application.routes.draw do
 
   # ROOT ENPOINT
   # get '/', to: proc { [200, {}, ['']] }
-  root to: 'welcome#index'
+  # root to: 'welcome#index'
 
 
 end
