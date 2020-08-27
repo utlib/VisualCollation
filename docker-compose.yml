@@ -16,6 +16,7 @@ services:
       - ADMIN_EMAIL
       - SECRET_KEY_BASE
       - RAILS_ENV
+      - RAILS_SERVE_STATIC_FILES
     depends_on:
       - mongo
       - xproc
