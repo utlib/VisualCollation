@@ -1,5 +1,6 @@
 Rails.application.routes.draw do
 
+  get 'welcome/index'
   # AUTHENTICATION ENDPOINTS
   resource :session, controller: 'sessions', only: [:create, :destroy], defaults: {format: :json}
   resource :registration, controller: 'registrations', only: [:create], defaults: {format: :json}
@@ -63,7 +64,8 @@ Rails.application.routes.draw do
   get '/docs' => redirect('/docs/index.html')
 
   # ROOT ENPOINT
-  get '/', to: proc { [200, {}, ['']] }
+  # get '/', to: proc { [200, {}, ['']] }
+  root to: 'welcome#index'
 
 
 end
