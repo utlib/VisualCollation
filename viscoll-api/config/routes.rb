@@ -1,6 +1,5 @@
 Rails.application.routes.draw do
 
-  # root to: static('/index.html')
   get 'welcome/index'
   # AUTHENTICATION ENDPOINTS
   resource :session, controller: 'sessions', only: [:create, :destroy], defaults: {format: :json}
@@ -67,5 +66,6 @@ Rails.application.routes.draw do
   # ROOT ENPOINT
   # get '/', to: proc { [200, {}, ['']] }
   # root to: 'welcome#index'
+  get '*other', to: 'static#index'
 
 end
