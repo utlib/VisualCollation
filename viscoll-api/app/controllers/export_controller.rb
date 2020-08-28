@@ -57,7 +57,9 @@ class ExportController < ApplicationController
         puts "Errors: #{errors.inspect}"
 
         if errors.empty?
-          xproc_uri = URI.parse 'http://xproc:2000/xproc/viscoll2svg/'
+          # TODO: Create Xproc class for handing XPROC calls and data
+          # TODO: create Xproc#run_job(pipe_line) ; returns `response_hash`?
+          xproc_uri = URI.parse "http://xproc:2000/xproc/viscoll2svg/"
           xproc_req = Net::HTTP::Post.new(xproc_uri)
           collation_file = @format == 'svg2' ? 'collation2.css' : 'collation.css'
           config_xml = %Q{<config><css xml:id="css">#{collation_file}</css></config>}
@@ -70,6 +72,7 @@ class ExportController < ApplicationController
           response_hash = JSON.parse(xproc_response.body)
           puts response_hash
 
+          # TODO: Xproc#retreive_data; returns IO object
           job_url = response_hash["_links"]["job"]["href"]
           job_uri = URI.parse job_url
           job_req = Net::HTTP::Get.new(job_uri)
