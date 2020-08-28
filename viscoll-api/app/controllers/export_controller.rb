@@ -83,7 +83,7 @@ class ExportController < ApplicationController
           File.open outfile, 'wb' do |f|
             f.puts job_response.body
           end
-          @zipFilePath = "#{@base_api_url}/transformationsrt/zip/#{job_id}"
+          @zipFilePath = "#{@base_api_url}/transformations/zip/#{job_id}"
 
           # send_file outfile, :type => 'application/zip', :disposition => 'inline'
           render json: {data: exportData, type: @format, Images: {exportedImages:@zipFilePath ? @zipFilePath : false}}, status: :ok and return
