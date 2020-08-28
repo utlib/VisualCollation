@@ -25,7 +25,7 @@ Rails.application.routes.draw do
   resources :projects, defaults: {format: :json}, only: [:index, :show, :update, :destroy, :create]
 
   # XPROC endpoints
-  get '/xproc/zip/:job_id', to: 'xproc#get_zip', defaults: { format: :json }
+  get '/transformations/zip/:job_id', to: 'xproc#get_zip', defaults: { format: :json }
 
   # DIY IMAGE ENDPOINTS
   post '/images', to: 'images#uploadImages', defaults: {format: :json}
