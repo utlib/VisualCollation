@@ -65,7 +65,7 @@ Set in the ENV the following:
 * `SECRET_KEY_BASE` -- the Rails secrect key base
 * `RAILS_ENV` -- 'production', if deploying to staging or production
                   environments
-
+* `XPROC_URL` -- full URL to the xproc service; e.g., `http://host.com:<PORT>`
 
 ## Installation and Setup
 

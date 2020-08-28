@@ -1,0 +1,4 @@
+development:
+  url: http://xproc:2000
+production:
+  url: <%= ENV['XPROC_URL'] %>

@@ -59,7 +59,8 @@ class ExportController < ApplicationController
         if errors.empty?
           # TODO: Create Xproc class for handing XPROC calls and data
           # TODO: create Xproc#run_job(pipe_line) ; returns `response_hash`?
-          xproc_uri = URI.parse "http://xproc:2000/xproc/viscoll2svg/"
+          puts "Rails.configuration.xproc: #{Rails.configuration.xproc}"
+          xproc_uri = URI.parse "#{Rails.configuration.xproc['url']}/xproc/viscoll2svg/"
           xproc_req = Net::HTTP::Post.new(xproc_uri)
           collation_file = @format == 'svg2' ? 'collation2.css' : 'collation.css'
           config_xml = %Q{<config><css xml:id="css">#{collation_file}</css></config>}

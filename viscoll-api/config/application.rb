@@ -53,5 +53,8 @@ module ViscollApi
       :enable_starttls_auto => true
     }
     config.action_mailer.default_url_options = { :host => ENV['APPLICATION_HOST'] }
+
+    # load configuration information for xproc service
+    config.xproc = config_for :xproc
   end
 end
