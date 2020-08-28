@@ -2,8 +2,10 @@
 
 ### Idrovora integration and deployment tasks
 
-- [ ] TODO: Cleanup `export_controller.rb` SVG generation
+- [ ] TODO: Create job for collation formulas; will return zip file
 - [ ] TODO: Have `Export.js` -- `downloadZip()` return zip with file name on disk
+- [ ] TODO: Add image list creation; note that we can't simply return URLs to the images
+- [ ] TODO: Cleanup `export_controller.rb` SVG generation
 - [ ] TODO: Revisit filenames in `public/xproc/zip`; perhaps use 
             `<PROJECT_ID>-<FORMAT>.zip`; like `987654321-svg2.zip` 
 - [ ] TODO: Create job to cleanup zip files in `public/xproc/zip`
