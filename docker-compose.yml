@@ -39,7 +39,12 @@ services:
 
   xproc:
     image: "quay.io/upennlibraries/vceditor_idrovora:${RELEASE_TAG}"
-    command: --http 2000 --http-context-path /xproc --http-doc-root /docs /xpl
+    command: ["--http", "2000",
+              "--http-context-path", "/xproc",
+              "--http-doc-root", "/docs",
+              "--http-cleanup-schedule", "0 0 * * * ?",
+              "--http-job-max-age", "PT168H",
+              "/xpl"]
     deploy:
       labels:
         - "traefik.enable=true"
