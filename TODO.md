@@ -18,6 +18,6 @@
 - [ ] TODO: Rename app to VCEditor, wherever that makes sense
 - [ ] TODO: Update application README for VCEditor
 - [ ] TODO: Document configuration and deployment; dev docker setup
-- [ ] TODO: Change Idrovora XPL/XSL config to pass job-dir to XSL
+- [X] TODO: Change Idrovora XPL/XSL config to pass job-dir to XSL
 - [ ] TODO: Look at license text; esp. `Copyright 2020 University of Toronto Libraries`
 - [ ] TODO: Test Idrovora and Idrovora integration

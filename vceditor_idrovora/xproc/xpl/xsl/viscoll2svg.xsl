@@ -38,7 +38,7 @@
 
         `css-base`      path to the css file directory, relative to this file.
 
-        `config-xml`    path the config.xml file containing css filename
+        `job-base`    path to the job directory, for resolving job-specific resources
 
         `css`           css text to be inserted in the output SVG
 
@@ -52,8 +52,8 @@
 
     -->
     <xsl:param name="css-base" select="'./'"/>
-    <xsl:param name="config-xml"/>
-    <xsl:variable name="css" select="unparsed-text(concat($css-base, document(concat($config-xml, '#css'))))"/>
+    <xsl:param name="job-base" select="'./'"/>
+    <xsl:variable name="css" select="unparsed-text(concat($css-base, document(concat($job-base, 'config.xml#css'))))"/>
 
     <!-- X and Y reference values - i.e. the registration for the whole diagram, changing these values, the whole diagram can be moved -->
     <xsl:variable name="Ox" select="0"/>
