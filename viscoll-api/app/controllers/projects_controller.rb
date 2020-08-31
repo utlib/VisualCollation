@@ -1,7 +1,7 @@
 class ProjectsController < ApplicationController
   before_action :authenticate!, except: [:viewOnly]
   before_action :set_project, only: [:show, :update, :destroy, :createManifest, :updateManifest, :deleteManifest, :clone]
-  
+
 
   # GET /projects
   def index
@@ -38,7 +38,6 @@ class ProjectsController < ApplicationController
       end
       # Instantiate a new project with the given params
       @project = Project.new(project_params)
-      puts @project.inspect
       # If the project contains noteTypes, add the 'Unknown' type if its not present
       if (not @project.noteTypes.empty? and not @project.noteTypes.include?('Unknown'))
         @project.noteTypes.push('Unknown')
@@ -84,9 +83,9 @@ class ProjectsController < ApplicationController
     begin
       # Skip some callbacks
       Leaf.skip_callback(:destroy, :before, :unlink_notes)
-      if deleteUnlinkedImages 
+      if deleteUnlinkedImages
         Image.skip_callback(:destroy, :before, :unlink_sides_before_delete)
-        current_user.images.where({ "projectIDs" => { '$eq': [@project.id.to_s] } }).each do | image | 
+        current_user.images.where({ "projectIDs" => { '$eq': [@project.id.to_s] } }).each do | image |
           image.destroy
         end
       end
@@ -109,7 +108,7 @@ class ProjectsController < ApplicationController
       manifest = manifest_params.to_h
       if not manifest.key?("id")
         manifestID = Project.new.id.to_s
-      else 
+      else
         manifestID = manifest[:id]
       end
       @project.manifests[manifestID] = {id: manifestID, url: manifest[:url]}
@@ -133,7 +132,7 @@ class ProjectsController < ApplicationController
       if not @project.manifests.key?(manifest["id"])
         render json: {error: "Manifest with id: " + manifest["id"] + " not found in project with id: " + @project.id.to_s + "."}, status: :unprocessable_entity and return
       end
-      # ONLY UPDATING MANIFEST NAME FOR NOW 
+      # ONLY UPDATING MANIFEST NAME FOR NOW
       @project.manifests[manifest["id"]]["name"] = manifest["name"]
       @project.save
     rescue Exception => e
@@ -184,7 +183,7 @@ class ProjectsController < ApplicationController
           !(image.projectIDs.include?(newProject.id.to_s)) ? image.projectIDs.push(newProject.id.to_s) : nil
           image.save
         end
-      end    
+      end
       @projects = current_user.projects.order_by(:updated_at => 'desc')
       @images = current_user.images
       render :index, status: :ok and return
