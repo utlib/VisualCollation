@@ -110,7 +110,7 @@ describe "GET /projects/:id/export/:format", :type => :request do
         expect(export_result['Notes']).to eq({
           '1' => {'params'=>{'title'=>"Test Note", 'type'=>"Ink", 'description'=>"This is a test", 'show'=>true}, 'objects'=>{'Group'=>[1], 'Leaf'=>[5], 'Recto'=>[5], 'Verso'=>[5]}}
         })
-        expect(image_result['exportedImages']).to eq("https://dummy.library.utoronto.ca/api/images/zip/#{@project.id}")
+        expect(image_result['exportedImages']).to eq("https://vceditor.library.upenn.edu/images/zip/#{@project.id}")
       end
     end
     
@@ -127,7 +127,7 @@ describe "GET /projects/:id/export/:format", :type => :request do
       
       it 'should have expected content' do
         expect(@body['type']).to eq 'xml'
-        expect(@body['Images']['exportedImages']).to eq("https://dummy.library.utoronto.ca/api/images/zip/#{@project.id}")
+        expect(@body['Images']['exportedImages']).to eq("https://vceditor.library.upenn.edu/images/zip/#{@project.id}")
         result = Nokogiri::XML(@body['data'])
         # Metadata elements
         expect(result.css("textblock title").text).to eq 'Sample project'
@@ -216,7 +216,7 @@ describe "GET /projects/:id/export/:format", :type => :request do
       end
       
       it 'should show error' do
-        expect(@body['error']).to eq "Export format must be one of [json, xml]"
+        expect(@body['error']).to eq "Export format must be one of [json, xml, svg]"
       end
     end
   end
