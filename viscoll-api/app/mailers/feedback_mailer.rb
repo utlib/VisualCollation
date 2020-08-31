@@ -7,7 +7,7 @@ class FeedbackMailer < ApplicationMailer
     @user = User.find(current_user)
     mail(
       subject: title,
-      to: ENV['ADMIN_EMAIL'],
+      to: Rails.application.secrets.admin_email,
       template_name: 'sendFeedback'
     )
   end
