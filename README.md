@@ -26,6 +26,8 @@ Bring up the containers with:
 docker-compose up
 ```
 
+TOOO: Change following: give instructions for creating Ethereal mail account. The following paragraph needs to be removed.
+
 To access emails being sent by the app (for user account activation, password reset, etc), set up Ethereal with the following credentials:
 
 ```
@@ -33,7 +35,14 @@ To access emails being sent by the app (for user account activation, password re
 :password => 'RP4P6zMm3rVW9adMZF'
 ```
 
-This configuration is located at `viscoll-api/config/environments/development.rb`.
+Once the account is created, set the credentials in the `.docker-environment-dev` file:
+
+```
+MAILER_USR=<ACCOUNT>@ethereal.email
+MAILER_PWD=<PASSWORD>
+```
+
+Replace `<ACCOUNT>` with the actual account name and `<PASSWORD>` with the actual password.
 
 ## Deploying with Docker Swarm and Traefik
 
@@ -62,10 +71,12 @@ Set in the ENV the following:
 * `RELEASE_TAG` -- the release tag of the docker image (e.g., `lastest`)
 * `ADMIN_EMAIL` -- the mailto address for admin emails
 * `APPLICATION_HOST` -- the application host; used by VCEditor
-* `SECRET_KEY_BASE` -- the Rails secrect key base
-* `RAILS_ENV` -- 'production', if deploying to staging or production
+* `SECRET_KEY_BASE` -- the Rails secret key base (production and staging environments)
+* `RAILS_ENV` -- 'production', use only if deploying to staging or production
                   environments
 * `XPROC_URL` -- full URL to the xproc service; e.g., `http://host.com:<PORT>`
+
+In development set environment in `.docker-environment-dev`. See the `docker-environment-dev-sample` file for a template.
 
 ## Installation and Setup
 
