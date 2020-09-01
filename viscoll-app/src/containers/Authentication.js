@@ -1,29 +1,27 @@
 import React, { Component } from 'react';
 import RaisedButton from 'material-ui/RaisedButton';
 import imgCollation from '../assets/collation.png';
-import imgLogo from '../assets/logo_white.png';
+import imgLogo from '../assets/vceditor_logo.png';
 import Register from '../components/authentication/Register';
 import Login from '../components/authentication/Login';
 import ResetPassword from '../components/authentication/ResetPassword';
 import ResetPasswordRequest from '../components/authentication/ResetPasswordRequest';
 import ResendConfirmation from '../components/authentication/ResendConfirmation';
-import {btnLg} from '../styles/button';
-import { connect } from "react-redux";
-import NetworkErrorScreen from "../components/global/NetworkErrorScreen";
-import { 
-  login, 
-  register, 
-  confirm, 
-  resetPasswordRequest, 
+import { btnLg } from '../styles/button';
+import { connect } from 'react-redux';
+import NetworkErrorScreen from '../components/global/NetworkErrorScreen';
+import {
+  login,
+  register,
+  confirm,
+  resetPasswordRequest,
   resetPassword,
   logout,
   resendConfirmation,
-} from "../actions/backend/userActions";
-
+} from '../actions/backend/userActions';
 
 /** Landing page of the app.  Contain register, login and password reset forms. */
 class Landing extends Component {
-
   constructor(props) {
     super(props);
     this.state = {
@@ -31,49 +29,64 @@ class Landing extends Component {
       login: false,
       reset: false,
       resetRequest: false,
-      reset_token: "",
-      message: "",
+      reset_token: '',
+      message: '',
       resendConfirmation: false,
       resendConfirmationSuccess: false,
-    }
+    };
   }
 
   toggleRegister = () => {
-    this.setState({register: !this.state.register, message: ""});
-  }
+    this.setState({ register: !this.state.register, message: '' });
+  };
 
   toggleLogin = () => {
-    this.setState({login: !this.state.login, message: ""});
-  }
+    this.setState({ login: !this.state.login, message: '' });
+  };
 
   toggleResetRequest = () => {
-    this.setState({resetRequest: !this.state.resetRequest, message: ""});
-  }
+    this.setState({ resetRequest: !this.state.resetRequest, message: '' });
+  };
 
   tapCancel = () => {
-    this.setState({login: false, register: false, resetRequest: false, resendConfirmation: false, message: ""});
-  }
+    this.setState({
+      login: false,
+      register: false,
+      resetRequest: false,
+      resendConfirmation: false,
+      message: '',
+    });
+  };
 
   handleResetPasswordSuccess = () => {
-    this.setState({reset: false, message: "Your password has been successfully updated. Go ahead and login."});
-  }
+    this.setState({
+      reset: false,
+      message:
+        'Your password has been successfully updated. Go ahead and login.',
+    });
+  };
 
   componentWillReceiveProps(nextProps) {
-    if (nextProps.user.errors.confirmation.length>0) {
-      this.setState({resendConfirmation: true});
+    if (nextProps.user.errors.confirmation.length > 0) {
+      this.setState({ resendConfirmation: true });
     }
-    if (nextProps.notification.includes("Successfully confirmed your account")) {
-      this.setState({message: nextProps.notification, resendConfirmationSuccess: true});
+    if (
+      nextProps.notification.includes('Successfully confirmed your account')
+    ) {
+      this.setState({
+        message: nextProps.notification,
+        resendConfirmationSuccess: true,
+      });
     }
   }
 
   componentDidMount() {
     const token = this.props.location.search.split('=')[1];
     if (token) {
-      if (this.props.location.pathname.includes("confirmation")){
+      if (this.props.location.pathname.includes('confirmation')) {
         this.props.confirmUser(token);
         if (this.props.user.authenticated) this.props.logoutUser();
-      } else if (this.props.location.pathname.includes("password")) {
+      } else if (this.props.location.pathname.includes('password')) {
         this.setState({ reset: true, reset_token: token });
       }
     } else {
@@ -84,86 +97,99 @@ class Landing extends Component {
   }
 
   render() {
-    const message = this.state.message? <p>{this.state.message}</p> : "";
-    let resetPassword = "";
-    let resetPasswordRequest = "";
-    let resendConfirmation = "";
+    const message = this.state.message ? <p>{this.state.message}</p> : '';
+    let resetPassword = '';
+    let resetPasswordRequest = '';
+    let resendConfirmation = '';
 
     let register = (
       <div className="spacingBottom">
-        <RaisedButton 
-          primary fullWidth 
+        <RaisedButton
+          primary
+          fullWidth
           onClick={() => this.toggleRegister()}
-          label="Create account" 
-          {...btnLg} 
+          label="Create account"
+          {...btnLg}
         />
       </div>
     );
     let login = (
       <div className="spacingBottom">
-        <RaisedButton 
-          fullWidth 
+        <RaisedButton
+          fullWidth
           onClick={() => this.toggleLogin()}
-          label="Login" 
-          {...btnLg} 
+          label="Login"
+          {...btnLg}
         />
       </div>
     );
-    
+
     if (this.state.register) {
-      register =  <Register 
-                    action={{registerUser: this.props.registerUser}}
-                    userState={this.props.user} 
-                    tapCancel={this.tapCancel} 
-                  />;
-      login = "";
+      register = (
+        <Register
+          action={{ registerUser: this.props.registerUser }}
+          userState={this.props.user}
+          tapCancel={this.tapCancel}
+        />
+      );
+      login = '';
     } else if (this.state.resetRequest) {
-      login = "";
-      register = "";
-      resetPassword =  "";
-      resetPasswordRequest = <ResetPasswordRequest
-                                action={{resetPasswordRequest: this.props.resetPasswordRequest}}
-                                tapCancel={this.tapCancel}
-                              />
+      login = '';
+      register = '';
+      resetPassword = '';
+      resetPasswordRequest = (
+        <ResetPasswordRequest
+          action={{ resetPasswordRequest: this.props.resetPasswordRequest }}
+          tapCancel={this.tapCancel}
+        />
+      );
     } else if (this.state.login) {
-        register = "";
-        login = <Login 
-                  history={this.props.history}
-                  user={this.props.user} 
-                  action={{loginUser: this.props.loginUser, resendConfirmation: this.props.resendConfirmation}} 
-                  tapCancel={this.tapCancel}
-                  toggleResetRequest={this.toggleResetRequest}
-                />;
+      register = '';
+      login = (
+        <Login
+          history={this.props.history}
+          user={this.props.user}
+          action={{
+            loginUser: this.props.loginUser,
+            resendConfirmation: this.props.resendConfirmation,
+          }}
+          tapCancel={this.tapCancel}
+          toggleResetRequest={this.toggleResetRequest}
+        />
+      );
     } else if (this.state.reset) {
-      login = "";
-      register = "";
-      resetPassword =  <ResetPassword 
-                          resetPassword={this.props.resetPassword}
-                          reset_password_token={this.state.reset_token}
-                          handleResetPasswordSuccess={this.handleResetPasswordSuccess}
-                        />;
-      
+      login = '';
+      register = '';
+      resetPassword = (
+        <ResetPassword
+          resetPassword={this.props.resetPassword}
+          reset_password_token={this.state.reset_token}
+          handleResetPasswordSuccess={this.handleResetPasswordSuccess}
+        />
+      );
     } else if (this.state.resendConfirmation) {
-      login = "";
-      register = "";
-      resendConfirmation = <ResendConfirmation 
-        action={{resendConfirmation: this.props.resendConfirmation}}
-        message={this.props.user.errors.confirmation}
-        email={""}
-        tapCancel={this.tapCancel}
-      />
+      login = '';
+      register = '';
+      resendConfirmation = (
+        <ResendConfirmation
+          action={{ resendConfirmation: this.props.resendConfirmation }}
+          message={this.props.user.errors.confirmation}
+          email={''}
+          tapCancel={this.tapCancel}
+        />
+      );
     } else if (this.state.resendConfirmationSuccess) {
-      register = "";
+      register = '';
     }
 
     return (
       <div className="landing">
         <div className="container">
           <div className="panelLogo">
-            <img src={imgCollation} alt="Collation illustration"/>
+            <img src={imgCollation} alt="Collation illustration" />
           </div>
           <div className="panelLogin" role="main">
-            <img src={imgLogo} alt="VisColl logo"/>
+            <img src={imgLogo} alt="VisColl logo" />
             <hr />
             <br />
             {message}
@@ -181,40 +207,40 @@ class Landing extends Component {
   }
 }
 
-
-const mapStateToProps = (state) => {
+const mapStateToProps = state => {
   return {
     user: state.user,
-    notification: 'notification' in state.user? state.user.notification : state.global.notification
+    notification:
+      'notification' in state.user
+        ? state.user.notification
+        : state.global.notification,
   };
 };
 
-
-const mapDispatchToProps = (dispatch) => {
+const mapDispatchToProps = dispatch => {
   return {
     logoutUser: () => {
       dispatch(logout());
     },
-    loginUser: (user) => {
+    loginUser: user => {
       dispatch(login(user));
     },
-    registerUser: (user) => {
+    registerUser: user => {
       dispatch(register(user));
     },
-    confirmUser: (confirmation_token) => {
+    confirmUser: confirmation_token => {
       dispatch(confirm(confirmation_token));
     },
-    resetPasswordRequest: (email) => {
+    resetPasswordRequest: email => {
       dispatch(resetPasswordRequest(email));
     },
     resetPassword: (reset_token, password) => {
       dispatch(resetPassword(reset_token, password));
     },
-    resendConfirmation: (email) => {
+    resendConfirmation: email => {
       dispatch(resendConfirmation(email));
     },
   };
 };
-
 
 export default connect(mapStateToProps, mapDispatchToProps)(Landing);
