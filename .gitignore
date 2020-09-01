@@ -73,3 +73,4 @@ MAILER_DOMAIN=localhost
 APPLICATION_HOST=localhost
 .env
 vceditor_idrovora/xproc/docs/
+.docker-environment-dev
