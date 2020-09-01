@@ -1,195 +1,229 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import Toolbar from 'material-ui/Toolbar';
-import {ToolbarGroup} from 'material-ui/Toolbar';
+import { ToolbarGroup } from 'material-ui/Toolbar';
 import IconMenu from 'material-ui/IconMenu';
 import MenuItem from 'material-ui/MenuItem';
 import IconButton from 'material-ui/IconButton';
 import Avatar from 'material-ui/Avatar';
 import UserProfileForm from '../components/topbar/UserProfileForm';
 import FlatButton from 'material-ui/FlatButton';
-import NotesFilter from "../components/notesManager/NotesFilter";
+import NotesFilter from '../components/notesManager/NotesFilter';
 import FilterIcon from 'material-ui/svg-icons/content/filter-list';
 import Undo from 'material-ui/svg-icons/content/undo';
 import Redo from 'material-ui/svg-icons/content/redo';
 import Image from 'material-ui/svg-icons/image/image';
-import imgLogo from '../assets/logo_white.svg';
-import {btnBase} from "../styles/button";
-import { connect } from "react-redux";
-import { 
+import imgLogo from '../assets/vceditor_logo.svg';
+import { btnBase } from '../styles/button';
+import { connect } from 'react-redux';
+import {
   logout,
   updateProfile,
-  deleteProfile
-} from "../actions/backend/userActions";
+  deleteProfile,
+} from '../actions/backend/userActions';
 
 /** The topbar menu used in `Dashboard` and `Project` components */
 class TopBar extends Component {
-
   constructor(props) {
     super(props);
     this.state = {
-      userProfileModalOpen: false
+      userProfileModalOpen: false,
     };
   }
 
   componentDidMount() {
-    window.addEventListener("keydown", this.shortcutListener);
+    window.addEventListener('keydown', this.shortcutListener);
   }
 
   componentWillUnmount() {
-    window.removeEventListener("keydown", this.shortcutListener);
+    window.removeEventListener('keydown', this.shortcutListener);
   }
 
-  shortcutListener = (event) => {
-    if ((event.ctrlKey || event.metaKey) && event.code==="KeyZ") {
-      if (this.props.actionHistory.undo.length>0) this.props.undo();
-    } else if ((event.ctrlKey || event.metaKey) && event.code==="KeyY") {
+  shortcutListener = event => {
+    if ((event.ctrlKey || event.metaKey) && event.code === 'KeyZ') {
+      if (this.props.actionHistory.undo.length > 0) this.props.undo();
+    } else if ((event.ctrlKey || event.metaKey) && event.code === 'KeyY') {
       event.preventDefault();
-      if (this.props.actionHistory.redo.length>0) this.props.redo();
+      if (this.props.actionHistory.redo.length > 0) this.props.redo();
     }
-  }
+  };
 
-  handleUserProfileUpdate = (user) => {
+  handleUserProfileUpdate = user => {
     const userID = this.props.user.id;
     this.props.updateProfile(user, userID);
-  }
+  };
 
-  toggleUserProfile = (userProfileModalOpen=false) => {
+  toggleUserProfile = (userProfileModalOpen = false) => {
     this.setState({ userProfileModalOpen });
     this.props.togglePopUp(userProfileModalOpen);
-  }
+  };
 
   handleUserAccountDelete = () => {
     const userID = this.props.user.id;
     this.props.deleteProfile(userID);
-  }
+  };
 
   handleUserLogout = () => {
     this.props.logoutUser();
-  }
+  };
 
   goHome = () => {
-    if (this.props.history.location.pathname.includes("dashboard")) {
+    if (this.props.history.location.pathname.includes('dashboard')) {
       this.props.goToDashboardProjectList();
     } else {
       this.props.resetActionHistory();
       this.props.history.push('/dashboard');
     }
-  }
+  };
 
   render() {
     // User icon menu on the right corner of Toolbar
     let UserMenu;
     if (this.props.user.name) {
-      UserMenu = ( 
+      UserMenu = (
         <IconMenu
-          iconButtonElement={ 
-            <IconButton 
+          iconButtonElement={
+            <IconButton
               tabIndex={this.props.tabIndex}
-              style={{padding:0}}
+              style={{ padding: 0 }}
               aria-label="User icon"
             >
-              <Avatar color="#3A4B55" backgroundColor="#dfdfdf">{this.props.user.name.charAt(0).toUpperCase()}</Avatar>
-            </IconButton> }
-          targetOrigin={{horizontal: 'right', vertical: 'top'}}
-          anchorOrigin={{horizontal: 'right', vertical: 'bottom'}}
+              <Avatar color="#3A4B55" backgroundColor="#dfdfdf">
+                {this.props.user.name.charAt(0).toUpperCase()}
+              </Avatar>
+            </IconButton>
+          }
+          targetOrigin={{ horizontal: 'right', vertical: 'top' }}
+          anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
         >
-          <MenuItem primaryText="Edit Profile" 
+          <MenuItem
+            primaryText="Edit Profile"
             onClick={() => this.toggleUserProfile(true)}
           />
-          <MenuItem primaryText="Sign out" 
+          <MenuItem
+            primaryText="Sign out"
             onClick={() => this.handleUserLogout()}
           />
         </IconMenu>
       );
     }
 
-    let topbarClasses = "topbar";
-    if (this.props.popUpActive) topbarClasses += " lowerZIndex"
-    let imageViewerTitle="";
-    if (this.props.windowWidth>768 && this.props.imageViewerEnabled) {
-      imageViewerTitle = "Hide image viewer";
-    } else if (this.props.windowWidth>768) {
-      imageViewerTitle = "Image viewer";
+    let topbarClasses = 'topbar';
+    if (this.props.popUpActive) topbarClasses += ' lowerZIndex';
+    let imageViewerTitle = '';
+    if (this.props.windowWidth > 768 && this.props.imageViewerEnabled) {
+      imageViewerTitle = 'Hide image viewer';
+    } else if (this.props.windowWidth > 768) {
+      imageViewerTitle = 'Image viewer';
     }
     return (
-      <div role="region" aria-label="toolbar" className={topbarClasses} style={this.props.viewMode==="VIEWING"?{left:0, width:"100%"}:{}}>
-        <button 
-          className="logo" 
-          style={{cursor:"pointer", border:0}} 
-          onClick={this.goHome} 
-          aria-label="Click to go home" 
+      <div
+        role="region"
+        aria-label="toolbar"
+        className={topbarClasses}
+        style={
+          this.props.viewMode === 'VIEWING' ? { left: 0, width: '100%' } : {}
+        }
+      >
+        <button
+          className="logo"
+          style={{ cursor: 'pointer', border: 0 }}
+          onClick={this.goHome}
+          aria-label="Click to go home"
           tabIndex={this.props.tabIndex}
         >
           <img src={imgLogo} alt="Viscoll logo" />
         </button>
-        <Toolbar style={{background:"#ffffff"}}>
+        <Toolbar style={{ background: '#ffffff' }}>
+          <ToolbarGroup>{this.props.children}</ToolbarGroup>
           <ToolbarGroup>
-              {this.props.children}
-          </ToolbarGroup>
-          <ToolbarGroup>
-            {this.props.showUndoRedo?
+            {this.props.showUndoRedo ? (
               <div>
-                <IconButton 
-                  tooltip={this.props.actionHistory.undo.length===0? "" : "Undo (Ctrl Z)"}
+                <IconButton
+                  tooltip={
+                    this.props.actionHistory.undo.length === 0
+                      ? ''
+                      : 'Undo (Ctrl Z)'
+                  }
                   aria-label="Undo action"
                   tabIndex={this.props.tabIndex}
-                  disabled={this.props.actionHistory.undo.length===0}
-                  onClick={(e)=>{e.preventDefault();this.props.undo()}}
+                  disabled={this.props.actionHistory.undo.length === 0}
+                  onClick={e => {
+                    e.preventDefault();
+                    this.props.undo();
+                  }}
                 >
-                  <Undo color={"#526C91"} />
+                  <Undo color={'#526C91'} />
                 </IconButton>
-                <IconButton 
-                  tooltip={this.props.actionHistory.redo.length===0? "" : "Redo (Ctrl Y)"}
+                <IconButton
+                  tooltip={
+                    this.props.actionHistory.redo.length === 0
+                      ? ''
+                      : 'Redo (Ctrl Y)'
+                  }
                   aria-label="Redo action"
                   tabIndex={this.props.tabIndex}
-                  disabled={this.props.actionHistory.redo.length===0}
-                  onClick={(e)=>{e.preventDefault();this.props.redo()}}
+                  disabled={this.props.actionHistory.redo.length === 0}
+                  onClick={e => {
+                    e.preventDefault();
+                    this.props.redo();
+                  }}
                 >
-                  <Redo color={"#526C91"} />
+                  <Redo color={'#526C91'} />
                 </IconButton>
               </div>
-              : null 
-            }
+            ) : null}
 
-            {this.props.showImageViewerButton ? 
+            {this.props.showImageViewerButton ? (
               <FlatButton
                 primary
                 label={imageViewerTitle}
                 onClick={() => this.props.toggleImageViewer()}
-                icon={<Image style={{height:20}}/>}
-                labelStyle={{...btnBase().labelStyle, padding:this.props.windowWidth<=1024?"0px 10px 0px 0px":10}}
-                style={{...btnBase().style, marginRight: 5, }}
+                icon={<Image style={{ height: 20 }} />}
+                labelStyle={{
+                  ...btnBase().labelStyle,
+                  padding:
+                    this.props.windowWidth <= 1024 ? '0px 10px 0px 0px' : 10,
+                }}
+                style={{ ...btnBase().style, marginRight: 5 }}
                 tabIndex={this.props.tabIndex}
               />
-              : null
-            }
-            {this.props.toggleFilterDrawer? 
-              <div style={{borderRight:"1px solid #ffffff", paddingRight:"10px"}}>
-                <IconButton 
+            ) : null}
+            {this.props.toggleFilterDrawer ? (
+              <div
+                style={{
+                  borderRight: '1px solid #ffffff',
+                  paddingRight: '10px',
+                }}
+              >
+                <IconButton
                   tooltip="Filter"
-                  onClick={(e)=>{e.preventDefault();this.props.toggleFilterDrawer()}}
+                  onClick={e => {
+                    e.preventDefault();
+                    this.props.toggleFilterDrawer();
+                  }}
                   tabIndex={this.props.tabIndex}
                 >
-                  <FilterIcon color={"#526C91"}/>
+                  <FilterIcon color={'#526C91'} />
                 </IconButton>
               </div>
-              : null
-            }
-            {this.props.notesFilter ? <NotesFilter 
-                                        notes={this.props.notes} 
-                                        filterNotes={this.props.filterNotes}
-                                        onValueChange={this.props.onValueChange}
-                                        onTypeChange={this.props.onTypeChange}
-                                        filterTypes={this.props.filterTypes}
-                                        tabIndex={this.props.tabIndex}
-                                    /> : null}
-            
+            ) : null}
+            {this.props.notesFilter ? (
+              <NotesFilter
+                notes={this.props.notes}
+                filterNotes={this.props.filterNotes}
+                onValueChange={this.props.onValueChange}
+                onTypeChange={this.props.onTypeChange}
+                filterTypes={this.props.filterTypes}
+                tabIndex={this.props.tabIndex}
+              />
+            ) : null}
+
             {UserMenu}
-          </ToolbarGroup> 
+          </ToolbarGroup>
         </Toolbar>
-        <UserProfileForm 
+        <UserProfileForm
           userProfileModalOpen={this.state.userProfileModalOpen}
-          handleUserProfileUpdate={this.handleUserProfileUpdate} 
+          handleUserProfileUpdate={this.handleUserProfileUpdate}
           name={this.props.user.name}
           email={this.props.user.email}
           currentPasswordError={this.props.user.errors.update.current_password}
@@ -198,10 +232,10 @@ class TopBar extends Component {
           handleUserAccountDelete={this.handleUserAccountDelete}
         />
       </div>
-    )
+    );
   }
 }
-const mapStateToProps = (state) => {
+const mapStateToProps = state => {
   return {
     user: state.user,
     notes: state.active.notes,
@@ -209,7 +243,7 @@ const mapStateToProps = (state) => {
   };
 };
 
-const mapDispatchToProps = (dispatch) => {
+const mapDispatchToProps = dispatch => {
   return {
     logoutUser: () => {
       dispatch(logout());
@@ -217,21 +251,19 @@ const mapDispatchToProps = (dispatch) => {
     updateProfile: (user, userID) => {
       dispatch(updateProfile(user, userID));
     },
-    deleteProfile: (userID) => {
+    deleteProfile: userID => {
       dispatch(deleteProfile(userID));
     },
     undo: () => {
-      dispatch({type:"UNDO"})
+      dispatch({ type: 'UNDO' });
     },
     redo: () => {
-      dispatch({type:"REDO"})
+      dispatch({ type: 'REDO' });
     },
     resetActionHistory: () => {
-      dispatch({type:"CLEAR_ACTION_HISTORY"})
-    }
+      dispatch({ type: 'CLEAR_ACTION_HISTORY' });
+    },
   };
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(TopBar);
-
-  
