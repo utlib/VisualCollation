@@ -11,6 +11,7 @@ services:
       - 3000:3000
     depends_on:
       - api
+    stdin_open: true
   api:
     env_file: ./.env
     container_name: viscoll_api
