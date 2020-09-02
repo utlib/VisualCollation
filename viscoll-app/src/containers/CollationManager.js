@@ -754,7 +754,7 @@ class CollationManager extends Component {
               backgroundColor="rgba(255, 255, 255, 0.05)"
               style={{ width: '100%' }}
               onClick={() => {
-                this.handleFormula(true, 'svg', 'SVG');
+                this.handleExportToggle(true, 'formula', 'Formula');
               }}
               tabIndex={this.props.popUpActive ? -1 : 0}
             />
