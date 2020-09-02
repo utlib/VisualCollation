@@ -94,6 +94,8 @@ class ExportController < ApplicationController
         else
           render json: {data: errors, type: @format}, status: :unprocessable_entity and return
         end
+      when 'formula'
+        puts 'formula request received'
       else
         render json: {error: "Export format must be one of [json, xml, svg]"}, status: :unprocessable_entity and return
       end
