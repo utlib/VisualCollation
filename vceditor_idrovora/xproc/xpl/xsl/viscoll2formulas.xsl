@@ -6,7 +6,7 @@
     xpath-default-namespace="http://schoenberginstitute.org/schema/collation"
     exclude-result-prefixes="xlink xs xd tei" version="2.0">
 
-    <xsl:output name="txt" method="text"/>
+    <xsl:output name="collationFormulasTXT" method="text"/>
 
     <xd:doc scope="stylesheet">
         <xd:desc>
@@ -20,6 +20,12 @@
                 generates two text files with two styles of simple collation formulas</xd:p>
         </xd:desc>
     </xd:doc>
+
+    <!-- Variable to find the path to the top folder of the textblock
+        (containing all the XML, SVG, HTML, CSS, JS, etc. files) -->
+    <xsl:variable name="base-uri">
+        <xsl:value-of select="tokenize(base-uri(), 'XML/')[1]"/>
+    </xsl:variable>
 
     <xd:doc>
         <xd:desc>
@@ -51,7 +57,7 @@
             </xsl:call-template>
         </xsl:for-each>
     </xsl:template>
-    
+
     <xd:doc>
         <xd:desc>
             <xd:b>Collation formula generator.</xd:b>
@@ -61,9 +67,12 @@
     </xd:doc>
     <xsl:template name="collationFormula1">
         <xsl:param name="tbID"/>
-        <xsl:result-document href="{concat($tbID, '-formula_01.xml')}">
-          <vc:formula>
-            <xsl:for-each-group select="leaf"
+        <xsl:variable name="filename-formulaTXT_01" select="concat($tbID, '-formula_01.txt')"/>
+        <xsl:variable name="href">
+            <xsl:value-of select="concat($base-uri, 'XML/', $filename-formulaTXT_01)"/>
+        </xsl:variable>
+        <xsl:result-document href="{$href}" format="collationFormulasTXT">
+            <xsl:for-each-group select="leaves/leaf"
                 group-by="
                 if (contains(q[1]/@n, '.')) then
                 substring-before(q[1]/@n, '.')
@@ -106,10 +115,9 @@
                 </xsl:choose>
                 <xsl:text> </xsl:text>
             </xsl:for-each-group>
-          </vc:formula>
         </xsl:result-document>
     </xsl:template>
-    
+
     <xd:doc>
         <xd:desc>
             <xd:b>Collation formula generator.</xd:b>
@@ -120,9 +128,12 @@
     </xd:doc>
     <xsl:template name="collationFormula2">
         <xsl:param name="tbID"/>
-        <xsl:result-document href="{concat($tbID, '-formula_02.xml')}">
-          <vc:formula>
-            <xsl:for-each-group select="leaf"
+        <xsl:variable name="filename-formulaTXT_02" select="concat($tbID, '-formula_02.txt')"/>
+        <xsl:variable name="href">
+            <xsl:value-of select="concat($base-uri, 'XML/', $filename-formulaTXT_02)"/>
+        </xsl:variable>
+        <xsl:result-document href="{$href}" format="collationFormulasTXT">
+            <xsl:for-each-group select="leaves/leaf"
                 group-by="
                     if (contains(q[1]/@n, '.')) then
                         substring-before(q[1]/@n, '.')
@@ -219,9 +230,8 @@
                     </xsl:when>
                 </xsl:choose>
                 <xsl:text> </xsl:text>
-              </xsl:for-each-group>
-            </vc:formula>
+            </xsl:for-each-group>
         </xsl:result-document>
-    </xsl:template>    
+    </xsl:template>
 
 </xsl:stylesheet>
