@@ -102,7 +102,7 @@ class ExportController < ApplicationController
         puts "Errors: #{errors.inspect}"
 
         if errors.empty?
-          xproc_uri = URI.parse "#{Rails.configuration.xproc['url']}/xproc/viscoll2svg/"
+          xproc_uri = URI.parse "#{Rails.configuration.xproc['url']}/xproc/viscoll2formulas/"
           xproc_req = Net::HTTP::Post.new(xproc_uri)
           collation_file = @format == 'svg2' ? 'collation2.css' : 'collation.css'
           config_xml = %Q{<config><css xml:id="css">#{collation_file}</css></config>}
@@ -115,7 +115,6 @@ class ExportController < ApplicationController
           response_hash = JSON.parse(xproc_response.body)
           puts response_hash
 
-          # TODO: Xproc#retreive_data; returns IO object
           job_url = response_hash["_links"]["job"]["href"]
           job_uri = URI.parse job_url
           job_req = Net::HTTP::Get.new(job_uri)
@@ -131,7 +130,7 @@ class ExportController < ApplicationController
           end
           @zipFilePath = "#{@base_api_url}/transformations/zip/#{job_id}"
 
-          # send_file outfile, :type => 'application/zip', :disposition => 'inline'
+          send_file outfile, :type => 'application/zip', :disposition => 'inline'
           render json: {data: exportData, type: @format, Images: {exportedImages:@zipFilePath ? @zipFilePath : false}}, status: :ok and return
         else
           render json: {data: errors, type: @format}, status: :unprocessable_entity and return
