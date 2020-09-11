@@ -57,7 +57,6 @@ class ExportController < ApplicationController
         puts "Errors: #{errors.inspect}"
 
         if errors.empty?
-          exportData = 'test'
           # TODO: Create Xproc class for handing XPROC calls and data
           # TODO: create Xproc#run_job(pipe_line) ; returns `response_hash`?
           puts "Rails.configuration.xproc: #{Rails.configuration.xproc}"
@@ -89,6 +88,13 @@ class ExportController < ApplicationController
             f.puts job_response.body
           end
           @zipFilePath = "#{@base_api_url}/transformations/zip/#{job_id}"
+          Zip::File.open(outfile) do |zip_file|
+            zip_file.each do |entry| 
+              if File.extname(entry.name) === '.svg'
+                puts entry.get_input_stream.read
+              end
+            end
+          end
 
           # send_file outfile, :type => 'application/zip', :disposition => 'inline'
           render json: {data: exportData, type: @format, Images: {exportedImages:@zipFilePath ? @zipFilePath : false}}, status: :ok and return
