@@ -57,6 +57,7 @@ class ExportController < ApplicationController
         puts "Errors: #{errors.inspect}"
 
         if errors.empty?
+          exportData = 'test'
           # TODO: Create Xproc class for handing XPROC calls and data
           # TODO: create Xproc#run_job(pipe_line) ; returns `response_hash`?
           puts "Rails.configuration.xproc: #{Rails.configuration.xproc}"
