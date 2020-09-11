@@ -97,12 +97,9 @@ class ExportController < ApplicationController
               end
             end
           end
-          
           exportData = files
-          puts "Export Data: #{exportData}"
 
-          # send_file outfile, :type => 'application/zip', :disposition => 'inline'
-          render json: {data: exportData[0], type: @format, Images: {exportedImages:@zipFilePath ? @zipFilePath : false}}, status: :ok and return
+          render json: {data: exportData, type: @format, Images: {exportedImages:@zipFilePath ? @zipFilePath : false}}, status: :ok and return
         else
           render json: {data: errors, type: @format}, status: :unprocessable_entity and return
         end
