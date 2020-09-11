@@ -113,7 +113,7 @@ export default function editCollationReducer(state = initialState, action) {
       break;
     case 'EXPORT_SUCCESS':
       state.exportedData =
-        action.payload.type === 'xml' || 'svg'
+        action.payload.type === 'xml' || 'svg' || 'svg2' || 'formula'
           ? action.payload.data
           : JSON.stringify(action.payload.Export, null, 4);
       state.exportedImages = action.payload.Images.exportedImages;
