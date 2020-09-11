@@ -88,16 +88,21 @@ class ExportController < ApplicationController
             f.puts job_response.body
           end
           @zipFilePath = "#{@base_api_url}/transformations/zip/#{job_id}"
+
+          files = []
           Zip::File.open(outfile) do |zip_file|
             zip_file.each do |entry| 
               if File.extname(entry.name) === '.svg'
-                puts entry.get_input_stream.read
+                files<<entry.get_input_stream.read
               end
             end
           end
+          
+          exportData = files
+          puts "Export Data: #{exportData}"
 
           # send_file outfile, :type => 'application/zip', :disposition => 'inline'
-          render json: {data: exportData, type: @format, Images: {exportedImages:@zipFilePath ? @zipFilePath : false}}, status: :ok and return
+          render json: {data: exportData[0], type: @format, Images: {exportedImages:@zipFilePath ? @zipFilePath : false}}, status: :ok and return
         else
           render json: {data: errors, type: @format}, status: :unprocessable_entity and return
         end
