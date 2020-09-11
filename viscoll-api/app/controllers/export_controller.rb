@@ -44,8 +44,6 @@ class ExportController < ApplicationController
         else
           render json: {data: errors, type: @format}, status: :unprocessable_entity and return
         end
-        #skip validation and sending exportData even when errors
-        # render json: {data: exportData, type: @format, Images: {exportedImages:@zipFilePath ? @zipFilePath : false}}, status: :ok and return
       when "json"
         @data = buildJSON(@project)
         render :'exports/show', status: :ok and return
@@ -57,39 +55,18 @@ class ExportController < ApplicationController
         puts "Errors: #{errors.inspect}"
 
         if errors.empty?
-          # TODO: Create Xproc class for handing XPROC calls and data
-          # TODO: create Xproc#run_job(pipe_line) ; returns `response_hash`?
-          puts "Rails.configuration.xproc: #{Rails.configuration.xproc}"
-          xproc_uri = URI.parse "#{Rails.configuration.xproc['url']}/xproc/viscoll2svg/"
-          xproc_req = Net::HTTP::Post.new(xproc_uri)
+
           collation_file = @format == 'svg2' ? 'collation2.css' : 'collation.css'
-          config_xml = %Q{<config><css xml:id="css">#{collation_file}</css></config>}
-          form = [['input', StringIO.new(xml.to_xml)],
-                  ['config', StringIO.new(config_xml)]]
-          xproc_req.set_form(form, 'multipart/form-data')
-          xproc_response = Net::HTTP.start(xproc_uri.hostname, xproc_uri.port) do |http|
-            http.request(xproc_req)
-          end
-          response_hash = JSON.parse(xproc_response.body)
-          puts response_hash
+          config_xml = %Q{<config><css xml:id="css">#{collation_file}</css></config>} 
 
-          # TODO: Xproc#retreive_data; returns IO object
-          job_url = response_hash["_links"]["job"]["href"]
-          job_uri = URI.parse job_url
-          job_req = Net::HTTP::Get.new(job_uri)
-          job_req["Accept"] = 'application/zip'
-          job_response = Net::HTTP.start(job_uri.hostname, job_uri.port) do |http|
-            http.request(job_req)
-          end
+          job_response = process_pipeline 'viscoll2svg', xml.to_xml, config_xml
 
-          job_id  = response_hash['id']
-          outfile = "#{Rails.root}/public/xproc/#{job_id}.zip"
+          outfile = "#{Rails.root}/public/xproc/#{@project.id}-svg.zip"
           File.open outfile, 'wb' do |f|
             f.puts job_response.body
           end
-          @zipFilePath = "#{@base_api_url}/transformations/zip/#{job_id}"
+          @zipFilePath = "#{@base_api_url}/transformations/zip/#{@project.id}-svg"
 
-          # send_file outfile, :type => 'application/zip', :disposition => 'inline'
           render json: {data: exportData, type: @format, Images: {exportedImages:@zipFilePath ? @zipFilePath : false}}, status: :ok and return
         else
           render json: {data: errors, type: @format}, status: :unprocessable_entity and return
@@ -113,6 +90,31 @@ class ExportController < ApplicationController
     rescue Exception => e
       render json: {error: "project not found with id "+params[:id]}, status: :not_found and return
     end
+  end
+
+  def process_pipeline pipeline, xml_string, config_xml = nil
+    # run the pipeline
+    xproc_uri = URI.parse "#{Rails.configuration.xproc['url']}/xproc/#{pipeline}/"
+    xproc_req = Net::HTTP::Post.new(xproc_uri)
+    form = [['input', StringIO.new(xml_string)]]
+    form << ['config', StringIO.new(config_xml)] if config_xml
+            
+    xproc_req.set_form(form, 'multipart/form-data')
+    xproc_response = Net::HTTP.start(xproc_uri.hostname, xproc_uri.port) do |http|
+      http.request(xproc_req)
+    end
+    response_hash = JSON.parse(xproc_response.body)
+    puts response_hash
+
+    # TODO: Xproc#retreive_data; returns IO object
+    job_url = response_hash["_links"]["job"]["href"]
+    job_uri = URI.parse job_url
+    job_req = Net::HTTP::Get.new(job_uri)
+    job_req["Accept"] = 'application/zip'
+    job_response = Net::HTTP.start(job_uri.hostname, job_uri.port) do |http|
+      http.request(job_req)
+    end
+    job_response    
   end
 
 end
