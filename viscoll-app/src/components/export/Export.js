@@ -121,7 +121,7 @@ const Export = props => {
               })}
           </div>
         ) : (
-          props.exportedData
+          <pre>{props.exportedData}</pre>
         )}
       </div>
     ) : (
@@ -179,7 +179,7 @@ const Export = props => {
       ) : (
         ''
       )}
-      <pre>{exportedData}</pre>
+      {exportedData}
     </Dialog>
   );
 };
