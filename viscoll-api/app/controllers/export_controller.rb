@@ -3,7 +3,7 @@ require 'zip'
 class ExportController < ApplicationController
   before_action :authenticate!
   before_action :set_project, only: [:show]
-
+  
   # GET /projects/:id/export/:format
   def show
     # Zip all DIY images and provide the link to download the file
@@ -30,75 +30,54 @@ class ExportController < ApplicationController
       end
     rescue Exception => e
     end
-
+    
     begin
-      case @format
-      when "xml"
-        exportData = buildDotModel(@project)
-        xml = Nokogiri::XML(exportData)
-        schema = Nokogiri::XML::RelaxNG(File.open("public/viscoll-datamodel81120.rng"))
-        errors = schema.validate(xml)
-        puts errors
-        if errors.empty?
+      exportData = buildDotModel(@project)
+      xml = Nokogiri::XML(exportData)
+      schema = Nokogiri::XML::RelaxNG(File.open("public/viscoll-datamodel81120.rng"))
+      errors = schema.validate(xml)
+      
+      if errors.empty?
+        case @format
+        when "xml"
           render json: {data: exportData, type: @format, Images: {exportedImages:@zipFilePath ? @zipFilePath : false}}, status: :ok and return
-        else
-          render json: {data: errors, type: @format}, status: :unprocessable_entity and return
-        end
-      when "json"
-        @data = buildJSON(@project)
-        render :'exports/show', status: :ok and return
-      when 'svg', 'svg2'
-        exportData = buildDotModel(@project)
-        xml = Nokogiri::XML(exportData)
-        schema = Nokogiri::XML::RelaxNG(File.open("public/viscoll-datamodel81120.rng"))
-        errors = schema.validate(xml)
-        puts "Errors: #{errors.inspect}"
-
-        if errors.empty?
-
+        when "json"
+          @data = buildJSON(@project)
+          render :'exports/show', status: :ok and return
+        when 'svg', 'svg2'
           collation_file = @format == 'svg2' ? 'collation2.css' : 'collation.css'
-          config_xml = %Q{<config><css xml:id="css">#{collation_file}</css></config>} 
-
+          config_xml = %Q{<config><css xml:id="css">#{collation_file}</css></config>}
+          
           job_response = process_pipeline 'viscoll2svg', xml.to_xml, config_xml
-
+          
           outfile = "#{Rails.root}/public/xproc/#{@project.id}-svg.zip"
           File.open outfile, 'wb' do |f|
             f.puts job_response.body
           end
           @zipFilePath = "#{@base_api_url}/transformations/zip/#{@project.id}-svg"
-
+          
           render json: {data: exportData, type: @format, Images: {exportedImages:@zipFilePath ? @zipFilePath : false}}, status: :ok and return
-        else
-          render json: {data: errors, type: @format}, status: :unprocessable_entity and return
-        end
-      when 'formula'
-        exportData = buildDotModel(@project)
-        xml = Nokogiri::XML(exportData)
-        schema = Nokogiri::XML::RelaxNG(File.open("public/viscoll-datamodel81120.rng"))
-        errors = schema.validate(xml)
-        puts "Errors: #{errors.inspect}"
-
-        if errors.empty?
-          job_response = process_pipeline 'viscoll2formulas', xml.to_xml 
-
+        when 'formula'
+          job_response = process_pipeline 'viscoll2formulas', xml.to_xml
+          
           outfile = "#{Rails.root}/public/xproc/#{@project.id}-formula.zip"
           File.open outfile, 'wb' do |f|
             f.puts job_response.body
           end
           @zipFilePath = "#{@base_api_url}/transformations/zip/#{@project.id}-formula"
-
+          
           render json: {data: exportData, type: @format, Images: {exportedImages:@zipFilePath ? @zipFilePath : false}}, status: :ok and return
         else
-          render json: {data: errors, type: @format}, status: :unprocessable_entity and return
+          render json: {error: "Export format must be one of [json, xml, svg, formula]"}, status: :unprocessable_entity and return
         end
       else
-        render json: {error: "Export format must be one of [json, xml, svg]"}, status: :unprocessable_entity and return
+        render json: {data: errors, type: @format}, status: :unprocessable_entity and return
       end
     rescue Exception => e
       render json: {error: e.message}, status: :internal_server_error and return
     end
   end
-
+  
   private
   def set_project
     begin
@@ -111,21 +90,21 @@ class ExportController < ApplicationController
       render json: {error: "project not found with id "+params[:id]}, status: :not_found and return
     end
   end
-
+  
   def process_pipeline pipeline, xml_string, config_xml = nil
     # run the pipeline
     xproc_uri = URI.parse "#{Rails.configuration.xproc['url']}/xproc/#{pipeline}/"
     xproc_req = Net::HTTP::Post.new(xproc_uri)
     form = [['input', StringIO.new(xml_string)]]
     form << ['config', StringIO.new(config_xml)] if config_xml
-            
+    
     xproc_req.set_form(form, 'multipart/form-data')
     xproc_response = Net::HTTP.start(xproc_uri.hostname, xproc_uri.port) do |http|
       http.request(xproc_req)
     end
     response_hash = JSON.parse(xproc_response.body)
     puts response_hash
-
+    
     # TODO: Xproc#retreive_data; returns IO object
     job_url = response_hash["_links"]["job"]["href"]
     job_uri = URI.parse job_url
@@ -136,5 +115,4 @@ class ExportController < ApplicationController
     end
     job_response    
   end
-
 end
