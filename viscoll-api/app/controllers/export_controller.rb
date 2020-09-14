@@ -47,6 +47,7 @@ class ExportController < ApplicationController
         #skip validation and sending exportData even when errors
         # render json: {data: exportData, type: @format, Images: {exportedImages:@zipFilePath ? @zipFilePath : false}}, status: :ok and return
       when "json"
+        # TODO: fix json export
         @data = buildJSON(@project)
         render :'exports/show', status: :ok and return
       when 'svg', 'svg2'
