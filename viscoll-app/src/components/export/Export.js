@@ -104,9 +104,23 @@ const Export = props => {
           <IconCopy />
         </IconButton>
 
-        {props.exportedType === 'share'
+        {/* {props.exportedType === 'share'
           ? window.location.href + '/viewOnly'
-          : props.exportedData}
+          : props.exportedData} */}
+        {props.exportedType === 'svg' ? (
+          <div>
+            {Array.from(props.exportedData).map((value, index) => {
+              return (
+                <img
+                  key={index}
+                  src={`data:image/svg+xml;utf8,${encodeURIComponent(value)}`}
+                ></img>
+              );
+            })}
+          </div>
+        ) : (
+          props.exportedData
+        )}
       </div>
     ) : (
       <div>
