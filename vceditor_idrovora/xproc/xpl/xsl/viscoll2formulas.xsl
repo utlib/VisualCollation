@@ -51,7 +51,7 @@
             </xsl:call-template>
         </xsl:for-each>
     </xsl:template>
-    
+
     <xd:doc>
         <xd:desc>
             <xd:b>Collation formula generator.</xd:b>
@@ -63,7 +63,7 @@
         <xsl:param name="tbID"/>
         <xsl:result-document href="{concat($tbID, '-formula_01.xml')}">
           <vc:formula>
-            <xsl:for-each-group select="leaf"
+            <xsl:for-each-group select="leaves/leaf"
                 group-by="
                 if (contains(q[1]/@n, '.')) then
                 substring-before(q[1]/@n, '.')
@@ -109,7 +109,7 @@
           </vc:formula>
         </xsl:result-document>
     </xsl:template>
-    
+
     <xd:doc>
         <xd:desc>
             <xd:b>Collation formula generator.</xd:b>
@@ -122,7 +122,7 @@
         <xsl:param name="tbID"/>
         <xsl:result-document href="{concat($tbID, '-formula_02.xml')}">
           <vc:formula>
-            <xsl:for-each-group select="leaf"
+            <xsl:for-each-group select="leaves/leaf"
                 group-by="
                     if (contains(q[1]/@n, '.')) then
                         substring-before(q[1]/@n, '.')
@@ -222,6 +222,6 @@
               </xsl:for-each-group>
             </vc:formula>
         </xsl:result-document>
-    </xsl:template>    
+    </xsl:template>
 
 </xsl:stylesheet>

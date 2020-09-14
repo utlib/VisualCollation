@@ -17,6 +17,7 @@ services:
       - SECRET_KEY_BASE
       - RAILS_ENV
       - RAILS_SERVE_STATIC_FILES
+      - XPROC_URL
     depends_on:
       - mongo
       - xproc

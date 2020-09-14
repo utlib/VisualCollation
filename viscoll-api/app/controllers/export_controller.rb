@@ -71,6 +71,47 @@ class ExportController < ApplicationController
         else
           render json: {data: errors, type: @format}, status: :unprocessable_entity and return
         end
+      when 'formula'
+        exportData = buildDotModel(@project)
+        xml = Nokogiri::XML(exportData)
+        schema = Nokogiri::XML::RelaxNG(File.open("public/viscoll-datamodel81120.rng"))
+        errors = schema.validate(xml)
+        puts "Errors: #{errors.inspect}"
+
+        if errors.empty?
+          xproc_uri = URI.parse "#{Rails.configuration.xproc['url']}/xproc/viscoll2formulas/"
+          xproc_req = Net::HTTP::Post.new(xproc_uri)
+          collation_file = @format == 'svg2' ? 'collation2.css' : 'collation.css'
+          config_xml = %Q{<config><css xml:id="css">#{collation_file}</css></config>}
+          form = [['input', StringIO.new(xml.to_xml)],
+                  ['config', StringIO.new(config_xml)]]
+          xproc_req.set_form(form, 'multipart/form-data')
+          xproc_response = Net::HTTP.start(xproc_uri.hostname, xproc_uri.port) do |http|
+            http.request(xproc_req)
+          end
+          response_hash = JSON.parse(xproc_response.body)
+          puts response_hash
+
+          job_url = response_hash["_links"]["job"]["href"]
+          job_uri = URI.parse job_url
+          job_req = Net::HTTP::Get.new(job_uri)
+          job_req["Accept"] = 'application/zip'
+          job_response = Net::HTTP.start(job_uri.hostname, job_uri.port) do |http|
+            http.request(job_req)
+          end
+
+          job_id  = response_hash['id']
+          outfile = "#{Rails.root}/public/xproc/#{job_id}.zip"
+          File.open outfile, 'wb' do |f|
+            f.puts job_response.body
+          end
+          @zipFilePath = "#{@base_api_url}/transformations/zip/#{job_id}"
+
+          send_file outfile, :type => 'application/zip', :disposition => 'inline'
+          render json: {data: exportData, type: @format, Images: {exportedImages:@zipFilePath ? @zipFilePath : false}}, status: :ok and return
+        else
+          render json: {data: errors, type: @format}, status: :unprocessable_entity and return
+        end
       else
         render json: {error: "Export format must be one of [json, xml, svg]"}, status: :unprocessable_entity and return
       end
