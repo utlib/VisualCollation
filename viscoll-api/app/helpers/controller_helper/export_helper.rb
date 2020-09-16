@@ -228,23 +228,24 @@ module ControllerHelper
                 leafAttributes["xml:id"] = idPrefix+"-"+idPostfix
                 leafAttributes["stub"] = "yes" if leaf.stubType != "None"
                 xml.leaf leafAttributes do
-                  folioNumberAttr = {}
-                  folioNumberAttr[:certainty] = 1
 
                   rectoSide = project.sides.find(leaf.rectoID)
                   versoSide = project.sides.find(leaf.versoID)
+
                   if leaf.folio_number
+                    folioNumberAttr = {}
+                    folioNumberAttr[:certainty] = 1
                     folioNumber = leaf.folio_number
                     folioNumberAttr[:val] = folioNumber
                     xml.folioNumber folioNumberAttr do
                       xml.text folioNumber
                     end
-                  end
-
-                  if rectoSide.page_number
+                  elsif rectoSide.page_number && leaf.folio_number.nil?
+                    pageNumberAttr = {}
+                    pageNumberAttr[:certainty] = 1
                     pageNumber = "#{rectoSide.page_number.to_s}-#{versoSide.page_number.to_s}"
-                    folioNumberAttr[:val] = pageNumber
-                    xml.folioNumber folioNumberAttr do
+                    pageNumberAttr[:val] = pageNumber
+                    xml.folioNumber pageNumberAttr do
                       xml.text pageNumber
                     end
                   end
@@ -266,12 +267,10 @@ module ControllerHelper
                     if leaf.conjoined_to
                       idPostfix = parents.join("-")+"-"+@leafs[leaf.conjoined_to][:memberOrder].to_s
                       xml.conjoin :certainty => 1, :target => "#"+idPrefix+"-"+idPostfix
+                    else
+                      xml.single :val => "yes"
                     end
                   end
-
-                  # if not leaf.conjoined_to
-                  #   xml.single :val => "yes"
-                  # end
 
                   rectoSide = project.sides.find(leaf.rectoID)
                   rectoAttributes = {}
