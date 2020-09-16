@@ -266,12 +266,10 @@ module ControllerHelper
                     if leaf.conjoined_to
                       idPostfix = parents.join("-")+"-"+@leafs[leaf.conjoined_to][:memberOrder].to_s
                       xml.conjoin :certainty => 1, :target => "#"+idPrefix+"-"+idPostfix
+                    else
+                      xml.single :val => "yes"
                     end
                   end
-
-                  # if not leaf.conjoined_to
-                  #   xml.single :val => "yes"
-                  # end
 
                   rectoSide = project.sides.find(leaf.rectoID)
                   rectoAttributes = {}
