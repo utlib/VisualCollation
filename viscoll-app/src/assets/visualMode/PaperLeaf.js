@@ -482,9 +482,10 @@ PaperLeaf.prototype = {
     if (this.visibleAttributes.leaf) {
       if (this.visibleAttributes.leaf.folio_number) {
         let notationStyles = this.notationStyle.split('-');
-        if (this.leaf.folio_number)
+        if (this.leaf.folio_number) {
           rectoValues.push(this.leaf.folio_number + notationStyles[0]);
-        versoValues.push(this.leaf.folio_number + notationStyles[1]);
+          versoValues.push(this.leaf.folio_number + notationStyles[1]);
+        }
       }
     }
     let rectoContent = '';
