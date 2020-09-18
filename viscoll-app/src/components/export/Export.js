@@ -29,9 +29,7 @@ const Export = props => {
       disabled={!isValidExport}
     />,
     <FlatButton
-      label={
-         'Download ' + props.exportedType
-      }
+      label={'Download ' + props.exportedType}
       icon={<IconDownload />}
       style={
         props.exportedImages && props.exportedType !== 'png'
@@ -105,11 +103,26 @@ const Export = props => {
         >
           <IconCopy />
         </IconButton>
-        <pre>
-          {props.exportedType === 'share'
-            ? window.location.href + '/viewOnly'
-            : props.exportedData}
-        </pre>
+
+        {/* {props.exportedType === 'share'
+          ? window.location.href + '/viewOnly'
+          : props.exportedData} */}
+        {props.exportedType === 'svg' || props.exportedType === 'svg2' ? (
+          <div>
+            {Array.from(props.exportedData)
+              .reverse()
+              .map((value, index) => {
+                return (
+                  <img
+                    key={index}
+                    src={`data:image/svg+xml;utf8,${encodeURIComponent(value)}`}
+                  ></img>
+                );
+              })}
+          </div>
+        ) : (
+          <pre>{props.exportedData}</pre>
+        )}
       </div>
     ) : (
       <div>

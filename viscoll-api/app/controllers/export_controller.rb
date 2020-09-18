@@ -55,7 +55,17 @@ class ExportController < ApplicationController
             f.puts job_response.body
           end
           @zipFilePath = "#{@base_api_url}/transformations/zip/#{@project.id}-svg"
-          
+
+          files = []
+          Zip::File.open(outfile) do |zip_file|
+            zip_file.each do |entry| 
+              if File.extname(entry.name) === '.svg'
+                files<<entry.get_input_stream.read
+              end
+            end
+          end
+          exportData = files
+
           render json: {data: exportData, type: @format, Images: {exportedImages:@zipFilePath ? @zipFilePath : false}}, status: :ok and return
         when 'formula'
           job_response = process_pipeline 'viscoll2formulas', xml.to_xml
@@ -65,6 +75,20 @@ class ExportController < ApplicationController
             f.puts job_response.body
           end
           @zipFilePath = "#{@base_api_url}/transformations/zip/#{@project.id}-formula"
+
+          files = []
+          Zip::File.open(outfile) do |zip_file|
+            zip_file.each_with_index do |entry, index| 
+              puts entry.name
+              if File.basename(entry.name).include? "formula"
+                file_content = "Quire #{index + 1}: " + %r{>([^<]*)<}.match(entry.get_input_stream.read)[1]
+                files<<file_content
+                files<<"\n"
+              end
+            end
+          end
+          puts files
+          exportData = files
           
           render json: {data: exportData, type: @format, Images: {exportedImages:@zipFilePath ? @zipFilePath : false}}, status: :ok and return
         else
