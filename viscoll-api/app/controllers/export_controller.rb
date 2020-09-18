@@ -78,12 +78,11 @@ class ExportController < ApplicationController
 
           files = []
           Zip::File.open(outfile) do |zip_file|
-            zip_file.each_with_index do |entry, index| 
-              puts entry.name
+            zip_file.each do |entry| 
               if File.basename(entry.name).include? "formula"
-                file_content = "Quire #{index + 1}: " + %r{>([^<]*)<}.match(entry.get_input_stream.read)[1]
-                files<<file_content
-                files<<"\n"
+                file_content = %r{>([^<]*)<}.match(entry.get_input_stream.read)[1]
+                files << file_content
+                break
               end
             end
           end
