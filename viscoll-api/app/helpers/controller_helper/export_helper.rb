@@ -277,14 +277,16 @@ module ControllerHelper
                   attachmentAttributes[:certainty] = 1
 
                   if leaf.attached_above != "None"
-                    attachmentAttributes[:type] = leaf.attached_above
-                    attachmentAttributes[:target] = "#id-Ferr208-1-7"
+                    attachmentAttributes[:type] = leaf.attached_above.downcase
+                    idPostfix = parents.join("-") + "-" + (@leafs[leaf.id][:memberOrder] - 1).to_s
+                    attachmentAttributes[:target] = "#"+idPrefix+"-"+idPostfix
                     xml.send('attachment-method', attachmentAttributes)
                   end
 
                   if leaf.attached_below != "None"
-                    attachmentAttributes[:type] = leaf.attached_below
-                    attachmentAttributes[:target] = "#id-Ferr208-1-7"
+                    attachmentAttributes[:type] = leaf.attached_below.downcase
+                    idPostfix = parents.join("-") + "-" + (@leafs[leaf.id][:memberOrder] + 1).to_s
+                    attachmentAttributes[:target] = "#"+idPrefix+"-"+idPostfix
                     xml.send('attachment-method', attachmentAttributes)
                   end
 
