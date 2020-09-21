@@ -230,7 +230,14 @@ PaperLeaf.prototype = {
     this.textVerso.onMouseLeave = function (event) {};
   },
   createAttachments: function () {
-    if (this.order > 1 && this.leaf.attached_above.includes('Glued')) {
+    if (
+      (this.order > 1 && this.leaf.attached_above === 'Sewn') ||
+      (this.order > 1 && this.leaf.attached_above === 'Pasted') ||
+      (this.order > 1 && this.leaf.attached_above === 'Tipped') ||
+      (this.order > 1 && this.leaf.attached_above === 'Drummed') ||
+      (this.order > 1 && this.leaf.attached_above === 'Stitched')
+    ) {
+      console.log(this.leaf.attached_above);
       this.createGlue();
     } else if (this.order > 1 && this.leaf.attached_above === 'Other') {
       this.createOtherAttachment();

@@ -272,6 +272,24 @@ module ControllerHelper
                     end
                   end
 
+                  # <attachment-method certainty="1" type="pasted" target="#id-Ferr208-1-7"/>
+                  attachmentAttributes = {}
+                  attachmentAttributes[:certainty] = 1
+
+                  if leaf.attached_above != "None"
+                    attachmentAttributes[:type] = leaf.attached_above.downcase
+                    idPostfix = parents.join("-") + "-" + (@leafs[leaf.id][:memberOrder] - 1).to_s
+                    attachmentAttributes[:target] = "#"+idPrefix+"-"+idPostfix
+                    xml.send('attachment-method', attachmentAttributes)
+                  end
+
+                  if leaf.attached_below != "None"
+                    attachmentAttributes[:type] = leaf.attached_below.downcase
+                    idPostfix = parents.join("-") + "-" + (@leafs[leaf.id][:memberOrder] + 1).to_s
+                    attachmentAttributes[:target] = "#"+idPrefix+"-"+idPostfix
+                    xml.send('attachment-method', attachmentAttributes)
+                  end
+
                   rectoSide = project.sides.find(leaf.rectoID)
                   rectoAttributes = {}
                   rectoAttributes["xml:id"] = leafAttributes["xml:id"]
@@ -642,14 +660,14 @@ module ControllerHelper
                 if leaf.attached_above == "Other"
                   attachementMethods.push("#Glued_Above_Other")
                 else
-                  attachementMethods.push("#Glued_Above_"+leaf.attached_above.split(" ")[1][1..-2])
+                  attachementMethods.push("#Glued_Above_"+leaf.attached_above)
                 end
               end
               if leaf.attached_below != "None"
                 if leaf.attached_below == "Other"
                   attachementMethods.push("#Glued_Below_Other")
                 else
-                  attachementMethods.push("#Glued_Below_"+leaf.attached_below.split(" ")[1][1..-2])
+                  attachementMethods.push("#Glued_Below_"+leaf.attached_below)
                 end
               end
               attachementMethods = attachementMethods.join(" ").strip
