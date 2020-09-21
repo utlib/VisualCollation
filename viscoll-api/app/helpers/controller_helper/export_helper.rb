@@ -282,6 +282,11 @@ module ControllerHelper
                     xml.send('attachment-method', attachmentAttributes)
                   end
 
+                  if leaf.attached_below != "None"
+                    attachmentAttributes[:type] = leaf.attached_below
+                    attachmentAttributes[:target] = "#id-Ferr208-1-7"
+                    xml.send('attachment-method', attachmentAttributes)
+                  end
 
                   rectoSide = project.sides.find(leaf.rectoID)
                   rectoAttributes = {}
