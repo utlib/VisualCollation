@@ -82,7 +82,7 @@ class ProjectsController < ApplicationController
     deleteUnlinkedImages = project_delete_params.to_h["deleteUnlinkedImages"]
     begin
       # Skip some callbacks
-      Leaf.skip_callback(:destroy, :before, :unlink_notes)
+      Leaf.skip_callback(:destroy, :before, :unlink_terms)
       if deleteUnlinkedImages
         Image.skip_callback(:destroy, :before, :unlink_sides_before_delete)
         current_user.images.where({ "projectIDs" => { '$eq': [@project.id.to_s] } }).each do | image |
@@ -98,7 +98,7 @@ class ProjectsController < ApplicationController
     ensure
       # Enable callbacks again
       Image.set_callback(:destroy, :before, :unlink_sides_before_delete)
-      Leaf.set_callback(:destroy, :before, :unlink_notes)
+      Leaf.set_callback(:destroy, :before, :unlink_terms)
     end
   end
 
@@ -171,7 +171,7 @@ class ProjectsController < ApplicationController
         Leafs: exportedData[:leafs],
         Rectos: exportedData[:rectos],
         Versos: exportedData[:versos],
-        Notes: exportedData[:notes],
+        Notes: exportedData[:terms],
       }
       handleJSONImport(JSON.parse(export.to_json))
       newProject = current_user.projects.order_by(:updated_at => 'desc').first

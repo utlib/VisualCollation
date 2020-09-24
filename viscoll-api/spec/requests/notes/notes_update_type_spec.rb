@@ -13,12 +13,12 @@ describe "PUT /notes/type", :type => :request do
       user: @user,
       noteTypes: ["Ink", "Paper"]
     })
-    @project.notes << FactoryGirl.create(:note, {
+    @project.notes << FactoryGirl.create(:term, {
       project_id: @project.id,
       type: "Ink",
       description: "Sepia"
     })
-    @project.notes << FactoryGirl.create(:note, {
+    @project.notes << FactoryGirl.create(:term, {
       project_id: @project.id,
       type: "Paper",
       description: "Parchment"
@@ -115,7 +115,7 @@ describe "PUT /notes/type", :type => :request do
         expect(@project.noteTypes).to eq ["Ink", "Paper"]
       end
     end
-    
+
     context 'with unauthorized project' do
       before do
         @user2 = FactoryGirl.create(:user)
@@ -124,11 +124,11 @@ describe "PUT /notes/type", :type => :request do
         put '/notes/type', params: @parameters.to_json, headers: {'Authorization' => @authToken, 'CONTENT_TYPE' => 'application/json', 'ACCEPT' => 'application/json'}
         @project.reload
       end
-      
+
       it 'should return 403' do
         expect(response).to have_http_status(:unauthorized)
       end
-      
+
       it 'should leave the types alone' do
         expect(@project.noteTypes).to eq ["Ink", "Paper"]
       end

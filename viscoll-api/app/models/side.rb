@@ -12,10 +12,10 @@ class Side
 
   # Relations
   belongs_to :project
-  has_and_belongs_to_many :notes, inverse_of: nil
+  has_and_belongs_to_many :terms, inverse_of: nil
 
   # Callbacks
-  before_destroy :unlink_notes, :unlink_image
+  before_destroy :unlink_terms, :unlink_image
 
   def parent_leaf
     Leaf.find(parentID)

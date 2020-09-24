@@ -12,7 +12,7 @@ describe "PUT /notes/id/link", :type => :request do
     @project = FactoryGirl.create(:project, {user: @user, noteTypes: ["Ink"]})
     @defaultGroup = FactoryGirl.create(:quire, project: @project)
     @project.add_groupIDs([@defaultGroup.id.to_s], 0)
-    @note = FactoryGirl.create(:note, {
+    @term = FactoryGirl.create(:term, {
       project: @project,
       title: "some title for note",
       type: "Ink",
@@ -41,7 +41,7 @@ describe "PUT /notes/id/link", :type => :request do
             }
           ]
         }
-        put '/notes/'+@note.id+'/link', params: @parameters.to_json, headers: {'Authorization' => @authToken, 'CONTENT_TYPE' => 'application/json', 'ACCEPT' => 'application/json'}
+        put '/notes/'+@term.id+'/link', params: @parameters.to_json, headers: {'Authorization' => @authToken, 'CONTENT_TYPE' => 'application/json', 'ACCEPT' => 'application/json'}
         @group.reload
       end
 
@@ -51,7 +51,7 @@ describe "PUT /notes/id/link", :type => :request do
 
       it 'should add the note to the target' do
         expect(@group.notes.length).to eq 1
-        expect(@group.notes[0].id).to eq @note.id
+        expect(@group.notes[0].id).to eq @term.id
       end
     end
     context 'and correct leaf target' do
@@ -66,7 +66,7 @@ describe "PUT /notes/id/link", :type => :request do
             }
           ]
         }
-        put '/notes/'+@note.id+'/link', params: @parameters.to_json, headers: {'Authorization' => @authToken, 'CONTENT_TYPE' => 'application/json', 'ACCEPT' => 'application/json'}
+        put '/notes/'+@term.id+'/link', params: @parameters.to_json, headers: {'Authorization' => @authToken, 'CONTENT_TYPE' => 'application/json', 'ACCEPT' => 'application/json'}
         @leaf.reload
       end
 
@@ -76,7 +76,7 @@ describe "PUT /notes/id/link", :type => :request do
 
       it 'should add the note to the target' do
         expect(@leaf.notes.length).to eq 1
-        expect(@leaf.notes[0].id).to eq @note.id
+        expect(@leaf.notes[0].id).to eq @term.id
       end
     end
     context 'and correct side target' do
@@ -92,7 +92,7 @@ describe "PUT /notes/id/link", :type => :request do
             }
           ]
         }
-        put '/notes/'+@note.id+'/link', params: @parameters.to_json, headers: {'Authorization' => @authToken, 'CONTENT_TYPE' => 'application/json', 'ACCEPT' => 'application/json'}
+        put '/notes/'+@term.id+'/link', params: @parameters.to_json, headers: {'Authorization' => @authToken, 'CONTENT_TYPE' => 'application/json', 'ACCEPT' => 'application/json'}
         @side.reload
       end
 
@@ -102,7 +102,7 @@ describe "PUT /notes/id/link", :type => :request do
 
       it 'should add the note to the target' do
         expect(@side.notes.length).to eq 1
-        expect(@side.notes[0].id).to eq @note.id
+        expect(@side.notes[0].id).to eq @term.id
       end
     end
     context 'and a project belonging to another user' do
@@ -121,7 +121,7 @@ describe "PUT /notes/id/link", :type => :request do
               }
             ]
           }
-          put '/notes/'+@note.id+'/link', params: @parameters2.to_json, headers: {'Authorization' => @authToken, 'CONTENT_TYPE' => 'application/json', 'ACCEPT' => 'application/json'}
+          put '/notes/'+@term.id+'/link', params: @parameters2.to_json, headers: {'Authorization' => @authToken, 'CONTENT_TYPE' => 'application/json', 'ACCEPT' => 'application/json'}
           @group2.reload
         end
 
@@ -145,7 +145,7 @@ describe "PUT /notes/id/link", :type => :request do
               }
             ]
           }
-          put '/notes/'+@note.id+'/link', params: @parameters2.to_json, headers: {'Authorization' => @authToken, 'CONTENT_TYPE' => 'application/json', 'ACCEPT' => 'application/json'}
+          put '/notes/'+@term.id+'/link', params: @parameters2.to_json, headers: {'Authorization' => @authToken, 'CONTENT_TYPE' => 'application/json', 'ACCEPT' => 'application/json'}
           @leaf2.reload
         end
 
@@ -170,7 +170,7 @@ describe "PUT /notes/id/link", :type => :request do
               }
             ]
           }
-          put '/notes/'+@note.id+'/link', params: @parameters2.to_json, headers: {'Authorization' => @authToken, 'CONTENT_TYPE' => 'application/json', 'ACCEPT' => 'application/json'}
+          put '/notes/'+@term.id+'/link', params: @parameters2.to_json, headers: {'Authorization' => @authToken, 'CONTENT_TYPE' => 'application/json', 'ACCEPT' => 'application/json'}
           @side2.reload
         end
 
@@ -186,7 +186,7 @@ describe "PUT /notes/id/link", :type => :request do
     context 'and unknown target type' do
       before do
         @parameters[:objects][0][:type] = "unknown"
-        put '/notes/'+@note.id+'/link', params: @parameters.to_json, headers: {'Authorization' => @authToken, 'CONTENT_TYPE' => 'application/json', 'ACCEPT' => 'application/json'}
+        put '/notes/'+@term.id+'/link', params: @parameters.to_json, headers: {'Authorization' => @authToken, 'CONTENT_TYPE' => 'application/json', 'ACCEPT' => 'application/json'}
         @body = JSON.parse(response.body)
       end
 
@@ -200,7 +200,7 @@ describe "PUT /notes/id/link", :type => :request do
     end
     context 'and missing note' do
       before do
-        put '/notes/'+@note.id+'missing/link', params: @parameters.to_json, headers: {'Authorization' => @authToken, 'CONTENT_TYPE' => 'application/json', 'ACCEPT' => 'application/json'}
+        put '/notes/'+@term.id+'missing/link', params: @parameters.to_json, headers: {'Authorization' => @authToken, 'CONTENT_TYPE' => 'application/json', 'ACCEPT' => 'application/json'}
         @body = JSON.parse(response.body)
       end
 
@@ -219,7 +219,7 @@ describe "PUT /notes/id/link", :type => :request do
             }
           ]
         }
-        put '/notes/'+@note.id+'/link', params: @parameters.to_json, headers: {'Authorization' => @authToken, 'CONTENT_TYPE' => 'application/json', 'ACCEPT' => 'application/json'}
+        put '/notes/'+@term.id+'/link', params: @parameters.to_json, headers: {'Authorization' => @authToken, 'CONTENT_TYPE' => 'application/json', 'ACCEPT' => 'application/json'}
         @group.reload
         @body = JSON.parse(response.body)
       end
@@ -234,7 +234,7 @@ describe "PUT /notes/id/link", :type => :request do
     end
     context 'and uncaught exception' do
       before do
-        allow_any_instance_of(Note).to receive(:save).and_raise("Exception!")
+        allow_any_instance_of(Term).to receive(:save).and_raise("Exception!")
         @group = FactoryGirl.create(:group, { project: @project })
         @parameters = {
           objects: [
@@ -244,7 +244,7 @@ describe "PUT /notes/id/link", :type => :request do
             }
           ]
         }
-        put '/notes/'+@note.id+'/link', params: @parameters.to_json, headers: {'Authorization' => @authToken, 'CONTENT_TYPE' => 'application/json', 'ACCEPT' => 'application/json'}
+        put '/notes/'+@term.id+'/link', params: @parameters.to_json, headers: {'Authorization' => @authToken, 'CONTENT_TYPE' => 'application/json', 'ACCEPT' => 'application/json'}
         @group.reload
         @body = JSON.parse(response.body)
       end
@@ -257,7 +257,7 @@ describe "PUT /notes/id/link", :type => :request do
 
   context 'with corrupted authorization' do
     before do
-      put '/notes/'+@note.id+'/link', params: @parameters.to_json, headers: {'Authorization' => @authToken+'asdf', 'CONTENT_TYPE' => 'application/json', 'ACCEPT' => 'application/json'}
+      put '/notes/'+@term.id+'/link', params: @parameters.to_json, headers: {'Authorization' => @authToken+'asdf', 'CONTENT_TYPE' => 'application/json', 'ACCEPT' => 'application/json'}
       @body = JSON.parse(response.body)
     end
 
@@ -272,7 +272,7 @@ describe "PUT /notes/id/link", :type => :request do
 
   context 'with empty authorization' do
     before do
-      put '/notes/'+@note.id+'/link', params: @parameters.to_json, headers: {'Authorization' => ""}
+      put '/notes/'+@term.id+'/link', params: @parameters.to_json, headers: {'Authorization' => ""}
     end
 
     it 'returns an bad request error' do
@@ -286,7 +286,7 @@ describe "PUT /notes/id/link", :type => :request do
 
   context 'invalid authorization' do
     before do
-      put '/notes/'+@note.id+'/link', params: @parameters.to_json, headers: {'Authorization' => "123456789"}
+      put '/notes/'+@term.id+'/link', params: @parameters.to_json, headers: {'Authorization' => "123456789"}
     end
 
     it 'returns an bad request error' do
@@ -300,7 +300,7 @@ describe "PUT /notes/id/link", :type => :request do
 
   context 'without authorization' do
     before do
-      put '/notes/'+@note.id+'/link'
+      put '/notes/'+@term.id+'/link'
     end
 
     it 'returns an unauthorized action error' do

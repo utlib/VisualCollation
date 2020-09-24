@@ -27,7 +27,7 @@ module ControllerHelper
       rootMemberOrder = 1
       @groupIDs.each_with_index do | groupID, index|
         group = @project.groups.find(groupID)
-        @groups[index + 1] = { 
+        @groups[index + 1] = {
           "params": {
             "type": group.type,
             "title": group.title,
@@ -44,7 +44,7 @@ module ControllerHelper
       end
 
       # Generate @leafIDs list
-      @groups.each do | groupOrder, group | 
+      @groups.each do | groupOrder, group |
         if group[:params][:nestLevel] == 1
           getLeafMemberOrders(group[:memberOrders])
         end
@@ -75,7 +75,7 @@ module ControllerHelper
       # Transform group's tacketed and sewing to leaf global orders
       # Transform group's parentID to group global order
       @groups.each do | groupID, group |
-        memberOrders = [] 
+        memberOrders = []
         group[:memberOrders].each do |memberID|
           if memberID[0] == "G"
             memberOrders.push("Group_" + (@groupIDs.index(memberID)+1).to_s)
@@ -97,7 +97,7 @@ module ControllerHelper
         @rectos[index + 1] = {
           "params": {
             "page_number": recto.page_number ? recto.page_number : "",
-            "texture": recto.texture, 
+            "texture": recto.texture,
             "image": recto.image,
             "script_direction": recto.script_direction
           },
@@ -111,7 +111,7 @@ module ControllerHelper
         @versos[index + 1] = {
           "params": {
             "page_number": verso.page_number ? verso.page_number : "",
-            "texture": verso.texture, 
+            "texture": verso.texture,
             "image": verso.image,
             "script_direction": verso.script_direction
           },
@@ -119,7 +119,7 @@ module ControllerHelper
         }
       end
 
-      @project.notes.each_with_index do | note, index | 
+      @project.notes.each_with_index do | note, index |
         @notes[index + 1] = {
           "params": {
             "title": note.title,
@@ -140,19 +140,19 @@ module ControllerHelper
       end
 
       return {
-        "project": @projectInformation,
-        "groups": @groups,
-        "leafs": @leafs,
-        "rectos": @rectos,
-        "versos": @versos,
-        "notes": @notes,
+          "project": @projectInformation,
+          "groups":  @groups,
+          "leafs":   @leafs,
+          "rectos":  @rectos,
+          "versos":  @versos,
+          terms:     @notes,
       }
     end
 
 
     # Populate leaf orders recursively
     def getLeafMemberOrders(memberIDs)
-      memberIDs.each_with_index do | memberID, index | 
+      memberIDs.each_with_index do | memberID, index |
         if memberID[0] == "G"
           getLeafMemberOrders(@groups[@groupIDs.index(memberID)+1][:memberOrders])
         elsif memberID[0] == "L"
@@ -296,7 +296,7 @@ module ControllerHelper
                   rectoAttributes[:type] = "Recto"
                   if rectoSide.page_number
                     rectoAttributes[:page_number] = rectoSide.page_number
-                  else 
+                  else
                     rectoAttributes[:page_number] = "EMPTY"
                   end
                   rectoAttributes[:texture] = rectoSide.texture unless rectoSide.texture == "None"
@@ -312,7 +312,7 @@ module ControllerHelper
                   versoAttributes[:type] = "Verso"
                   if versoSide.page_number
                     versoAttributes[:page_number] = versoSide.page_number
-                  else 
+                  else
                     versoAttributes[:page_number] = "EMPTY"
                   end
                   versoAttributes[:texture] = versoSide.texture unless versoSide.texture == "None"
@@ -333,13 +333,13 @@ module ControllerHelper
             project.noteTypes.each do |noteType|
               unless noteType == 'Unknown'
                 taxAtt = {'xml:id': "taxonomy_#{noteType.parameterize.underscore}"}
-                xml.taxonomy taxAtt do 
-                  xml.label do 
+                xml.taxonomy taxAtt do
+                  xml.label do
                     xml.text noteType
                   end
                   # grab an array of notes with the current noteType
                   children = project.notes.select {|note| note.type == noteType}
-                  
+
                   # add proper attributes and crete term elements
                   children.each do |childNote|
                     termAttributes = {'xml:id': "term_#{childNote._id}"}
@@ -399,7 +399,7 @@ module ControllerHelper
                   groupAttributeValues.push(group[attribute])
                 end
               end
-              groupAttributeValues.each do |attributeValue| 
+              groupAttributeValues.each do |attributeValue|
                 termID = {"xml:id": "group_"+attribute+"_"+attributeValue.parameterize.underscore}
                 xml.term termID do
                   xml.text attributeValue
@@ -460,7 +460,7 @@ module ControllerHelper
                   idPostfix = parents.join("-")+"-"+memberOrder.to_s
                   memberIDs.push(idPrefix+"-"+idPostfix)
                 end
-                
+
               end
               memberIDs = memberIDs.join(" #").strip
               parents = parentsOrders(groupID, project)
@@ -489,7 +489,7 @@ module ControllerHelper
                 xml.label do
                   xml.text 'List of values for Leaf ' + attribute
                 end
-                leafAttributeValues.each do |attributeValue| 
+                leafAttributeValues.each do |attributeValue|
                   termID = {"xml:id": "leaf_"+attribute+"_"+attributeValue.parameterize.underscore}
                   xml.term termID do
                     xml.text attributeValue
@@ -523,14 +523,14 @@ module ControllerHelper
             sideAttribute = {"xml:id": 'side_'+attribute}
             sideAttributeValues = []
             @rectos.each do |rectoID, recto|
-              if recto[attribute] == nil and not sideAttributeValues.include? "EMPTY" 
+              if recto[attribute] == nil and not sideAttributeValues.include? "EMPTY"
                 sideAttributeValues.push("EMPTY")
               elsif recto[attribute] != nil and not sideAttributeValues.include? recto[attribute] and recto[attribute] != "None"
                 sideAttributeValues.push(recto[attribute])
               end
             end
             @versos.each do |versoID, verso|
-              if verso[attribute] == nil and not sideAttributeValues.include? "EMPTY" 
+              if verso[attribute] == nil and not sideAttributeValues.include? "EMPTY"
                 sideAttributeValues.push("EMPTY")
               elsif verso[attribute] != nil and not sideAttributeValues.include? verso[attribute] and  verso[attribute] != "None"
                 sideAttributeValues.push(verso[attribute])
@@ -541,7 +541,7 @@ module ControllerHelper
                 xml.label do
                   xml.text 'List of values for Side ' + attribute
                 end
-                sideAttributeValues.each do |attributeValue| 
+                sideAttributeValues.each do |attributeValue|
                   if attributeValue
                     termID = {"xml:id": "side_"+attribute+"_"+attributeValue.parameterize.underscore}
                     xml.term termID do
@@ -557,11 +557,11 @@ module ControllerHelper
           # Note Attributes Taxonomy
           if not project.notes.empty?
             noteTitle = {"xml:id": 'note_title'}
-            xml.taxonomy noteTitle do  
+            xml.taxonomy noteTitle do
               xml.label do
                 xml.text 'List of values for Note Titles'
               end
-              project.notes.each_with_index do |note, index| 
+              project.notes.each_with_index do |note, index|
                 if not @noteTitles.include? note.title
                   @noteTitles.push(note.title)
                 end
@@ -574,7 +574,7 @@ module ControllerHelper
               end
             end
             noteShow = {"xml:id": 'note_show'}
-            xml.taxonomy noteShow do  
+            xml.taxonomy noteShow do
               xml.label do
                 xml.text 'Whether to show Note in Visualizations'
               end
@@ -588,7 +588,7 @@ module ControllerHelper
           # NOTES
           # if not project.notes.empty?
           #   xml.notes do
-          #     project.notes.each_with_index do |note, index| 
+          #     project.notes.each_with_index do |note, index|
           #       noteAttributes = {}
           #       noteAttributes["xml:id"] = idPrefix+"-n-"+(index+1).to_s
           #       noteAttributes[:type] = note.type
@@ -603,7 +603,7 @@ module ControllerHelper
           # end
 
           # MAPPING
-          xml.mapping do 
+          xml.mapping do
             # Map quires to attributes and notes and memberIDs
             @groupIDs.each do |groupID|
               group = @groups[groupID]
@@ -700,7 +700,7 @@ module ControllerHelper
                 if linkedAttributes != ""
                   termText = linkedNotes.strip+" #"+linkedAttributes
                   if linkedImage != ""
-                    termText = termText+" "+linkedImage+" #manifest_"+recto.image[:manifestID] 
+                    termText = termText+" "+linkedImage+" #manifest_"+recto.image[:manifestID]
                   end
                   xml.map :side => 'recto', :target => "#"+attributes["xml:id"] do
                     xml.term :target => termText.strip
@@ -708,7 +708,7 @@ module ControllerHelper
                 else
                   termText = linkedNotes.strip
                   if linkedImage != ""
-                    termText = termText+" "+linkedImage+" #manifest_"+recto.image[:manifestID] 
+                    termText = termText+" "+linkedImage+" #manifest_"+recto.image[:manifestID]
                   end
                   xml.map :side => 'recto', :target => "#"+attributes["xml:id"] do
                     xml.term :target => termText.strip
@@ -735,7 +735,7 @@ module ControllerHelper
                 if linkedAttributes != ""
                   termText = linkedNotes.strip+" #"+linkedAttributes
                   if linkedImage != ""
-                    termText = termText+" "+linkedImage+" #manifest_"+verso.image[:manifestID] 
+                    termText = termText+" "+linkedImage+" #manifest_"+verso.image[:manifestID]
                   end
                   xml.map :side => 'verso', :target => "#"+attributes["xml:id"] do
                     xml.term :target => termText.strip
@@ -743,7 +743,7 @@ module ControllerHelper
                 else
                   termText = linkedNotes.strip
                   if linkedImage != ""
-                    termText = termText+" "+linkedImage+" #manifest_"+verso.image[:manifestID] 
+                    termText = termText+" "+linkedImage+" #manifest_"+verso.image[:manifestID]
                   end
                   xml.map :side => 'verso', :target => "#"+attributes["xml:id"] do
                     xml.term :target => termText.strip
@@ -753,7 +753,7 @@ module ControllerHelper
             end
             # Map notes to noteTitles
             @notes.each do |noteID, attributes|
-              note = attributes[:note]
+              note = attributes[:term]
               xml.map :target => attributes["xml:id"] do
                 termText = []
                 if @noteTitles.include? note.title
@@ -774,7 +774,7 @@ module ControllerHelper
     # Populate leaf and side objects in ascending order
     def populateLeafSideObjects(memberIDs, project, leafMember=1)
       groupMember = 1
-      memberIDs.each_with_index do | memberID, index | 
+      memberIDs.each_with_index do | memberID, index |
         if memberID[0] == "G"
           @groups[memberID] = {"memberOrder": groupMember}
           populateLeafSideObjects(project.groups.find(memberID).memberIDs, project, leafMember)

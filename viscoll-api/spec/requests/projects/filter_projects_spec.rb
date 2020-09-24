@@ -10,7 +10,7 @@ describe "PUT /projects/:id/filter", :type => :request do
     post '/session', params: {:session => { :email => @user.email, :password => "user" }}
     @authToken = JSON.parse(response.body)['session']['jwt']
   end
-  
+
   before :each do
     @parameters = {
       "queries": [
@@ -19,7 +19,7 @@ describe "PUT /projects/:id/filter", :type => :request do
       ]
     }
   end
-  
+
   it 'should be sane' do
     expect(@project1.groups.count).to eq 4
     expect(@project1.groups.collect { |g| g.id }.count).to eq 4
@@ -41,18 +41,18 @@ describe "PUT /projects/:id/filter", :type => :request do
           }
           put "/projects/#{@project1.id}/filter", params: @parameters.to_json, headers: {'Authorization' => @authToken, 'CONTENT_TYPE' => 'application/json', 'ACCEPT' => 'application/json'}
         end
-        
+
         it 'returns 200' do
           expect(response).to have_http_status(:ok)
         end
-        
+
         it 'contains the expected entries' do
           body = JSON.parse(response.body)
           expect(body['Groups']).to include(@project1.groups[0].id.to_s)
           expect(body['Groups']).not_to include(@project2.groups[0].id.to_s)
         end
       end
-      
+
       context 'equals multiple' do
         before do
           @parameters = {
@@ -67,18 +67,18 @@ describe "PUT /projects/:id/filter", :type => :request do
           }
           put "/projects/#{@project1.id}/filter", params: @parameters.to_json, headers: {'Authorization' => @authToken, 'CONTENT_TYPE' => 'application/json', 'ACCEPT' => 'application/json'}
         end
-        
+
         it 'returns 200' do
           expect(response).to have_http_status(:ok)
         end
-        
+
         it 'contains the expected entries' do
           body = JSON.parse(response.body)
           expect(body['Groups']).to include(@project1.groups[0].id.to_s)
           expect(body['Groups']).not_to include(@project2.groups[0].id.to_s)
         end
       end
-      
+
       context 'contains one' do
         before do
           @parameters = {
@@ -93,18 +93,18 @@ describe "PUT /projects/:id/filter", :type => :request do
           }
           put "/projects/#{@project1.id}/filter", params: @parameters.to_json, headers: {'Authorization' => @authToken, 'CONTENT_TYPE' => 'application/json', 'ACCEPT' => 'application/json'}
         end
-        
+
         it 'returns 200' do
           expect(response).to have_http_status(:ok)
         end
-        
+
         it 'contains the expected entries' do
           body = JSON.parse(response.body)
           expect(body['Groups']).to include(@project1.groups[0].id.to_s)
           expect(body['Groups']).not_to include(@project2.groups[0].id.to_s)
         end
       end
-      
+
       context 'contains multiple' do
         before do
           @parameters = {
@@ -119,18 +119,18 @@ describe "PUT /projects/:id/filter", :type => :request do
           }
           put "/projects/#{@project1.id}/filter", params: @parameters.to_json, headers: {'Authorization' => @authToken, 'CONTENT_TYPE' => 'application/json', 'ACCEPT' => 'application/json'}
         end
-        
+
         it 'returns 200' do
           expect(response).to have_http_status(:ok)
         end
-        
+
         it 'contains the expected entries' do
           body = JSON.parse(response.body)
           expect(body['Groups']).to include(@project1.groups[0].id.to_s)
           expect(body['Groups']).not_to include(@project2.groups[0].id.to_s)
         end
       end
-      
+
       context 'not equals one' do
         before do
           @parameters = {
@@ -145,11 +145,11 @@ describe "PUT /projects/:id/filter", :type => :request do
           }
           put "/projects/#{@project1.id}/filter", params: @parameters.to_json, headers: {'Authorization' => @authToken, 'CONTENT_TYPE' => 'application/json', 'ACCEPT' => 'application/json'}
         end
-        
+
         it 'returns 200' do
           expect(response).to have_http_status(:ok)
         end
-        
+
         it 'contains the expected entries' do
           body = JSON.parse(response.body)
           expect(body['Groups']).not_to include(@project1.groups[0].id.to_s)
@@ -158,7 +158,7 @@ describe "PUT /projects/:id/filter", :type => :request do
           end
         end
       end
-      
+
       context 'not equals multiple' do
         before do
           @parameters = {
@@ -173,11 +173,11 @@ describe "PUT /projects/:id/filter", :type => :request do
           }
           put "/projects/#{@project1.id}/filter", params: @parameters.to_json, headers: {'Authorization' => @authToken, 'CONTENT_TYPE' => 'application/json', 'ACCEPT' => 'application/json'}
         end
-        
+
         it 'returns 200' do
           expect(response).to have_http_status(:ok)
         end
-        
+
         it 'contains the expected entries' do
           body = JSON.parse(response.body)
           expect(body['Groups']).not_to include(@project1.groups[0].id.to_s)
@@ -187,7 +187,7 @@ describe "PUT /projects/:id/filter", :type => :request do
           end
         end
       end
-      
+
       context 'not contains one' do
         before do
           @parameters = {
@@ -202,11 +202,11 @@ describe "PUT /projects/:id/filter", :type => :request do
           }
           put "/projects/#{@project1.id}/filter", params: @parameters.to_json, headers: {'Authorization' => @authToken, 'CONTENT_TYPE' => 'application/json', 'ACCEPT' => 'application/json'}
         end
-        
+
         it 'returns 200' do
           expect(response).to have_http_status(:ok)
         end
-        
+
         it 'contains the expected entries' do
           body = JSON.parse(response.body)
           expect(body['Groups']).not_to include(@project1.groups[0].id.to_s)
@@ -215,7 +215,7 @@ describe "PUT /projects/:id/filter", :type => :request do
           end
         end
       end
-      
+
       context 'not contains multiple' do
         before do
           @parameters = {
@@ -230,11 +230,11 @@ describe "PUT /projects/:id/filter", :type => :request do
           }
           put "/projects/#{@project1.id}/filter", params: @parameters.to_json, headers: {'Authorization' => @authToken, 'CONTENT_TYPE' => 'application/json', 'ACCEPT' => 'application/json'}
         end
-        
+
         it 'returns 200' do
           expect(response).to have_http_status(:ok)
         end
-        
+
         it 'contains the expected entries' do
           body = JSON.parse(response.body)
           expect(body['Groups']).not_to include(@project1.groups[0].id.to_s)
@@ -245,7 +245,7 @@ describe "PUT /projects/:id/filter", :type => :request do
         end
       end
     end
-    
+
     context 'and leaf-based queries' do
       context 'equals one' do
         before do
@@ -263,17 +263,17 @@ describe "PUT /projects/:id/filter", :type => :request do
           }
           put "/projects/#{@project1.id}/filter", params: @parameters.to_json, headers: {'Authorization' => @authToken, 'CONTENT_TYPE' => 'application/json', 'ACCEPT' => 'application/json'}
         end
-        
+
         it 'returns 200' do
           expect(response).to have_http_status(:ok)
         end
-        
+
         it 'contains the expected entries' do
           body = JSON.parse(response.body)
           expect(body['Leafs']).to eq [@project1.leafs[5].id.to_s]
         end
       end
-      
+
       context 'equals multiple' do
         before do
           @project1.leafs[5].update(material: 'Copy paper')
@@ -294,11 +294,11 @@ describe "PUT /projects/:id/filter", :type => :request do
           }
           put "/projects/#{@project1.id}/filter", params: @parameters.to_json, headers: {'Authorization' => @authToken, 'CONTENT_TYPE' => 'application/json', 'ACCEPT' => 'application/json'}
         end
-        
+
         it 'returns 200' do
           expect(response).to have_http_status(:ok)
         end
-        
+
         it 'contains the expected entries' do
           body = JSON.parse(response.body)
           expect(body['Leafs'].length).to eq 3
@@ -307,7 +307,7 @@ describe "PUT /projects/:id/filter", :type => :request do
           expect(body['Leafs']).to include(@project1.leafs[16].id.to_s)
         end
       end
-      
+
       context 'not equals one' do
         before do
           @project1.leafs[5].update(material: 'Copy paper')
@@ -324,11 +324,11 @@ describe "PUT /projects/:id/filter", :type => :request do
           }
           put "/projects/#{@project1.id}/filter", params: @parameters.to_json, headers: {'Authorization' => @authToken, 'CONTENT_TYPE' => 'application/json', 'ACCEPT' => 'application/json'}
         end
-        
+
         it 'returns 200' do
           expect(response).to have_http_status(:ok)
         end
-        
+
         it 'contains the expected entries' do
           body = JSON.parse(response.body)
           expect(body['Leafs'].count).to eq @project1.leafs.count-1
@@ -336,7 +336,7 @@ describe "PUT /projects/:id/filter", :type => :request do
           expect(body['Leafs']).not_to include(@project2.leafs[5].id.to_s)
         end
       end
-      
+
       context 'not equals multiple' do
         before do
           @project1.leafs[5].update(material: 'Copy paper')
@@ -357,11 +357,11 @@ describe "PUT /projects/:id/filter", :type => :request do
           }
           put "/projects/#{@project1.id}/filter", params: @parameters.to_json, headers: {'Authorization' => @authToken, 'CONTENT_TYPE' => 'application/json', 'ACCEPT' => 'application/json'}
         end
-        
+
         it 'returns 200' do
           expect(response).to have_http_status(:ok)
         end
-        
+
         it 'contains the expected entries' do
           body = JSON.parse(response.body)
           expect(body['Leafs'].count).to eq @project1.leafs.count-3
@@ -373,7 +373,7 @@ describe "PUT /projects/:id/filter", :type => :request do
           expect(body['Leafs']).not_to include(@project2.leafs[16].id.to_s)
         end
       end
-      
+
       context 'with legacy conjoined_leaf_order attribute' do
         before do
           @parameters = {
@@ -388,18 +388,18 @@ describe "PUT /projects/:id/filter", :type => :request do
           }
           put "/projects/#{@project1.id}/filter", params: @parameters.to_json, headers: {'Authorization' => @authToken, 'CONTENT_TYPE' => 'application/json', 'ACCEPT' => 'application/json'}
         end
-        
+
         it 'returns 200' do
           expect(response).to have_http_status(:ok)
         end
-        
+
         it 'contains the expected entries' do
           body = JSON.parse(response.body)
           expect(body['Leafs']).to eq [@project1.leafs[-1].id.to_s]
         end
       end
     end
-    
+
     context 'and side-based queries' do
       context 'equals one' do
         before do
@@ -417,17 +417,17 @@ describe "PUT /projects/:id/filter", :type => :request do
           }
           put "/projects/#{@project1.id}/filter", params: @parameters.to_json, headers: {'Authorization' => @authToken, 'CONTENT_TYPE' => 'application/json', 'ACCEPT' => 'application/json'}
         end
-        
+
         it 'returns 200' do
           expect(response).to have_http_status(:ok)
         end
-        
+
         it 'contains the expected entries' do
           body = JSON.parse(response.body)
           expect(body['Sides']).to eq [@project1.sides[7].id.to_s]
         end
       end
-      
+
       context 'equals multiple' do
         before do
           @project1.sides[7].update(script_direction: 'Top-To-Bottom')
@@ -445,11 +445,11 @@ describe "PUT /projects/:id/filter", :type => :request do
           }
           put "/projects/#{@project1.id}/filter", params: @parameters.to_json, headers: {'Authorization' => @authToken, 'CONTENT_TYPE' => 'application/json', 'ACCEPT' => 'application/json'}
         end
-        
+
         it 'returns 200' do
           expect(response).to have_http_status(:ok)
         end
-        
+
         it 'contains the expected entries' do
           body = JSON.parse(response.body)
           expect(body['Sides'].count).to eq 2
@@ -457,7 +457,7 @@ describe "PUT /projects/:id/filter", :type => :request do
           expect(body['Sides']).to include @project1.sides[10].id.to_s
         end
       end
-      
+
       context 'not equals one' do
         before do
           @project1.sides[7].update(script_direction: 'Top-To-Bottom')
@@ -474,18 +474,18 @@ describe "PUT /projects/:id/filter", :type => :request do
           }
           put "/projects/#{@project1.id}/filter", params: @parameters.to_json, headers: {'Authorization' => @authToken, 'CONTENT_TYPE' => 'application/json', 'ACCEPT' => 'application/json'}
         end
-        
+
         it 'returns 200' do
           expect(response).to have_http_status(:ok)
         end
-        
+
         it 'contains the expected entries' do
           body = JSON.parse(response.body)
           expect(body['Sides'].count).to eq @project1.sides.count-1
           expect(body['Sides']).not_to include @project1.sides[7].id.to_s
         end
       end
-      
+
       context 'not equals multiple' do
         before do
           @project1.sides[7].update(script_direction: 'Top-To-Bottom')
@@ -503,11 +503,11 @@ describe "PUT /projects/:id/filter", :type => :request do
           }
           put "/projects/#{@project1.id}/filter", params: @parameters.to_json, headers: {'Authorization' => @authToken, 'CONTENT_TYPE' => 'application/json', 'ACCEPT' => 'application/json'}
         end
-        
+
         it 'returns 200' do
           expect(response).to have_http_status(:ok)
         end
-        
+
         it 'contains the expected entries' do
           body = JSON.parse(response.body)
           expect(body['Sides'].count).to eq @project1.sides.count-2
@@ -515,7 +515,7 @@ describe "PUT /projects/:id/filter", :type => :request do
           expect(body['Sides']).not_to include @project1.sides[10].id.to_s
         end
       end
-      
+
       context 'contains one' do
         before do
           @project1.sides[9].update(page_number: 'PN0')
@@ -531,17 +531,17 @@ describe "PUT /projects/:id/filter", :type => :request do
           }
           put "/projects/#{@project1.id}/filter", params: @parameters.to_json, headers: {'Authorization' => @authToken, 'CONTENT_TYPE' => 'application/json', 'ACCEPT' => 'application/json'}
         end
-        
+
         it 'returns 200' do
           expect(response).to have_http_status(:ok)
         end
-        
+
         it 'contains the expected entries' do
           body = JSON.parse(response.body)
           expect(body['Sides']).to eq [@project1.sides[9].id.to_s]
         end
       end
-      
+
       context 'contains multiple' do
         before do
           @project1.sides[6].update(page_number: 'PN0')
@@ -559,11 +559,11 @@ describe "PUT /projects/:id/filter", :type => :request do
           }
           put "/projects/#{@project1.id}/filter", params: @parameters.to_json, headers: {'Authorization' => @authToken, 'CONTENT_TYPE' => 'application/json', 'ACCEPT' => 'application/json'}
         end
-        
+
         it 'returns 200' do
           expect(response).to have_http_status(:ok)
         end
-        
+
         it 'contains the expected entries' do
           body = JSON.parse(response.body)
           expect(body['Sides'].count).to eq 2
@@ -571,7 +571,7 @@ describe "PUT /projects/:id/filter", :type => :request do
           expect(body['Sides']).to include @project1.sides[11].id.to_s
         end
       end
-      
+
       context 'not contains one' do
         before do
           @project1.sides[9].update(page_number: 'PN0')
@@ -587,18 +587,18 @@ describe "PUT /projects/:id/filter", :type => :request do
           }
           put "/projects/#{@project1.id}/filter", params: @parameters.to_json, headers: {'Authorization' => @authToken, 'CONTENT_TYPE' => 'application/json', 'ACCEPT' => 'application/json'}
         end
-        
+
         it 'returns 200' do
           expect(response).to have_http_status(:ok)
         end
-        
+
         it 'contains the expected entries' do
           body = JSON.parse(response.body)
           expect(body['Sides'].count).to eq @project1.sides.count-1
           expect(body['Sides']).not_to include @project1.sides[9].id.to_s
         end
       end
-      
+
       context 'not contains multiple' do
         before do
           @project1.sides[6].update(page_number: 'PN0')
@@ -616,11 +616,11 @@ describe "PUT /projects/:id/filter", :type => :request do
           }
           put "/projects/#{@project1.id}/filter", params: @parameters.to_json, headers: {'Authorization' => @authToken, 'CONTENT_TYPE' => 'application/json', 'ACCEPT' => 'application/json'}
         end
-        
+
         it 'returns 200' do
           expect(response).to have_http_status(:ok)
         end
-        
+
         it 'contains the expected entries' do
           body = JSON.parse(response.body)
           expect(body['Sides'].count).to eq @project1.sides.count-2
@@ -630,15 +630,15 @@ describe "PUT /projects/:id/filter", :type => :request do
         end
       end
     end
-    
+
     context 'and note-based queries' do
       before do
-        @note1 = FactoryGirl.create(:note, project_id: @project1.id, attachments: [@project1.groups[1], @project1.leafs[5], @project1.sides[14], @project1.sides[15]], title: "ULTRA WAAHOO")
-        @note2 = FactoryGirl.create(:note, project_id: @project1.id, attachments: [@project1.groups[2], @project1.leafs[7], @project1.sides[2], @project1.sides[3]], title: "XTREME FOOBAR")
-        @note3 = FactoryGirl.create(:note, project_id: @project1.id, attachments: [@project1.groups[3], @project1.leafs[3], @project1.sides[10], @project1.sides[11]], title: "CREEPY WAAHOO")
-        @notebad = FactoryGirl.create(:note, project_id: @project2.id, attachments: [@project2.groups[1], @project2.leafs[5], @project2.sides[14], @project2.sides[15]], title: "ULTRA WAAHOO")
+        @note1 = FactoryGirl.create(:term, project_id: @project1.id, attachments: [@project1.groups[1], @project1.leafs[5], @project1.sides[14], @project1.sides[15]], title: "ULTRA WAAHOO")
+        @note2 = FactoryGirl.create(:term, project_id: @project1.id, attachments: [@project1.groups[2], @project1.leafs[7], @project1.sides[2], @project1.sides[3]], title: "XTREME FOOBAR")
+        @note3 = FactoryGirl.create(:term, project_id: @project1.id, attachments: [@project1.groups[3], @project1.leafs[3], @project1.sides[10], @project1.sides[11]], title: "CREEPY WAAHOO")
+        @notebad = FactoryGirl.create(:term, project_id: @project2.id, attachments: [@project2.groups[1], @project2.leafs[5], @project2.sides[14], @project2.sides[15]], title: "ULTRA WAAHOO")
       end
-      
+
       context "equals one" do
         before do
           @parameters = {
@@ -653,17 +653,17 @@ describe "PUT /projects/:id/filter", :type => :request do
           }
           put "/projects/#{@project1.id}/filter", params: @parameters.to_json, headers: {'Authorization' => @authToken, 'CONTENT_TYPE' => 'application/json', 'ACCEPT' => 'application/json'}
         end
-        
+
         it 'returns 200' do
           expect(response).to have_http_status(:ok)
         end
-        
+
         it 'contains the expected entries' do
           body = JSON.parse(response.body)
           expect(body['Notes']).to eq [@note1.id.to_s]
         end
       end
-      
+
       context "equals multiple" do
         before do
           @parameters = {
@@ -678,11 +678,11 @@ describe "PUT /projects/:id/filter", :type => :request do
           }
           put "/projects/#{@project1.id}/filter", params: @parameters.to_json, headers: {'Authorization' => @authToken, 'CONTENT_TYPE' => 'application/json', 'ACCEPT' => 'application/json'}
         end
-        
+
         it 'returns 200' do
           expect(response).to have_http_status(:ok)
         end
-        
+
         it 'contains the expected entries' do
           body = JSON.parse(response.body)
           expect(body['Notes'].count).to eq 2
@@ -690,7 +690,7 @@ describe "PUT /projects/:id/filter", :type => :request do
           expect(body['Notes']).to include @note3.id.to_s
         end
       end
-      
+
       context "not equals one" do
         before do
           @parameters = {
@@ -705,11 +705,11 @@ describe "PUT /projects/:id/filter", :type => :request do
           }
           put "/projects/#{@project1.id}/filter", params: @parameters.to_json, headers: {'Authorization' => @authToken, 'CONTENT_TYPE' => 'application/json', 'ACCEPT' => 'application/json'}
         end
-        
+
         it 'returns 200' do
           expect(response).to have_http_status(:ok)
         end
-        
+
         it 'contains the expected entries' do
           body = JSON.parse(response.body)
           expect(body['Notes'].count).to eq @project1.notes.count-1
@@ -717,7 +717,7 @@ describe "PUT /projects/:id/filter", :type => :request do
           expect(body['Notes']).not_to include @notebad.id.to_s
         end
       end
-      
+
       context "not equals multiple" do
         before do
           @parameters = {
@@ -732,11 +732,11 @@ describe "PUT /projects/:id/filter", :type => :request do
           }
           put "/projects/#{@project1.id}/filter", params: @parameters.to_json, headers: {'Authorization' => @authToken, 'CONTENT_TYPE' => 'application/json', 'ACCEPT' => 'application/json'}
         end
-        
+
         it 'returns 200' do
           expect(response).to have_http_status(:ok)
         end
-        
+
         it 'contains the expected entries' do
           body = JSON.parse(response.body)
           expect(body['Notes'].count).to eq @project1.notes.count-2
@@ -745,7 +745,7 @@ describe "PUT /projects/:id/filter", :type => :request do
           expect(body['Notes']).not_to include @notebad.id.to_s
         end
       end
-      
+
       context "contains one" do
         before do
           @parameters = {
@@ -760,17 +760,17 @@ describe "PUT /projects/:id/filter", :type => :request do
           }
           put "/projects/#{@project1.id}/filter", params: @parameters.to_json, headers: {'Authorization' => @authToken, 'CONTENT_TYPE' => 'application/json', 'ACCEPT' => 'application/json'}
         end
-        
+
         it 'returns 200' do
           expect(response).to have_http_status(:ok)
         end
-        
+
         it 'contains the expected entries' do
           body = JSON.parse(response.body)
           expect(body['Notes']).to eq [@note1.id.to_s]
         end
       end
-      
+
       context "contains multiple" do
         before do
           @parameters = {
@@ -785,11 +785,11 @@ describe "PUT /projects/:id/filter", :type => :request do
           }
           put "/projects/#{@project1.id}/filter", params: @parameters.to_json, headers: {'Authorization' => @authToken, 'CONTENT_TYPE' => 'application/json', 'ACCEPT' => 'application/json'}
         end
-        
+
         it 'returns 200' do
           expect(response).to have_http_status(:ok)
         end
-        
+
         it 'contains the expected entries' do
           body = JSON.parse(response.body)
           expect(body['Notes'].count).to eq 2
@@ -797,7 +797,7 @@ describe "PUT /projects/:id/filter", :type => :request do
           expect(body['Notes']).to include @note3.id.to_s
         end
       end
-      
+
       context "not contains one" do
         before do
           @parameters = {
@@ -812,18 +812,18 @@ describe "PUT /projects/:id/filter", :type => :request do
           }
           put "/projects/#{@project1.id}/filter", params: @parameters.to_json, headers: {'Authorization' => @authToken, 'CONTENT_TYPE' => 'application/json', 'ACCEPT' => 'application/json'}
         end
-        
+
         it 'returns 200' do
           expect(response).to have_http_status(:ok)
         end
-        
+
         it 'contains the expected entries' do
           body = JSON.parse(response.body)
           expect(body['Notes'].count).to eq @project1.notes.count-1
           expect(body['Notes']).not_to include @note1.id.to_s
         end
       end
-      
+
       context "not contains multiple" do
         before do
           @parameters = {
@@ -838,20 +838,20 @@ describe "PUT /projects/:id/filter", :type => :request do
           }
           put "/projects/#{@project1.id}/filter", params: @parameters.to_json, headers: {'Authorization' => @authToken, 'CONTENT_TYPE' => 'application/json', 'ACCEPT' => 'application/json'}
         end
-        
+
         it 'returns 200' do
           expect(response).to have_http_status(:ok)
         end
-        
+
         it 'contains the expected entries' do
           body = JSON.parse(response.body)
-          expect(body['Notes'].count).to eq @project1.notes.count-2
+          expect(body['Notes'].count).to eq @project1.terms.count-2
           expect(body['Notes']).not_to include @note2.id.to_s
           expect(body['Notes']).not_to include @note3.id.to_s
         end
       end
     end
-    
+
     context 'and compound conditions' do
       context 'using AND' do
         before do
@@ -874,18 +874,18 @@ describe "PUT /projects/:id/filter", :type => :request do
           }
           put "/projects/#{@project1.id}/filter", params: @parameters.to_json, headers: {'Authorization' => @authToken, 'CONTENT_TYPE' => 'application/json', 'ACCEPT' => 'application/json'}
         end
-        
+
         it 'returns 200' do
           expect(response).to have_http_status(:ok)
         end
-        
+
         it 'contains the expected entries' do
           body = JSON.parse(response.body)
           expect(body['Groups']).to include(@project1.groups[0].id.to_s)
           expect(body['Groups']).not_to include(@project2.groups[0].id.to_s)
         end
       end
-      
+
       context 'using OR' do
         before do
           @parameters = {
@@ -914,11 +914,11 @@ describe "PUT /projects/:id/filter", :type => :request do
           }
           put "/projects/#{@project1.id}/filter", params: @parameters.to_json, headers: {'Authorization' => @authToken, 'CONTENT_TYPE' => 'application/json', 'ACCEPT' => 'application/json'}
         end
-        
+
         it 'returns 200' do
           expect(response).to have_http_status(:ok)
         end
-        
+
         it 'contains the expected entries' do
           body = JSON.parse(response.body)
           expect(body['Groups'].count).to eq @project1.groups.count
@@ -946,7 +946,7 @@ describe "PUT /projects/:id/filter", :type => :request do
       before do
         put "/projects/#{@project1.id}missing/filter", params: @parameters.to_json, headers: {'Authorization' => @authToken}
       end
-    
+
       it 'returns 404' do
         expect(response).to have_http_status(:not_found)
       end
@@ -956,7 +956,7 @@ describe "PUT /projects/:id/filter", :type => :request do
       before do
         put "/projects/#{@project2.id}/filter", params: @parameters.to_json, headers: {'Authorization' => @authToken}
       end
-    
+
       it 'returns 401' do
         expect(response).to have_http_status(:unauthorized)
       end

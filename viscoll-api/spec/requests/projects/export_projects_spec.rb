@@ -23,13 +23,13 @@ describe "GET /projects/:id/export/:format", :type => :request do
     @testgroup = FactoryGirl.create(:group, project: @project, nestLevel: 1, title: 'Group 1')
     @upleafs = 2.times.collect { FactoryGirl.create(:leaf, project: @project, parentID: @testgroup.id.to_s, nestLevel: 1) }
     @testmidgroup = FactoryGirl.create(:group, project: @project, parentID: @testgroup.id.to_s, nestLevel: 2, title: 'Group 2')
-    @midleafs = 2.times.collect { FactoryGirl.create(:leaf, project: @project, parentID: @testmidgroup.id.to_s, nestLevel: 2) }  
+    @midleafs = 2.times.collect { FactoryGirl.create(:leaf, project: @project, parentID: @testmidgroup.id.to_s, nestLevel: 2) }
     @botleafs = 2.times.collect { FactoryGirl.create(:leaf, project: @project, parentID: @testgroup.id.to_s, nestLevel: 1) }
     @botleafs[1].update(type: 'Endleaf')
     @project.add_groupIDs([@testgroup.id.to_s, @testmidgroup.id.to_s], 0)
     @testgroup.add_members([@upleafs[0].id.to_s, @upleafs[1].id.to_s, @testmidgroup.id.to_s, @botleafs[0].id.to_s, @botleafs[1].id.to_s], 0)
     @testmidgroup.add_members([@midleafs[0].id.to_s, @midleafs[1].id.to_s], 0)
-    @testnote = FactoryGirl.create(:note, project: @project, title: 'Test Note', type: 'Ink', description: 'This is a test', show: true, objects: {Group: [@testgroup.id.to_s], Leaf: [@botleafs[0].id.to_s], Recto: [@botleafs[0].rectoID], Verso: [@botleafs[0].versoID]})
+    @testnote = FactoryGirl.create(:term, project: @project, title: 'Test Note', type: 'Ink', description: 'This is a test', show: true, objects: {Group: [@testgroup.id.to_s], Leaf: [@botleafs[0].id.to_s], Recto: [@botleafs[0].rectoID], Verso: [@botleafs[0].versoID]})
     @testimage = FactoryGirl.create(:pixel, user: @user, projectIDs: [@project.id.to_s], sideIDs: [@upleafs[0].rectoID], filename: 'pixel.png')
     Side.find(@upleafs[0].rectoID).update(image: {
       manifestID: 'DIYImages',
@@ -37,11 +37,11 @@ describe "GET /projects/:id/export/:format", :type => :request do
       url: "https://dummy.library.utoronto.ca/images/#{@testimage.id}_pixel.png"
     })
   end
-  
+
   before :each do
     @format = 'json'
   end
-  
+
   before :all do
     imagePath = "#{Rails.root}/public/uploads"
     File.new(imagePath+'/pixel', 'w')
@@ -62,11 +62,11 @@ describe "GET /projects/:id/export/:format", :type => :request do
         get "/projects/#{@project.id}/export/#{@format}", headers: {'Authorization' => @authToken, 'CONTENT_TYPE' => 'application/json', 'ACCEPT' => 'application/json'}
         @body = JSON.parse(response.body)
       end
-      
+
       it 'should return 200' do
         expect(response).to have_http_status(:ok)
       end
-      
+
       it 'should have expected content' do
         export_result = @body['Export']
         image_result = @body['Images']
@@ -113,18 +113,18 @@ describe "GET /projects/:id/export/:format", :type => :request do
         expect(image_result['exportedImages']).to eq("https://vceditor.library.upenn.edu/images/zip/#{@project.id}")
       end
     end
-    
+
     context 'for XML export' do
       before do
         @format = 'xml'
         get "/projects/#{@project.id}/export/#{@format}", headers: {'Authorization' => @authToken, 'CONTENT_TYPE' => 'application/json', 'ACCEPT' => 'application/json'}
         @body = JSON.parse(response.body)
       end
-      
+
       it 'should return 200' do
         expect(response).to have_http_status(:ok)
       end
-      
+
       it 'should have expected content' do
         expect(@body['type']).to eq 'xml'
         expect(@body['Images']['exportedImages']).to eq("https://vceditor.library.upenn.edu/images/zip/#{@project.id}")
@@ -177,50 +177,50 @@ describe "GET /projects/:id/export/:format", :type => :request do
         # )
       end
     end
-    
+
     context 'with missing project' do
       before do
         get "/projects/#{@project.id}missing/export/#{@format}", headers: {'Authorization' => @authToken, 'CONTENT_TYPE' => 'application/json', 'ACCEPT' => 'application/json'}
         @body = JSON.parse(response.body)
       end
-      
+
       it 'should return 404' do
         expect(response).to have_http_status(:not_found)
       end
-      
+
       it 'should show error' do
         expect(@body['error']).to eq "project not found with id #{@project.id}missing"
       end
     end
-    
+
     context 'with unauthorized project' do
       before do
         @project.update(user: FactoryGirl.create(:user))
         get "/projects/#{@project.id}/export/#{@format}", headers: {'Authorization' => @authToken, 'CONTENT_TYPE' => 'application/json', 'ACCEPT' => 'application/json'}
       end
-      
+
       it 'should return 401' do
         expect(response).to have_http_status(:unauthorized)
       end
     end
-    
+
     context 'with invalid format' do
       before do
         @format = 'waahoo'
         get "/projects/#{@project.id}/export/#{@format}", headers: {'Authorization' => @authToken, 'CONTENT_TYPE' => 'application/json', 'ACCEPT' => 'application/json'}
         @body = JSON.parse(response.body)
       end
-      
+
       it 'should return 422' do
         expect(response).to have_http_status(:unprocessable_entity)
       end
-      
+
       it 'should show error' do
         expect(@body['error']).to eq "Export format must be one of [json, xml, svg, formula]"
       end
     end
   end
-    
+
   context 'with corrupted authorization' do
     before do
       get "/projects/#{@project.id}/export/#{@format}", headers: {'Authorization' => @authToken+'asdf', 'CONTENT_TYPE' => 'application/json', 'ACCEPT' => 'application/json'}

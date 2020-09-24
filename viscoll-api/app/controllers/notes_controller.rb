@@ -5,39 +5,39 @@ class NotesController < ApplicationController
 
   # POST /notes
   def create
-    @note = Note.new(note_create_params)
+    @term = Term.new(note_create_params)
     begin
-      @project = Project.find(@note.project_id)
+      @project = Project.find(@term.project_id)
     rescue Mongoid::Errors::DocumentNotFound
-      render json: {project_id: "project not found with id "+@note.project_id}, status: :unprocessable_entity and return
+      render json: {project_id: "project not found with id "+@term.project_id}, status: :unprocessable_entity and return
     end
     if @project.user != current_user
       render json: {error: ''}, status: :unauthorized and return
     end
-    if @note.save
-      if not Project.find(@note.project_id).noteTypes.include?(@note.type)
-        @note.delete
-        render json: {type: "should be one of " +Project.find(@note.project_id).noteTypes.to_s}, status: :unprocessable_entity and return
+    if @term.save
+      if not Project.find(@term.project_id).noteTypes.include?(@term.type)
+        @term.delete
+        render json: {type: "should be one of " +Project.find(@term.project_id).noteTypes.to_s}, status: :unprocessable_entity and return
       end
     else
-      render json: @note.errors, status: :unprocessable_entity and return
+      render json: @term.errors, status: :unprocessable_entity and return
     end
   end
 
   # PATCH/PUT /notes/1
   def update
     type = note_update_params.to_h[:type]
-    if not Project.find(@note.project_id).noteTypes.include?(type)
-      render json: {type: "should be one of " +Project.find(@note.project_id).noteTypes.to_s}, status: :unprocessable_entity and return
+    if not Project.find(@term.project_id).noteTypes.include?(type)
+      render json: {type: "should be one of " +Project.find(@term.project_id).noteTypes.to_s}, status: :unprocessable_entity and return
     end
-    if !@note.update(note_update_params)
-      render json: @note.errors, status: :unprocessable_entity and return
+    if !@term.update(note_update_params)
+      render json: @term.errors, status: :unprocessable_entity and return
     end
   end
 
   # DELETE /notes/1
   def destroy
-    @note.destroy
+    @term.destroy
   end
 
   # PUT /notes/1/link
@@ -67,12 +67,12 @@ class NotesController < ApplicationController
         rescue Mongoid::Errors::DocumentNotFound
           render json: {id: type + " object not found with id "+id}, status: :unprocessable_entity and return
         end
-        @object.notes.push(@note)
+        @object.notes.push(@term)
         @object.save
-        if (not @note.objects[type].include?(id))
-          @note.objects[type].push(id)
+        if (not @term.objects[type].include?(id))
+          @term.objects[type].push(id)
         end
-        @note.save
+        @term.save
       end
     rescue Exception => e
       render json: {error: e.message}, status: :unprocessable_entity and return
@@ -106,10 +106,10 @@ class NotesController < ApplicationController
         rescue Mongoid::Errors::DocumentNotFound
           render json: {id: type + " object not found with id "+id}, status: :unprocessable_entity and return
         end
-        @object.notes.delete(@note)
+        @object.notes.delete(@term)
         @object.save
-        @note.objects[type].delete(id)
-        @note.save
+        @term.objects[type].delete(id)
+        @term.save
       end
     rescue Exception => e
       render json: {error: e.message}, status: :unprocessable_entity and return
@@ -171,8 +171,8 @@ class NotesController < ApplicationController
     # Use callbacks to share common setup or constraints between actions.
     def set_note
       begin
-        @note = Note.find(params[:id])
-        @project = Project.find(@note.project_id)
+        @term    = Term.find(params[:id])
+        @project = Project.find(@term.project_id)
         if (@project.user_id!=current_user.id)
           render json: {error: ""}, status: :unauthorized and return
         end
@@ -182,7 +182,7 @@ class NotesController < ApplicationController
         render json: {error: e.message}, status: :unprocessable_entity and return
       end
     end
-    
+
     def set_attached_project
       project_id = note_type_params.to_h[:project_id]
       begin
@@ -195,13 +195,13 @@ class NotesController < ApplicationController
       end
     end
 
-    # Never trust parameters from the scary internet, only allow the white list through.    
+    # Never trust parameters from the scary internet, only allow the white list through.
     def note_create_params
-      params.require(:note).permit(:project_id, :id, :title, :type, :description, :uri, :show)
+      params.require(:term).permit(:project_id, :id, :title, :type, :description, :uri, :show)
     end
 
     def note_update_params
-      params.require(:note).permit(:title, :type, :description, :uri, :show)
+      params.require(:term).permit(:title, :type, :description, :uri, :show)
     end
 
     def note_object_link_params

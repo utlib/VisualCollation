@@ -8,7 +8,7 @@ json.set! "active" do
   json.noteTypes @data[:project][:noteTypes]
 
   json.set! "manifests" do
-    json.set! "DIYImages" do 
+    json.set! "DIYImages" do
       json.id "DIYImages"
       json.images @diyImages
       json.name "Uploaded Images"
@@ -25,7 +25,7 @@ json.set! "active" do
   json.Leafs @data[:leafs]
   json.Rectos @data[:rectos]
   json.Versos @data[:versos]
-  json.Notes @data[:notes]
+  json.Notes @data[:terms]
 end
 
 json.set! "dashboard" do
@@ -35,7 +35,7 @@ json.set! "dashboard" do
     end
   end
 
-  json.set! "images" do 
+  json.set! "images" do
     json.array!(@images) do | image |
       json.extract! image, :id, :projectIDs, :sideIDs
       json.url @base_api_url+"/images/"+image.id.to_s+"_"+image.filename

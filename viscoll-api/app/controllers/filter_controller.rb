@@ -1,7 +1,7 @@
 class FilterController < ApplicationController
   before_action :authenticate!
   before_action :set_project, only: [:show]
-  
+
   # PUT /projects/filter
   def show
     begin
@@ -21,7 +21,7 @@ class FilterController < ApplicationController
       @groups = finalResponse[:Groups]
       @leafs = finalResponse[:Leafs]
       @sides = finalResponse[:Sides]
-      @notes = finalResponse[:Notes] 
+      @notes = finalResponse[:Notes]
       @groupsOfMatchingLeafs = finalResponse[:GroupsOfMatchingLeafs]
       @leafsOfMatchingSides = finalResponse[:LeafsOfMatchingSides]
       @groupsOfMatchingSides = finalResponse[:GroupsOfMatchingSides]
@@ -58,7 +58,7 @@ class FilterController < ApplicationController
       leafs = []
       sides = []
       notes = []
-      
+
       if attribute == 'conjoined_leaf_order'
         old_attribute = attribute
         attribute = 'conjoined_to'
@@ -80,7 +80,7 @@ class FilterController < ApplicationController
       when 'not contains'
         query_condition_params = { attribute => (values.length > 1) ? { '$nin': values.map { |x| /^#{Regexp.escape(x)}/} } : { '$not': /#{Regexp.escape(values[0])}/} }
       end
-      
+
       case type
       when 'group'
         groupQueryResult = @project.groups.only(:id).where(query_condition_params)
@@ -119,9 +119,9 @@ class FilterController < ApplicationController
       conjunctions.push(conjunction)
     end
     conjunctions.pop
-    result = sets[0] 
+    result = sets[0]
     conjunctions.each_with_index do |conjunction, index|
-      if (index+1 <= sets.length-1) 
+      if (index+1 <= sets.length-1)
         if conjunction == "AND"
           result = result & sets[index+1]
         else
@@ -143,9 +143,9 @@ class FilterController < ApplicationController
       elsif @objectIDs[:Sides].include?(objectID)
         response[:Sides].push(objectID)
       elsif @objectIDs[:Notes].include?(objectID)
-        note = Note.find(objectID)
-        groupIDs = note.objects[:Group] 
-        leafIDs = note.objects[:Leaf] 
+        note = Term.find(objectID)
+        groupIDs = note.objects[:Group]
+        leafIDs = note.objects[:Leaf]
         rectoIDs = note.objects[:Recto]
         versoIDs = note.objects[:Verso]
         groupIDs.each do |groupID|
@@ -214,6 +214,6 @@ class FilterController < ApplicationController
   def filter_params
     params.permit(:queries => [:type, :attribute, :condition, :conjunction, :values => []])
   end
-  
+
 
 end
