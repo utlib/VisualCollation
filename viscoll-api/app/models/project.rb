@@ -17,11 +17,11 @@ class Project
   has_many :groups, dependent: :delete
   has_many :leafs, dependent: :delete
   has_many :sides, dependent: :delete
-  has_many :notes, dependent: :delete
+  has_many :terms, dependent: :delete
 
   # Callbacks
   before_destroy :unlink_images_before_delete
- 
+
   # Validations
   validates_presence_of :title, :message => "Project title is required."
   validates_uniqueness_of :title, :message => "Project title: '%{value}', must be unique.", scope: :user
@@ -29,12 +29,12 @@ class Project
   def add_groupIDs(groupIDs, index)
     if self.groupIDs.length == 0
       self.groupIDs = groupIDs
-    else 
+    else
       self.groupIDs.insert(index, *groupIDs)
     end
     self.save()
   end
-  
+
   def remove_groupID(groupID)
     self.groupIDs.delete(groupID)
     self.save()

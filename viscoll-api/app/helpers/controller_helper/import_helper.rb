@@ -17,7 +17,7 @@ module ControllerHelper
       end
       data["project"]["user_id"] = current_user.id
       project = Project.create(data["project"])
-    
+
       # Create all Leafs
       data["Leafs"].each do |leafOrder, data|
         data["params"]["project_id"] = project.id
@@ -68,7 +68,7 @@ module ControllerHelper
           leafIDConjoinedTo = allLeafsIDsInOrder[data["conjoined_leaf_order"]-1]
           leaf = project.leafs.find(allLeafsIDsInOrder[leafOrder.to_i-1])
           leaf.update(conjoined_to: leafIDConjoinedTo)
-        end      
+        end
       end
 
       # Update all Rectos
@@ -89,7 +89,7 @@ module ControllerHelper
       # Create all Notes
       data["Notes"].each do |noteOrder, data|
         data["params"]["project_id"] = project.id
-        note = Note.new(data["params"])
+        note = Term.new(data["params"])
         # Generate objectIDs of Groups, Leafs, Rectos, Versos with this note
         groupIDs = []
         data["objects"]["Group"].each do |groupOrder|

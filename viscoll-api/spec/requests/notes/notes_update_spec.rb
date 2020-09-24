@@ -13,13 +13,13 @@ describe "PUT /notes/id", :type => :request do
       user: @user,
       noteTypes: ["Ink"]
     })
-    @note = FactoryGirl.create(:note, {
+    @term       = FactoryGirl.create(:term, {
       type: "Ink",
       project: @project,
       description: "vermilion"
     })
     @parameters = {
-      "note": {
+        term: {
         "project_id": @project.id.to_str,
         "title": "some title for note",
         "type": "Ink",
@@ -31,8 +31,8 @@ describe "PUT /notes/id", :type => :request do
   context 'with valid authorization' do
     context 'and valid note ID' do
       before do
-        put '/notes/'+@note.id, params: @parameters.to_json, headers: {'Authorization' => @authToken, 'CONTENT_TYPE' => 'application/json', 'ACCEPT' => 'application/json'}
-        @note.reload
+        put '/notes/'+@term.id, params: @parameters.to_json, headers: {'Authorization' => @authToken, 'CONTENT_TYPE' => 'application/json', 'ACCEPT' => 'application/json'}
+        @term.reload
       end
 
       it 'returns 204' do
@@ -40,13 +40,13 @@ describe "PUT /notes/id", :type => :request do
       end
 
       it 'Updates the note' do
-        expect(@note.description).to eq "sepia"
+        expect(@term.description).to eq "sepia"
       end
     end
 
     context 'and invalid note ID' do
       before do
-        put '/notes/'+@note.id+'invalid', params: @parameters.to_json, headers: {'Authorization' => @authToken, 'CONTENT_TYPE' => 'application/json', 'ACCEPT' => 'application/json'}
+        put '/notes/'+@term.id+'invalid', params: @parameters.to_json, headers: {'Authorization' => @authToken, 'CONTENT_TYPE' => 'application/json', 'ACCEPT' => 'application/json'}
       end
 
       it 'returns 404' do
@@ -56,8 +56,8 @@ describe "PUT /notes/id", :type => :request do
 
     context 'and failed update' do
       before do
-        allow_any_instance_of(Note).to receive(:update).and_return(false)
-        put '/notes/'+@note.id, params: @parameters.to_json, headers: {'Authorization' => @authToken, 'CONTENT_TYPE' => 'application/json', 'ACCEPT' => 'application/json'}
+        allow_any_instance_of(Term).to receive(:update).and_return(false)
+        put '/notes/'+@term.id, params: @parameters.to_json, headers: {'Authorization' => @authToken, 'CONTENT_TYPE' => 'application/json', 'ACCEPT' => 'application/json'}
       end
 
       it 'returns 422' do
@@ -67,9 +67,9 @@ describe "PUT /notes/id", :type => :request do
 
     context 'and out-of-context note type' do
       before do
-        @parameters[:note][:type] = "waahoo"
-        put '/notes/'+@note.id, params: @parameters.to_json, headers: {'Authorization' => @authToken, 'CONTENT_TYPE' => 'application/json', 'ACCEPT' => 'application/json'}
-        @note.reload
+        @parameters[:term][:type] = "waahoo"
+        put '/notes/'+@term.id, params: @parameters.to_json, headers: {'Authorization' => @authToken, 'CONTENT_TYPE' => 'application/json', 'ACCEPT' => 'application/json'}
+        @term.reload
         @body = JSON.parse(response.body)
       end
 
@@ -82,8 +82,8 @@ describe "PUT /notes/id", :type => :request do
       end
 
       it 'leaves the note alone' do
-        expect(@note.description).to eq "vermilion"
-        expect(@note.type).to eq "Ink"
+        expect(@term.description).to eq "vermilion"
+        expect(@term.type).to eq "Ink"
       end
     end
 
@@ -94,7 +94,7 @@ describe "PUT /notes/id", :type => :request do
           user: @user2,
           noteTypes: ["Ink"]
         })
-        @note2 = FactoryGirl.create(:note, {
+        @note2 = FactoryGirl.create(:term, {
           type: "Ink",
           project: @project2,
           description: "Prussian blue"
@@ -115,7 +115,7 @@ describe "PUT /notes/id", :type => :request do
 
   context 'with corrupted authorization' do
     before do
-      put '/notes/'+@note.id, params: @parameters.to_json, headers: {'Authorization' => @authToken+'asdf', 'CONTENT_TYPE' => 'application/json', 'ACCEPT' => 'application/json'}
+      put '/notes/'+@term.id, params: @parameters.to_json, headers: {'Authorization' => @authToken+'asdf', 'CONTENT_TYPE' => 'application/json', 'ACCEPT' => 'application/json'}
       @body = JSON.parse(response.body)
     end
 
@@ -130,7 +130,7 @@ describe "PUT /notes/id", :type => :request do
 
   context 'with empty authorization' do
     before do
-      put '/notes/'+@note.id, params: @parameters.to_json, headers: {'Authorization' => ""}
+      put '/notes/'+@term.id, params: @parameters.to_json, headers: {'Authorization' => ""}
     end
 
     it 'returns an bad request error' do
@@ -144,7 +144,7 @@ describe "PUT /notes/id", :type => :request do
 
   context 'invalid authorization' do
     before do
-      put '/notes/'+@note.id, params: @parameters.to_json, headers: {'Authorization' => "123456789"}
+      put '/notes/'+@term.id, params: @parameters.to_json, headers: {'Authorization' => "123456789"}
     end
 
     it 'returns an bad request error' do
@@ -158,7 +158,7 @@ describe "PUT /notes/id", :type => :request do
 
   context 'without authorization' do
     before do
-      put '/notes/'+@note.id
+      put '/notes/'+@term.id
     end
 
     it 'returns an unauthorized action error' do

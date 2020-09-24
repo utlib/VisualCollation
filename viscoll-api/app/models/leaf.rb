@@ -17,11 +17,11 @@ class Leaf
 
   # Relations
   belongs_to :project
-  has_and_belongs_to_many :notes, inverse_of: nil
+  has_and_belongs_to_many :terms, inverse_of: nil
 
   # Callbacks
   before_create :edit_ID, :create_sides
-  before_destroy :unlink_notes, :destroy_sides, :update_parent_group
+  before_destroy :unlink_terms, :destroy_sides, :update_parent_group
 
   def parent_project
     group = Group.find(self.parentID)
@@ -40,8 +40,8 @@ class Leaf
   end
 
   # If linked to note(s), remove link from the note(s)'s side
-  def unlink_notes 
-    self.notes.each do | note | 
+  def unlink_notes
+    self.notes.each do | note |
       note.objects[:Leaf].delete(self.id.to_s)
       note.save
     end

@@ -5,8 +5,8 @@ FactoryGirl.define do
   sequence :note_text do |n|
     "Blah #{n}"
   end
-  
-  factory :note do
+
+  factory :term do
     transient do
       attachments []
     end

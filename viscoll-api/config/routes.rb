@@ -58,7 +58,7 @@ Rails.application.routes.draw do
   post '/notes/type', to: 'notes#createType', defaults: {format: :json}, only: [:create]
   put '/notes/type', to: 'notes#updateType', defaults: {format: :json}, only: [:update]
   delete '/notes/type', to: 'notes#deleteType', defaults: {format: :json}, only: [:destroy]
-  resources :notes, defaults: {format: :json}, only: [:show, :update, :destroy, :create]
+  resources :terms, defaults: {format: :json}, only: [:show, :update, :destroy, :create]
 
   # DOCUMENTATION
   get '/docs' => redirect('/docs/index.html')

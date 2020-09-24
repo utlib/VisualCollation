@@ -6,7 +6,7 @@ module ControllerHelper
       groupIDs = []
       allGroups.each do |groupInfo|
         group = Group.new({project_id: project, title:"Default", type:"Quire"})
-        
+
         # Create leaves
         newlyAddedLeafs = []
         newlyAddedLeafIDs = []
@@ -24,7 +24,7 @@ module ControllerHelper
         end
         group.save
         groupIDs.push(group.id.to_s)
-        # Add folio numbers 
+        # Add folio numbers
         if folioNumber
           newlyAddedLeafs.each do |leaf|
             leaf.update_attribute(:folio_number, folioNumber.to_s)
@@ -60,13 +60,13 @@ module ControllerHelper
       return {name: response["label"][0..150], images: images}
     end
 
-    def assignTexture(leaves, startingTexture) 
+    def assignTexture(leaves, startingTexture)
       # Create pattern of hair and flesh depending on starting texture value
       textures = [startingTexture]
       textureOptions = []
       if startingTexture == "Hair"
         textureOptions += ["Flesh", "Hair"]
-      else 
+      else
         textureOptions += ["Hair", "Flesh"]
       end
       leaves.count.times do |i|
@@ -82,14 +82,14 @@ module ControllerHelper
           i += 1
           verso.update_attribute(:texture, textures[i])
           i += 1
-        else 
+        else
           recto.update_attribute(:texture, "Hair")
           verso.update_attribute(:texture, "Flesh")
         end
       end
     end
 
-    def generateResponse() 
+    def generateResponse()
       @project.reload
       @projectInformation = {}
       @groupIDs = @project.groupIDs
@@ -115,7 +115,7 @@ module ControllerHelper
       @project.manifests.each do |manifestID, manifest|
         manifestInformation = getManifestInformation(manifest[:url])
         manifestName = manifest[:name] ? manifest[:name] : manifestInformation[:name]
-        if manifestName.length>50 
+        if manifestName.length>50
           manifestName = manifestName[0,47] + "..."
         end
         @projectInformation[:manifests][manifestID][:images] = manifestInformation[:images].map { |image| image.merge({manifestID: manifestID})}
@@ -141,56 +141,56 @@ module ControllerHelper
       @groupIDs.each_with_index do | groupID, index|
         group = @project.groups.find(groupID)
         # group = Group.find(groupID)
-        @groups[group.id.to_s] = { 
-          "id": group.id.to_s, 
-          "type": group.type,
-          "title": group.title,
-          "tacketed": group.tacketed,
-          "sewing": group.sewing,
-          "nestLevel": group.nestLevel,
-          "parentID": group.parentID,
-          "notes": [],
-          "memberIDs": group.memberIDs,
-          "memberType": "Group",
+        @groups[group.id.to_s] = {
+            "id":         group.id.to_s,
+            "type":       group.type,
+            "title":      group.title,
+            "tacketed":   group.tacketed,
+            "sewing":     group.sewing,
+            "nestLevel":  group.nestLevel,
+            "parentID":   group.parentID,
+            terms:        [],
+            "memberIDs":  group.memberIDs,
+            "memberType": "Group",
         }
       end
-      @groups.each do | groupID, group | 
+      @groups.each do | groupID, group |
         if group[:nestLevel] == 1
           getLeafMembers(group[:memberIDs])
         end
       end
       @project.leafs.each do | leaf |
         @leafs[leaf.id.to_s] = {
-          "id": leaf.id.to_s,
-          "folio_number": leaf.folio_number,
-          "material": leaf.material,
-          "type": leaf.type,
-          "conjoined_to": leaf.conjoined_to,
-          "attached_above": leaf.attached_above,
-          "attached_below": leaf.attached_below,
-          "stub": leaf.stub,
-          "nestLevel": leaf.nestLevel,
-          "parentID": leaf.parentID,
-          "rectoID": leaf.rectoID,
-          "versoID": leaf.versoID,
-          "notes": [],
-          "memberType": "Leaf",
+            "id": leaf.id.to_s,
+            "folio_number": leaf.folio_number,
+            "material":       leaf.material,
+            "type":           leaf.type,
+            "conjoined_to":   leaf.conjoined_to,
+            "attached_above": leaf.attached_above,
+            "attached_below": leaf.attached_below,
+            "stub":           leaf.stub,
+            "nestLevel":      leaf.nestLevel,
+            "parentID":       leaf.parentID,
+            "rectoID":        leaf.rectoID,
+            "versoID":        leaf.versoID,
+            terms:            [],
+            "memberType":     "Leaf",
         }
       end
-      
-      
 
-      @project.sides.each do | side | 
+
+
+      @project.sides.each do | side |
         parentOrder =  @leafIDs.index(side.parentID) + 1
         obj = {
-          "id": side.id.to_s,
-          "parentID": side.parentID,
-          "page_number": side.page_number,
-          "texture": side.texture, 
-          "image": side.image,
-          "script_direction": side.script_direction,
-          "notes": [],
-          "memberType": side.id[0] == "R" ? "Recto" : "Verso"
+            "id":               side.id.to_s,
+            "parentID":         side.parentID,
+            "page_number":      side.page_number,
+            "texture":          side.texture,
+            "image":            side.image,
+            "script_direction": side.script_direction,
+            terms:              [],
+            "memberType":       side.id[0] == "R" ? "Recto" : "Verso"
         }
         if side.id[0] == "R"
           @rectos[side.id.to_s] = obj
@@ -206,7 +206,7 @@ module ControllerHelper
         @versoIDs.push(leaf[:versoID])
       end
 
-      @project.notes.each do | note | 
+      @project.notes.each do | note |
         @notes[note.id.to_s] = {
           "id": note.id.to_s,
           "title": note.title,
@@ -216,37 +216,37 @@ module ControllerHelper
           "show": note.show,
           "objects": note.objects,
         }
-        note.objects["Group"].each do | id | 
-          @groups[id][:notes].append(note.id.to_s)
+        note.objects["Group"].each do | id |
+          @groups[id][:terms].append(note.id.to_s)
         end
-        note.objects["Leaf"].each do | id | 
-          @leafs[id][:notes].append(note.id.to_s)
+        note.objects["Leaf"].each do | id |
+          @leafs[id][:terms].append(note.id.to_s)
         end
-        note.objects["Recto"].each do | id | 
-          @rectos[id][:notes].append(note.id.to_s)
+        note.objects["Recto"].each do | id |
+          @rectos[id][:terms].append(note.id.to_s)
         end
-        note.objects["Verso"].each do | id | 
-          @versos[id][:notes].append(note.id.to_s)
+        note.objects["Verso"].each do | id |
+          @versos[id][:terms].append(note.id.to_s)
         end
       end
 
       return {
-        "project": @projectInformation,
-        "groupIDs": @groupIDs,
-        "leafIDs": @leafIDs,
-        "rectoIDs": @rectoIDs,
-        "versoIDs": @versoIDs,
-        "groups": @groups,
-        "leafs": @leafs,
-        "rectos": @rectos,
-        "versos": @versos,
-        "notes": @notes,
+          "project":  @projectInformation,
+          "groupIDs": @groupIDs,
+          "leafIDs":  @leafIDs,
+          "rectoIDs": @rectoIDs,
+          "versoIDs": @versoIDs,
+          "groups":   @groups,
+          "leafs":    @leafs,
+          "rectos":   @rectos,
+          "versos":   @versos,
+          terms:      @notes,
       }
     end
 
     # Populate @leafIDs recursively
     def getLeafMembers(memberIDs)
-      memberIDs.each_with_index do | memberID, index | 
+      memberIDs.each_with_index do | memberID, index |
         if memberID[0] == "G"
           getLeafMembers(@groups[memberID][:memberIDs])
         elsif memberID[0] == "L"
