@@ -233,10 +233,10 @@
       "parentOrder": 6
     }
   },
-  "Notes": {
+  "Terms": {
     "1": {
       "params": {
-        "title": "Test Note",
+        "title": "Test Term",
         "type": "Ink",
         "description": "This is a test",
         "show": true

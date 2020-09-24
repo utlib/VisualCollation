@@ -10,7 +10,7 @@ module ControllerHelper
       @leafs = {}
       @rectos = {}
       @versos = {}
-      @notes = {}
+      @terms = {}
       
       # Project Information
       @projectInformation = {
@@ -24,8 +24,8 @@ module ControllerHelper
       # Grab project Title
       projectTitleNode = xml.xpath("//x:title", "x" => "http://schoenberginstitute.org/schema/collation")
       if projectTitleNode.text.empty?
-        @projectInformation[:title] =  "No title" 
-      else 
+        @projectInformation[:title] =  "No title"
+      else
         @projectInformation[:title] = projectTitleNode.text
       end
       if not @projectInformation[:title]
@@ -52,10 +52,10 @@ module ControllerHelper
             id = child.attributes["id"].value.split("_")[-1]
             url = child.text
             @projectInformation[:manifests][id] = {:id => id, :url => url}
-          end      
+          end
         end
       end
-     
+
       # Groups Information
       allGroupNodes = xml.xpath('//x:quire', "x" => "http://schoenberginstitute.org/schema/collation")
       # Generate all attributes for Groups
@@ -333,7 +333,7 @@ module ControllerHelper
             versoOrders.push(versoOrder)
           end
         end
-        @notes[noteOrder] = {
+        @terms[noteOrder] = {
           params: {
             title: title,
             type: type,
@@ -374,7 +374,7 @@ module ControllerHelper
         Leafs: @leafs,
         Rectos: @rectos,
         Versos: @versos,
-        Notes: @notes
+        Terms: @terms
       }
 
       handleJSONImport(JSON.parse(jsonImport.to_json))

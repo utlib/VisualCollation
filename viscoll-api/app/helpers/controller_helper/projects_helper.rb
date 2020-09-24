@@ -100,7 +100,7 @@ module ControllerHelper
       @leafs = {}
       @rectos = {}
       @versos = {}
-      @notes = {}
+      @terms = {}
 
       @projectInformation = {
         "id": @project.id.to_s,
@@ -149,7 +149,7 @@ module ControllerHelper
             "sewing":     group.sewing,
             "nestLevel":  group.nestLevel,
             "parentID":   group.parentID,
-            terms:        [],
+            "terms":        [],
             "memberIDs":  group.memberIDs,
             "memberType": "Group",
         }
@@ -173,7 +173,7 @@ module ControllerHelper
             "parentID":       leaf.parentID,
             "rectoID":        leaf.rectoID,
             "versoID":        leaf.versoID,
-            terms:            [],
+            "terms":            [],
             "memberType":     "Leaf",
         }
       end
@@ -189,7 +189,7 @@ module ControllerHelper
             "texture":          side.texture,
             "image":            side.image,
             "script_direction": side.script_direction,
-            terms:              [],
+            "terms":              [],
             "memberType":       side.id[0] == "R" ? "Recto" : "Verso"
         }
         if side.id[0] == "R"
@@ -206,27 +206,27 @@ module ControllerHelper
         @versoIDs.push(leaf[:versoID])
       end
 
-      @project.notes.each do | note |
-        @notes[note.id.to_s] = {
-          "id": note.id.to_s,
-          "title": note.title,
-          "type": note.type,
-          "description": note.description,
-          "uri": note.uri,
-          "show": note.show,
-          "objects": note.objects,
+      @project.terms.each do | term |
+        @terms[term.id.to_s] = {
+          "id": term.id.to_s,
+          "title": term.title,
+          "type": term.type,
+          "description": term.description,
+          "uri": term.uri,
+          "show": term.show,
+          "objects": term.objects,
         }
-        note.objects["Group"].each do | id |
-          @groups[id][:terms].append(note.id.to_s)
+        term.objects["Group"].each do | id |
+          @groups[id][:terms].append(term.id.to_s)
         end
-        note.objects["Leaf"].each do | id |
-          @leafs[id][:terms].append(note.id.to_s)
+        term.objects["Leaf"].each do | id |
+          @leafs[id][:terms].append(term.id.to_s)
         end
-        note.objects["Recto"].each do | id |
-          @rectos[id][:terms].append(note.id.to_s)
+        term.objects["Recto"].each do | id |
+          @rectos[id][:terms].append(term.id.to_s)
         end
-        note.objects["Verso"].each do | id |
-          @versos[id][:terms].append(note.id.to_s)
+        term.objects["Verso"].each do | id |
+          @versos[id][:terms].append(term.id.to_s)
         end
       end
 
@@ -240,7 +240,7 @@ module ControllerHelper
           "leafs":    @leafs,
           "rectos":   @rectos,
           "versos":   @versos,
-          terms:      @notes,
+          "terms":      @terms,
       }
     end
 

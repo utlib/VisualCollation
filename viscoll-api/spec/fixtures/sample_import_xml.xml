@@ -44,7 +44,7 @@
   </taxonomy>
   <taxonomy xml:id="note_title">
     <label>List of values for Note Titles</label>
-    <term xml:id="note_title_test_note">Test Note</term>
+    <term xml:id="note_title_test_note">Test Term</term>
   </taxonomy>
   <taxonomy xml:id="note_show">
     <label>Whether to show Note in Visualizations</label>

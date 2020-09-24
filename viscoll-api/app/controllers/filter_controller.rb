@@ -21,7 +21,7 @@ class FilterController < ApplicationController
       @groups = finalResponse[:Groups]
       @leafs = finalResponse[:Leafs]
       @sides = finalResponse[:Sides]
-      @notes = finalResponse[:Notes]
+      @terms = finalResponse[:Notes]
       @groupsOfMatchingLeafs = finalResponse[:GroupsOfMatchingLeafs]
       @leafsOfMatchingSides = finalResponse[:LeafsOfMatchingSides]
       @groupsOfMatchingSides = finalResponse[:GroupsOfMatchingSides]

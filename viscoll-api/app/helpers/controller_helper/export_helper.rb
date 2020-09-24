@@ -12,7 +12,7 @@ module ControllerHelper
       @leafs = {}
       @rectos = {}
       @versos = {}
-      @notes = {}
+      @terms = {}
 
       @projectInformation = {
         "title": @project.title,
@@ -120,7 +120,7 @@ module ControllerHelper
       end
 
       @project.notes.each_with_index do | note, index |
-        @notes[index + 1] = {
+        @terms[index + 1] = {
           "params": {
             "title": note.title,
             "type": note.type,
@@ -130,13 +130,13 @@ module ControllerHelper
           "objects": {}
         }
         if note.uri.present?
-          @notes[index + 1][:params][:uri] = note.uri
+          @terms[index + 1][:params][:uri] = note.uri
         end
 
-        @notes[index + 1][:objects][:Group] = note.objects["Group"].map { |groupID| @groupIDs.index(groupID)+1 }
-        @notes[index + 1][:objects][:Leaf] = note.objects["Leaf"].map { |leafID| @leafIDs.index(leafID)+1 }
-        @notes[index + 1][:objects][:Recto] = note.objects["Recto"].map { |rectoID| @rectoIDs.index(rectoID)+1 }
-        @notes[index + 1][:objects][:Verso] = note.objects["Verso"].map { |versoID| @versoIDs.index(versoID)+1 }
+        @terms[index + 1][:objects][:Group] = note.objects["Group"].map { |groupID| @groupIDs.index(groupID)+1 }
+        @terms[index + 1][:objects][:Leaf] = note.objects["Leaf"].map { |leafID| @leafIDs.index(leafID)+1 }
+        @terms[index + 1][:objects][:Recto] = note.objects["Recto"].map { |rectoID| @rectoIDs.index(rectoID)+1 }
+        @terms[index + 1][:objects][:Verso] = note.objects["Verso"].map { |versoID| @versoIDs.index(versoID)+1 }
       end
 
       return {
@@ -145,7 +145,7 @@ module ControllerHelper
           "leafs":   @leafs,
           "rectos":  @rectos,
           "versos":  @versos,
-          terms:     @notes,
+          terms:     @terms,
       }
     end
 
@@ -168,7 +168,7 @@ module ControllerHelper
       @leafs = {}
       @rectos = {}
       @versos = {}
-      @notes = {}
+      @terms = {}
       @noteTitles = []
       @allGroupAttributeValues = []
       @allLeafAttributeValues = []
@@ -752,7 +752,7 @@ module ControllerHelper
               end
             end
             # Map notes to noteTitles
-            @notes.each do |noteID, attributes|
+            @terms.each do |noteID, attributes|
               note = attributes[:term]
               xml.map :target => attributes["xml:id"] do
                 termText = []

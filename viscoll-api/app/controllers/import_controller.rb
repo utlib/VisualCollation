@@ -30,6 +30,7 @@ class ImportController < ApplicationController
       @images = current_user.images
       render :'projects/index', status: :ok and return
     rescue Exception => e
+      puts e
       render json: {error: errorMessage}, status: :unprocessable_entity and return
     ensure
     end

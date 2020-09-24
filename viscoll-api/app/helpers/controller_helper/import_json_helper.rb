@@ -87,15 +87,15 @@ module ControllerHelper
 
       project.reload
       # Create all Notes
-      data["Notes"].each do |noteOrder, data|
+      data["Terms"].each do |termOrder, data|
         data["params"]["project_id"] = project.id
-        note = Term.new(data["params"])
+        term = Term.new(data["params"])
         # Generate objectIDs of Groups, Leafs, Rectos, Versos with this note
         groupIDs = []
         data["objects"]["Group"].each do |groupOrder|
           groupID = allGroupsIDsInOrder[groupOrder-1]
           group = project.groups.find(groupID)
-          group.notes.push(note)
+          group.terms.push(term)
           group.save
           groupIDs.push(groupID)
         end
@@ -103,7 +103,7 @@ module ControllerHelper
         data["objects"]["Leaf"].each do |leafOrder|
           leafID = allLeafsIDsInOrder[leafOrder-1]
           leaf = project.leafs.find(leafID)
-          leaf.notes.push(note)
+          leaf.terms.push(term)
           leaf.save
           leafIDs.push(leafID)
         end
@@ -111,7 +111,7 @@ module ControllerHelper
         data["objects"]["Recto"].each do |rectoOrder|
           rectoID = allRectosIDsInOrder[rectoOrder-1]
           recto = project.sides.find(rectoID)
-          recto.notes.push(note)
+          recto.terms.push(term)
           recto.save
           rectoIDs.push(rectoID)
         end
@@ -119,15 +119,15 @@ module ControllerHelper
         data["objects"]["Verso"].each do |versoOrder|
           versoID = allVersosIDsInOrder[versoOrder-1]
           verso = project.sides.find(versoID)
-          verso.notes.push(note)
+          verso.terms.push(term)
           verso.save
           versoIDs.push(versoID)
         end
-        note.objects[:Group] = groupIDs
-        note.objects[:Leaf] = leafIDs
-        note.objects[:Recto] = rectoIDs
-        note.objects[:Verso] = versoIDs
-        note.save
+        term.objects[:Group] = groupIDs
+        term.objects[:Leaf] = leafIDs
+        term.objects[:Recto] = rectoIDs
+        term.objects[:Verso] = versoIDs
+        term.save
       end
 
       # Update project groupIDs
