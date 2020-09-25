@@ -5,7 +5,7 @@ json.Notes @terms
 json.GroupsOfMatchingLeafs @groupsOfMatchingLeafs
 json.LeafsOfMatchingSides @leafsOfMatchingSides
 json.GroupsOfMatchingSides @groupsOfMatchingSides
-json.GroupsOfMatchingNotes @groupsOfMatchingNotes
-json.LeafsOfMatchingNotes @leafsOfMatchingNotes
-json.SidesOfMatchingNotes @sidesOfMatchingNotes
+json.GroupsOfMatchingNotes @groupsOfMatchingTerms
+json.LeafsOfMatchingNotes @leafsOfMatchingTerms
+json.SidesOfMatchingNotes @sidesOfMatchingTerms
 json.visibleAttributes @visibleAttributes

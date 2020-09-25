@@ -94,13 +94,13 @@ describe "PUT /notes/id", :type => :request do
           user: @user2,
           noteTypes: ["Ink"]
         })
-        @note2 = FactoryGirl.create(:term, {
+        @term2 = FactoryGirl.create(:term, {
           type: "Ink",
           project: @project2,
           description: "Prussian blue"
         })
-        put '/notes/'+@note2.id, params: @parameters.to_json, headers: {'Authorization' => @authToken, 'CONTENT_TYPE' => 'application/json', 'ACCEPT' => 'application/json'}
-        @note2.reload
+        put '/notes/'+@term2.id, params: @parameters.to_json, headers: {'Authorization' => @authToken, 'CONTENT_TYPE' => 'application/json', 'ACCEPT' => 'application/json'}
+        @term2.reload
       end
 
       it 'returns 401' do
@@ -108,7 +108,7 @@ describe "PUT /notes/id", :type => :request do
       end
 
       it 'leaves the note alone' do
-        expect(@note2.description).to eq "Prussian blue"
+        expect(@term2.description).to eq "Prussian blue"
       end
     end
   end

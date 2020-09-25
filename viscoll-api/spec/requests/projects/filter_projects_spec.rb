@@ -631,12 +631,12 @@ describe "PUT /projects/:id/filter", :type => :request do
       end
     end
 
-    context 'and note-based queries' do
+    context 'and term-based queries' do
       before do
-        @note1 = FactoryGirl.create(:term, project_id: @project1.id, attachments: [@project1.groups[1], @project1.leafs[5], @project1.sides[14], @project1.sides[15]], title: "ULTRA WAAHOO")
-        @note2 = FactoryGirl.create(:term, project_id: @project1.id, attachments: [@project1.groups[2], @project1.leafs[7], @project1.sides[2], @project1.sides[3]], title: "XTREME FOOBAR")
-        @note3 = FactoryGirl.create(:term, project_id: @project1.id, attachments: [@project1.groups[3], @project1.leafs[3], @project1.sides[10], @project1.sides[11]], title: "CREEPY WAAHOO")
-        @notebad = FactoryGirl.create(:term, project_id: @project2.id, attachments: [@project2.groups[1], @project2.leafs[5], @project2.sides[14], @project2.sides[15]], title: "ULTRA WAAHOO")
+        @term1 = FactoryGirl.create(:term, project_id: @project1.id, attachments: [@project1.groups[1], @project1.leafs[5], @project1.sides[14], @project1.sides[15]], title: "ULTRA WAAHOO")
+        @term2 = FactoryGirl.create(:term, project_id: @project1.id, attachments: [@project1.groups[2], @project1.leafs[7], @project1.sides[2], @project1.sides[3]], title: "XTREME FOOBAR")
+        @term3 = FactoryGirl.create(:term, project_id: @project1.id, attachments: [@project1.groups[3], @project1.leafs[3], @project1.sides[10], @project1.sides[11]], title: "CREEPY WAAHOO")
+        @termbad = FactoryGirl.create(:term, project_id: @project2.id, attachments: [@project2.groups[1], @project2.leafs[5], @project2.sides[14], @project2.sides[15]], title: "ULTRA WAAHOO")
       end
 
       context "equals one" do
@@ -644,7 +644,7 @@ describe "PUT /projects/:id/filter", :type => :request do
           @parameters = {
             "queries": [
               {
-                "type": "note",
+                "type": "term",
                 "attribute": "title",
                 "condition": "equals",
                 "values": [ 'ULTRA WAAHOO' ]
@@ -660,7 +660,7 @@ describe "PUT /projects/:id/filter", :type => :request do
 
         it 'contains the expected entries' do
           body = JSON.parse(response.body)
-          expect(body['Notes']).to eq [@note1.id.to_s]
+          expect(body['Terms']).to eq [@term1.id.to_s]
         end
       end
 
@@ -685,9 +685,9 @@ describe "PUT /projects/:id/filter", :type => :request do
 
         it 'contains the expected entries' do
           body = JSON.parse(response.body)
-          expect(body['Notes'].count).to eq 2
-          expect(body['Notes']).to include @note2.id.to_s
-          expect(body['Notes']).to include @note3.id.to_s
+          expect(body['Terms'].count).to eq 2
+          expect(body['Terms']).to include @term2.id.to_s
+          expect(body['Terms']).to include @term3.id.to_s
         end
       end
 
@@ -696,7 +696,7 @@ describe "PUT /projects/:id/filter", :type => :request do
           @parameters = {
             "queries": [
               {
-                "type": "note",
+                "type": "term",
                 "attribute": "title",
                 "condition": "not equals",
                 "values": [ 'ULTRA WAAHOO' ]
@@ -712,9 +712,9 @@ describe "PUT /projects/:id/filter", :type => :request do
 
         it 'contains the expected entries' do
           body = JSON.parse(response.body)
-          expect(body['Notes'].count).to eq @project1.notes.count-1
-          expect(body['Notes']).not_to include @note1.id.to_s
-          expect(body['Notes']).not_to include @notebad.id.to_s
+          expect(body['Terms'].count).to eq @project1.terms.count-1
+          expect(body['Terms']).not_to include @term1.id.to_s
+          expect(body['Terms']).not_to include @termbad.id.to_s
         end
       end
 
@@ -723,7 +723,7 @@ describe "PUT /projects/:id/filter", :type => :request do
           @parameters = {
             "queries": [
               {
-                "type": "note",
+                "type": "term",
                 "attribute": "title",
                 "condition": "not equals",
                 "values": [ 'ULTRA WAAHOO', 'CREEPY WAAHOO' ]
@@ -739,10 +739,10 @@ describe "PUT /projects/:id/filter", :type => :request do
 
         it 'contains the expected entries' do
           body = JSON.parse(response.body)
-          expect(body['Notes'].count).to eq @project1.notes.count-2
-          expect(body['Notes']).not_to include @note1.id.to_s
-          expect(body['Notes']).not_to include @note3.id.to_s
-          expect(body['Notes']).not_to include @notebad.id.to_s
+          expect(body['Terms'].count).to eq @project1.terms.count-2
+          expect(body['Terms']).not_to include @term1.id.to_s
+          expect(body['Terms']).not_to include @term3.id.to_s
+          expect(body['Terms']).not_to include @termbad.id.to_s
         end
       end
 
@@ -751,7 +751,7 @@ describe "PUT /projects/:id/filter", :type => :request do
           @parameters = {
             "queries": [
               {
-                "type": "note",
+                "type": "term",
                 "attribute": "title",
                 "condition": "contains",
                 "values": [ 'ULTRA' ]
@@ -767,7 +767,7 @@ describe "PUT /projects/:id/filter", :type => :request do
 
         it 'contains the expected entries' do
           body = JSON.parse(response.body)
-          expect(body['Notes']).to eq [@note1.id.to_s]
+          expect(body['Terms']).to eq [@term1.id.to_s]
         end
       end
 
@@ -776,7 +776,7 @@ describe "PUT /projects/:id/filter", :type => :request do
           @parameters = {
             "queries": [
               {
-                "type": "note",
+                "type": "term",
                 "attribute": "title",
                 "condition": "contains",
                 "values": [ 'CREEPY', 'XTREME' ]
@@ -792,9 +792,9 @@ describe "PUT /projects/:id/filter", :type => :request do
 
         it 'contains the expected entries' do
           body = JSON.parse(response.body)
-          expect(body['Notes'].count).to eq 2
-          expect(body['Notes']).to include @note2.id.to_s
-          expect(body['Notes']).to include @note3.id.to_s
+          expect(body['Terms'].count).to eq 2
+          expect(body['Terms']).to include @term2.id.to_s
+          expect(body['Terms']).to include @term3.id.to_s
         end
       end
 
@@ -803,7 +803,7 @@ describe "PUT /projects/:id/filter", :type => :request do
           @parameters = {
             "queries": [
               {
-                "type": "note",
+                "type": "term",
                 "attribute": "title",
                 "condition": "not contains",
                 "values": [ 'ULTRA' ]
@@ -819,8 +819,8 @@ describe "PUT /projects/:id/filter", :type => :request do
 
         it 'contains the expected entries' do
           body = JSON.parse(response.body)
-          expect(body['Notes'].count).to eq @project1.notes.count-1
-          expect(body['Notes']).not_to include @note1.id.to_s
+          expect(body['Terms'].count).to eq @project1.terms.count-1
+          expect(body['Terms']).not_to include @term1.id.to_s
         end
       end
 
@@ -829,7 +829,7 @@ describe "PUT /projects/:id/filter", :type => :request do
           @parameters = {
             "queries": [
               {
-                "type": "note",
+                "type": "term",
                 "attribute": "title",
                 "condition": "not contains",
                 "values": [ 'CREEPY', 'XTREME' ]
@@ -845,9 +845,9 @@ describe "PUT /projects/:id/filter", :type => :request do
 
         it 'contains the expected entries' do
           body = JSON.parse(response.body)
-          expect(body['Notes'].count).to eq @project1.terms.count-2
-          expect(body['Notes']).not_to include @note2.id.to_s
-          expect(body['Notes']).not_to include @note3.id.to_s
+          expect(body['Terms'].count).to eq @project1.terms.count-2
+          expect(body['Terms']).not_to include @term2.id.to_s
+          expect(body['Terms']).not_to include @term3.id.to_s
         end
       end
     end

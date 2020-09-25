@@ -52,11 +52,11 @@ describe "DELETE /notes/id", :type => :request do
           user: @user2,
           noteTypes: ["Hand"]
         })
-        @note2 = FactoryGirl.create(:term, {
+        @term2 = FactoryGirl.create(:term, {
           type: "Hand",
           project: @project2
         })
-        delete '/notes/'+@note2.id, params: @parameters.to_json, headers: {'Authorization' => @authToken, 'CONTENT_TYPE' => 'application/json', 'ACCEPT' => 'application/json'}
+        delete '/notes/'+@term2.id, params: @parameters.to_json, headers: {'Authorization' => @authToken, 'CONTENT_TYPE' => 'application/json', 'ACCEPT' => 'application/json'}
       end
 
       it 'returns 401' do
@@ -64,7 +64,7 @@ describe "DELETE /notes/id", :type => :request do
       end
 
       it 'leaves the note alone' do
-        expect(Term.where(id: @note2.id).exists?).to be true
+        expect(Term.where(id: @term2.id).exists?).to be true
       end
     end
   end

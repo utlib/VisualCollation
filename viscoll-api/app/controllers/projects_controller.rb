@@ -166,12 +166,12 @@ class ProjectsController < ApplicationController
     begin
       exportedData = buildJSON(@project)
       export = {
-        project: exportedData[:project],
-        Groups: exportedData[:groups],
-        Leafs: exportedData[:leafs],
-        Rectos: exportedData[:rectos],
-        Versos: exportedData[:versos],
-        Notes: exportedData[:terms],
+          project: exportedData[:project],
+          Groups: exportedData[:groups],
+          Leafs: exportedData[:leafs],
+          Rectos: exportedData[:rectos],
+          Versos: exportedData[:versos],
+          Terms: exportedData[:terms],
       }
       handleJSONImport(JSON.parse(export.to_json))
       newProject = current_user.projects.order_by(:updated_at => 'desc').first
