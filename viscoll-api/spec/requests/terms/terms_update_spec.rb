@@ -21,7 +21,7 @@ describe "PUT /notes/id", :type => :request do
     @parameters = {
         term: {
         "project_id": @project.id.to_str,
-        "title": "some title for note",
+        "title": "some title for term",
         "type": "Ink",
         "description": "sepia"
       }

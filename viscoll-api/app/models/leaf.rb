@@ -39,11 +39,11 @@ class Leaf
     self.id = "Leaf_"+self.id.to_s unless self.id.to_s[0]=="L"
   end
 
-  # If linked to note(s), remove link from the note(s)'s side
-  def unlink_notes
-    self.notes.each do | note |
-      note.objects[:Leaf].delete(self.id.to_s)
-      note.save
+  # If linked to term(s), remove link from the term(s)'s side
+  def unlink_terms
+    self.terms.each do | term |
+      term.objects[:Leaf].delete(self.id.to_s)
+      term.save
     end
   end
 

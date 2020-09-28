@@ -14,7 +14,7 @@ describe "PUT /notes/id/unlink", :type => :request do
     @project.add_groupIDs([@defaultGroup.id.to_s], 0)
     @term = FactoryGirl.create(:term, {
       project: @project,
-      title: "some title for note",
+      title: "some title for term",
       type: "Ink",
       description: "blue ink"
     })

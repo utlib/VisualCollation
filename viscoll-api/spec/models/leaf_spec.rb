@@ -51,11 +51,11 @@ RSpec.describe Leaf, type: :model do
 
   describe "Destruction" do
     it "should unlink its notes" do
-      subnote = FactoryGirl.create(:term, project: @project, objects: {Group: [], Leaf: [@leaf.id], Recto: [], Verso: []})
-      @leaf.notes << subnote
+      subterm = FactoryGirl.create(:term, project: @project, objects: {Group: [], Leaf: [@leaf.id], Recto: [], Verso: []})
+      @leaf.terms << subterm
       @leaf.save
       @leaf.destroy
-      expect(subnote.objects[:Leaf]).to be_empty
+      expect(subterm.objects[:Leaf]).to be_empty
     end
 
     it "should destroy its sides" do

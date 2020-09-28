@@ -57,12 +57,12 @@ RSpec.describe Group, type: :model do
   end
 
   describe "On-destroy hooks" do
-    it "should remove itself from an associated note" do
-      note = FactoryGirl.create(:term, project: @project, objects: {Group: [@group.id], Leaf: [], Recto: [], Verso: []})
-      @group.notes << note
+    it "should remove itself from an associated term" do
+      term = FactoryGirl.create(:term, project: @project, objects: {Group: [@group.id], Leaf: [], Recto: [], Verso: []})
+      @group.terms << term
       @group.save
       @group.destroy
-      expect(note.objects[:Group]).to be_empty
+      expect(term.objects[:Group]).to be_empty
     end
 
     it "should remove itself from an associated project" do

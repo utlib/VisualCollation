@@ -1,11 +1,11 @@
-class NotesController < ApplicationController
+class TermsController < ApplicationController
   before_action :authenticate!
-  before_action :set_note, only: [:update, :link, :unlink, :destroy]
+  before_action :set_term, only: [:update, :link, :unlink, :destroy]
   before_action :set_attached_project, only: [:createType, :deleteType, :updateType]
 
-  # POST /notes
+  # POST /terms
   def create
-    @term = Term.new(note_create_params)
+    @term = Term.new(term_create_params)
     begin
       @project = Project.find(@term.project_id)
     rescue Mongoid::Errors::DocumentNotFound
@@ -24,26 +24,26 @@ class NotesController < ApplicationController
     end
   end
 
-  # PATCH/PUT /notes/1
+  # PATCH/PUT /terms/1
   def update
-    type = note_update_params.to_h[:type]
+    type = term_update_params.to_h[:type]
     if not Project.find(@term.project_id).noteTypes.include?(type)
       render json: {type: "should be one of " +Project.find(@term.project_id).noteTypes.to_s}, status: :unprocessable_entity and return
     end
-    if !@term.update(note_update_params)
+    if !@term.update(term_update_params)
       render json: @term.errors, status: :unprocessable_entity and return
     end
   end
 
-  # DELETE /notes/1
+  # DELETE /terms/1
   def destroy
     @term.destroy
   end
 
-  # PUT /notes/1/link
+  # PUT /terms/1/link
   def link
     begin
-      objects = note_object_link_params.to_h[:objects]
+      objects = term_object_link_params.to_h[:objects]
       objects.each do |object|
         type = object[:type]
         id = object[:id]
@@ -67,7 +67,7 @@ class NotesController < ApplicationController
         rescue Mongoid::Errors::DocumentNotFound
           render json: {id: type + " object not found with id "+id}, status: :unprocessable_entity and return
         end
-        @object.notes.push(@term)
+        @object.terms.push(@term)
         @object.save
         if (not @term.objects[type].include?(id))
           @term.objects[type].push(id)
@@ -79,10 +79,10 @@ class NotesController < ApplicationController
     end
   end
 
-  # PUT /notes/1/unlink
+  # PUT /terms/1/unlink
   def unlink
     begin
-      objects = note_object_link_params.to_h[:objects]
+      objects = term_object_link_params.to_h[:objects]
       objects.each do |object|
         type = object[:type]
         id = object[:id]
@@ -106,7 +106,7 @@ class NotesController < ApplicationController
         rescue Mongoid::Errors::DocumentNotFound
           render json: {id: type + " object not found with id "+id}, status: :unprocessable_entity and return
         end
-        @object.notes.delete(@term)
+        @object.terms.delete(@term)
         @object.save
         @term.objects[type].delete(id)
         @term.save
@@ -118,7 +118,7 @@ class NotesController < ApplicationController
 
 
 
-  # POST /notes/type
+  # POST /terms/type
   def createType
     type = note_type_params.to_h[:type]
     if @project.noteTypes.include?(type)
@@ -130,7 +130,7 @@ class NotesController < ApplicationController
   end
 
 
-  # DELETE /notes/type
+  # DELETE /terms/type
   def deleteType
     type = note_type_params.to_h[:type]
     if not @project.noteTypes.include?(type)
@@ -138,15 +138,15 @@ class NotesController < ApplicationController
     else
       @project.noteTypes.delete(type)
       @project.save
-      @project.notes.where(type: type).each do |note|
-        note.update(type: "Unknown")
-        note.save
+      @project.terms.where(type: type).each do |term|
+        term.update(type: "Unknown")
+        term.save
       end
     end
   end
 
 
-  # PUT /notes/type
+  # PUT /terms/type
   def updateType
     old_type = note_type_params.to_h[:old_type]
     type = note_type_params.to_h[:type]
@@ -158,9 +158,9 @@ class NotesController < ApplicationController
       indexToEdit = @project.noteTypes.index(old_type)
       @project.noteTypes[indexToEdit] = type
       @project.save
-      @project.notes.where(type: old_type).each do |note|
-        note.update(type: type)
-        note.save
+      @project.terms.where(type: old_type).each do |term|
+        term.update(type: type)
+        term.save
       end
     end
   end
@@ -169,7 +169,7 @@ class NotesController < ApplicationController
 
   private
     # Use callbacks to share common setup or constraints between actions.
-    def set_note
+    def set_term
       begin
         @term    = Term.find(params[:id])
         @project = Project.find(@term.project_id)
@@ -196,15 +196,15 @@ class NotesController < ApplicationController
     end
 
     # Never trust parameters from the scary internet, only allow the white list through.
-    def note_create_params
+    def term_create_params
       params.require(:term).permit(:project_id, :id, :title, :type, :description, :uri, :show)
     end
 
-    def note_update_params
+    def term_update_params
       params.require(:term).permit(:title, :type, :description, :uri, :show)
     end
 
-    def note_object_link_params
+    def term_object_link_params
       params.permit(:objects => [:id, :type])
     end
 

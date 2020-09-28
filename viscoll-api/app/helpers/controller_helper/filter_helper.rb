@@ -62,7 +62,7 @@ module ControllerHelper
             'script_direction' => ['equals', 'not equals'],
             'uri' => ['equals', 'not equals', 'contains', 'not contains'],
           },
-          'note' => {
+          'term' => {
             'title' => ['equals', 'not equals', 'contains', 'not contains'],
             'type' => ['equals', 'not equals'],
             'description' => ['equals', 'not equals', 'contains', 'not contains']

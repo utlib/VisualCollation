@@ -78,16 +78,16 @@ module ControllerHelper
         parentNodeID = groupNode.attributes["parent"]? groupNode.attributes["parent"].value : nil
         parentOrder = parentNodeID ? @allGroupNodeIDsInOrder.index(parentNodeID)+1 : nil
         @groups[groupOrder] = {
-          params: {
+            params: {
             type: "Quire",
             title: "",
             nestLevel: nestLevel
           },
-          tacketed: [],
-          sewing: [],
-          parentOrder: parentOrder,
-          memberOrders: [],
-          noteTitles: []
+            tacketed: [],
+            sewing: [],
+            parentOrder: parentOrder,
+            memberOrders: [],
+            termTitles: []
         }
       end
       # MAP attributes for all groups
@@ -107,8 +107,8 @@ module ControllerHelper
             groupTermTaxonomyID=="group_sewing" ? @groups[groupOrder][:sewing]=groupTerm.text.split(" ") : nil
             groupTermTaxonomyID=="group_tacketed" ? @groups[groupOrder][:tacketed]=groupTerm.text.split(" ") : nil
             groupTermTaxonomyID=="group_members" ?  @groups[groupOrder][:memberOrders]=groupTerm.text.split(" ") : nil
-            if groupTermTaxonomyID=="note_title"
-              @groups[groupOrder][:noteTitles].push(groupTerm.text) unless @groups[groupOrder][:noteTitles].include? groupTerm.text
+            if groupTermTaxonomyID=="term_title"
+              @groups[groupOrder][:termTitles].push(groupTerm.text) unless @groups[groupOrder][:termTitles].include? groupTerm.text
             end
           end
         end
@@ -146,7 +146,7 @@ module ControllerHelper
           nestLevel = parentGroup[:params][:nestLevel]
         end
         @leafs[leafOrder] = {
-          params: {
+            params: {
             folio_number: nil,
             material: "None",
             type: type,
@@ -155,31 +155,31 @@ module ControllerHelper
             stub: stub,
             nestLevel: nestLevel
           },
-          conjoined_leaf_order: conjoinedToNodeID,
-          parentOrder: parentOrder,
-          rectoOrder: leafOrder,
-          versoOrder: leafOrder,
-          noteTitles: []
+            conjoined_leaf_order: conjoinedToNodeID,
+            parentOrder: parentOrder,
+            rectoOrder: leafOrder,
+            versoOrder: leafOrder,
+            termTitles: []
         }
         @rectos[leafOrder] = {
-          params: {
+            params: {
             page_number: nil,
             texture: "None",
             image: {},
             script_direction: "None"
           },
-          parentOrder: leafOrder,
-          noteTitles: []
+            parentOrder: leafOrder,
+            termTitles: []
         }
         @versos[leafOrder] = {
-          params: {
+            params: {
             page_number: nil,
             texture: "None",
             image: {},
             script_direction: "None"
           },
-          parentOrder: leafOrder,
-          noteTitles: []
+            parentOrder: leafOrder,
+            termTitles: []
         }
       end
 
@@ -203,7 +203,7 @@ module ControllerHelper
       end
 
       # In @leafs, Update conjoined_to from nodeIDs to globalOrders.
-      # Also Map material, attachment_methods (for Leaves), texture, script_direction, page_number (for Sides) and noteTitles. 
+      # Also Map material, attachment_methods (for Leaves), texture, script_direction, page_number (for Sides) and termTitles.
       @leafs.each do |leafOrder, attributes|    
         if @leafs[leafOrder][:conjoined_leaf_order]
           @leafs[leafOrder][:conjoined_leaf_order] = @allLeafNodeIDsInOrder.index(attributes[:conjoined_leaf_order])+1
@@ -244,16 +244,16 @@ module ControllerHelper
                       sideTermTaxonomyID=="side_script_direction" ? @rectos[leafOrder][:params][:script_direction]=sideTerm.text : nil
                       sideTermTaxonomyID=="side_page_number" ? @rectos[leafOrder][:params][:page_number]=sideTerm.text : nil
                       sideTermTaxonomyID=="manifests" ? @rectos[leafOrder][:params][:image][:manifestID]=sideTerm.attributes["id"].value.split("_")[1] : nil
-                      if sideTermTaxonomyID=="note_title"
-                       @rectos[leafOrder][:noteTitles].push(sideTerm.text) unless @rectos[leafOrder][:noteTitles].include? sideTerm.text
+                      if sideTermTaxonomyID=="term_title"
+                       @rectos[leafOrder][:termTitles].push(sideTerm.text) unless @rectos[leafOrder][:termTitles].include? sideTerm.text
                       end
                     else
                       sideTermTaxonomyID=="side_texture" ? @versos[leafOrder][:params][:texture]=sideTerm.text : nil
                       sideTermTaxonomyID=="side_script_direction" ? @versos[leafOrder][:params][:script_direction]=sideTerm.text : nil
                       sideTermTaxonomyID=="side_page_number" ? @versos[leafOrder][:params][:page_number]=sideTerm.text : nil
                       sideTermTaxonomyID=="manifests" ? @versos[leafOrder][:params][:image][:manifestID]=sideTerm.attributes["id"].value.split("_")[1] : nil
-                      if sideTermTaxonomyID=="note_title"
-                       @versos[leafOrder][:noteTitles].push(sideTerm.text) unless @versos[leafOrder][:noteTitles].include? sideTerm.text
+                      if sideTermTaxonomyID=="term_title"
+                       @versos[leafOrder][:termTitles].push(sideTerm.text) unless @versos[leafOrder][:termTitles].include? sideTerm.text
                       end
                     end
                   end
@@ -268,8 +268,8 @@ module ControllerHelper
                   leafTerm = leafTerms[0]
                   leafTermTaxonomyID = leafTerm.parent.attributes["id"].value
                   leafTermTaxonomyID=="leaf_material" ? @leafs[leafOrder][:params][:material]=leafTerm.text : nil
-                  if leafTermTaxonomyID=="note_title"
-                    @leafs[leafOrder][:noteTitles].push(leafTerm.text) unless @leafs[leafOrder][:noteTitles].include? leafTerm.text
+                  if leafTermTaxonomyID=="term_title"
+                    @leafs[leafOrder][:termTitles].push(leafTerm.text) unless @leafs[leafOrder][:termTitles].include? leafTerm.text
                   end
                   if leafTermTaxonomyID=='leaf_attachment_method'
                     leafTerm.attributes["id"].value.include?("Above") ?  @leafs[leafOrder][:params][:attached_above]=leafTerm.text : nil
@@ -282,58 +282,58 @@ module ControllerHelper
         end
       end
 
-      # Generate all attributes for Notes
-      allNotes = xml.xpath('//x:note', "x" => "http://schoenberginstitute.org/schema/collation")
-      allNotes.each_with_index do |noteNode, noteOrder|
-        noteNodeID = noteNode.attributes["id"].value
-        type = noteNode.attributes["type"].value
+      # Generate all attributes for Terms
+      allTerms = xml.xpath('//x:note', "x" => "http://schoenberginstitute.org/schema/collation")
+      allTerms.each_with_index do |termNode, termOrder|
+        termNodeID = termNode.attributes["id"].value
+        type = termNode.attributes["type"].value
         title = ""
-        description = noteNode.text
+        description = termNode.text
         show = false
         @projectInformation[:noteTypes].push(type)
-        # MAP the noteTitle and show for all notes
-        mapTargetSearchText = "//x:map[@target='#"+noteNodeID+"']"
-        noteMappingNodes = xml.xpath(mapTargetSearchText, "x" => "http://schoenberginstitute.org/schema/collation")
-        if not noteMappingNodes.empty?
-          noteMappingNode = noteMappingNodes[0] # Only 1 mapping per note
-          noteTermTargets = noteMappingNode.children[1].attributes["target"].value.split(" ")
-          noteTermTargets.each do |target|
+        # MAP the termTitle and show for all terms
+        mapTargetSearchText = "//x:map[@target='#"+termNodeID+"']"
+        termMappingNodes = xml.xpath(mapTargetSearchText, "x" => "http://schoenberginstitute.org/schema/collation")
+        if not termMappingNodes.empty?
+          termMappingNode = termMappingNodes[0] # Only 1 mapping per term
+          termTermTargets = termMappingNode.children[1].attributes["target"].value.split(" ")
+          termTermTargets.each do |target|
             termSearchText = "//x:term[@xml:id='"+target[1..-1]+"']"
-            noteTerms = xml.xpath(termSearchText, "x" => "http://schoenberginstitute.org/schema/collation")
-            if not noteTerms.empty?
-              noteTerm = noteTerms[0]
-              noteTermTaxonomyID = noteTerm.parent.attributes["id"].value
-              noteTermTaxonomyID=="note_title" ? title=noteTerm.text : nil
-              noteTermTaxonomyID=="note_show" ? show=true : nil
+            termTerms = xml.xpath(termSearchText, "x" => "http://schoenberginstitute.org/schema/collation")
+            if not termTerms.empty?
+              termTerm = termTerms[0]
+              termTermTaxonomyID = termTerm.parent.attributes["id"].value
+              termTermTaxonomyID=="term_title" ? title=termTerm.text : nil
+              termTermTaxonomyID=="term_show" ? show=true : nil
             end
           end
         end
-        # MAP Groups, Leafs, Rectos, Versos for this Note
+        # MAP Groups, Leafs, Rectos, Versos for this Term
         groupOrders = []
         @groups.each do |groupOrder, attributes|
-          if attributes[:noteTitles].include? title
+          if attributes[:termTitles].include? title
             groupOrders.push(groupOrder)
           end
         end
         leafOrders = []
         @leafs.each do |leafOrder, attributes|
-          if attributes[:noteTitles].include? title
+          if attributes[:termTitles].include? title
             leafOrders.push(leafOrder)
           end
         end
         rectoOrders = []
         @rectos.each do |rectoOrder, attributes|
-          if attributes[:noteTitles].include? title
+          if attributes[:termTitles].include? title
             rectoOrders.push(rectoOrder)
           end
         end
         versoOrders = []
         @versos.each do |versoOrder, attributes|
-          if attributes[:noteTitles].include? title
+          if attributes[:termTitles].include? title
             versoOrders.push(versoOrder)
           end
         end
-        @terms[noteOrder] = {
+        @terms[termOrder] = {
           params: {
             title: title,
             type: type,

@@ -23,11 +23,11 @@ class Side
 
   protected
   # If linked to note(s), remove link from the note(s)'s side
-  def unlink_notes
-    self.notes.each do | note |
-      note.objects[:Recto].delete(self.id.to_s)
-      note.objects[:Verso].delete(self.id.to_s)
-      note.save
+  def unlink_terms
+    self.terms.each do | term |
+      term.objects[:Recto].delete(self.id.to_s)
+      term.objects[:Verso].delete(self.id.to_s)
+      term.save
     end
   end
 

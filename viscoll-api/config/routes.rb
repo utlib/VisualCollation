@@ -52,12 +52,12 @@ Rails.application.routes.draw do
   put '/sides/:id', to: 'sides#update', defaults: {format: :json}, only: [:update]
   put '/sides', to: 'sides#updateMultiple', defaults: {format: :json}, only: [:update]
 
-  # NOTE ENDPOINTS
-  put '/notes/:id/link', to: 'notes#link', defaults: {format: :json}, only: [:update]
-  put '/notes/:id/unlink', to: 'notes#unlink', defaults: {format: :json}, only: [:update]
-  post '/notes/type', to: 'notes#createType', defaults: {format: :json}, only: [:create]
-  put '/notes/type', to: 'notes#updateType', defaults: {format: :json}, only: [:update]
-  delete '/notes/type', to: 'notes#deleteType', defaults: {format: :json}, only: [:destroy]
+  # TERM ENDPOINTS
+  put '/terms/:id/link', to: 'terms#link', defaults: {format: :json}, only: [:update]
+  put '/terms/:id/unlink', to: 'terms#unlink', defaults: {format: :json}, only: [:update]
+  post '/terms/type', to: 'terms#createType', defaults: {format: :json}, only: [:create]
+  put '/terms/type', to: 'terms#updateType', defaults: {format: :json}, only: [:update]
+  delete '/terms/type', to: 'terms#deleteType', defaults: {format: :json}, only: [:destroy]
   resources :terms, defaults: {format: :json}, only: [:show, :update, :destroy, :create]
 
   # DOCUMENTATION

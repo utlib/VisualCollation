@@ -2609,7 +2609,7 @@ definitions:
             example: 5951303fc9bf3c7b9a573a3f
           title:
             type: string
-            example: some title for note
+            example: some title for term
           type:
             type: string
             example: Ink
@@ -2625,7 +2625,7 @@ definitions:
         properties:
           title:
             type: string
-            example: some title for note
+            example: some title for term
           type:
             type: string
             example: Ink
@@ -2647,7 +2647,7 @@ definitions:
         example: 5951303fc9bf3c7b9a573a3f
       title:
         type: string
-        example: some title for note
+        example: some title for term
       type:
         type: string
         example: Ink

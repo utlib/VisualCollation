@@ -135,7 +135,6 @@ class FilterController < ApplicationController
 
   def buildResponse(combinedResult)
     response = {Groups: [], Leafs: [], Sides: [], Terms: [], GroupsOfMatchingTerms: [], LeafsOfMatchingTerms: [], SidesOfMatchingTerms:[], LeafsOfMatchingSides:[], GroupsOfMatchingSides:[], GroupsOfMatchingLeafs:[]}
-    binding.pry
     combinedResult.each do |objectID|
       if @objectIDs[:Groups].include?(objectID)
         response[:Groups].push(objectID)

@@ -86,11 +86,11 @@ module ControllerHelper
       end
 
       project.reload
-      # Create all Notes
+      # Create all Terms
       data["Terms"].each do |termOrder, data|
         data["params"]["project_id"] = project.id
         term = Term.new(data["params"])
-        # Generate objectIDs of Groups, Leafs, Rectos, Versos with this note
+        # Generate objectIDs of Groups, Leafs, Rectos, Versos with this term
         groupIDs = []
         data["objects"]["Group"].each do |groupOrder|
           groupID = allGroupsIDsInOrder[groupOrder-1]
