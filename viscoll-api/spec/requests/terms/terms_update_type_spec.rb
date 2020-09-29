@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-describe "PUT /notes/type", :type => :request do
+describe "PUT /terms/type", :type => :request do
   before do
     @user = FactoryGirl.create(:user, {:password => "user"})
     put '/confirmation', params: {:confirmation_token => @user.confirmation_token}
@@ -13,12 +13,12 @@ describe "PUT /notes/type", :type => :request do
       user: @user,
       noteTypes: ["Ink", "Paper"]
     })
-    @project.notes << FactoryGirl.create(:term, {
+    @project.terms << FactoryGirl.create(:term, {
       project_id: @project.id,
       type: "Ink",
       description: "Sepia"
     })
-    @project.notes << FactoryGirl.create(:term, {
+    @project.terms << FactoryGirl.create(:term, {
       project_id: @project.id,
       type: "Paper",
       description: "Parchment"
@@ -36,7 +36,7 @@ describe "PUT /notes/type", :type => :request do
   context 'with valid authorization' do
     context 'with valid parameters' do
       before do
-        put '/notes/type', params: @parameters.to_json, headers: {'Authorization' => @authToken, 'CONTENT_TYPE' => 'application/json', 'ACCEPT' => 'application/json'}
+        put '/terms/type', params: @parameters.to_json, headers: {'Authorization' => @authToken, 'CONTENT_TYPE' => 'application/json', 'ACCEPT' => 'application/json'}
         @project.reload
       end
 
@@ -50,17 +50,17 @@ describe "PUT /notes/type", :type => :request do
         expect(@project.noteTypes).not_to include "Paper"
       end
 
-      it 'should rename notes with that type' do
-        expect(@project.notes).to include an_object_having_attributes(type: "Ink")
-        expect(@project.notes).to include an_object_having_attributes(type: "New Paper")
-        expect(@project.notes).not_to include an_object_having_attributes(type: "Paper")
+      it 'should rename terms with that type' do
+        expect(@project.terms).to include an_object_having_attributes(type: "Ink")
+        expect(@project.terms).to include an_object_having_attributes(type: "New Paper")
+        expect(@project.terms).not_to include an_object_having_attributes(type: "Paper")
       end
     end
 
     context 'with missing project' do
       before do
         @parameters[:noteType][:project_id] += 'missing'
-        put '/notes/type', params: @parameters.to_json, headers: {'Authorization' => @authToken, 'CONTENT_TYPE' => 'application/json', 'ACCEPT' => 'application/json'}
+        put '/terms/type', params: @parameters.to_json, headers: {'Authorization' => @authToken, 'CONTENT_TYPE' => 'application/json', 'ACCEPT' => 'application/json'}
         @project.reload
         @body = JSON.parse(response.body)
       end
@@ -77,7 +77,7 @@ describe "PUT /notes/type", :type => :request do
     context 'with out-of-context type' do
       before do
         @parameters[:noteType][:old_type] = "Waahoo"
-        put '/notes/type', params: @parameters.to_json, headers: {'Authorization' => @authToken, 'CONTENT_TYPE' => 'application/json', 'ACCEPT' => 'application/json'}
+        put '/terms/type', params: @parameters.to_json, headers: {'Authorization' => @authToken, 'CONTENT_TYPE' => 'application/json', 'ACCEPT' => 'application/json'}
         @project.reload
         @body = JSON.parse(response.body)
       end
@@ -98,7 +98,7 @@ describe "PUT /notes/type", :type => :request do
     context 'with duplicated target type' do
       before do
         @parameters[:noteType][:type] = "Ink"
-        put '/notes/type', params: @parameters.to_json, headers: {'Authorization' => @authToken, 'CONTENT_TYPE' => 'application/json', 'ACCEPT' => 'application/json'}
+        put '/terms/type', params: @parameters.to_json, headers: {'Authorization' => @authToken, 'CONTENT_TYPE' => 'application/json', 'ACCEPT' => 'application/json'}
         @project.reload
         @body = JSON.parse(response.body)
       end
@@ -121,7 +121,7 @@ describe "PUT /notes/type", :type => :request do
         @user2 = FactoryGirl.create(:user)
         @project.user = @user2
         @project.save
-        put '/notes/type', params: @parameters.to_json, headers: {'Authorization' => @authToken, 'CONTENT_TYPE' => 'application/json', 'ACCEPT' => 'application/json'}
+        put '/terms/type', params: @parameters.to_json, headers: {'Authorization' => @authToken, 'CONTENT_TYPE' => 'application/json', 'ACCEPT' => 'application/json'}
         @project.reload
       end
 
@@ -137,7 +137,7 @@ describe "PUT /notes/type", :type => :request do
 
   context 'with corrupted authorization' do
     before do
-      put '/notes/type', params: @parameters.to_json, headers: {'Authorization' => @authToken+'asdf', 'CONTENT_TYPE' => 'application/json', 'ACCEPT' => 'application/json'}
+      put '/terms/type', params: @parameters.to_json, headers: {'Authorization' => @authToken+'asdf', 'CONTENT_TYPE' => 'application/json', 'ACCEPT' => 'application/json'}
       @body = JSON.parse(response.body)
     end
 
@@ -152,7 +152,7 @@ describe "PUT /notes/type", :type => :request do
 
   context 'with empty authorization' do
     before do
-      put '/notes/type', params: @parameters.to_json, headers: {'Authorization' => ""}
+      put '/terms/type', params: @parameters.to_json, headers: {'Authorization' => ""}
     end
 
     it 'returns an bad request error' do
@@ -166,7 +166,7 @@ describe "PUT /notes/type", :type => :request do
 
   context 'invalid authorization' do
     before do
-      put '/notes/type', params: @parameters.to_json, headers: {'Authorization' => "123456789"}
+      put '/terms/type', params: @parameters.to_json, headers: {'Authorization' => "123456789"}
     end
 
     it 'returns an bad request error' do
@@ -180,7 +180,7 @@ describe "PUT /notes/type", :type => :request do
 
   context 'without authorization' do
     before do
-      put '/notes/type'
+      put '/terms/type'
     end
 
     it 'returns an unauthorized action error' do

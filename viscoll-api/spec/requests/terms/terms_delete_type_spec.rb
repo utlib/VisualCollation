@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-describe "DELETE /notes/type", :type => :request do
+describe "DELETE /terms/type", :type => :request do
   before do
     @user = FactoryGirl.create(:user, {:password => "user"})
     put '/confirmation', params: {:confirmation_token => @user.confirmation_token}
@@ -10,12 +10,12 @@ describe "DELETE /notes/type", :type => :request do
 
   before :each do
     @project = FactoryGirl.create(:project, {user: @user, noteTypes: ["Ink", "Paper"]})
-    @project.notes << FactoryGirl.create(:term, {
+    @project.terms << FactoryGirl.create(:term, {
       project_id: @project.id,
       type: "Ink",
       description: "Sepia"
     })
-    @project.notes << FactoryGirl.create(:term, {
+    @project.terms << FactoryGirl.create(:term, {
       project_id: @project.id,
       type: "Paper",
       description: "Parchment"
@@ -32,7 +32,7 @@ describe "DELETE /notes/type", :type => :request do
   context 'with valid authorization' do
     context 'with valid parameters' do
       before do
-        delete '/notes/type', params: @parameters.to_json, headers: {'Authorization' => @authToken, 'CONTENT_TYPE' => 'application/json', 'ACCEPT' => 'application/json'}
+        delete '/terms/type', params: @parameters.to_json, headers: {'Authorization' => @authToken, 'CONTENT_TYPE' => 'application/json', 'ACCEPT' => 'application/json'}
         @project.reload
       end
 
@@ -46,15 +46,15 @@ describe "DELETE /notes/type", :type => :request do
       end
 
       it 'should change notes of the type to Unknown' do
-        expect(@project.notes).to include an_object_having_attributes(type: "Unknown")
-        expect(@project.notes).to include an_object_having_attributes(type: "Paper")
+        expect(@project.terms).to include an_object_having_attributes(type: "Unknown")
+        expect(@project.terms).to include an_object_having_attributes(type: "Paper")
       end
     end
 
     context 'with missing project' do
       before do
         @parameters[:noteType][:project_id] += 'missing'
-        delete '/notes/type', params: @parameters.to_json, headers: {'Authorization' => @authToken, 'CONTENT_TYPE' => 'application/json', 'ACCEPT' => 'application/json'}
+        delete '/terms/type', params: @parameters.to_json, headers: {'Authorization' => @authToken, 'CONTENT_TYPE' => 'application/json', 'ACCEPT' => 'application/json'}
         @project.reload
         @body = JSON.parse(response.body)
       end
@@ -71,7 +71,7 @@ describe "DELETE /notes/type", :type => :request do
     context 'with out-of-context type' do
       before do
         @parameters[:noteType][:type] = "Waahoo"
-        delete '/notes/type', params: @parameters.to_json, headers: {'Authorization' => @authToken, 'CONTENT_TYPE' => 'application/json', 'ACCEPT' => 'application/json'}
+        delete '/terms/type', params: @parameters.to_json, headers: {'Authorization' => @authToken, 'CONTENT_TYPE' => 'application/json', 'ACCEPT' => 'application/json'}
         @project.reload
         @body = JSON.parse(response.body)
       end
@@ -94,7 +94,7 @@ describe "DELETE /notes/type", :type => :request do
         @user2 = FactoryGirl.create(:user)
         @project.user = @user2
         @project.save
-        delete '/notes/type', params: @parameters.to_json, headers: {'Authorization' => @authToken, 'CONTENT_TYPE' => 'application/json', 'ACCEPT' => 'application/json'}
+        delete '/terms/type', params: @parameters.to_json, headers: {'Authorization' => @authToken, 'CONTENT_TYPE' => 'application/json', 'ACCEPT' => 'application/json'}
         @project.reload
       end
 
@@ -110,7 +110,7 @@ describe "DELETE /notes/type", :type => :request do
 
   context 'with corrupted authorization' do
     before do
-      delete '/notes/type', params: @parameters.to_json, headers: {'Authorization' => @authToken+'asdf', 'CONTENT_TYPE' => 'application/json', 'ACCEPT' => 'application/json'}
+      delete '/terms/type', params: @parameters.to_json, headers: {'Authorization' => @authToken+'asdf', 'CONTENT_TYPE' => 'application/json', 'ACCEPT' => 'application/json'}
       @body = JSON.parse(response.body)
     end
 
@@ -125,7 +125,7 @@ describe "DELETE /notes/type", :type => :request do
 
   context 'with empty authorization' do
     before do
-      delete '/notes/type', params: @parameters.to_json, headers: {'Authorization' => ""}
+      delete '/terms/type', params: @parameters.to_json, headers: {'Authorization' => ""}
     end
 
     it 'returns an bad request error' do
@@ -139,7 +139,7 @@ describe "DELETE /notes/type", :type => :request do
 
   context 'invalid authorization' do
     before do
-      delete '/notes/type', params: @parameters.to_json, headers: {'Authorization' => "123456789"}
+      delete '/terms/type', params: @parameters.to_json, headers: {'Authorization' => "123456789"}
     end
 
     it 'returns an bad request error' do
@@ -153,7 +153,7 @@ describe "DELETE /notes/type", :type => :request do
 
   context 'without authorization' do
     before do
-      delete '/notes/type'
+      delete '/terms/type'
     end
 
     it 'returns an unauthorized action error' do

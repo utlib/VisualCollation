@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-describe "DELETE /notes/id", :type => :request do
+describe "DELETE /terms/id", :type => :request do
   before do
     @user = FactoryGirl.create(:user, {:password => "user"})
     put '/confirmation', params: {:confirmation_token => @user.confirmation_token}
@@ -23,7 +23,7 @@ describe "DELETE /notes/id", :type => :request do
   context 'with valid authorization' do
     context 'and valid note ID' do
       before do
-        delete '/notes/'+@term.id, params: @parameters.to_json, headers: {'Authorization' => @authToken, 'CONTENT_TYPE' => 'application/json', 'ACCEPT' => 'application/json'}
+        delete '/terms/'+@term.id, params: @parameters.to_json, headers: {'Authorization' => @authToken, 'CONTENT_TYPE' => 'application/json', 'ACCEPT' => 'application/json'}
       end
 
       it 'returns 204' do
@@ -37,7 +37,7 @@ describe "DELETE /notes/id", :type => :request do
 
     context 'and invalid note ID' do
       before do
-        delete '/notes/'+@term.id+'invalid', params: @parameters.to_json, headers: {'Authorization' => @authToken, 'CONTENT_TYPE' => 'application/json', 'ACCEPT' => 'application/json'}
+        delete '/terms/'+@term.id+'invalid', params: @parameters.to_json, headers: {'Authorization' => @authToken, 'CONTENT_TYPE' => 'application/json', 'ACCEPT' => 'application/json'}
       end
 
       it 'returns 404' do
@@ -56,7 +56,7 @@ describe "DELETE /notes/id", :type => :request do
           type: "Hand",
           project: @project2
         })
-        delete '/notes/'+@term2.id, params: @parameters.to_json, headers: {'Authorization' => @authToken, 'CONTENT_TYPE' => 'application/json', 'ACCEPT' => 'application/json'}
+        delete '/terms/'+@term2.id, params: @parameters.to_json, headers: {'Authorization' => @authToken, 'CONTENT_TYPE' => 'application/json', 'ACCEPT' => 'application/json'}
       end
 
       it 'returns 401' do
@@ -71,7 +71,7 @@ describe "DELETE /notes/id", :type => :request do
 
   context 'with corrupted authorization' do
     before do
-      delete '/notes/'+@term.id, params: @parameters.to_json, headers: {'Authorization' => @authToken+'asdf', 'CONTENT_TYPE' => 'application/json', 'ACCEPT' => 'application/json'}
+      delete '/terms/'+@term.id, params: @parameters.to_json, headers: {'Authorization' => @authToken+'asdf', 'CONTENT_TYPE' => 'application/json', 'ACCEPT' => 'application/json'}
       @body = JSON.parse(response.body)
     end
 
@@ -86,7 +86,7 @@ describe "DELETE /notes/id", :type => :request do
 
   context 'with empty authorization' do
     before do
-      delete '/notes/'+@term.id, params: @parameters.to_json, headers: {'Authorization' => ""}
+      delete '/terms/'+@term.id, params: @parameters.to_json, headers: {'Authorization' => ""}
     end
 
     it 'returns an bad request error' do
@@ -100,7 +100,7 @@ describe "DELETE /notes/id", :type => :request do
 
   context 'invalid authorization' do
     before do
-      delete '/notes/'+@term.id, params: @parameters.to_json, headers: {'Authorization' => "123456789"}
+      delete '/terms/'+@term.id, params: @parameters.to_json, headers: {'Authorization' => "123456789"}
     end
 
     it 'returns an bad request error' do
@@ -114,7 +114,7 @@ describe "DELETE /notes/id", :type => :request do
 
   context 'without authorization' do
     before do
-      delete '/notes/'+@term.id
+      delete '/terms/'+@term.id
     end
 
     it 'returns an unauthorized action error' do
