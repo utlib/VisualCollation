@@ -726,22 +726,6 @@ class CollationManager extends Component {
               tabIndex={this.props.popUpActive ? -1 : 0}
             />
           </div>
-          <div className="export">
-            <FlatButton
-              label="SVG2"
-              aria-label="Export to SVG2"
-              labelStyle={{
-                color: '#ffffff',
-                fontSize: this.state.windowWidth <= 768 ? '0.75em' : null,
-              }}
-              backgroundColor="rgba(255, 255, 255, 0.05)"
-              style={{ width: '100%' }}
-              onClick={() => {
-                this.handleExportToggle(true, 'svg2', 'SVG2');
-              }}
-              tabIndex={this.props.popUpActive ? -1 : 0}
-            />
-          </div>
           <h2>Export Collation Formula</h2>
           <div className="export">
             <FlatButton

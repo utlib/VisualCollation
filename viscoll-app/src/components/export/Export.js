@@ -107,18 +107,16 @@ const Export = props => {
         {/* {props.exportedType === 'share'
           ? window.location.href + '/viewOnly'
           : props.exportedData} */}
-        {props.exportedType === 'svg' || props.exportedType === 'svg2' ? (
+        {props.exportedType === 'svg' ? (
           <div>
-            {Array.from(props.exportedData)
-              .reverse()
-              .map((value, index) => {
-                return (
-                  <img
-                    key={index}
-                    src={`data:image/svg+xml;utf8,${encodeURIComponent(value)}`}
-                  ></img>
-                );
-              })}
+            {Array.from(props.exportedData).map((value, index) => {
+              return (
+                <img
+                  key={index}
+                  src={`data:image/svg+xml;utf8,${encodeURIComponent(value)}`}
+                ></img>
+              );
+            })}
           </div>
         ) : (
           <pre>{props.exportedData}</pre>
