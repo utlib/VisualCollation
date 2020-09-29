@@ -100,7 +100,7 @@
   </manuscript>
   <mapping>
     <map target="#ravenna_384_2339-q-1">
-      <term target="#note_title_test_note #group_title_quire_1 #group_type_quire #group_members_ravenna_384_2339-q-1"/>
+      <term target="#group_title_quire_1 #group_type_quire #group_members_ravenna_384_2339-q-1"/>
     </map>
     <map target="#ravenna_384_2339-q-1-2">
       <term target=" #group_title_quire_2 #group_type_quire #group_members_ravenna_384_2339-q-1-2"/>
