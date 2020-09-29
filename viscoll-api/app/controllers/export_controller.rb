@@ -44,8 +44,8 @@ class ExportController < ApplicationController
         when "json"
           @data = buildJSON(@project)
           render :'exports/show', status: :ok and return
-        when 'svg', 'svg2'
-          collation_file = @format == 'svg2' ? 'collation2.css' : 'collation.css'
+        when 'svg'
+          collation_file = 'collation.css'
           config_xml = %Q{<config><css xml:id="css">#{collation_file}</css></config>}
           
           job_response = process_pipeline 'viscoll2svg', xml.to_xml, config_xml
