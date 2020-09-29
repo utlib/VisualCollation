@@ -10,7 +10,7 @@ module ControllerHelper
       @leafs = {}
       @rectos = {}
       @versos = {}
-      @notes = {}
+      @terms = {}
       
       # Project Information
       @projectInformation = {
@@ -113,7 +113,6 @@ module ControllerHelper
           end
         end
       end
-    
 
       # Generate all attributes for Leafs
       allLeafNodes = xml.xpath('//x:leaf', "x" => "http://schoenberginstitute.org/schema/collation")
@@ -282,73 +281,6 @@ module ControllerHelper
         end
       end
 
-      # Generate all attributes for Notes
-      allNotes = xml.xpath('//x:note', "x" => "http://schoenberginstitute.org/schema/collation")
-      allNotes.each_with_index do |noteNode, noteOrder|
-        noteNodeID = noteNode.attributes["id"].value
-        type = noteNode.attributes["type"].value
-        title = ""
-        description = noteNode.text
-        show = false
-        @projectInformation[:noteTypes].push(type)
-        # MAP the noteTitle and show for all notes
-        mapTargetSearchText = "//x:map[@target='#"+noteNodeID+"']"
-        noteMappingNodes = xml.xpath(mapTargetSearchText, "x" => "http://schoenberginstitute.org/schema/collation")
-        if not noteMappingNodes.empty?
-          noteMappingNode = noteMappingNodes[0] # Only 1 mapping per note
-          noteTermTargets = noteMappingNode.children[1].attributes["target"].value.split(" ")
-          noteTermTargets.each do |target|
-            termSearchText = "//x:term[@xml:id='"+target[1..-1]+"']"
-            noteTerms = xml.xpath(termSearchText, "x" => "http://schoenberginstitute.org/schema/collation")
-            if not noteTerms.empty?
-              noteTerm = noteTerms[0]
-              noteTermTaxonomyID = noteTerm.parent.attributes["id"].value
-              noteTermTaxonomyID=="note_title" ? title=noteTerm.text : nil
-              noteTermTaxonomyID=="note_show" ? show=true : nil
-            end
-          end
-        end
-        # MAP Groups, Leafs, Rectos, Versos for this Note
-        groupOrders = []
-        @groups.each do |groupOrder, attributes|
-          if attributes[:noteTitles].include? title
-            groupOrders.push(groupOrder)
-          end
-        end
-        leafOrders = []
-        @leafs.each do |leafOrder, attributes|
-          if attributes[:noteTitles].include? title
-            leafOrders.push(leafOrder)
-          end
-        end
-        rectoOrders = []
-        @rectos.each do |rectoOrder, attributes|
-          if attributes[:noteTitles].include? title
-            rectoOrders.push(rectoOrder)
-          end
-        end
-        versoOrders = []
-        @versos.each do |versoOrder, attributes|
-          if attributes[:noteTitles].include? title
-            versoOrders.push(versoOrder)
-          end
-        end
-        @notes[noteOrder] = {
-          params: {
-            title: title,
-            type: type,
-            description: description,
-            show: show
-          },
-          objects: {
-            Group: groupOrders,
-            Leaf: leafOrders,
-            Recto: rectoOrders,
-            Verso: versoOrders
-          }
-        }
-      end
-
       # Everything is fine upto this point unless the xml import is driectly from Dot's Model. 
       # In that case, we have to generate the memberOrders attribute for each Group manually.
       # We will loose the actual memberOrders. Here we add the Group members first and then Leaf members.
@@ -374,7 +306,7 @@ module ControllerHelper
         Leafs: @leafs,
         Rectos: @rectos,
         Versos: @versos,
-        Notes: @notes
+        Terms: @terms
       }
 
       handleJSONImport(JSON.parse(jsonImport.to_json))
