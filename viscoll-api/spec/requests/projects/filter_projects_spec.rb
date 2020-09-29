@@ -669,7 +669,7 @@ describe "PUT /projects/:id/filter", :type => :request do
           @parameters = {
             "queries": [
               {
-                "type": "note",
+                "type": "term",
                 "attribute": "title",
                 "condition": "equals",
                 "values": [ 'CREEPY WAAHOO', 'XTREME FOOBAR' ]
