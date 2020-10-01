@@ -11,7 +11,7 @@ import Dialog from 'material-ui/Dialog';
 import ImageViewer from '../global/ImageViewer';
 import SelectField from '../global/SelectField';
 import { checkboxStyle } from '../../styles/checkbox';
-import { renderNoteChip } from '../../helpers/renderHelper';
+import { renderTermChip } from '../../helpers/renderHelper';
 
 /** Side infobox */
 export default class SideInfoBox extends React.Component {
@@ -198,7 +198,7 @@ export default class SideInfoBox extends React.Component {
     let chips = [];
     for (let noteID of this.props.commonNotes) {
       const note = this.props.Notes[noteID];
-      chips.push(renderNoteChip(this.props, note));
+      chips.push(renderTermChip(this.props, note));
     }
     return chips;
   };

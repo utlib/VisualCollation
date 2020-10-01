@@ -14,7 +14,7 @@ import { getMemberOrder } from '../../helpers/getMemberOrder';
 import { checkboxStyle } from '../../styles/checkbox';
 import { btnBase } from '../../styles/button';
 import FolioNumberDialog from '../infoBox/dialog/FolioNumberDialog';
-import { renderNoteChip } from '../../helpers/renderHelper';
+import { renderTermChip } from '../../helpers/renderHelper';
 import TextField from 'material-ui/TextField/TextField';
 import IconSubmit from 'material-ui/svg-icons/action/done';
 import IconClear from 'material-ui/svg-icons/content/clear';
@@ -218,7 +218,7 @@ export default class LeafInfoBox extends React.Component {
     let chips = [];
     for (let noteID of this.props.commonNotes) {
       const note = this.props.Notes[noteID];
-      chips.push(renderNoteChip(this.props, note));
+      chips.push(renderTermChip(this.props, note));
     }
     return chips;
   };

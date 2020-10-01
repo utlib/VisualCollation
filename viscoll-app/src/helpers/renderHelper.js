@@ -1,7 +1,7 @@
 import React from 'react';
 import Chip from 'material-ui/Chip';
 
-export function renderNoteChip(props, note) {
+export function renderTermChip(props, note) {
   let deleteFn = () => {props.action.unlinkNote(note.id)};
   if (props.isReadOnly) deleteFn = null;
   return <Chip 
