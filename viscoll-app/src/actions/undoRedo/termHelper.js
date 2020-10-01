@@ -2,10 +2,10 @@ import {
   deleteNoteType,
   updateNoteType,
   createNoteType,
-  updateNote,
-  unlinkNote,
-  linkNote,
-  addNote,
+  updateTerm,
+  unlinkTerm,
+  linkTerm,
+  addTerm,
 } from '../backend/termActions';
 
 export function undoUpdateNoteType(action, state) {
@@ -36,61 +36,61 @@ export function undoDeleteNoteType(action, state) {
     type,
   }
   historyActions.push(createNoteType(noteType));
-  // Update notes that had this note type
-  for (const key in state.project.Notes) {
-    if (!state.project.Notes.hasOwnProperty(key)) continue;
-    if (state.project.Notes[key].type === type) {
-      historyActions.push(updateNote(key, {type}));
+  // Update terms that had this note type
+  for (const key in state.project.Terms) {
+    if (!state.project.Terms.hasOwnProperty(key)) continue;
+    if (state.project.Terms[key].type === type) {
+      historyActions.push(updateTerm(key, {type}));
     }
   }
   return historyActions;
 }
 
-export function undoLinkNote(action, state) {
+export function undoLinkTerm(action, state) {
   const urlSplit = action.payload.request.url.split("/");
-  const noteID = urlSplit[urlSplit.length-2];
-  const historyAction = unlinkNote(noteID, action.payload.request.data.objects);
+  const termID = urlSplit[urlSplit.length-2];
+  const historyAction = unlinkTerm(termID, action.payload.request.data.objects);
   return [historyAction];
 }
 
-export function undoUnlinkNote(action, state) {
+export function undoUnlinkTerm(action, state) {
   const urlSplit = action.payload.request.url.split("/");
-  const noteID = urlSplit[urlSplit.length-2];
-  const historyAction = linkNote(noteID, action.payload.request.data.objects);
+  const termID = urlSplit[urlSplit.length-2];
+  const historyAction = linkTerm(termID, action.payload.request.data.objects);
   return [historyAction];
 }
 
-export function undoDeleteNote(action, state) {
+export function undoDeleteTerm(action, state) {
   const historyActions = [];
-  const noteID = action.payload.request.url.split("/").pop();
-  const note = state.project.Notes[noteID];
+  const termID = action.payload.request.url.split("/").pop();
+  const term = state.project.Terms[termID];
 
-  // Create note
-  const noteData = {
+  // Create term
+  const termData = {
     project_id: state.project.id,
-    id: noteID,
-    title: note.title,
-    type: note.type,
-    description: note.description,
-    show: note.show,
+    id: termID,
+    title: term.title,
+    type: term.type,
+    description: term.description,
+    show: term.show,
   }
-  historyActions.push(addNote(noteData));
+  historyActions.push(addTerm(termData));
 
   // Relink leaves, groups, sides
   const objects = [];
-  for (const id of note.objects.Group) {
+  for (const id of term.objects.Group) {
     objects.push({id, type:"Group"});
   }
-  for (const id of note.objects.Leaf) {
+  for (const id of term.objects.Leaf) {
     objects.push({id, type:"Leaf"});
   }
-  for (const id of note.objects.Recto) {
+  for (const id of term.objects.Recto) {
     objects.push({id, type:"Recto"});
   }
-  for (const id of note.objects.Verso) {
+  for (const id of term.objects.Verso) {
     objects.push({id, type:"Verso"});
   }
-  historyActions.push(linkNote(noteID, objects));
+  historyActions.push(linkTerm(termID, objects));
 
   return historyActions;
 }
