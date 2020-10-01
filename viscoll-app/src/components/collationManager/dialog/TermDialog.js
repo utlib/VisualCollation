@@ -1,5 +1,5 @@
 import React from 'react';
-import EditTermForm from '../../notesManager/EditNoteForm';
+import EditTermForm from '../../termsManager/EditNoteForm';
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
 

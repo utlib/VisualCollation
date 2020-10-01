@@ -7,7 +7,7 @@ import IconButton from 'material-ui/IconButton';
 import Avatar from 'material-ui/Avatar';
 import UserProfileForm from '../components/topbar/UserProfileForm';
 import FlatButton from 'material-ui/FlatButton';
-import TermsFilter from '../components/notesManager/NotesFilter';
+import TermsFilter from '../components/termsManager/NotesFilter';
 import FilterIcon from 'material-ui/svg-icons/content/filter-list';
 import Undo from 'material-ui/svg-icons/content/undo';
 import Redo from 'material-ui/svg-icons/content/redo';
