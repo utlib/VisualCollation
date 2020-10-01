@@ -1,9 +1,9 @@
-export function addNote(note) {
+export function addTerm(term) {
   /**
-     note: {
+     term: {
     "project_id": "5951303fc9bf3c7b9a573a3f",
     "id": "595130sadsadsa9bf3c7b9a573a3f"
-    "title": "some title for note",
+    "title": "some title for term",
     "type": "Ink",
     "description": "blue ink",
     "uri": "https://www.test.com/",
@@ -12,26 +12,26 @@ export function addNote(note) {
      */
   return {
     types: [
-      'CREATE_NOTE_FRONTEND',
-      'CREATE_NOTE_SUCCESS_BACKEND',
-      'CREATE_NOTE_FAILED_BACKEND',
+      'CREATE_TERM_FRONTEND',
+      'CREATE_TERM_SUCCESS_BACKEND',
+      'CREATE_TERM_FAILED_BACKEND',
     ],
     payload: {
       request: {
-        url: `/notes`,
+        url: `/terms`,
         method: 'post',
-        data: { note },
-        successMessage: 'Successfully created the note',
+        data: { term },
+        successMessage: 'Successfully created the term',
         errorMessage: 'Ooops! Something went wrong',
       },
     },
   };
 }
 
-export function updateNote(noteID, note) {
+export function updateTerm(termID, term) {
   /**
-     note: {
-    "title": "some title for note",
+     term: {
+    "title": "some title for term",
     "type": "Ink",
     "description": "blue ink"
     "uri": "https://www.test.com/",
@@ -39,34 +39,34 @@ export function updateNote(noteID, note) {
      */
   return {
     types: [
-      'UPDATE_NOTE_FRONTEND',
-      'UPDATE_NOTE_SUCCESS_BACKEND',
-      'UPDATE_NOTE_FAILED_BACKEND',
+      'UPDATE_TERM_FRONTEND',
+      'UPDATE_TERM_SUCCESS_BACKEND',
+      'UPDATE_TERM_FAILED_BACKEND',
     ],
     payload: {
       request: {
-        url: `/notes/${noteID}`,
+        url: `/terms/${termID}`,
         method: 'put',
-        data: { note },
-        successMessage: 'Successfully updated the note',
+        data: { term },
+        successMessage: 'Successfully updated the term',
         errorMessage: 'Ooops! Something went wrong',
       },
     },
   };
 }
 
-export function deleteNote(noteID) {
+export function deleteTerm(termID) {
   return {
     types: [
-      'DELETE_NOTE_FRONTEND',
-      'DELETE_NOTE_SUCCESS_BACKEND',
-      'DELETE_NOTE_FAILED_BACKEND',
+      'DELETE_TERM_FRONTEND',
+      'DELETE_TERM_SUCCESS_BACKEND',
+      'DELETE_TERM_FAILED_BACKEND',
     ],
     payload: {
       request: {
-        url: `/notes/${noteID}`,
+        url: `/terms/${termID}`,
         method: 'delete',
-        successMessage: 'Successfully deleted the note',
+        successMessage: 'Successfully deleted the term',
         errorMessage: 'Ooops! Something went wrong',
       },
     },
@@ -74,7 +74,7 @@ export function deleteNote(noteID) {
   };
 }
 
-export function linkNote(noteID, objects) {
+export function linkTerm(termID, objects) {
   /**
      objects: [
      {
@@ -85,16 +85,16 @@ export function linkNote(noteID, objects) {
      */
   return {
     types: [
-      'LINK_NOTE_FRONTEND',
-      'LINK_NOTE_SUCCESS_BACKEND',
-      'LINK_NOTE_FAILED_BACKEND',
+      'LINK_TERM_FRONTEND',
+      'LINK_TERM_SUCCESS_BACKEND',
+      'LINK_TERM_FAILED_BACKEND',
     ],
     payload: {
       request: {
-        url: `/notes/${noteID}/link`,
+        url: `/terms/${termID}/link`,
         method: 'put',
         data: { objects },
-        successMessage: 'Successfully linked the note',
+        successMessage: 'Successfully linked the term',
         errorMessage: 'Ooops! Something went wrong',
       },
     },
@@ -102,7 +102,7 @@ export function linkNote(noteID, objects) {
   };
 }
 
-export function unlinkNote(noteID, objects) {
+export function unlinkTerm(termID, objects) {
   /**
      objects: [
      {
@@ -113,16 +113,16 @@ export function unlinkNote(noteID, objects) {
      */
   return {
     types: [
-      'UNLINK_NOTE_FRONTEND',
-      'UNLINK_NOTE_SUCCESS_BACKEND',
-      'UNLINK_NOTE_FAILED_BACKEND',
+      'UNLINK_TERM_FRONTEND',
+      'UNLINK_TERM_SUCCESS_BACKEND',
+      'UNLINK_TERM_FAILED_BACKEND',
     ],
     payload: {
       request: {
-        url: `/notes/${noteID}/unlink`,
+        url: `/terms/${termID}/unlink`,
         method: 'put',
         data: { objects },
-        successMessage: 'Successfully unlinked the note',
+        successMessage: 'Successfully unlinked the term',
         errorMessage: 'Ooops! Something went wrong',
       },
     },
@@ -145,7 +145,7 @@ export function createNoteType(noteType) {
     ],
     payload: {
       request: {
-        url: `/notes/type`,
+        url: `/terms/type`,
         method: 'post',
         data: { noteType },
         successMessage: 'Successfully created the note type',
@@ -172,7 +172,7 @@ export function updateNoteType(noteType) {
     ],
     payload: {
       request: {
-        url: `/notes/type`,
+        url: `/terms/type`,
         method: 'put',
         data: { noteType },
         successMessage: 'Successfully updated the note type',
@@ -198,7 +198,7 @@ export function deleteNoteType(noteType) {
     ],
     payload: {
       request: {
-        url: `/notes/type`,
+        url: `/terms/type`,
         method: 'delete',
         data: { noteType },
         successMessage: 'Successfully deleted the note type',
