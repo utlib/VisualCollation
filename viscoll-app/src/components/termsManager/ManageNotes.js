@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import RaisedButton from 'material-ui/RaisedButton';
-import EditNoteForm from './EditNoteForm';
+import EditTermForm from './EditTermForm';
 import NewNoteForm from './NewNoteForm';
 import Add from 'material-ui/svg-icons/content/add';
 import { btnMd, btnBase } from '../../styles/button';
@@ -200,7 +200,7 @@ export default class ManageNotes extends Component {
       );
     } else {
       noteForm = (
-        <EditNoteForm
+        <EditTermForm
           action={{
             addNote: this.props.action.addNote,
             updateNote: this.updateNote,

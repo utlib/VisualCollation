@@ -9,7 +9,7 @@ import SelectField from '../global/SelectField';
 import ChipInput from 'material-ui-chip-input';
 
 /** Create New Note tab in the Note Manager */
-export default class EditNoteForm extends Component {
+export default class EditTermForm extends Component {
   constructor(props) {
     super(props);
     this.state = {
