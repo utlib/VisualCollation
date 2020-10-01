@@ -29,10 +29,10 @@ import {
 } from '../actions/backend/filterActions';
 import { updateGroup } from '../actions/backend/groupActions';
 import {
-  updateNote,
-  deleteNote,
-  linkNote,
-  unlinkNote,
+  updateTerm,
+  deleteTerm,
+  linkTerm,
+  unlinkTerm,
 } from '../actions/backend/termActions';
 import {
   loadProject,
@@ -40,7 +40,7 @@ import {
   updateProject,
 } from '../actions/backend/projectActions';
 import fileDownload from 'js-file-download';
-import NoteDialog from '../components/collationManager/dialog/NoteDialog';
+import TermDialog from '../components/collationManager/dialog/TermDialog';
 import { radioBtnDark } from '../styles/button';
 import ManagersPanel from '../components/global/ManagersPanel';
 
@@ -62,13 +62,13 @@ class CollationManager extends Component {
         label: '',
         type: '',
         exportCols: 1,
-        exportNotes: true,
+        exportTerms: true,
       },
       selectAll: '',
       leftSideBarOpen: true,
       showTips: props.preferences.showTips,
       imageViewerEnabled: false,
-      activeNote: null,
+      activeTerm: null,
       tipIndex: 0,
     };
   }
@@ -112,20 +112,20 @@ class CollationManager extends Component {
       this.setState({ selectAll: nextProps.selectedObjects.type + 's' });
     }
 
-    // Update active note
-    const commonNotes = this.getCommonNotes(nextProps);
+    // Update active term
+    const commonTerms = this.getCommonTerms(nextProps);
     if (
-      this.state.activeNote !== null &&
-      commonNotes.findIndex(noteID => noteID === this.state.activeNote.id) <
+      this.state.activeTerm !== null &&
+      commonTerms.findIndex(termID => termID === this.state.activeTerm.id) <
         0 &&
       !this.state.clickedFromDiagram
     ) {
-      // Hide note when note was clicked from infobox and removed from selected object
-      this.setState({ activeNote: null });
-    } else if (this.state.activeNote) {
-      // Update note object
+      // Hide term when term was clicked from infobox and removed from selected object
+      this.setState({ activeTerm: null });
+    } else if (this.state.activeTerm) {
+      // Update term object
       this.setState({
-        activeNote: nextProps.project.Notes[this.state.activeNote.id],
+        activeTerm: nextProps.project.Terms[this.state.activeTerm.id],
       });
     }
   }
@@ -208,9 +208,9 @@ class CollationManager extends Component {
     );
   };
 
-  handleExportToggle = (open, type, label, exportCols, exportNotes) => {
+  handleExportToggle = (open, type, label, exportCols, exportTerms) => {
     this.setState(
-      { export: { open, type, label, exportCols, exportNotes } },
+      { export: { open, type, label, exportCols, exportTerms } },
       () => {
         if (this.state.export.open && type !== 'png' && type !== 'share')
           this.props.exportProject(this.props.project.id, type);
@@ -299,32 +299,32 @@ class CollationManager extends Component {
     });
   };
 
-  closeNoteDialog = () => {
-    this.setState({ activeNote: null, clickedFromDiagram: false }, () =>
+  closeTermDialog = () => {
+    this.setState({ activeTerm: null, clickedFromDiagram: false }, () =>
       this.props.togglePopUp(false)
     );
   };
-  openNoteDialog = (note, clickedFromDiagram = false) => {
-    this.setState({ activeNote: note, clickedFromDiagram }, () =>
+  openTermDialog = (term, clickedFromDiagram = false) => {
+    this.setState({ activeTerm: term, clickedFromDiagram }, () =>
       this.props.togglePopUp(true)
     );
   };
 
-  getCommonNotes = (props = this.props) => {
-    // Find the common notes of all currently selected objects
+  getCommonTerms = (props = this.props) => {
+    // Find the common terms of all currently selected objects
     const memberType = props.selectedObjects.type;
     const members = props.selectedObjects.members;
-    let notes = [];
+    let terms = [];
     if (members.length > 0) {
-      notes = props.project[memberType + 's'][members[0]].notes;
+      terms = props.project[memberType + 's'][members[0]].terms;
       for (let id of members) {
-        notes = this.intersect(
-          notes,
-          props.project[memberType + 's'][id].notes
+        terms = this.intersect(
+          terms,
+          props.project[memberType + 's'][id].terms
         );
       }
     }
-    return notes;
+    return terms;
   };
 
   /**
@@ -341,27 +341,27 @@ class CollationManager extends Component {
       });
   };
 
-  updateNote = (noteID, note) => {
-    this.props.updateNote(
-      noteID,
-      note,
+  updateTerm = (termID, term) => {
+    this.props.updateTerm(
+      termID,
+      term,
       this.props.project.id,
       this.props.collationManager.filters
     );
   };
 
-  linkDialogNote = (noteID, objects) => {
-    this.props.linkNote(
-      noteID,
+  linkDialogTerm = (termID, objects) => {
+    this.props.linkTerm(
+      termID,
       objects,
       this.props.project.id,
       this.props.collationManager.filters
     );
   };
 
-  linkAndUnlinkNotes = (noteID, linkObjects, unlinkObjects) => {
-    this.props.linkAndUnlinkNotes(
-      noteID,
+  linkAndUnlinkTerms = (termID, linkObjects, unlinkObjects) => {
+    this.props.linkAndUnlinkTerms(
+      termID,
       linkObjects,
       unlinkObjects,
       this.props.project.id,
@@ -369,19 +369,19 @@ class CollationManager extends Component {
     );
   };
 
-  unlinkDialogNote = (noteID, objects) => {
-    this.props.unlinkNote(
-      noteID,
+  unlinkDialogTerm = (termID, objects) => {
+    this.props.unlinkTerm(
+      termID,
       objects,
       this.props.project.id,
       this.props.collationManager.filters
     );
   };
 
-  deleteNote = noteID => {
-    this.closeNoteDialog();
-    this.props.deleteNote(
-      noteID,
+  deleteTerm = termID => {
+    this.closeTermDialog();
+    this.props.deleteTerm(
+      termID,
       this.props.project.id,
       this.props.collationManager.filters
     );
@@ -549,7 +549,7 @@ class CollationManager extends Component {
         numRootGroups={this.numRootGroups()}
         setExport={this.setExport}
         exportCols={this.state.export.exportCols}
-        exportNotes={this.state.export.exportNotes}
+        exportTerms={this.state.export.exportTerms}
       />
     );
 
@@ -771,12 +771,12 @@ class CollationManager extends Component {
         <InfoBox
           type={this.props.selectedObjects.type}
           user={this.props.user}
-          closeNoteDialog={this.closeNoteDialog}
-          commonNotes={this.getCommonNotes()}
-          openNoteDialog={this.openNoteDialog}
+          closeTermDialog={this.closeTermDialog}
+          commonTerms={this.getCommonTerms()}
+          openTermDialog={this.openTermDialog}
           action={{
-            linkNote: this.props.linkNote,
-            unlinkNote: this.props.unlinkNote,
+            linkTerm: this.props.linkTerm,
+            unlinkTerm: this.props.unlinkTerm,
             updatePreferences: this.props.updatePreferences,
           }}
           togglePopUp={this.props.togglePopUp}
@@ -823,7 +823,7 @@ class CollationManager extends Component {
                   this.props.toggleVisualizationDrawing
                 }
                 updateGroup={this.updateGroup}
-                openNoteDialog={note => this.openNoteDialog(note, true)}
+                openTermDialog={term => this.openTermDialog(term, true)}
                 tabIndex={this.props.popUpActive ? -1 : 0}
               />
             </div>
@@ -883,9 +883,9 @@ class CollationManager extends Component {
               sewing={this.props.collationManager.visualizations.sewing}
               toggleVisualizationDrawing={this.props.toggleVisualizationDrawing}
               updateGroup={this.updateGroup}
-              openNoteDialog={note => this.openNoteDialog(note, true)}
+              openTermDialog={term => this.openTermDialog(term, true)}
               tabIndex={this.props.popUpActive ? -1 : 0}
-              showNotes={this.state.export.exportNotes}
+              showTerms={this.state.export.exportTerms}
             />
           </div>
           {infobox}
@@ -909,23 +909,23 @@ class CollationManager extends Component {
           }
         />
         {workspace}
-        <NoteDialog
-          open={this.state.activeNote !== null}
-          commonNotes={this.getCommonNotes()}
-          activeNote={
-            this.state.activeNote ? this.state.activeNote : { id: null }
+        <TermDialog
+          open={this.state.activeTerm !== null}
+          commonTerms={this.getCommonTerms()}
+          activeTerm={
+            this.state.activeTerm ? this.state.activeTerm : { id: null }
           }
-          closeNoteDialog={this.closeNoteDialog}
+          closeTermDialog={this.closeTermDialog}
           action={{
-            updateNote: this.updateNote,
-            deleteNote: this.deleteNote,
-            linkNote: this.linkDialogNote,
-            unlinkNote: this.unlinkDialogNote,
-            linkAndUnlinkNotes: this.linkAndUnlinkNotes,
+            updateTerm: this.updateTerm,
+            deleteTerm: this.deleteTerm,
+            linkTerm: this.linkDialogTerm,
+            unlinkTerm: this.unlinkDialogTerm,
+            linkAndUnlinkTerms: this.linkAndUnlinkTerms,
           }}
           projectID={this.props.project.id}
           noteTypes={this.props.project.noteTypes}
-          Notes={this.props.project.Notes}
+          Terms={this.props.project.Terms}
           Groups={this.props.project.Groups}
           groupIDs={this.props.project.groupIDs}
           Leafs={this.props.project.Leafs}
@@ -1012,47 +1012,47 @@ const mapDispatchToProps = dispatch => {
       dispatch(updateGroup(groupID, group));
     },
 
-    updateNote: (noteID, note, projectID, filters) => {
-      dispatch(updateNote(noteID, note)).then(() =>
+    updateTerm: (termID, term, projectID, filters) => {
+      dispatch(updateTerm(termID, term)).then(() =>
         dispatch(reapplyFilterProject(projectID, filters))
       );
     },
 
-    deleteNote: (noteID, projectID, filters) => {
-      dispatch(deleteNote(noteID)).then(() =>
+    deleteTerm: (termID, projectID, filters) => {
+      dispatch(deleteTerm(termID)).then(() =>
         dispatch(reapplyFilterProject(projectID, filters))
       );
     },
 
-    linkNote: (noteID, object, projectID, filters) => {
-      dispatch(linkNote(noteID, object)).then(() =>
+    linkTerm: (termID, object, projectID, filters) => {
+      dispatch(linkTerm(termID, object)).then(() =>
         dispatch(reapplyFilterProject(projectID, filters))
       );
     },
 
-    unlinkNote: (noteID, object, projectID, filters) => {
-      dispatch(unlinkNote(noteID, object)).then(() =>
+    unlinkTerm: (termID, object, projectID, filters) => {
+      dispatch(unlinkTerm(termID, object)).then(() =>
         dispatch(reapplyFilterProject(projectID, filters))
       );
     },
 
-    linkAndUnlinkNotes: (
-      noteID,
+    linkAndUnlinkTerms: (
+      termID,
       linkObjects,
       unlinkObjects,
       projectID,
       filters
     ) => {
       if (linkObjects.length > 0 && unlinkObjects.length > 0) {
-        dispatch(linkNote(noteID, linkObjects))
-          .then(action => dispatch(unlinkNote(noteID, unlinkObjects)))
+        dispatch(linkTerm(termID, linkObjects))
+          .then(action => dispatch(unlinkTerm(termID, unlinkObjects)))
           .then(() => dispatch(reapplyFilterProject(projectID, filters)));
       } else if (linkObjects.length > 0) {
-        dispatch(linkNote(noteID, linkObjects)).then(() =>
+        dispatch(linkTerm(termID, linkObjects)).then(() =>
           dispatch(reapplyFilterProject(projectID, filters))
         );
       } else if (unlinkObjects.length > 0) {
-        dispatch(unlinkNote(noteID, unlinkObjects)).then(() =>
+        dispatch(unlinkTerm(termID, unlinkObjects)).then(() =>
           dispatch(reapplyFilterProject(projectID, filters))
         );
       }
