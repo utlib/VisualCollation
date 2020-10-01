@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import TopBar from './TopBar';
-import ManageNotes from '../components/notesManager/ManageNotes';
+import ManageTerms from '../components/notesManager/ManageNotes';
 import NoteType from '../components/notesManager/NoteType';
 import { Tabs, Tab } from 'material-ui/Tabs';
 // import Panel from '../components/global/Panel';
@@ -137,7 +137,7 @@ class TermsManager extends Component {
 
     if (this.props.activeTab === 'MANAGE') {
       content = (
-        <ManageNotes
+        <ManageTerms
           action={{
             updateNote: this.updateNote,
             addNote: this.handleAddNote,
