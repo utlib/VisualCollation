@@ -4,7 +4,7 @@ import RaisedButton from 'material-ui/RaisedButton';
 import Checkbox from 'material-ui/Checkbox';
 import SelectField from '../global/SelectField';
 
-/** Create New Note tab in the Note Manager */
+/** Create New Term tab in the Term Manager */
 export default class NewTermForm extends Component {
   constructor(props) {
     super(props);
@@ -25,10 +25,10 @@ export default class NewTermForm extends Component {
 
   //ensure title validates (is not a duplicate, too long etc)
   validateTitle = title => {
-    for (let noteID in this.props.Notes) {
-      const note = this.props.Notes[noteID];
-      if (note.title === title) {
-        this.setState({ errors: { title: 'This note title already exists.' } });
+    for (let termID in this.props.Terms) {
+      const term = this.props.Terms[termID];
+      if (term.title === title) {
+        this.setState({ errors: { title: 'This term title already exists.' } });
         return;
       }
     }
@@ -56,13 +56,13 @@ export default class NewTermForm extends Component {
         description: this.state.description,
         show: this.state.show,
       };
-      if (this.props.note)
-        this.props.action.updateNote(this.props.note.id, editing);
+      if (this.props.term)
+        this.props.action.updateTerm(this.props.term.id, editing);
     }
   };
 
   create = () => {
-    let note = {
+    let term = {
       project_id: this.props.projectID,
       title: this.state.title,
       type: this.state.type,
@@ -70,7 +70,7 @@ export default class NewTermForm extends Component {
       uri: this.state.uri,
       show: this.state.show,
     };
-    this.props.action.addNote(note);
+    this.props.action.addTerm(term);
     // Reset form
     this.setState({
       title: '',
@@ -85,8 +85,8 @@ export default class NewTermForm extends Component {
   };
 
   /**
-   * Clear values in the input fields if we are creating a new note
-   * Reset to original values if we are editing an existing note
+   * Clear values in the input fields if we are creating a new term
+   * Reset to original values if we are editing an existing term
    */
   reset = props => {
     this.setState({
@@ -152,13 +152,13 @@ export default class NewTermForm extends Component {
     return (
       <div className="container">
         <h1>{title}</h1>
-        <div className="noteForm">
-          <div className="label" id="newNoteTitle">
+        <div className="termForm">
+          <div className="label" id="newTermTitle">
             Title
           </div>
           <div className="input">
             <TextField
-              aria-labelledby="newNoteTitle"
+              aria-labelledby="newTermTitle"
               name="title"
               value={this.state.title}
               errorText={this.state.errors.title}
@@ -179,12 +179,12 @@ export default class NewTermForm extends Component {
               data={this.props.noteTypes.map(this.renderNoteTypes)}
             ></SelectField>
           </div>
-          <div className="label" id="newNoteDescription">
+          <div className="label" id="newTermDescription">
             Description
           </div>
           <div className="input">
             <TextField
-              aria-labelledby="newNoteDescription"
+              aria-labelledby="newTermDescription"
               name="description"
               value={this.state.description}
               onChange={(e, v) => this.onChange('description', v)}
@@ -192,12 +192,12 @@ export default class NewTermForm extends Component {
               fullWidth
             />
           </div>
-          <div className="label" id="newNoteURI">
+          <div className="label" id="newTermURI">
             URI
           </div>
           <div className="input">
             <TextField
-              aria-labelledby="newNoteURI"
+              aria-labelledby="newTermURI"
               name="uri"
               value={this.state.uri}
               onChange={(e, v) => this.onChange('uri', v)}
@@ -205,12 +205,12 @@ export default class NewTermForm extends Component {
               fullWidth
             />
           </div>
-          <div className="label" style={{ paddingTop: 20 }} id="newNoteShow">
+          <div className="label" style={{ paddingTop: 20 }} id="newTermShow">
             Show in diagram
           </div>
           <div className="input">
             <Checkbox
-              aria-labelledby="newNoteShow"
+              aria-labelledby="newTermShow"
               name="show"
               value={this.state.show}
               checked={this.state.show}
