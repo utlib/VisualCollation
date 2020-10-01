@@ -24,9 +24,9 @@ const ManagersPanel = props => {
       </button>
       <button
         className={
-          props.managerMode === 'notesManager' ? 'manager active' : 'manager'
+          props.managerMode === 'termsManager' ? 'manager active' : 'manager'
         }
-        onClick={() => props.changeManagerMode('notesManager')}
+        onClick={() => props.changeManagerMode('termsManager')}
         tabIndex={props.popUpActive ? -1 : 0}
         aria-label="Taxonomies Manager"
       >
