@@ -4463,7 +4463,7 @@ export const projectState001 = {
         ],
         nestLevel: 1,
         parentID: null,
-        notes: ['5a57825a4cfad13070870df8'],
+        terms: ['5a57825a4cfad13070870df8'],
         memberIDs: [
           'Leaf_5a57825a4cfad13070870dc4',
           'Leaf_5a57825a4cfad13070870dc7',
@@ -4485,7 +4485,7 @@ export const projectState001 = {
         sewing: [],
         nestLevel: 1,
         parentID: null,
-        notes: ['5a57825a4cfad13070870df8'],
+        terms: ['5a57825a4cfad13070870df8'],
         memberIDs: [
           'Group_5a57825a4cfad13070870df6',
           'Leaf_5a57825a4cfad13070870de2',
@@ -4505,7 +4505,7 @@ export const projectState001 = {
         sewing: [],
         nestLevel: 2,
         parentID: 'Group_5a57825a4cfad13070870df5',
-        notes: [],
+        terms: [],
         memberIDs: [
           'Group_5a57825a4cfad13070870df7',
           'Leaf_5a57825a4cfad13070870ddc',
@@ -4521,7 +4521,7 @@ export const projectState001 = {
         sewing: [],
         nestLevel: 3,
         parentID: 'Group_5a57825a4cfad13070870df6',
-        notes: [],
+        terms: [],
         memberIDs: [
           'Leaf_5a57825a4cfad13070870dd6',
           'Leaf_5a57825a4cfad13070870dd9',
@@ -4542,7 +4542,7 @@ export const projectState001 = {
         parentID: 'Group_5a57825a4cfad13070870df4',
         rectoID: 'Recto_5a57825a4cfad13070870dc5',
         versoID: 'Verso_5a57825a4cfad13070870dc6',
-        notes: ['5a57825a4cfad13070870df9'],
+        terms: ['5a57825a4cfad13070870df9'],
         memberType: 'Leaf',
       },
       Leaf_5a57825a4cfad13070870dc7: {
@@ -4557,7 +4557,7 @@ export const projectState001 = {
         parentID: 'Group_5a57825a4cfad13070870df4',
         rectoID: 'Recto_5a57825a4cfad13070870dc8',
         versoID: 'Verso_5a57825a4cfad13070870dc9',
-        notes: [],
+        terms: [],
         memberType: 'Leaf',
       },
       Leaf_5a57825a4cfad13070870dca: {
@@ -4572,7 +4572,7 @@ export const projectState001 = {
         parentID: 'Group_5a57825a4cfad13070870df4',
         rectoID: 'Recto_5a57825a4cfad13070870dcb',
         versoID: 'Verso_5a57825a4cfad13070870dcc',
-        notes: ['5a57825a4cfad13070870dfa'],
+        terms: ['5a57825a4cfad13070870dfa'],
         memberType: 'Leaf',
       },
       Leaf_5a57825a4cfad13070870dcd: {
@@ -4587,7 +4587,7 @@ export const projectState001 = {
         parentID: 'Group_5a57825a4cfad13070870df4',
         rectoID: 'Recto_5a57825a4cfad13070870dce',
         versoID: 'Verso_5a57825a4cfad13070870dcf',
-        notes: ['5a57825a4cfad13070870dfa'],
+        terms: ['5a57825a4cfad13070870dfa'],
         memberType: 'Leaf',
       },
       Leaf_5a57825a4cfad13070870dd0: {
@@ -4602,7 +4602,7 @@ export const projectState001 = {
         parentID: 'Group_5a57825a4cfad13070870df4',
         rectoID: 'Recto_5a57825a4cfad13070870dd1',
         versoID: 'Verso_5a57825a4cfad13070870dd2',
-        notes: ['5a57825a4cfad13070870dfa'],
+        terms: ['5a57825a4cfad13070870dfa'],
         memberType: 'Leaf',
       },
       Leaf_5a57825a4cfad13070870dd3: {
@@ -4617,7 +4617,7 @@ export const projectState001 = {
         parentID: 'Group_5a57825a4cfad13070870df4',
         rectoID: 'Recto_5a57825a4cfad13070870dd4',
         versoID: 'Verso_5a57825a4cfad13070870dd5',
-        notes: [],
+        terms: [],
         memberType: 'Leaf',
       },
       Leaf_5a57825a4cfad13070870dd6: {
@@ -4632,7 +4632,7 @@ export const projectState001 = {
         parentID: 'Group_5a57825a4cfad13070870df7',
         rectoID: 'Recto_5a57825a4cfad13070870dd7',
         versoID: 'Verso_5a57825a4cfad13070870dd8',
-        notes: [],
+        terms: [],
         memberType: 'Leaf',
       },
       Leaf_5a57825a4cfad13070870dd9: {
@@ -4647,7 +4647,7 @@ export const projectState001 = {
         parentID: 'Group_5a57825a4cfad13070870df7',
         rectoID: 'Recto_5a57825a4cfad13070870dda',
         versoID: 'Verso_5a57825a4cfad13070870ddb',
-        notes: [],
+        terms: [],
         memberType: 'Leaf',
       },
       Leaf_5a57825a4cfad13070870ddc: {
@@ -4662,7 +4662,7 @@ export const projectState001 = {
         parentID: 'Group_5a57825a4cfad13070870df6',
         rectoID: 'Recto_5a57825a4cfad13070870ddd',
         versoID: 'Verso_5a57825a4cfad13070870dde',
-        notes: [],
+        terms: [],
         memberType: 'Leaf',
       },
       Leaf_5a57825a4cfad13070870ddf: {
@@ -4677,7 +4677,7 @@ export const projectState001 = {
         parentID: 'Group_5a57825a4cfad13070870df6',
         rectoID: 'Recto_5a57825a4cfad13070870de0',
         versoID: 'Verso_5a57825a4cfad13070870de1',
-        notes: [],
+        terms: [],
         memberType: 'Leaf',
       },
       Leaf_5a57825a4cfad13070870de2: {
@@ -4692,7 +4692,7 @@ export const projectState001 = {
         parentID: 'Group_5a57825a4cfad13070870df5',
         rectoID: 'Recto_5a57825a4cfad13070870de3',
         versoID: 'Verso_5a57825a4cfad13070870de4',
-        notes: ['5a57825a4cfad13070870df9'],
+        terms: ['5a57825a4cfad13070870df9'],
         memberType: 'Leaf',
       },
       Leaf_5a57825a4cfad13070870de5: {
@@ -4707,7 +4707,7 @@ export const projectState001 = {
         parentID: 'Group_5a57825a4cfad13070870df5',
         rectoID: 'Recto_5a57825a4cfad13070870de6',
         versoID: 'Verso_5a57825a4cfad13070870de7',
-        notes: ['5a57825a4cfad13070870df8'],
+        terms: ['5a57825a4cfad13070870df8'],
         memberType: 'Leaf',
       },
       Leaf_5a57825a4cfad13070870de8: {
@@ -4722,7 +4722,7 @@ export const projectState001 = {
         parentID: 'Group_5a57825a4cfad13070870df5',
         rectoID: 'Recto_5a57825a4cfad13070870de9',
         versoID: 'Verso_5a57825a4cfad13070870dea',
-        notes: ['5a57825a4cfad13070870df8'],
+        terms: ['5a57825a4cfad13070870df8'],
         memberType: 'Leaf',
       },
       Leaf_5a57825a4cfad13070870deb: {
@@ -4737,7 +4737,7 @@ export const projectState001 = {
         parentID: 'Group_5a57825a4cfad13070870df5',
         rectoID: 'Recto_5a57825a4cfad13070870dec',
         versoID: 'Verso_5a57825a4cfad13070870ded',
-        notes: ['5a57825a4cfad13070870df8'],
+        terms: ['5a57825a4cfad13070870df8'],
         memberType: 'Leaf',
       },
       Leaf_5a57825a4cfad13070870dee: {
@@ -4752,7 +4752,7 @@ export const projectState001 = {
         parentID: 'Group_5a57825a4cfad13070870df5',
         rectoID: 'Recto_5a57825a4cfad13070870def',
         versoID: 'Verso_5a57825a4cfad13070870df0',
-        notes: [],
+        terms: [],
         memberType: 'Leaf',
       },
       Leaf_5a57825a4cfad13070870df1: {
@@ -4767,7 +4767,7 @@ export const projectState001 = {
         parentID: 'Group_5a57825a4cfad13070870df5',
         rectoID: 'Recto_5a57825a4cfad13070870df2',
         versoID: 'Verso_5a57825a4cfad13070870df3',
-        notes: [],
+        terms: [],
         memberType: 'Leaf',
       },
     },
@@ -4785,7 +4785,7 @@ export const projectState001 = {
             'https://iiif.library.utoronto.ca/image/v2/hollar:Hollar_a_3000_0003',
         },
         script_direction: 'None',
-        notes: [],
+        terms: [],
         memberType: 'Recto',
       },
       Recto_5a57825a4cfad13070870dc8: {
@@ -4801,7 +4801,7 @@ export const projectState001 = {
             'https://iiif.library.utoronto.ca/image/v2/hollar:Hollar_a_3000_0002',
         },
         script_direction: 'None',
-        notes: ['5a57825a4cfad13070870dfa'],
+        terms: ['5a57825a4cfad13070870dfa'],
         memberType: 'Recto',
       },
       Recto_5a57825a4cfad13070870dcb: {
@@ -4817,7 +4817,7 @@ export const projectState001 = {
             'https://iiif.library.utoronto.ca/image/v2/hollar:Hollar_a_3000_0001',
         },
         script_direction: 'None',
-        notes: [],
+        terms: [],
         memberType: 'Recto',
       },
       Recto_5a57825a4cfad13070870dce: {
@@ -4833,7 +4833,7 @@ export const projectState001 = {
             'https://iiif.library.utoronto.ca/image/v2/hollar:Hollar_a_3000_0007',
         },
         script_direction: 'Left-to-Right',
-        notes: [],
+        terms: [],
         memberType: 'Recto',
       },
       Recto_5a57825a4cfad13070870dd1: {
@@ -4849,7 +4849,7 @@ export const projectState001 = {
             'https://iiif.library.utoronto.ca/image/v2/hollar:Hollar_a_3000_0009',
         },
         script_direction: 'Left-to-Right',
-        notes: [],
+        terms: [],
         memberType: 'Recto',
       },
       Recto_5a57825a4cfad13070870dd4: {
@@ -4865,7 +4865,7 @@ export const projectState001 = {
             'https://iiif.library.utoronto.ca/image/v2/hollar:Hollar_a_3000_0011',
         },
         script_direction: 'Left-to-Right',
-        notes: [],
+        terms: [],
         memberType: 'Recto',
       },
       Recto_5a57825a4cfad13070870dd7: {
@@ -4876,7 +4876,7 @@ export const projectState001 = {
         texture: 'Hair',
         image: {},
         script_direction: 'Left-to-Right',
-        notes: [],
+        terms: [],
         memberType: 'Recto',
       },
       Recto_5a57825a4cfad13070870dda: {
@@ -4887,7 +4887,7 @@ export const projectState001 = {
         texture: 'Hair',
         image: {},
         script_direction: 'Left-to-Right',
-        notes: [],
+        terms: [],
         memberType: 'Recto',
       },
       Recto_5a57825a4cfad13070870ddd: {
@@ -4898,7 +4898,7 @@ export const projectState001 = {
         texture: 'Hair',
         image: {},
         script_direction: 'Left-to-Right',
-        notes: [],
+        terms: [],
         memberType: 'Recto',
       },
       Recto_5a57825a4cfad13070870de0: {
@@ -4909,7 +4909,7 @@ export const projectState001 = {
         texture: 'Hair',
         image: {},
         script_direction: 'None',
-        notes: [],
+        terms: [],
         memberType: 'Recto',
       },
       Recto_5a57825a4cfad13070870de3: {
@@ -4920,7 +4920,7 @@ export const projectState001 = {
         texture: 'Hair',
         image: {},
         script_direction: 'None',
-        notes: [],
+        terms: [],
         memberType: 'Recto',
       },
       Recto_5a57825a4cfad13070870de6: {
@@ -4931,7 +4931,7 @@ export const projectState001 = {
         texture: 'Hair',
         image: {},
         script_direction: 'None',
-        notes: [],
+        terms: [],
         memberType: 'Recto',
       },
       Recto_5a57825a4cfad13070870de9: {
@@ -4942,7 +4942,7 @@ export const projectState001 = {
         texture: 'Hair',
         image: {},
         script_direction: 'None',
-        notes: [],
+        terms: [],
         memberType: 'Recto',
       },
       Recto_5a57825a4cfad13070870dec: {
@@ -4953,7 +4953,7 @@ export const projectState001 = {
         texture: 'Hair',
         image: {},
         script_direction: 'None',
-        notes: [],
+        terms: [],
         memberType: 'Recto',
       },
       Recto_5a57825a4cfad13070870def: {
@@ -4964,7 +4964,7 @@ export const projectState001 = {
         texture: 'Hair',
         image: {},
         script_direction: 'None',
-        notes: [],
+        terms: [],
         memberType: 'Recto',
       },
       Recto_5a57825a4cfad13070870df2: {
@@ -4975,7 +4975,7 @@ export const projectState001 = {
         texture: 'Hair',
         image: {},
         script_direction: 'None',
-        notes: [],
+        terms: [],
         memberType: 'Recto',
       },
     },
@@ -4993,7 +4993,7 @@ export const projectState001 = {
             'http://localhost:3001/images/5a5cc9594cfad17bed092f4a_cguk1l0u4aeewdf.jpeg',
         },
         script_direction: 'None',
-        notes: ['5a57825a4cfad13070870df9', '5a57825a4cfad13070870dfa'],
+        terms: ['5a57825a4cfad13070870df9', '5a57825a4cfad13070870dfa'],
         memberType: 'Verso',
       },
       Verso_5a57825a4cfad13070870dc9: {
@@ -5009,7 +5009,7 @@ export const projectState001 = {
             'http://localhost:3001/images/5a5cc9594cfad17bed092f4b_3c17f2b4127b1a5a8bcfc76ba9de9c9f_chiba_inu_dogs_shiba_inu_funny.jpeg',
         },
         script_direction: 'None',
-        notes: ['5a57825a4cfad13070870dfa'],
+        terms: ['5a57825a4cfad13070870dfa'],
         memberType: 'Verso',
       },
       Verso_5a57825a4cfad13070870dcc: {
@@ -5025,7 +5025,7 @@ export const projectState001 = {
             'http://localhost:3001/images/5a5cc9594cfad17bed092f4c_1_105.jpeg',
         },
         script_direction: 'None',
-        notes: [],
+        terms: [],
         memberType: 'Verso',
       },
       Verso_5a57825a4cfad13070870dcf: {
@@ -5036,7 +5036,7 @@ export const projectState001 = {
         texture: 'Flesh',
         image: {},
         script_direction: 'None',
-        notes: [],
+        terms: [],
         memberType: 'Verso',
       },
       Verso_5a57825a4cfad13070870dd2: {
@@ -5047,7 +5047,7 @@ export const projectState001 = {
         texture: 'Flesh',
         image: {},
         script_direction: 'None',
-        notes: [],
+        terms: [],
         memberType: 'Verso',
       },
       Verso_5a57825a4cfad13070870dd5: {
@@ -5058,7 +5058,7 @@ export const projectState001 = {
         texture: 'Flesh',
         image: {},
         script_direction: 'None',
-        notes: [],
+        terms: [],
         memberType: 'Verso',
       },
       Verso_5a57825a4cfad13070870dd8: {
@@ -5069,7 +5069,7 @@ export const projectState001 = {
         texture: 'Flesh',
         image: {},
         script_direction: 'None',
-        notes: [],
+        terms: [],
         memberType: 'Verso',
       },
       Verso_5a57825a4cfad13070870ddb: {
@@ -5080,7 +5080,7 @@ export const projectState001 = {
         texture: 'Flesh',
         image: {},
         script_direction: 'None',
-        notes: [],
+        terms: [],
         memberType: 'Verso',
       },
       Verso_5a57825a4cfad13070870dde: {
@@ -5091,7 +5091,7 @@ export const projectState001 = {
         texture: 'Flesh',
         image: {},
         script_direction: 'None',
-        notes: [],
+        terms: [],
         memberType: 'Verso',
       },
       Verso_5a57825a4cfad13070870de1: {
@@ -5102,7 +5102,7 @@ export const projectState001 = {
         texture: 'Flesh',
         image: {},
         script_direction: 'None',
-        notes: [],
+        terms: [],
         memberType: 'Verso',
       },
       Verso_5a57825a4cfad13070870de4: {
@@ -5113,7 +5113,7 @@ export const projectState001 = {
         texture: 'Flesh',
         image: {},
         script_direction: 'None',
-        notes: [],
+        terms: [],
         memberType: 'Verso',
       },
       Verso_5a57825a4cfad13070870de7: {
@@ -5124,7 +5124,7 @@ export const projectState001 = {
         texture: 'Flesh',
         image: {},
         script_direction: 'None',
-        notes: [],
+        terms: [],
         memberType: 'Verso',
       },
       Verso_5a57825a4cfad13070870dea: {
@@ -5135,7 +5135,7 @@ export const projectState001 = {
         texture: 'Flesh',
         image: {},
         script_direction: 'None',
-        notes: [],
+        terms: [],
         memberType: 'Verso',
       },
       Verso_5a57825a4cfad13070870ded: {
@@ -5146,7 +5146,7 @@ export const projectState001 = {
         texture: 'Flesh',
         image: {},
         script_direction: 'Right-To-Left',
-        notes: [],
+        terms: [],
         memberType: 'Verso',
       },
       Verso_5a57825a4cfad13070870df0: {
@@ -5157,7 +5157,7 @@ export const projectState001 = {
         texture: 'Flesh',
         image: {},
         script_direction: 'Right-To-Left',
-        notes: [],
+        terms: [],
         memberType: 'Verso',
       },
       Verso_5a57825a4cfad13070870df3: {
@@ -5168,11 +5168,11 @@ export const projectState001 = {
         texture: 'Flesh',
         image: {},
         script_direction: 'Right-To-Left',
-        notes: [],
+        terms: [],
         memberType: 'Verso',
       },
     },
-    Notes: {
+    Terms: {
       '5a57825a4cfad13070870df8': {
         id: '5a57825a4cfad13070870df8',
         title: 'Black ink',
@@ -5354,7 +5354,7 @@ export const projectState001 = {
           displayName: 'URI',
         },
       ],
-      note: [
+      term: [
         {
           name: 'title',
           displayName: 'Title',
@@ -5379,13 +5379,13 @@ export const projectState001 = {
       Groups: [],
       Leafs: [],
       Sides: [],
-      Notes: [],
+      Terms: [],
       GroupsOfMatchingLeafs: [],
       LeafsOfMatchingSides: [],
       GroupsOfMatchingSides: [],
-      GroupsOfMatchingNotes: [],
-      LeafsOfMatchingNotes: [],
-      SidesOfMatchingNotes: [],
+      GroupsOfMatchingTerms: [],
+      LeafsOfMatchingTerms: [],
+      SidesOfMatchingTerms: [],
       active: false,
       hideOthers: false,
       queries: [
@@ -5409,7 +5409,7 @@ export const projectState001 = {
       sewing: '',
     },
   },
-  notesManager: {
+  termsManager: {
     activeTab: 'MANAGE',
   },
   imageManager: {
