@@ -25,7 +25,7 @@ import {
   deleteGroups,
 } from '../actions/backend/groupActions';
 import { updateSide, updateSides } from '../actions/backend/sideActions';
-import { addNote, linkNote } from '../actions/backend/termActions';
+import { addTerm, linkTerm } from '../actions/backend/termActions';
 import {
   changeInfoBoxTab,
   toggleVisualizationDrawing,
@@ -177,36 +177,36 @@ class InfoBox extends React.Component {
     this.props.updateSides(sides, this.props.projectID, this.props.filters);
   };
 
-  linkNote = noteID => {
+  linkTerm = termID => {
     let objects = [];
     let type = this.props.selectedObjects.type;
     if (type === 'Recto' || type === 'Verso') type = 'Side';
     for (let id of this.props.selectedObjects.members) {
       objects.push({ id, type });
     }
-    this.props.action.linkNote(
-      noteID,
+    this.props.action.linkTerm(
+      termID,
       objects,
       this.props.projectID,
       this.props.filters
     );
   };
 
-  unlinkNote = (noteID, sideIndex) => {
+  unlinkTerm = (termID, sideIndex) => {
     let objects = [];
     let type = this.props.selectedObjects.type;
     for (let id of this.props.selectedObjects.members) {
       objects.push({ id, type });
     }
-    this.props.action.unlinkNote(
-      noteID,
+    this.props.action.unlinkTerm(
+      termID,
       objects,
       this.props.projectID,
       this.props.filters
     );
   };
 
-  createAndAttachNote = (noteTitle, noteType, description, uri, show) => {
+  createAndAttachTerm = (termTitle, termType, description, uri, show) => {
     let objects = [];
     let type = this.props.selectedObjects.type;
     if (type === 'Recto' || type === 'Verso') type = 'Side';
@@ -217,17 +217,17 @@ class InfoBox extends React.Component {
     const date = Date.now().toString();
     const IDHash = userID + date;
     const id = IDHash.substr(IDHash.length - 24);
-    let note = {
+    let term = {
       project_id: this.props.projectID,
       id: id,
-      title: noteTitle,
+      title: termTitle,
       type: noteType,
       description: description,
       uri: uri,
       show: show,
     };
-    this.props.createAndAttachNote(
-      note,
+    this.props.createAndAttachTerm(
+      term,
       objects,
       this.props.projectID,
       this.props.filters
@@ -341,10 +341,10 @@ class InfoBox extends React.Component {
       </Tabs>
     );
 
-    const noteActions = {
-      linkNote: this.linkNote,
-      unlinkNote: this.unlinkNote,
-      createAndAttachNote: this.createAndAttachNote,
+    const termActions = {
+      linkTerm: this.linkTerm,
+      unlinkTerm: this.unlinkTerm,
+      createAndAttachTerm: this.createAndAttachTerm,
     };
 
     if (this.props.selectedObjects.type === 'Group') {
@@ -361,7 +361,7 @@ class InfoBox extends React.Component {
               deleteGroups: this.deleteGroups,
               toggleVisualizationDrawing: this.props.toggleVisualizationDrawing,
               updatePreferences: this.updatePreferences,
-              ...noteActions,
+              ...termActions,
             }}
             projectID={this.props.projectID}
             preferences={this.props.preferences}
@@ -373,16 +373,16 @@ class InfoBox extends React.Component {
             Leafs={this.props.Leafs}
             Rectos={this.props.Rectos}
             Versos={this.props.Versos}
-            Notes={this.props.Notes}
+            Terms={this.props.Terms}
             noteTypes={this.props.noteTypes}
-            commonNotes={this.props.commonNotes}
-            openNoteDialog={this.props.openNoteDialog}
+            commonTerms={this.props.commonTerms}
+            openTermDialog={this.props.openTermDialog}
             viewMode={this.props.collationManager.viewMode}
             selectedGroups={this.props.collationManager.selectedObjects.members}
             defaultAttributes={
               this.props.collationManager.defaultAttributes.group
             }
-            notesManager={this.props.notesManager}
+            termsManager={this.props.termsManager}
             tacketed={this.props.tacketed}
             isReadOnly={this.props.collationManager.viewMode === 'VIEWING'}
             togglePopUp={this.props.togglePopUp}
@@ -405,7 +405,7 @@ class InfoBox extends React.Component {
               generateFolioNumbers: this.generateFolioNumbers,
               generatePageNumbers: this.generatePageNumbers,
               updatePreferences: this.updatePreferences,
-              ...noteActions,
+              ...termActions,
             }}
             projectID={this.props.projectID}
             Groups={this.props.Groups}
@@ -416,17 +416,17 @@ class InfoBox extends React.Component {
             Leafs={this.props.Leafs}
             Rectos={this.props.Rectos}
             Versos={this.props.Versos}
-            Notes={this.props.Notes}
+            Terms={this.props.Terms}
             noteTypes={this.props.noteTypes}
-            commonNotes={this.props.commonNotes}
-            openNoteDialog={this.props.openNoteDialog}
+            commonTerms={this.props.commonTerms}
+            openTermDialog={this.props.openTermDialog}
             viewMode={this.props.collationManager.viewMode}
             selectedLeaves={this.props.collationManager.selectedObjects.members}
             defaultAttributes={
               this.props.collationManager.defaultAttributes.leaf
             }
             preferences={this.props.preferences}
-            notesManager={this.props.notesManager}
+            termsManager={this.props.termsManager}
             autoConjoinLeafs={this.autoConjoinLeafs}
             isReadOnly={this.props.collationManager.viewMode === 'VIEWING'}
             togglePopUp={this.props.togglePopUp}
@@ -448,7 +448,7 @@ class InfoBox extends React.Component {
               updateSides: this.updateSides,
               updateSide: this.updateSide,
               updatePreferences: this.updatePreferences,
-              ...noteActions,
+              ...termActions,
             }}
             preferences={this.props.preferences}
             projectID={this.props.projectID}
@@ -461,16 +461,16 @@ class InfoBox extends React.Component {
             Rectos={this.props.Rectos}
             Versos={this.props.Versos}
             Sides={this.props[this.props.selectedObjects.type + 's']}
-            Notes={this.props.Notes}
+            Terms={this.props.Terms}
             noteTypes={this.props.noteTypes}
-            commonNotes={this.props.commonNotes}
-            openNoteDialog={this.props.openNoteDialog}
+            commonTerms={this.props.commonTerms}
+            openTermDialog={this.props.openTermDialog}
             viewMode={this.props.collationManager.viewMode}
             selectedSides={this.props.collationManager.selectedObjects.members}
             defaultAttributes={
               this.props.collationManager.defaultAttributes.side
             }
-            notesManager={this.props.notesManager}
+            termsManager={this.props.termsManager}
             sideIndex={sideIndex}
             isReadOnly={this.props.collationManager.viewMode === 'VIEWING'}
             togglePopUp={this.props.togglePopUp}
@@ -497,11 +497,11 @@ const mapStateToProps = state => {
     Leafs: state.active.project.Leafs,
     Rectos: state.active.project.Rectos,
     Versos: state.active.project.Versos,
-    Notes: state.active.project.Notes,
+    Terms: state.active.project.Terms,
     noteTypes: state.active.project.noteTypes,
     selectedObjects: state.active.collationManager.selectedObjects,
     collationManager: state.active.collationManager,
-    notesManager: state.active.notesManager,
+    termsManager: state.active.termsManager,
     filters: state.active.collationManager.filters,
     tacketed: state.active.collationManager.visualizations.tacketed,
   };
@@ -597,9 +597,9 @@ const mapDispatchToProps = dispatch => {
       );
     },
 
-    createAndAttachNote: (note, objects, projectID, filters) => {
-      dispatch(addNote(note))
-        .then(() => dispatch(linkNote(note.id, objects)))
+    createAndAttachTerm: (term, objects, projectID, filters) => {
+      dispatch(addTerm(term))
+        .then(() => dispatch(linkTerm(term.id, objects)))
         .then(() => dispatch(reapplyFilterProject(projectID, filters)));
     },
 
