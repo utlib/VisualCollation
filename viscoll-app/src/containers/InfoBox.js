@@ -25,7 +25,7 @@ import {
   deleteGroups,
 } from '../actions/backend/groupActions';
 import { updateSide, updateSides } from '../actions/backend/sideActions';
-import { addNote, linkNote } from '../actions/backend/noteActions';
+import { addNote, linkNote } from '../actions/backend/termActions';
 import {
   changeInfoBoxTab,
   toggleVisualizationDrawing,

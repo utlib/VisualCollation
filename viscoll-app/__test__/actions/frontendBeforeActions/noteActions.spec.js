@@ -7,7 +7,7 @@ import {
   linkNote,
   unlinkNote,
   deleteNote,
-} from '../../../src/actions/frontend/before/noteActions';
+} from '../../../src/actions/frontend/before/termActions';
 
 import { projectState001 } from '../../testData/projectState001';
 

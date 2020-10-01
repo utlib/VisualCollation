@@ -5,7 +5,7 @@ import {
   deleteLeafs,
 } from '../backend/leafActions';
 import { updateSides } from '../backend/sideActions';
-import { linkNote } from '../backend/noteActions';
+import { linkNote } from '../backend/termActions';
 import { updateGroups } from '../backend/groupActions';
 
 export function undoCreateLeaves(action, state) {

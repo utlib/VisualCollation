@@ -15,7 +15,7 @@ import {
   linkNote,
   unlinkNote,
   deleteNote,
-} from '../../actions/frontend/before/noteActions';
+} from '../../actions/frontend/before/termActions';
 
 import {
   createGroups,

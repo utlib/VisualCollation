@@ -33,7 +33,7 @@ import {
   deleteNote,
   linkNote,
   unlinkNote,
-} from '../actions/backend/noteActions';
+} from '../actions/backend/termActions';
 import {
   loadProject,
   exportProject,

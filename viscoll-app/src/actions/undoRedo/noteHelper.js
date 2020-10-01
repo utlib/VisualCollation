@@ -6,7 +6,7 @@ import {
   unlinkNote,
   linkNote,
   addNote,
-} from '../backend/noteActions';
+} from '../backend/termActions';
 
 export function undoUpdateNoteType(action, state) {
   const noteType = {

@@ -11,7 +11,7 @@ import {
 
 import {
   linkNote,
-} from '../backend/noteActions';
+} from '../backend/termActions';
 
 export function undoCreateGroups(action, state) {
   const groupIDs = action.payload.request.data.additional.groupIDs.map((id)=>{return ("Group_"+id)});

@@ -19,7 +19,7 @@ import {
   deleteNoteType,
   linkNote,
   unlinkNote,
-} from '../actions/backend/noteActions';
+} from '../actions/backend/termActions';
 import { sendFeedback } from '../actions/backend/userActions';
 import ManagersPanel from '../components/global/ManagersPanel';
 
