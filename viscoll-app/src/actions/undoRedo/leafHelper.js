@@ -5,7 +5,7 @@ import {
   deleteLeafs,
 } from '../backend/leafActions';
 import { updateSides } from '../backend/sideActions';
-import { linkNote } from '../backend/termActions';
+import { linkTerm } from '../backend/termActions';
 import { updateGroups } from '../backend/groupActions';
 
 export function undoCreateLeaves(action, state) {
@@ -248,31 +248,31 @@ export function helperUndoDeleteLeaves(leafIDs, state) {
   const sideRequest = updateSides(sides);
   historyActions.push(sideRequest);
 
-  // Link notes
+  // Link terms
   for (const leafID of leafIDs) {
     const leaf = state.project.Leafs[leafID];
     const recto = state.project.Rectos[leaf.rectoID];
     const verso = state.project.Versos[leaf.versoID];
 
-    if (leaf.notes.length > 0) {
+    if (leaf.terms.length > 0) {
       const objects = [{ id: leafID, type: 'Leaf' }];
-      for (const noteID of leaf.notes) {
-        const noteRequest = linkNote(noteID, objects);
-        historyActions.push(noteRequest);
+      for (const termID of leaf.terms) {
+        const termRequest = linkTerm(termID, objects);
+        historyActions.push(termRequest);
       }
     }
-    if (recto.notes.length > 0) {
+    if (recto.terms.length > 0) {
       const objects = [{ id: recto.id, type: 'Side' }];
-      for (const noteID of recto.notes) {
-        const noteRequest = linkNote(noteID, objects);
-        historyActions.push(noteRequest);
+      for (const termID of recto.terms) {
+        const termRequest = linkTerm(termID, objects);
+        historyActions.push(termRequest);
       }
     }
-    if (verso.notes.length > 0) {
+    if (verso.terms.length > 0) {
       const objects = [{ id: verso.id, type: 'Side' }];
-      for (const noteID of verso.notes) {
-        const noteRequest = linkNote(noteID, objects);
-        historyActions.push(noteRequest);
+      for (const termID of verso.terms) {
+        const termRequest = linkTerm(termID, objects);
+        historyActions.push(termRequest);
       }
     }
   }
