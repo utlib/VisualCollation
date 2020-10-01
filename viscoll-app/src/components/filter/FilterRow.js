@@ -19,7 +19,7 @@ class FilterRow extends Component {
     }
   }
 
-  mapNoteAttributeMenuItems = (noteType, index) => {
+  mapTermAttributeMenuItems = (noteType, index) => {
     return { key:noteType+index, value:noteType, text:noteType }
   }
 
@@ -121,7 +121,7 @@ class FilterRow extends Component {
             disabled={this.props.disableNewRow}
             tabIndex={this.props.tabIndex}
             {...floatFieldLight}
-            data={[{value:"leaf",text:"Leaf"},{value:"group",text:"Group"},{value:"side",text:"Side"},{value:"note",text:"Note"}]}
+            data={[{value:"leaf",text:"Leaf"},{value:"group",text:"Group"},{value:"side",text:"Side"},{value:"term",text:"Term"}]}
           />
         </div>
         <div className="filterField">
