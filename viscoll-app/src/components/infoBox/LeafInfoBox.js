@@ -214,17 +214,17 @@ export default class LeafInfoBox extends React.Component {
     this.setState(newToggleState);
   };
 
-  renderNotes = () => {
+  renderTerms = () => {
     let chips = [];
-    for (let noteID of this.props.commonNotes) {
-      const note = this.props.Notes[noteID];
-      chips.push(renderTermChip(this.props, note));
+    for (let termID of this.props.commonTerms) {
+      const term = this.props.Terms[termID];
+      chips.push(renderTermChip(this.props, term));
     }
     return chips;
   };
 
-  closeNoteDialog = () => {
-    this.setState({ activeNote: null });
+  closeTermDialog = () => {
+    this.setState({ activeTerm: null });
     this.props.togglePopUp(false);
   };
 
@@ -796,14 +796,14 @@ export default class LeafInfoBox extends React.Component {
       }
     }
 
-    const notes = this.renderNotes();
+    const terms = this.renderTerms();
     return (
       <div className="inner">
         {attributeDivs}
         <div style={{ clear: 'both', textAlign: 'center', paddingTop: 10 }}>
           {imageThumbnails}
         </div>
-        {this.props.isReadOnly && notes.length === 0 ? (
+        {this.props.isReadOnly && terms.length === 0 ? (
           ''
         ) : (
           <div style={{ marginBottom: 15 }}>
@@ -811,11 +811,11 @@ export default class LeafInfoBox extends React.Component {
               ''
             ) : (
               <AddTerm
-                commonNotes={this.props.commonNotes}
-                Notes={this.props.Notes}
+                commonTerms={this.props.commonTerms}
+                Terms={this.props.Terms}
                 action={{
-                  linkNote: this.props.action.linkNote,
-                  createAndAttachNote: this.props.action.createAndAttachNote,
+                  linkTerm: this.props.action.linkTerm,
+                  createAndAttachTerm: this.props.action.createAndAttachTerm,
                 }}
                 noteTypes={this.props.noteTypes}
                 togglePopUp={this.props.togglePopUp}
@@ -825,12 +825,12 @@ export default class LeafInfoBox extends React.Component {
               />
             )}
             <div>
-              <h3 key="notesHeading">
+              <h3 key="termsHeading">
                 {Object.keys(this.props.selectedLeaves).length > 1
                   ? 'Terms in common'
                   : 'Terms'}
               </h3>
-              <div className="notesInfobox">{notes}</div>
+              <div className="termsInfobox">{terms}</div>
             </div>
           </div>
         )}
