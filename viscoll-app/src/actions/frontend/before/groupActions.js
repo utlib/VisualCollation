@@ -28,7 +28,7 @@ export function createGroups(action, state) {
       sewing: sewing? sewing : [],
       nestLevel: parentGroup ? parentGroup.nestLevel+1 : 1,
       parentID: parentGroup ? parentGroup.id : null,
-      notes: [],
+      terms: [],
       memberType: "Group",
       memberIDs: leafIDs.slice(count*noOfLeaves, count*noOfLeaves+noOfLeaves).map(leafID => "Leaf_"+leafID)
     }
@@ -89,11 +89,11 @@ export function deleteGroup(deletedGroupID, state) {
   // Remove deletedGroupID from groupIDs list
   let deletedGroupIDIndex = state.project.groupIDs.indexOf(deletedGroupID)
   state.project.groupIDs.splice(deletedGroupIDIndex, 1)
-  // Unlink all Notes of deletedGroupID
-  for (let noteID in state.project.Notes) {
-    deletedGroupIDIndex = state.project.Notes[noteID].objects.Group.indexOf(deletedGroupID)
+  // Unlink all Terms of deletedGroupID
+  for (let termID in state.project.Terms) {
+    deletedGroupIDIndex = state.project.Terms[termID].objects.Group.indexOf(deletedGroupID)
     if (deletedGroupIDIndex !== -1)
-    state.project.Notes[noteID].objects.Group.splice(deletedGroupIDIndex, 1)
+    state.project.Terms[termID].objects.Group.splice(deletedGroupIDIndex, 1)
   }
   // Remove deletedGroupID from deletedGroupParent's memberIDs list if exists
   if (deletedGroup.parentID ) {
