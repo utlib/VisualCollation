@@ -7,7 +7,7 @@ import Visibility from 'material-ui/svg-icons/action/visibility';
 import VisibilityOff from 'material-ui/svg-icons/action/visibility-off';
 import { getLeafsOfGroup } from '../../helpers/getLeafsOfGroup';
 import Dialog from 'material-ui/Dialog';
-import AddNote from './dialog/AddNote';
+import AddTerm from './dialog/AddTerm';
 import ImageViewer from '../global/ImageViewer';
 import SelectField from '../global/SelectField';
 import { getMemberOrder } from '../../helpers/getMemberOrder';
@@ -810,7 +810,7 @@ export default class LeafInfoBox extends React.Component {
             {this.props.isReadOnly ? (
               ''
             ) : (
-              <AddNote
+              <AddTerm
                 commonNotes={this.props.commonNotes}
                 Notes={this.props.Notes}
                 action={{

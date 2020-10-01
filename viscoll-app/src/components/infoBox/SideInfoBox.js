@@ -6,7 +6,7 @@ import IconSubmit from 'material-ui/svg-icons/action/done';
 import IconClear from 'material-ui/svg-icons/content/clear';
 import Visibility from 'material-ui/svg-icons/action/visibility';
 import VisibilityOff from 'material-ui/svg-icons/action/visibility-off';
-import AddNote from './dialog/AddNote';
+import AddTerm from './dialog/AddTerm';
 import Dialog from 'material-ui/Dialog';
 import ImageViewer from '../global/ImageViewer';
 import SelectField from '../global/SelectField';
@@ -509,7 +509,7 @@ export default class SideInfoBox extends React.Component {
           {this.props.isReadOnly ? (
             ''
           ) : (
-            <AddNote
+            <AddTerm
               commonNotes={this.props.commonNotes}
               Notes={this.props.Notes}
               action={{

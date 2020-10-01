@@ -16,7 +16,7 @@ import IconButton from 'material-ui/IconButton';
 import IconAdd from 'material-ui/svg-icons/content/add';
 import IconPencil from 'material-ui/svg-icons/content/create';
 import Avatar from 'material-ui/Avatar';
-import AddNote from './dialog/AddNote';
+import AddTerm from './dialog/AddTerm';
 import VisualizationDialog from './dialog/VisualizationDialog';
 import SelectField from '../global/SelectField';
 import { btnBase } from '../../styles/button';
@@ -827,7 +827,7 @@ export default class GroupInfoBox extends React.Component {
         <div>
           {attributeDivs}
           {!this.props.isReadOnly ? (
-            <AddNote
+            <AddTerm
               commonNotes={this.props.commonNotes}
               Notes={this.props.Notes}
               action={{
