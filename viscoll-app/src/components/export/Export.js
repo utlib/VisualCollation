@@ -145,10 +145,10 @@ const Export = props => {
         <br />
         <br />
         <Checkbox
-          label="Show notes in exported image"
-          id="exportNotes"
-          checked={props.exportNotes}
-          onCheck={() => props.setExport('exportNotes', !props.exportNotes)}
+          label="Show terms in exported image"
+          id="exportTerms"
+          checked={props.exportTerms}
+          onCheck={() => props.setExport('exportTerms', !props.exportTerms)}
         />
 
         <div style={{ width: 1, height: 1, overflow: 'hidden' }}>
