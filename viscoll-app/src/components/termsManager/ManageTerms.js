@@ -6,7 +6,7 @@ import Add from 'material-ui/svg-icons/content/add';
 import { btnMd, btnBase } from '../../styles/button';
 
 /** Create New Note tab in the Note Manager */
-export default class ManageNotes extends Component {
+export default class ManageTerms extends Component {
   constructor(props) {
     super(props);
     this.state = {

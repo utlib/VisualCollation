@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import TopBar from './TopBar';
-import ManageTerms from '../components/termsManager/ManageNotes';
+import ManageTerms from '../components/termsManager/ManageTerms';
 import NoteType from '../components/termsManager/NoteType';
 import { Tabs, Tab } from 'material-ui/Tabs';
 // import Panel from '../components/global/Panel';
