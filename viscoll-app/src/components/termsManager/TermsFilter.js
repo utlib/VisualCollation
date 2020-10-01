@@ -4,7 +4,7 @@ import Checkbox from 'material-ui/Checkbox';
 import {floatFieldLight} from '../../styles/textfield';
 
 /** Filter notes */
-class NotesFilter extends Component {
+class TermsFilter extends Component {
 
   constructor(props) {
     super(props);
@@ -63,4 +63,4 @@ class NotesFilter extends Component {
 }
 
 
-export default NotesFilter;
+export default TermsFilter;
