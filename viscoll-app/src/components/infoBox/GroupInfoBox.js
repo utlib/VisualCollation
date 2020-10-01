@@ -21,7 +21,7 @@ import VisualizationDialog from './dialog/VisualizationDialog';
 import SelectField from '../global/SelectField';
 import { btnBase } from '../../styles/button';
 import { checkboxStyle } from '../../styles/checkbox';
-import { renderNoteChip } from '../../helpers/renderHelper';
+import { renderTermChip } from '../../helpers/renderHelper';
 
 /** Group infobox */
 export default class GroupInfoBox extends React.Component {
@@ -210,17 +210,17 @@ export default class GroupInfoBox extends React.Component {
     return groupAttributes;
   }
 
-  renderNotes = () => {
+  renderTerms = () => {
     let chips = [];
-    for (let noteID of this.props.commonNotes) {
-      const note = this.props.Notes[noteID];
-      chips.push(renderNoteChip(this.props, note));
+    for (let termID of this.props.commonTerms) {
+      const term = this.props.Terms[termID];
+      chips.push(renderTermChip(this.props, term));
     }
     return chips;
   };
 
-  closeNoteDialog = () => {
-    this.setState({ activeNote: null });
+  closeTermDialog = () => {
+    this.setState({ activeTerm: null });
   };
 
   toggleTacketDrawing = e => {
@@ -821,18 +821,18 @@ export default class GroupInfoBox extends React.Component {
         </div>
       );
     }
-    const notes = this.renderNotes();
+    const terms = this.renderTerms();
     return (
       <div className="inner" style={{ minHeight: '135px' }}>
         <div>
           {attributeDivs}
           {!this.props.isReadOnly ? (
             <AddTerm
-              commonNotes={this.props.commonNotes}
-              Notes={this.props.Notes}
+              commonTerms={this.props.commonTerms}
+              Terms={this.props.Terms}
               action={{
-                linkNote: this.props.action.linkNote,
-                createAndAttachNote: this.props.action.createAndAttachNote,
+                linkTerm: this.props.action.linkTerm,
+                createAndAttachTerm: this.props.action.createAndAttachTerm,
               }}
               noteTypes={this.props.noteTypes}
               tabIndex={this.props.tabIndex}
@@ -844,9 +844,9 @@ export default class GroupInfoBox extends React.Component {
             ''
           )}
           <h3
-            key="notesHeading"
+            key="termsHeading"
             style={
-              this.props.isReadOnly && notes.length === 0
+              this.props.isReadOnly && terms.length === 0
                 ? { display: 'none' }
                 : {}
             }
@@ -854,10 +854,10 @@ export default class GroupInfoBox extends React.Component {
             {this.props.selectedGroups.length > 1 ? 'Terms in common' : 'Terms'}
           </h3>
           <div
-            className="notesInfobox"
-            style={notes.length === 0 ? { display: 'none' } : {}}
+            className="termsInfobox"
+            style={terms.length === 0 ? { display: 'none' } : {}}
           >
-            {notes}
+            {terms}
           </div>
         </div>
         {attributeSewing}
