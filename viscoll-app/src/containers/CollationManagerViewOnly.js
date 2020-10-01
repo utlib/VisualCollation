@@ -3,7 +3,7 @@ import { connect } from "react-redux";
 
 import InfoBox from './InfoBox';
 import ViewingMode from '../components/collationManager/ViewingMode';
-import NoteDialog from '../components/collationManager/dialog/NoteDialog';
+import TermDialog from '../components/collationManager/dialog/TermDialog';
 import {
   changeViewMode,
   handleObjectClick,
@@ -145,7 +145,7 @@ class CollationManagerViewOnly extends Component {
     return (
       <div className="collationManager">
         {workspace}
-        <NoteDialog
+        <TermDialog
           open={this.state.activeNote !== null}
           commonNotes={this.getCommonNotes()}
           activeNote={this.state.activeNote ? this.state.activeNote : { id: null }}
