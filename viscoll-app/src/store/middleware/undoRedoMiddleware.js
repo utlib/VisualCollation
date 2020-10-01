@@ -38,10 +38,10 @@ import {
   undoCreateNoteType,
   undoUpdateNoteType,
   undoDeleteNoteType,
-  undoLinkNote,
-  undoUnlinkNote,
-  undoDeleteNote,
-} from '../../actions/undoRedo/noteHelper';
+  undoLinkTerm,
+  undoUnlinkTerm,
+  undoDeleteTerm,
+} from '../../actions/undoRedo/termHelper';
 
 const undoRedoMiddleware = store => next => action => {
   async function sequentialDispatch(requests) {
@@ -162,14 +162,14 @@ const undoRedoMiddleware = store => next => action => {
     case 'DELETE_NOTETYPE_FRONTEND':
       historyAction = undoDeleteNoteType(action, store.getState().active);
       break;
-    case 'LINK_NOTE_FRONTEND':
-      historyAction = undoLinkNote(action, store.getState().active);
+    case 'LINK_TERM_FRONTEND':
+      historyAction = undoLinkTerm(action, store.getState().active);
       break;
-    case 'UNLINK_NOTE_FRONTEND':
-      historyAction = undoUnlinkNote(action, store.getState().active);
+    case 'UNLINK_TERM_FRONTEND':
+      historyAction = undoUnlinkTerm(action, store.getState().active);
       break;
-    case 'DELETE_NOTE_FRONTEND':
-      historyAction = undoDeleteNote(action, store.getState().active);
+    case 'DELETE_TERM_FRONTEND':
+      historyAction = undoDeleteTerm(action, store.getState().active);
       break;
     default:
       break;
