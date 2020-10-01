@@ -23,7 +23,7 @@ import {
 import { sendFeedback } from '../actions/backend/userActions';
 import ManagersPanel from '../components/global/ManagersPanel';
 
-class NotesManager extends Component {
+class TermsManager extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -298,4 +298,4 @@ const mapDispatchToProps = dispatch => {
     },
   };
 };
-export default connect(mapStateToProps, mapDispatchToProps)(NotesManager);
+export default connect(mapStateToProps, mapDispatchToProps)(TermsManager);
