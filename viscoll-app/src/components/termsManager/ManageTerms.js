@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import RaisedButton from 'material-ui/RaisedButton';
 import EditTermForm from './EditTermForm';
-import NewNoteForm from './NewNoteForm';
+import NewTermForm from './NewTermForm';
 import Add from 'material-ui/svg-icons/content/add';
 import { btnMd, btnBase } from '../../styles/button';
 
@@ -187,7 +187,7 @@ export default class ManageTerms extends Component {
     let noteForm;
     if (!this.state.activeNote) {
       noteForm = (
-        <NewNoteForm
+        <NewTermForm
           Notes={this.props.Notes}
           projectID={this.props.projectID}
           action={{ addNote: this.props.action.addNote }}

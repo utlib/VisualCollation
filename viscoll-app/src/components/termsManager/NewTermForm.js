@@ -5,7 +5,7 @@ import Checkbox from 'material-ui/Checkbox';
 import SelectField from '../global/SelectField';
 
 /** Create New Note tab in the Note Manager */
-export default class NewNoteForm extends Component {
+export default class NewTermForm extends Component {
   constructor(props) {
     super(props);
     this.state = {
