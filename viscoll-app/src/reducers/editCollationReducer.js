@@ -26,7 +26,7 @@ export default function editCollationReducer(state = initialState, action) {
         Leafs: action.payload.leafs,
         Rectos: action.payload.rectos,
         Versos: action.payload.versos,
-        Notes: action.payload.notes,
+        Terms: action.payload.terms,
       };
       break;
     case 'CREATE_MANIFEST_SUCCESS':
@@ -62,8 +62,8 @@ export default function editCollationReducer(state = initialState, action) {
     case 'CHANGE_MANAGER_MODE':
       state.managerMode = action.payload;
       break;
-    case 'CHANGE_NOTES_TAB':
-      state.notesManager.activeTab = action.payload;
+    case 'CHANGE_TERMS_TAB':
+      state.termsManager.activeTab = action.payload;
       break;
     case 'CHANGE_IMAGES_TAB':
       state.imageManager.activeTab = action.payload;
@@ -127,10 +127,10 @@ export default function editCollationReducer(state = initialState, action) {
     case 'CREATE_NOTETYPE_FRONTEND':
     case 'UPDATE_NOTETYPE_FRONTEND':
     case 'DELETE_NOTETYPE_FRONTEND':
-    case 'UPDATE_NOTE_FRONTEND':
-    case 'DELETE_NOTE_FRONTEND':
-    case 'LINK_NOTE_FRONTEND':
-    case 'UNLINK_NOTE_FRONTEND':
+    case 'UPDATE_TERM_FRONTEND':
+    case 'DELETE_TERM_FRONTEND':
+    case 'LINK_TERM_FRONTEND':
+    case 'UNLINK_TERM_FRONTEND':
     case 'AUTOCONJOIN_LEAFS_FRONTEND':
     case 'CREATE_GROUPS_FRONTEND':
     case 'UPDATE_GROUP_FRONTEND':
@@ -146,7 +146,7 @@ export default function editCollationReducer(state = initialState, action) {
     case 'UPDATE_SIDES_FRONTEND':
     case 'UPDATE_MANIFEST_FRONTEND':
     case 'DELETE_MANIFEST_FRONTEND':
-    case 'CREATE_NOTE_FRONTEND':
+    case 'CREATE_TERM_FRONTEND':
     case 'GENERATE_FOLIO_NUMBERS_FRONTEND':
     case 'GENERATE_PAGE_NUMBERS_FRONTEND':
       state = action.payload.response;
