@@ -194,17 +194,17 @@ export default class SideInfoBox extends React.Component {
     return sideAttributes;
   };
 
-  renderNotes = () => {
+  renderTerms = () => {
     let chips = [];
-    for (let noteID of this.props.commonNotes) {
-      const note = this.props.Notes[noteID];
-      chips.push(renderTermChip(this.props, note));
+    for (let termID of this.props.commonTerms) {
+      const term = this.props.Terms[termID];
+      chips.push(renderTermChip(this.props, term));
     }
     return chips;
   };
 
-  closeNoteDialog = () => {
-    this.setState({ activeNote: null });
+  closeTermDialog = () => {
+    this.setState({ activeTerm: null });
   };
 
   toggleImageModal = imageModalOpen => {
@@ -498,24 +498,24 @@ export default class SideInfoBox extends React.Component {
         </div>
       );
     }
-    const notes = this.renderNotes();
-    let notesDiv = [];
-    if (!(this.props.isReadOnly && notes.length === 0)) {
-      notesDiv.push(
+    const terms = this.renderTerms();
+    let termsDiv = [];
+    if (!(this.props.isReadOnly && terms.length === 0)) {
+      termsDiv.push(
         <div
-          key={'notesHeadingSide' + this.props.sideIndex}
+          key={'termsHeadingSide' + this.props.sideIndex}
           style={{ paddingTop: 5 }}
         >
           {this.props.isReadOnly ? (
             ''
           ) : (
             <AddTerm
-              commonNotes={this.props.commonNotes}
-              Notes={this.props.Notes}
+              commonTerms={this.props.commonTerms}
+              Terms={this.props.Terms}
               action={{
-                linkNote: noteID =>
-                  this.props.action.linkNote(noteID, this.props.sideIndex),
-                createAndAttachNote: this.props.action.createAndAttachNote,
+                linkTerm: termID =>
+                  this.props.action.linkTerm(termID, this.props.sideIndex),
+                createAndAttachTerm: this.props.action.createAndAttachTerm,
               }}
               noteTypes={this.props.noteTypes}
               togglePopUp={this.props.togglePopUp}
@@ -529,7 +529,7 @@ export default class SideInfoBox extends React.Component {
               ? 'Terms in common'
               : 'Terms'}
           </h3>
-          <div className="notesInfobox">{notes}</div>
+          <div className="termsInfobox">{terms}</div>
         </div>
       );
     }
@@ -600,7 +600,7 @@ export default class SideInfoBox extends React.Component {
         <div style={{ paddingTop: 10, textAlign: 'center' }}>
           {imageThumbnail}
         </div>
-        {notesDiv}
+        {termsDiv}
         {submitBtn}
         <Dialog
           modal={false}
