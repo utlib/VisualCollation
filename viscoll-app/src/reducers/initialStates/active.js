@@ -29,7 +29,7 @@ export const initialState = {
     Rectos: {},
     Versos: {},
     noteTypes: [],
-    Notes: {},
+    Terms: {},
     preferences: {
       showTips: true,
     },
@@ -143,7 +143,7 @@ export const initialState = {
           displayName: 'URI',
         },
       ],
-      note: [
+      term: [
         {
           name: 'title',
           displayName: 'Title',
@@ -168,13 +168,13 @@ export const initialState = {
       Groups: [],
       Leafs: [],
       Sides: [],
-      Notes: [],
+      Terms: [],
       GroupsOfMatchingLeafs: [],
       LeafsOfMatchingSides: [],
       GroupsOfMatchingSides: [],
-      GroupsOfMatchingNotes: [],
-      LeafsOfMatchingNotes: [],
-      SidesOfMatchingNotes: [],
+      GroupsOfMatchingTerms: [],
+      LeafsOfMatchingTerms: [],
+      SidesOfMatchingTerms: [],
       active: false,
       hideOthers: false,
       queries: [
@@ -198,7 +198,7 @@ export const initialState = {
       sewing: '',
     },
   },
-  notesManager: {
+  termsManager: {
     activeTab: 'MANAGE',
   },
   imageManager: {
