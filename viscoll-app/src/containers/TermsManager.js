@@ -8,17 +8,17 @@ import { Tabs, Tab } from 'material-ui/Tabs';
 import topbarStyle from '../styles/topbar';
 import {
   changeManagerMode,
-  changeNotesTab,
+  changeTermsTab,
 } from '../actions/backend/interactionActions';
 import {
-  addNote,
-  updateNote,
-  deleteNote,
+  addTerm,
+  updateTerm,
+  deleteTerm,
   createNoteType,
   updateNoteType,
   deleteNoteType,
-  linkNote,
-  unlinkNote,
+  linkTerm,
+  unlinkTerm,
 } from '../actions/backend/termActions';
 import { sendFeedback } from '../actions/backend/userActions';
 import ManagersPanel from '../components/global/ManagersPanel';
@@ -259,16 +259,16 @@ const mapDispatchToProps = dispatch => {
       dispatch(changeManagerMode(managerMode));
     },
     changeNotesTab: tabName => {
-      dispatch(changeNotesTab(tabName));
+      dispatch(changeTermsTab(tabName));
     },
     addNote: note => {
-      dispatch(addNote(note));
+      dispatch(addTerm(note));
     },
     updateNote: (noteID, note, props) => {
-      dispatch(updateNote(noteID, note));
+      dispatch(updateTerm(noteID, note));
     },
     deleteNote: noteID => {
-      dispatch(deleteNote(noteID));
+      dispatch(deleteTerm(noteID));
     },
     createNoteType: noteType => {
       dispatch(createNoteType(noteType));
@@ -280,17 +280,17 @@ const mapDispatchToProps = dispatch => {
       dispatch(deleteNoteType(noteType));
     },
     linkNote: (noteID, object, props) => {
-      dispatch(linkNote(noteID, object));
+      dispatch(linkTerm(noteID, object));
     },
     unlinkNote: (noteID, object, props) => {
-      dispatch(unlinkNote(noteID, object));
+      dispatch(unlinkTerm(noteID, object));
     },
     linkAndUnlinkNotes: (noteID, linkObjects, unlinkObjects, props) => {
       if (linkObjects.length > 0) {
-        dispatch(linkNote(noteID, linkObjects));
+        dispatch(linkTerm(noteID, linkObjects));
       }
       if (unlinkObjects.length > 0) {
-        dispatch(unlinkNote(noteID, unlinkObjects));
+        dispatch(unlinkTerm(noteID, unlinkObjects));
       }
     },
     sendFeedback: (title, message, userID) => {
