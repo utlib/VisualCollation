@@ -27,7 +27,7 @@ class TermsManager extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      Notes: props.Notes,
+      Terms: props.Terms,
       value: '',
       filterTypes: {
         title: true,
@@ -48,7 +48,7 @@ class TermsManager extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    this.setState({ Notes: nextProps.Notes }, () => this.applyFilter());
+    this.setState({ Terms: nextProps.Terms }, () => this.applyFilter());
   }
 
   resizeHandler = () => {
@@ -56,7 +56,7 @@ class TermsManager extends Component {
   };
 
   applyFilter = () => {
-    this.filterNotes(this.state.value, this.state.filterTypes);
+    this.filterTerms(this.state.value, this.state.filterTypes);
   };
 
   onValueChange = (e, value) => {
@@ -70,19 +70,19 @@ class TermsManager extends Component {
     );
   };
 
-  handleAddNote = note => {
+  handleAddTerm = term => {
     const userID = this.props.user.id;
     const date = Date.now().toString();
     const IDHash = userID + date;
-    note['id'] = IDHash.substr(IDHash.length - 24);
-    this.props.addNote(note);
+    term['id'] = IDHash.substr(IDHash.length - 24);
+    this.props.addTerm(term);
   };
 
-  filterNotes = (value, filterTypes) => {
+  filterTerms = (value, filterTypes) => {
     if (value === '') {
-      this.setState({ Notes: this.props.Notes });
+      this.setState({ Terms: this.props.Terms });
     } else {
-      let filteredNotes = {};
+      let filteredTerms = {};
       let isNoneSelected = true;
       for (let type of Object.keys(filterTypes)) {
         if (filterTypes[type]) {
@@ -92,18 +92,18 @@ class TermsManager extends Component {
       }
       if (isNoneSelected)
         filterTypes = { title: true, type: true, description: true };
-      for (let noteID in this.props.Notes) {
-        const note = this.props.Notes[noteID];
+      for (let termID in this.props.Terms) {
+        const term = this.props.Terms[termID];
         for (let type of Object.keys(filterTypes)) {
           if (
             filterTypes[type] &&
-            note[type].toUpperCase().includes(value.toUpperCase())
+            term[type].toUpperCase().includes(value.toUpperCase())
           )
-            if (filteredNotes[noteID]) break;
-            else filteredNotes[noteID] = note;
+            if (filteredTerms[termID]) break;
+            else filteredTerms[termID] = term;
         }
       }
-      this.setState({ Notes: filteredNotes });
+      this.setState({ Terms: filteredTerms });
     }
   };
 
@@ -111,21 +111,21 @@ class TermsManager extends Component {
     this.setState({ filterOpen: !this.state.filterOpen });
   };
 
-  updateNote = (noteID, note) => {
-    this.props.updateNote(noteID, note, this.props);
+  updateTerm = (termID, term) => {
+    this.props.updateTerm(termID, term, this.props);
   };
 
-  linkNote = (noteID, object) => {
-    this.props.linkNote(noteID, object, this.props);
+  linkTerm = (termID, object) => {
+    this.props.linkTerm(termID, object, this.props);
   };
 
-  unlinkNote = (noteID, object) => {
-    this.props.unlinkNote(noteID, object, this.props);
+  unlinkTerm = (termID, object) => {
+    this.props.unlinkTerm(termID, object, this.props);
   };
 
-  linkAndUnlinkNotes = (noteID, linkObjects, unlinkObjects) => {
-    this.props.linkAndUnlinkNotes(
-      noteID,
+  linkAndUnlinkTerms = (termID, linkObjects, unlinkObjects) => {
+    this.props.linkAndUnlinkTerms(
+      termID,
       linkObjects,
       unlinkObjects,
       this.props
@@ -139,17 +139,17 @@ class TermsManager extends Component {
       content = (
         <ManageTerms
           action={{
-            updateNote: this.updateNote,
-            addNote: this.handleAddNote,
-            deleteNote: this.props.deleteNote,
-            linkNote: this.linkNote,
-            unlinkNote: this.unlinkNote,
-            linkAndUnlinkNotes: this.linkAndUnlinkNotes,
+            updateTerm: this.updateTerm,
+            addTerm: this.handleAddTerm,
+            deleteTerm: this.props.deleteTerm,
+            linkTerm: this.linkTerm,
+            unlinkTerm: this.unlinkTerm,
+            linkAndUnlinkTerms: this.linkAndUnlinkTerms,
           }}
           projectID={this.props.projectID}
           notification={this.props.notification}
           noteTypes={this.props.noteTypes}
-          Notes={this.state.Notes}
+          Terms={this.state.Terms}
           Groups={this.props.Groups}
           Leafs={this.props.Leafs}
           Rectos={this.props.Rectos}
@@ -166,7 +166,7 @@ class TermsManager extends Component {
     } else if (this.props.activeTab === 'TYPES') {
       content = (
         <NoteType
-          Notes={this.state.Notes}
+          Terms={this.state.Terms}
           projectID={this.props.projectID}
           noteTypes={this.props.noteTypes}
           action={{
@@ -196,10 +196,10 @@ class TermsManager extends Component {
     );
 
     return (
-      <div className="notesManager">
+      <div className="termsManager">
         <TopBar
-          notesFilter={this.props.activeTab === 'MANAGE'}
-          filterNotes={this.filterNotes}
+          termsFilter={this.props.activeTab === 'MANAGE'}
+          filterTerms={this.filterTerms}
           onValueChange={this.onValueChange}
           onTypeChange={this.onTypeChange}
           filterTypes={this.state.filterTypes}
@@ -212,7 +212,7 @@ class TermsManager extends Component {
           <Tabs
             tabItemContainerStyle={{ backgroundColor: '#ffffff' }}
             value={this.props.activeTab}
-            onChange={v => this.props.changeNotesTab(v)}
+            onChange={v => this.props.changeTermsTab(v)}
           >
             <Tab
               label="Manage Terms"
@@ -229,7 +229,7 @@ class TermsManager extends Component {
           </Tabs>
         </TopBar>
         {sidebar}
-        <div className="notesWorkspace">{content}</div>
+        <div className="termsWorkspace">{content}</div>
       </div>
     );
   }
@@ -246,10 +246,10 @@ const mapStateToProps = state => {
     Leafs: state.active.project.Leafs,
     Rectos: state.active.project.Rectos,
     Versos: state.active.project.Versos,
-    Notes: state.active.project.Notes,
+    Terms: state.active.project.Terms,
     noteTypes: state.active.project.noteTypes,
-    activeTab: state.active.notesManager.activeTab,
-    notesManager: state.active.notesManager,
+    activeTab: state.active.termsManager.activeTab,
+    termsManager: state.active.termsManager,
     managerMode: state.active.managerMode,
   };
 };
@@ -258,17 +258,17 @@ const mapDispatchToProps = dispatch => {
     changeManagerMode: managerMode => {
       dispatch(changeManagerMode(managerMode));
     },
-    changeNotesTab: tabName => {
+    changeTermsTab: tabName => {
       dispatch(changeTermsTab(tabName));
     },
-    addNote: note => {
-      dispatch(addTerm(note));
+    addTerm: term => {
+      dispatch(addTerm(term));
     },
-    updateNote: (noteID, note, props) => {
-      dispatch(updateTerm(noteID, note));
+    updateTerm: (termID, term, props) => {
+      dispatch(updateTerm(termID, term));
     },
-    deleteNote: noteID => {
-      dispatch(deleteTerm(noteID));
+    deleteTerm: termID => {
+      dispatch(deleteTerm(termID));
     },
     createNoteType: noteType => {
       dispatch(createNoteType(noteType));
@@ -279,18 +279,18 @@ const mapDispatchToProps = dispatch => {
     deleteNoteType: (noteType, props) => {
       dispatch(deleteNoteType(noteType));
     },
-    linkNote: (noteID, object, props) => {
-      dispatch(linkTerm(noteID, object));
+    linkTerm: (termID, object, props) => {
+      dispatch(linkTerm(termID, object));
     },
-    unlinkNote: (noteID, object, props) => {
-      dispatch(unlinkTerm(noteID, object));
+    unlinkTerm: (termID, object, props) => {
+      dispatch(unlinkTerm(termID, object));
     },
-    linkAndUnlinkNotes: (noteID, linkObjects, unlinkObjects, props) => {
+    linkAndUnlinkTerms: (termID, linkObjects, unlinkObjects, props) => {
       if (linkObjects.length > 0) {
-        dispatch(linkTerm(noteID, linkObjects));
+        dispatch(linkTerm(termID, linkObjects));
       }
       if (unlinkObjects.length > 0) {
-        dispatch(unlinkTerm(noteID, unlinkObjects));
+        dispatch(unlinkTerm(termID, unlinkObjects));
       }
     },
     sendFeedback: (title, message, userID) => {
