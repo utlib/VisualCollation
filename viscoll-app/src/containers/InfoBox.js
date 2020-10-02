@@ -206,7 +206,7 @@ class InfoBox extends React.Component {
     );
   };
 
-  createAndAttachTerm = (termTitle, termType, description, uri, show) => {
+  createAndAttachTerm = (termTitle, noteType, description, uri, show) => {
     let objects = [];
     let type = this.props.selectedObjects.type;
     if (type === 'Recto' || type === 'Verso') type = 'Side';
