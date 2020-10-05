@@ -63,6 +63,12 @@
         <xsl:param name="tbID"/>
         <xsl:result-document href="{concat($tbID, '-formula_01.xml')}">
           <vc:formula>
+              <xsl:attribute name="type">
+                  <xsl:text>Formula 2</xsl:text>
+              </xsl:attribute>
+              <xsl:attribute name="format">
+                  <xsl:text>1(8, -4, +3)</xsl:text>
+              </xsl:attribute>
             <xsl:for-each-group select="leaves/leaf"
                 group-by="
                 if (contains(q[1]/@n, '.')) then
@@ -121,7 +127,13 @@
     <xsl:template name="collationFormula2">
         <xsl:param name="tbID"/>
         <xsl:result-document href="{concat($tbID, '-formula_02.xml')}">
-          <vc:formula>
+            <vc:formula>
+                <xsl:attribute name="type">
+                    <xsl:text>Formula 2</xsl:text>
+                </xsl:attribute>
+                <xsl:attribute name="format">
+                    <xsl:text>1(8, leaf missing between f.X and f.Y, leaf added after f.X)</xsl:text>
+                </xsl:attribute>
             <xsl:for-each-group select="leaves/leaf"
                 group-by="
                     if (contains(q[1]/@n, '.')) then
