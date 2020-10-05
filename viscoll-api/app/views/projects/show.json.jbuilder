@@ -25,7 +25,7 @@ json.set! "active" do
   json.Leafs @data[:leafs]
   json.Rectos @data[:rectos]
   json.Versos @data[:versos]
-  json.Notes @data[:terms]
+  json.Terms @data[:terms]
 end
 
 json.set! "dashboard" do

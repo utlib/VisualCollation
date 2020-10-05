@@ -4,7 +4,7 @@ json.set! 'Export' do
   json.Leafs @data[:leafs]
   json.Rectos @data[:rectos]
   json.Versos @data[:versos]
-  json.Notes @data[:terms]
+  json.Terms @data[:terms]
 end
 
 json.set! 'Images' do
