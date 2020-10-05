@@ -94,7 +94,11 @@ class ExportController < ApplicationController
           render json: {data: exportData, type: @format, Images: {exportedImages:@zipFilePath ? @zipFilePath : false}}, status: :ok and return
         when 'html'
           # generate imagelist
-          puts "html export"
+
+          puts @project.sides[0].image["url"]
+
+          exportData = []
+          render json: {data: exportData, type: @format, Images: {exportedImages:@zipFilePath ? @zipFilePath : false}}, status: :ok and return
         else
           render json: {error: "Export format must be one of [json, xml, svg, formula, html]"}, status: :unprocessable_entity and return
         end
