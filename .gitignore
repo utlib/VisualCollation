@@ -75,3 +75,4 @@ APPLICATION_HOST=localhost
 vceditor_idrovora/xproc/docs/
 .docker-environment-dev
 viscoll-api/.generators
+viscoll-api/public/uploads
