@@ -755,7 +755,7 @@ class CollationManager extends Component {
               backgroundColor="rgba(255, 255, 255, 0.05)"
               style={{ width: '100%' }}
               onClick={() => {
-                console.log('html');
+                this.handleExportToggle(true, 'html', 'HTML');
               }}
               tabIndex={this.props.popUpActive ? -1 : 0}
             />
