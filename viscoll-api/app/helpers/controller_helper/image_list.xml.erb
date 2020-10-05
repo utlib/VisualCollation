@@ -42,12 +42,12 @@
       <Column ss:Index="2" ss:AutoFitWidth="0" ss:Width="260"/>
       <% project.leafs.each do |leaf| %>
         <Row>
-          <Cell><Data ss:Type="String"><%= leaf.folioNumber %>r</Data></Cell>
-          <Cell><Data ss:Type="String"><%= Side.find(leaf.rectoID).image.url %></Data></Cell>
+          <Cell><Data ss:Type="String"><%= leaf.folio_number %>r</Data></Cell>
+          <Cell><Data ss:Type="String"><%= Side.find(leaf.rectoID).image["url"] %></Data></Cell>
         </Row>
         <Row>
-          <Cell><Data ss:Type="String"><%= leaf.folioNumber %>v</Data></Cell>
-          <Cell><Data ss:Type="String"><%= Side.find(leaf.versoID).image.url %></Data></Cell>
+          <Cell><Data ss:Type="String"><%= leaf.folio_number %>v</Data></Cell>
+          <Cell><Data ss:Type="String"><%= Side.find(leaf.versoID).image["url"] %></Data></Cell>
         </Row>
       <% end %>
     </Table>

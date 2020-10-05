@@ -3,7 +3,7 @@ require 'erb'
 module ControllerHelper
   module ExportHelper
 
-    IMAGE_LIST_ERB = File.expand_path '../image_list.erb', __FILE__
+    IMAGE_LIST_ERB = File.expand_path '../image_list.xml.erb', __FILE__
 
     def buildJSON(project)
       @project.reload

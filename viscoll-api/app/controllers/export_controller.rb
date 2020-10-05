@@ -94,8 +94,6 @@ class ExportController < ApplicationController
           render json: {data: exportData, type: @format, Images: {exportedImages:@zipFilePath ? @zipFilePath : false}}, status: :ok and return
         when 'html'
           # generate imagelist
-
-          # puts @project.sides[0].image["url"]
           image_list = build_image_list @project
           puts image_list
           exportData = []
