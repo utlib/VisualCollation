@@ -22,7 +22,7 @@ export function deleteNoteType(action, state) {
   const deletedNoteType = action.payload.request.data.noteType.type;
   // Rename the noteType of each Note that had deleteNoteType to Unknown
   for (let termID in state.project.Terms) {
-    if (state.project.Notes[termID].type === deletedNoteType)
+    if (state.project.Terms[termID].type === deletedNoteType)
       state.project.Terms[termID].type = 'Unknown';
   }
   // Delete the noteType from the noteTypes array
