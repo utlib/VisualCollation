@@ -64,7 +64,7 @@
         <xsl:result-document href="{concat($tbID, '-formula_01.xml')}">
           <vc:formula>
               <xsl:attribute name="type">
-                  <xsl:text>Formula 2</xsl:text>
+                  <xsl:text>Formula 1</xsl:text>
               </xsl:attribute>
               <xsl:attribute name="format">
                   <xsl:text>1(8, -4, +3)</xsl:text>
