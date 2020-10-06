@@ -95,7 +95,11 @@ class ExportController < ApplicationController
         when 'html'
           # generate imagelist
           image_list = build_image_list @project
-          puts image_list
+          
+          job_response = process_pipeline 'viscoll2html', xml.to_xml, nil, image_list
+
+          puts job_response
+          
           exportData = []
           render json: {data: exportData, type: @format, Images: {exportedImages:@zipFilePath ? @zipFilePath : false}}, status: :ok and return
         else
@@ -122,12 +126,13 @@ class ExportController < ApplicationController
     end
   end
 
-  def process_pipeline pipeline, xml_string, config_xml = nil
+  def process_pipeline pipeline, xml_string, config_xml = nil, image_list = nil
     # run the pipeline
     xproc_uri = URI.parse "#{Rails.configuration.xproc['url']}/xproc/#{pipeline}/"
     xproc_req = Net::HTTP::Post.new(xproc_uri)
     form = [['input', StringIO.new(xml_string)]]
     form << ['config', StringIO.new(config_xml)] if config_xml
+    form << ['images', StringIO.new(image_list)] if image_list
 
     xproc_req.set_form(form, 'multipart/form-data')
     xproc_response = Net::HTTP.start(xproc_uri.hostname, xproc_uri.port) do |http|
