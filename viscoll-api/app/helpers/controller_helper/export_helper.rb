@@ -262,11 +262,11 @@ module ControllerHelper
                   xml.mode mode
 
                   qAttributes = {}
+                  qAttributes[:target] = "#"+idPrefix+"-q-"+parents.join("-")
                   qAttributes[:position] = project.groups.find(leaf.parentID).memberIDs.index(leafID)+1
+                  qAttributes[:n] = parents[-1]
                   qAttributes[:leafno] = leafemberOrder
                   qAttributes[:certainty] = 1
-                  qAttributes[:target] = "#"+idPrefix+"-q-"+parents.join("-")
-                  qAttributes[:n] = parents[-1]
                   xml.q qAttributes do
                     if leaf.conjoined_to
                       idPostfix = parents.join("-")+"-"+@leafs[leaf.conjoined_to][:memberOrder].to_s
