@@ -93,10 +93,10 @@ class ExportController < ApplicationController
 
           render json: {data: exportData, type: @format, Images: {exportedImages:@zipFilePath ? @zipFilePath : false}}, status: :ok and return
         when 'html'
-          # generate imagelist
+          collation_file = 'collation.css'
+          config_xml = %Q{<config><css xml:id="css">#{collation_file}</css></config>}
           image_list = build_image_list @project
-          
-          job_response = process_pipeline 'viscoll2html', xml.to_xml, nil, image_list
+          job_response = process_pipeline 'viscoll2html', xml.to_xml, config_xml, image_list
 
           puts job_response
           
@@ -139,8 +139,8 @@ class ExportController < ApplicationController
       http.request(xproc_req)
     end
     response_hash = JSON.parse(xproc_response.body)
-    puts response_hash
-
+    
+    puts "response hash: #{response_hash}"
     # TODO: Xproc#retreive_data; returns IO object
     job_url = response_hash["_links"]["job"]["href"]
     job_uri = URI.parse job_url
