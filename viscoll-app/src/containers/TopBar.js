@@ -120,7 +120,7 @@ class TopBar extends Component {
           aria-label="Click to go home" 
           tabIndex={this.props.tabIndex}
         >
-          <img src={imgLogo} alt="Viscoll logo" />
+          <img src={imgLogo} alt="Viscodex logo" />
         </button>
         <Toolbar style={{background:"#ffffff"}}>
           <ToolbarGroup>
