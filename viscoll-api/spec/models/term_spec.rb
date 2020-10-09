@@ -4,7 +4,7 @@ RSpec.describe Term, type: :model do
   it { is_expected.to be_mongoid_document }
 
   it { is_expected.to have_field(:title).of_type(String) }
-  it { is_expected.to have_field(:type).of_type(String) }
+  it { is_expected.to have_field(:taxonomy).of_type(String) }
   it { is_expected.to have_field(:description).of_type(String) }
   it { is_expected.to have_field(:uri).of_type(String) }
   it { is_expected.to have_field(:objects).of_type(Hash) }
@@ -13,14 +13,14 @@ RSpec.describe Term, type: :model do
   it { is_expected.to belong_to(:project) }
 
   before :each do
-    @project = FactoryGirl.create(:project, noteTypes: ['Ink'])
+    @project = FactoryGirl.create(:project, taxonomies: ['Ink'])
     @group = FactoryGirl.create(:group, project: @project)
     @leaf = FactoryGirl.create(:leaf, project: @project, parentID: @group.id.to_s)
     @side1 = Side.find(id: @leaf.rectoID)
     @side2 = Side.find(id: @leaf.versoID)
     @project.add_groupIDs([@group.id.to_s], 0)
     @group.add_members([@leaf.id.to_s], 0)
-    @term = FactoryGirl.create(:term, project: @project, type: ['Ink'], objects: {Group: [@group.id.to_s], Leaf: [@leaf.id.to_s], Recto: [@side1.id.to_s], Verso: [@side2.id.to_s]} )
+    @term = FactoryGirl.create(:term, project: @project, taxonomy: ['Ink'], objects: {Group: [@group.id.to_s], Leaf: [@leaf.id.to_s], Recto: [@side1.id.to_s], Verso: [@side2.id.to_s]} )
     @group.terms << @term
     @group.save
     @leaf.terms << @term
@@ -37,19 +37,19 @@ RSpec.describe Term, type: :model do
       expect(@term).not_to be_valid
     end
     it "should be unique within the project" do
-      duplicate_note = FactoryGirl.create(:term, project: @project, type: ['Ink'], objects: {Group: [@group.id.to_s], Leaf: [], Recto: [], Verso: []} )
-      duplicate_note.title = @term.title
-      expect(duplicate_note).not_to be_valid
+      duplicate_term = FactoryGirl.create(:term, project: @project, taxonomy: ['Ink'], objects: {Group: [@group.id.to_s], Leaf: [], Recto: [], Verso: []} )
+      duplicate_term.title = @term.title
+      expect(duplicate_term).not_to be_valid
     end
     it "should not need to be unique globally" do
       project2 = FactoryGirl.create(:project)
       group2 = FactoryGirl.create(:group, project: project2)
       project2.add_groupIDs([group2.id.to_s], 0)
-      note2 = FactoryGirl.create(:term, project: project2, type: ['Ink'], objects: {Group: [group2.id.to_s], Leaf: [], Recto: [], Verso: []})
-      expect(note2).to be_valid
+      term2 = FactoryGirl.create(:term, project: project2, taxonomy: ['Ink'], objects: {Group: [group2.id.to_s], Leaf: [], Recto: [], Verso: []})
+      expect(term2).to be_valid
     end
-    it "should require a type" do
-      @term.type = ''
+    it "should require a taxonomy" do
+      @term.taxonomy = ''
       expect(@term).not_to be_valid
     end
   end
