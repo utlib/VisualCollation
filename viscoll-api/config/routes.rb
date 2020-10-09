@@ -55,9 +55,9 @@ Rails.application.routes.draw do
   # TERM ENDPOINTS
   put '/terms/:id/link', to: 'terms#link', defaults: {format: :json}, only: [:update]
   put '/terms/:id/unlink', to: 'terms#unlink', defaults: {format: :json}, only: [:update]
-  post '/terms/type', to: 'terms#createType', defaults: {format: :json}, only: [:create]
-  put '/terms/type', to: 'terms#updateType', defaults: {format: :json}, only: [:update]
-  delete '/terms/type', to: 'terms#deleteType', defaults: {format: :json}, only: [:destroy]
+  post '/terms/taxonomy', to: 'terms#createTaxonomy', defaults: {format: :json}, only: [:create]
+  put '/terms/taxonomy', to: 'terms#updateTaxonomy', defaults: {format: :json}, only: [:update]
+  delete '/terms/taxonomy', to: 'terms#deleteTaxonomy', defaults: {format: :json}, only: [:destroy]
   resources :terms, defaults: {format: :json}, only: [:show, :update, :destroy, :create]
 
   # DOCUMENTATION

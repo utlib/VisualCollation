@@ -1,7 +1,7 @@
 class TermsController < ApplicationController
   before_action :authenticate!
   before_action :set_term, only: [:update, :link, :unlink, :destroy]
-  before_action :set_attached_project, only: [:createType, :deleteType, :updateType]
+  before_action :set_attached_project, only: [:createTaxonomy, :deleteTaxonomy, :updateTaxonomy]
 
   # POST /terms
   def create
@@ -15,9 +15,9 @@ class TermsController < ApplicationController
       render json: {error: ''}, status: :unauthorized and return
     end
     if @term.save
-      if not Project.find(@term.project_id).noteTypes.include?(@term.type)
+      if not Project.find(@term.project_id).taxonomies.include?(@term.taxonomy)
         @term.delete
-        render json: {type: "should be one of " +Project.find(@term.project_id).noteTypes.to_s}, status: :unprocessable_entity and return
+        render json: {taxonomy: "should be one of " +Project.find(@term.project_id).taxonomies.to_s}, status: :unprocessable_entity and return
       end
     else
       render json: @term.errors, status: :unprocessable_entity and return
@@ -26,9 +26,9 @@ class TermsController < ApplicationController
 
   # PATCH/PUT /terms/1
   def update
-    type = term_update_params.to_h[:type]
-    if not Project.find(@term.project_id).noteTypes.include?(type)
-      render json: {type: "should be one of " +Project.find(@term.project_id).noteTypes.to_s}, status: :unprocessable_entity and return
+    taxonomy = term_update_params.to_h[:taxonomy]
+    if not Project.find(@term.project_id).taxonomies.include?(taxonomy)
+      render json: {taxonomy: "should be one of " +Project.find(@term.project_id).taxonomies.to_s}, status: :unprocessable_entity and return
     end
     if !@term.update(term_update_params)
       render json: @term.errors, status: :unprocessable_entity and return
@@ -45,10 +45,10 @@ class TermsController < ApplicationController
     begin
       objects = term_object_link_params.to_h[:objects]
       objects.each do |object|
-        type = object[:type]
+        taxonomy = object[:taxonomy]
         id = object[:id]
         begin
-          case type
+          case taxonomy
           when "Group"
             @object = Group.find(id)
             authorized = @object.project.user_id == current_user.id
@@ -59,18 +59,18 @@ class TermsController < ApplicationController
             @object = Side.find(id)
             authorized = @object.project.user_id == current_user.id
           else
-            render json: {type: "object not found with type "+type}, status: :unprocessable_entity and return
+            render json: {taxonomy: "object not found with taxonomy "+taxonomy}, status: :unprocessable_entity and return
           end
           unless authorized
             render json: {error: ''}, status: :unauthorized and return
           end
         rescue Mongoid::Errors::DocumentNotFound
-          render json: {id: type + " object not found with id "+id}, status: :unprocessable_entity and return
+          render json: {id: taxonomy + " object not found with id "+id}, status: :unprocessable_entity and return
         end
         @object.terms.push(@term)
         @object.save
-        if (not @term.objects[type].include?(id))
-          @term.objects[type].push(id)
+        if (not @term.objects[taxonomy].include?(id))
+          @term.objects[taxonomy].push(id)
         end
         @term.save
       end
@@ -84,10 +84,10 @@ class TermsController < ApplicationController
     begin
       objects = term_object_link_params.to_h[:objects]
       objects.each do |object|
-        type = object[:type]
+        taxonomy = object[:taxonomy]
         id = object[:id]
         begin
-          case type
+          case taxonomy
           when "Group"
             @object = Group.find(id)
             authorized = @object.project.user_id == current_user.id
@@ -98,17 +98,17 @@ class TermsController < ApplicationController
             @object = Side.find(id)
             authorized = @object.project.user_id == current_user.id
           else
-            render json: {type: "object not found with type "+type}, status: :unprocessable_entity and return
+            render json: {taxonomy: "object not found with taxonomy "+taxonomy}, status: :unprocessable_entity and return
           end
           unless authorized
             render json: {error: ''}, status: :unauthorized and return
           end
         rescue Mongoid::Errors::DocumentNotFound
-          render json: {id: type + " object not found with id "+id}, status: :unprocessable_entity and return
+          render json: {id: taxonomy + " object not found with id "+id}, status: :unprocessable_entity and return
         end
         @object.terms.delete(@term)
         @object.save
-        @term.objects[type].delete(id)
+        @term.objects[taxonomy].delete(id)
         @term.save
       end
     rescue Exception => e
@@ -118,48 +118,48 @@ class TermsController < ApplicationController
 
 
 
-  # POST /terms/type
-  def createType
-    type = note_type_params.to_h[:type]
-    if @project.noteTypes.include?(type)
-      render json: {type: type+" type already exists in the project"}, status: :unprocessable_entity and return
+  # POST /terms/taxonomy
+  def createTaxonomy
+    taxonomy = taxonomy_params.to_h[:taxonomy]
+    if @project.taxonomies.include?(taxonomy)
+      render json: {taxonomy: taxonomy+" taxonomy already exists in the project"}, status: :unprocessable_entity and return
     else
-      @project.noteTypes.push(type)
+      @project.taxonomies.push(taxonomy)
       @project.save
     end
   end
 
 
-  # DELETE /terms/type
-  def deleteType
-    type = note_type_params.to_h[:type]
-    if not @project.noteTypes.include?(type)
-      render json: {type: type+" type doesn't exist in the project"}, status: :unprocessable_entity and return
+  # DELETE /terms/taxonomy
+  def deleteTaxonomy
+    taxonomy = taxonomy_params.to_h[:taxonomy]
+    if not @project.taxonomies.include?(taxonomy)
+      render json: {taxonomy: taxonomy+" taxonomy doesn't exist in the project"}, status: :unprocessable_entity and return
     else
-      @project.noteTypes.delete(type)
+      @project.taxonomies.delete(taxonomy)
       @project.save
-      @project.terms.where(type: type).each do |term|
-        term.update(type: "Unknown")
+      @project.terms.where(taxonomy: taxonomy).each do |term|
+        term.update(taxonomy: "Unknown")
         term.save
       end
     end
   end
 
 
-  # PUT /terms/type
-  def updateType
-    old_type = note_type_params.to_h[:old_type]
-    type = note_type_params.to_h[:type]
-    if not @project.noteTypes.include?(old_type)
-      render json: {old_type: old_type+" type doesn't exist in the project"}, status: :unprocessable_entity and return
-    elsif @project.noteTypes.include?(type)
-      render json: {type: type+" already exists in the project"}, status: :unprocessable_entity and return
+  # PUT /terms/taxonomy
+  def updateTaxonomy
+    old_taxonomy = taxonomy_params.to_h[:old_taxonomy]
+    taxonomy = taxonomy_params.to_h[:taxonomy]
+    if not @project.taxonomies.include?(old_taxonomy)
+      render json: {old_taxonomy: old_taxonomy+" taxonomy doesn't exist in the project"}, status: :unprocessable_entity and return
+    elsif @project.taxonomies.include?(taxonomy)
+      render json: {taxonomy: taxonomy+" already exists in the project"}, status: :unprocessable_entity and return
     else
-      indexToEdit = @project.noteTypes.index(old_type)
-      @project.noteTypes[indexToEdit] = type
+      indexToEdit = @project.taxonomies.index(old_taxonomy)
+      @project.taxonomies[indexToEdit] = taxonomy
       @project.save
-      @project.terms.where(type: old_type).each do |term|
-        term.update(type: type)
+      @project.terms.where(taxonomy: old_taxonomy).each do |term|
+        term.update(taxonomy: taxonomy)
         term.save
       end
     end
@@ -184,7 +184,7 @@ class TermsController < ApplicationController
     end
 
     def set_attached_project
-      project_id = note_type_params.to_h[:project_id]
+      project_id = taxonomy_params.to_h[:project_id]
       begin
         @project = Project.find(project_id)
         if @project.user_id != current_user.id
@@ -197,19 +197,19 @@ class TermsController < ApplicationController
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def term_create_params
-      params.require(:term).permit(:project_id, :id, :title, :type, :description, :uri, :show)
+      params.require(:term).permit(:project_id, :id, :title, :taxonomy, :description, :uri, :show)
     end
 
     def term_update_params
-      params.require(:term).permit(:title, :type, :description, :uri, :show)
+      params.require(:term).permit(:title, :taxonomy, :description, :uri, :show)
     end
 
     def term_object_link_params
-      params.permit(:objects => [:id, :type])
+      params.permit(:objects => [:id, :taxonomy])
     end
 
-    def note_type_params
-      params.require(:noteType).permit(:type, :project_id, :old_type)
+    def taxonomy_params
+      params.require(:taxonomy).permit(:taxonomy, :project_id, :old_taxonomy)
     end
 
 

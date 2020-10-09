@@ -9,12 +9,12 @@ describe "POST /terms", :type => :request do
   end
 
   before :each do
-    @project = FactoryGirl.create(:project, {user: @user, noteTypes: ["Ink"]})
+    @project = FactoryGirl.create(:project, {user: @user, taxonomies: ["Ink"]})
     @parameters = {
         term: {
         "project_id": @project.id.to_str,
         "title": "some title for term",
-        "type": "Ink",
+        "taxonomy": "Ink",
         "description": "blue ink"
       }
     }
@@ -38,7 +38,7 @@ describe "POST /terms", :type => :request do
 
     context 'and out-of-context terms' do
       before do
-        @parameters[:term][:type] = "WAAHOO"
+        @parameters[:term][:taxonomy] = "WAAHOO"
         post '/terms', params: @parameters.to_json, headers: {'Authorization' => @authToken, 'CONTENT_TYPE' => 'application/json', 'ACCEPT' => 'application/json'}
         @body = JSON.parse(response.body)
       end
@@ -47,8 +47,8 @@ describe "POST /terms", :type => :request do
         expect(response).to have_http_status(:unprocessable_entity)
       end
 
-      it 'says what types are allowed' do
-        expect(@body['type']).to include('should be one of ["Ink"]')
+      it 'says what taxonomies are allowed' do
+        expect(@body['taxonomy']).to include('should be one of ["Ink"]')
       end
     end
 
@@ -82,7 +82,7 @@ describe "POST /terms", :type => :request do
     context 'and an unauthorized project' do
       before do
         @user2 = FactoryGirl.create(:user)
-        @project2 = FactoryGirl.create(:project, { user: @user2, noteTypes: ["Ink"] })
+        @project2 = FactoryGirl.create(:project, { user: @user2, taxonomies: ["Ink"] })
         @parameters[:term][:project_id] = @project2.id.to_str
         post '/terms', params: @parameters.to_json, headers: {'Authorization' => @authToken, 'CONTENT_TYPE' => 'application/json', 'ACCEPT' => 'application/json'}
       end
