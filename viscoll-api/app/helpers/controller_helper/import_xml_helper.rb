@@ -19,7 +19,7 @@ module ControllerHelper
         metadata: {date: ""},
         preferences: {showTips: true},
         manifests: {},
-        noteTypes: ["Unknown"]
+        taxonomies: ["Unknown"]
       }
       # Grab project Title
       projectTitleNode = xml.xpath("//x:title", "x" => "http://schoenberginstitute.org/schema/collation")
