@@ -45,10 +45,11 @@ class TermsController < ApplicationController
     begin
       objects = term_object_link_params.to_h[:objects]
       objects.each do |object|
-        taxonomy = object[:taxonomy]
+        type = object[:type]
         id = object[:id]
         begin
-          case taxonomy
+          binding.pry
+          case type
           when "Group"
             @object = Group.find(id)
             authorized = @object.project.user_id == current_user.id
@@ -59,18 +60,18 @@ class TermsController < ApplicationController
             @object = Side.find(id)
             authorized = @object.project.user_id == current_user.id
           else
-            render json: {taxonomy: "object not found with taxonomy "+taxonomy}, status: :unprocessable_entity and return
+            render json: {type: "object not found with type "+type}, status: :unprocessable_entity and return
           end
           unless authorized
             render json: {error: ''}, status: :unauthorized and return
           end
         rescue Mongoid::Errors::DocumentNotFound
-          render json: {id: taxonomy + " object not found with id "+id}, status: :unprocessable_entity and return
+          render json: {id: type + " object not found with id "+id}, status: :unprocessable_entity and return
         end
         @object.terms.push(@term)
         @object.save
-        if (not @term.objects[taxonomy].include?(id))
-          @term.objects[taxonomy].push(id)
+        if (not @term.objects[type].include?(id))
+          @term.objects[type].push(id)
         end
         @term.save
       end
@@ -84,10 +85,10 @@ class TermsController < ApplicationController
     begin
       objects = term_object_link_params.to_h[:objects]
       objects.each do |object|
-        taxonomy = object[:taxonomy]
+        type = object[:type]
         id = object[:id]
         begin
-          case taxonomy
+          case type
           when "Group"
             @object = Group.find(id)
             authorized = @object.project.user_id == current_user.id
@@ -104,11 +105,11 @@ class TermsController < ApplicationController
             render json: {error: ''}, status: :unauthorized and return
           end
         rescue Mongoid::Errors::DocumentNotFound
-          render json: {id: taxonomy + " object not found with id "+id}, status: :unprocessable_entity and return
+          render json: {id: type + " object not found with id "+id}, status: :unprocessable_entity and return
         end
         @object.terms.delete(@term)
         @object.save
-        @term.objects[taxonomy].delete(id)
+        @term.objects[type].delete(id)
         @term.save
       end
     rescue Exception => e
