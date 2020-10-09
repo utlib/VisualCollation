@@ -8,7 +8,7 @@ RSpec.describe Project, type: :model do
   it { is_expected.to have_field(:notationStyle).of_type(String) }
   it { is_expected.to have_field(:metadata).of_type(Hash) }
   it { is_expected.to have_field(:manifests).of_type(Hash) }
-  it { is_expected.to have_field(:noteTypes).of_type(Array) }
+  it { is_expected.to have_field(:taxonomies).of_type(Array) }
   it { is_expected.to have_field(:preferences).of_type(Hash) }
   it { is_expected.to have_field(:groupIDs).of_type(Array) }
 
