@@ -38,9 +38,9 @@ class ProjectsController < ApplicationController
       end
       # Instantiate a new project with the given params
       @project = Project.new(project_params)
-      # If the project contains noteTypes, add the 'Unknown' type if its not present
-      if (not @project.noteTypes.empty? and not @project.noteTypes.include?('Unknown'))
-        @project.noteTypes.push('Unknown')
+      # If the project contains taxonomies, add the 'Unknown' type if its not present
+      if (not @project.taxonomies.empty? and not @project.taxonomies.include?('Unknown'))
+        @project.taxonomies.push('Unknown')
       end
        # Associate the current logged_in user to this project
       @project.user = current_user
@@ -207,7 +207,7 @@ class ProjectsController < ApplicationController
 
   # Never trust parameters from the scary Internet, only allow the white list through.
   def project_params
-    params.require(:project).permit(:title, :shelfmark, :notationStyle, :metadata=>{}, :noteTypes=>[], :preferences=>{})
+    params.require(:project).permit(:title, :shelfmark, :notationStyle, :metadata=>{}, :taxonomies=>[], :preferences=>{})
   end
 
   def project_delete_params

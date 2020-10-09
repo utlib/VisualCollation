@@ -16,7 +16,7 @@ describe "GET /projects/:id/export/:format", :type => :request do
       'notationStyle' => 'r-v',
       'metadata' => { date: '18th century' },
       'preferences' => { 'showTips' => true },
-      'noteTypes' => ['Ink', 'Unknown'],
+      'taxonomies' => ['Ink', 'Unknown'],
       'manifests' => { '12341234': { 'id' => '12341234', 'url' => 'https://digital.library.villanova.edu/Item/vudl:99213/Manifest', 'name' => 'Boston, and Bunker Hill.' } }
     )
     # Attach group with 2 leafs - (group with 2 leafs) - 2 conjoined leafs, 1 image
@@ -29,7 +29,7 @@ describe "GET /projects/:id/export/:format", :type => :request do
     @project.add_groupIDs([@testgroup.id.to_s, @testmidgroup.id.to_s], 0)
     @testgroup.add_members([@upleafs[0].id.to_s, @upleafs[1].id.to_s, @testmidgroup.id.to_s, @botleafs[0].id.to_s, @botleafs[1].id.to_s], 0)
     @testmidgroup.add_members([@midleafs[0].id.to_s, @midleafs[1].id.to_s], 0)
-    @testnote = FactoryGirl.create(:term, project: @project, title: 'Test Note', type: 'Ink', description: 'This is a test', show: true, objects: {Group: [@testgroup.id.to_s], Leaf: [@botleafs[0].id.to_s], Recto: [@botleafs[0].rectoID], Verso: [@botleafs[0].versoID]})
+    @testterm = FactoryGirl.create(:term, project: @project, title: 'Test Term', taxonomy: 'Ink', description: 'This is a test', show: true, objects: {Group: [@testgroup.id.to_s], Leaf: [@botleafs[0].id.to_s], Recto: [@botleafs[0].rectoID], Verso: [@botleafs[0].versoID]})
     @testimage = FactoryGirl.create(:pixel, user: @user, projectIDs: [@project.id.to_s], sideIDs: [@upleafs[0].rectoID], filename: 'pixel.png')
     Side.find(@upleafs[0].rectoID).update(image: {
       manifestID: 'DIYImages',
@@ -77,7 +77,7 @@ describe "GET /projects/:id/export/:format", :type => :request do
           'metadata' => { 'date' => '18th century' },
           'preferences' => { 'showTips' => true },
           'manifests' => { '12341234' => { 'id' => '12341234', 'url' => 'https://digital.library.villanova.edu/Item/vudl:99213/Manifest', 'name' => 'Boston, and Bunker Hill.' } },
-          'noteTypes' => ['Ink', 'Unknown']
+          'taxonomies' => ['Ink', 'Unknown']
         })
         expect(export_result['Groups']).to eq({
           '1' => {'params'=>{'type'=>"Quire", 'title'=>"Group 1", 'nestLevel'=>1}, 'tacketed'=>[], 'sewing'=>[], 'parentOrder'=>nil, 'memberOrders'=>["Leaf_1", "Leaf_2", "Group_2", "Leaf_5", "Leaf_6"]},
@@ -107,8 +107,8 @@ describe "GET /projects/:id/export/:format", :type => :request do
           '5' => {'params'=>{'page_number'=>"", 'texture'=>"None", 'image'=>{}, 'script_direction'=>"None"}, 'parentOrder'=>5},
           '6' => {'params'=>{'page_number'=>"", 'texture'=>"None", 'image'=>{}, 'script_direction'=>"None"}, 'parentOrder'=>6}
         })
-        expect(export_result['Notes']).to eq({
-          '1' => {'params'=>{'title'=>"Test Note", 'type'=>"Ink", 'description'=>"This is a test", 'show'=>true}, 'objects'=>{'Group'=>[1], 'Leaf'=>[5], 'Recto'=>[5], 'Verso'=>[5]}}
+        expect(export_result['Terms']).to eq({
+          '1' => {'params'=>{'title'=>"Test Term", 'taxonomy'=>"Ink", 'description'=>"This is a test", 'show'=>true}, 'objects'=>{'Group'=>[1], 'Leaf'=>[5], 'Recto'=>[5], 'Verso'=>[5]}}
         })
         expect(image_result['exportedImages']).to eq("https://vceditor.library.upenn.edu/images/zip/#{@project.id}")
       end
@@ -156,7 +156,7 @@ describe "GET /projects/:id/export/:format", :type => :request do
           ['leaf_material_paper', 'Paper']
         )
         #TODO test for folio_number generation
-        # Sides and Notes
+        # Sides and Terms
         expect(result.css("mapping map").collect { |t| [t['target'], t['side'], t.css('term').first['target']]}).to include(
           ['#ravenna_384_2339-1-1', 'recto', '#side_page_number_EMPTY https://dummy.library.utoronto.ca/images/'+@testimage.id.to_s+'_pixel.png #manifest_DIYImages'],
           ['#ravenna_384_2339-1-2', 'recto', '#side_page_number_EMPTY'],
@@ -171,9 +171,9 @@ describe "GET /projects/:id/export/:format", :type => :request do
           ['#ravenna_384_2339-1-3', 'verso', '#side_page_number_EMPTY'],
           ['#ravenna_384_2339-1-4', 'verso', '#side_page_number_EMPTY']
         )
-        # testing for notes
+        # testing for terms
         # expect(result.css("mapping map").collect { |t| [t['target'], t.css('term').first['target']]}).to include(
-        #   ['#ravenna_384_2339-n-1', '#note_title_test_note #note_show'],
+        #   ['#ravenna_384_2339-n-1', '#term_title_test_term #term_show'],
         # )
       end
     end
