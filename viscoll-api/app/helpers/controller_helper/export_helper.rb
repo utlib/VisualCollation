@@ -21,7 +21,7 @@ module ControllerHelper
         "metadata": @project.metadata,
         "preferences": @project.preferences,
         "manifests": @project.manifests,
-        "noteTypes": @project.noteTypes
+        "taxonomies": @project.taxonomies
       }
 
       rootMemberOrder = 1
@@ -328,17 +328,17 @@ module ControllerHelper
             end
           end
 
-          # Creating taxonomies from note types
+          # Creating taxonomies
           if not project.terms.empty?
-            project.noteTypes.each do |noteType|
-              unless noteType == 'Unknown'
-                taxAtt = {'xml:id': "taxonomy_#{noteType.parameterize.underscore}"}
+            project.taxonomies.each do |taxonomy|
+              unless taxonomy == 'Unknown'
+                taxAtt = {'xml:id': "taxonomy_#{taxonomy.parameterize.underscore}"}
                 xml.taxonomy taxAtt do
                   xml.label do
-                    xml.text noteType
+                    xml.text taxonomy
                   end
-                  # grab an array of terms with the current noteType
-                  children = project.terms.select {|term| term.type == noteType}
+                  # grab an array of terms with the current taxonomy
+                  children = project.terms.select {|term| term.taxonomy == taxonomy}
 
                   # add proper attributes and crete term elements
                   children.each do |childTerm|
