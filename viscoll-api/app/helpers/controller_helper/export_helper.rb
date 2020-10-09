@@ -123,7 +123,7 @@ module ControllerHelper
         @terms[index + 1] = {
           "params": {
             "title": term.title,
-            "type": term.type,
+            "taxonomy": term.taxonomy,
             "description": term.description,
             "show": term.show
           },

@@ -1,8 +1,8 @@
 FactoryGirl.define do
-  sequence :note_title do |n|
-    "Note #{n}"
+  sequence :term_title do |n|
+    "Term #{n}"
   end
-  sequence :note_text do |n|
+  sequence :term_text do |n|
     "Blah #{n}"
   end
 
@@ -10,7 +10,7 @@ FactoryGirl.define do
     transient do
       attachments []
     end
-    before(:build) do |note, evaluator|
+    before(:build) do |term, evaluator|
       myobjects = {Group: [], Leaf: [], Recto: [], Verso: []}
       evaluator.attachments.each do |attachment|
         if attachment.is_a? Group
@@ -24,11 +24,11 @@ FactoryGirl.define do
             myobjects[:Recto] << attachment
           end
         else
-          raise Exception('Notes can only be attached to groups, leafs and sides')
+          raise Exception('Terms can only be attached to groups, leafs and sides')
         end
       end
     end
-    title { generate(:note_title) }
-    type "Unknown"
+    title { generate(:term_title) }
+    taxonomy "Unknown"
   end
 end
