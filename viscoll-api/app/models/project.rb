@@ -8,7 +8,7 @@ class Project
   field :notationStyle, type: String, default: "r-v" # (eg) "r-v"
   field :metadata, type: Hash, default: lambda { { } } # (eg) {date: "19th century"}
   field :manifests, type: Hash, default: lambda { { } } # (eg) { "1234556": { id: "123456, url: ""} }
-  field :noteTypes, type: Array, default: ["Unknown"] # custom notetypes
+  field :taxonomies, type: Array, default: ["Unknown"] # custom taxonomies
   field :preferences, type: Hash, default: lambda { { :showTips => true } }
   field :groupIDs, type: Array, default: []
 
