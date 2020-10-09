@@ -80,7 +80,7 @@ RSpec.describe ControllerHelper::ProjectsHelper, type: :helper do
         shelfmark: 'Ravenna 384.2339',
         metadata: { date: '18th century' },
         preferences: { showTips: true },
-        noteTypes: ['Hand', 'Ink', 'Unknown'],
+        taxonomies: ['Hand', 'Ink', 'Unknown'],
         manifests: { '12341234': { id: '12341234', url: 'https://digital.library.villanova.edu/Item/vudl:99213/Manifest', name: 'Boston, and Bunker Hill.' } }
       )
       # Attach group with 2 leafs - (group with 2 leafs) - 2 conjoined leafs
@@ -93,7 +93,7 @@ RSpec.describe ControllerHelper::ProjectsHelper, type: :helper do
       @project.add_groupIDs([@testgroup.id.to_s, @testmidgroup.id.to_s], 0)
       @testgroup.add_members([@upleafs[0].id.to_s, @upleafs[1].id.to_s, @testmidgroup.id.to_s, @botleafs[0].id.to_s, @botleafs[1].id.to_s], 0)
       @testmidgroup.add_members([@midleafs[0].id.to_s, @midleafs[1].id.to_s], 0)
-      @testnote = FactoryGirl.create(:term, project: @project, title: 'Test Note', type: 'Ink', description: 'This is a test', uri: 'https://www.test.com/', show: true, objects: {Group: [@testgroup.id.to_s], Leaf: [@botleafs[0].id.to_s], Recto: [@botleafs[0].rectoID], Verso: [@botleafs[0].versoID]})
+      @testterm = FactoryGirl.create(:term, project: @project, title: 'Test Term', taxonomy: 'Ink', description: 'This is a test', uri: 'https://www.test.com/', show: true, objects: {Group: [@testgroup.id.to_s], Leaf: [@botleafs[0].id.to_s], Recto: [@botleafs[0].rectoID], Verso: [@botleafs[0].versoID]})
     end
 
     it 'returns the right output for the given sample' do
@@ -105,7 +105,7 @@ RSpec.describe ControllerHelper::ProjectsHelper, type: :helper do
         'notationStyle': 'r-v',
         'metadata': { 'date' => '18th century' },
         'preferences': { 'showTips' => true },
-        'noteTypes': [ 'Hand', 'Ink', 'Unknown' ],
+        'taxonomies': [ 'Hand', 'Ink', 'Unknown' ],
         'manifests': { '12341234' => {
           'id' => '12341234',
           'url' => 'https://digital.library.villanova.edu/Item/vudl:99213/Manifest',
@@ -117,10 +117,10 @@ RSpec.describe ControllerHelper::ProjectsHelper, type: :helper do
       expect(body[:leafIDs]).to eq((@upleafs+@midleafs+@botleafs).collect { |leaf| leaf.id.to_s })
       expect(body[:rectoIDs]).to eq((@upleafs+@midleafs+@botleafs).collect { |leaf| leaf.rectoID })
       expect(body[:versoIDs]).to eq((@upleafs+@midleafs+@botleafs).collect { |leaf| leaf.versoID })
-      expect(body[:terms]).to eq({@testnote.id.to_s => {
-        id: @testnote.id.to_s,
-        title: 'Test Note',
-        type: 'Ink',
+      expect(body[:terms]).to eq({@testterm.id.to_s => {
+        id: @testterm.id.to_s,
+        title: 'Test Term',
+        taxonomy: 'Ink',
         description: 'This is a test',
         uri: 'https://www.test.com/',
         show: true,

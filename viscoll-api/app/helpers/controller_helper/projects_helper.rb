@@ -110,7 +110,7 @@ module ControllerHelper
         "metadata": @project.metadata,
         "preferences": @project.preferences,
         "manifests": @project.manifests,
-        "noteTypes": @project.noteTypes
+        "taxonomies": @project.taxonomies
       }
       @project.manifests.each do |manifestID, manifest|
         manifestInformation = getManifestInformation(manifest[:url])
@@ -210,7 +210,7 @@ module ControllerHelper
         @terms[term.id.to_s] = {
           "id": term.id.to_s,
           "title": term.title,
-          "type": term.type,
+          "taxonomy": term.taxonomy,
           "description": term.description,
           "uri": term.uri,
           "show": term.show,
