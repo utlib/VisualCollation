@@ -20,7 +20,7 @@ RSpec.describe ControllerHelper::StubbedImportHelper, type: :helper do
           "metadata" => { 'date' => '18th century' },
           "preferences" => { 'showTips' => true },
           "manifests" => { '12341234' => { 'id' => '12341234', 'url' => 'https://digital.library.villanova.edu/Item/vudl:99213/Manifest', 'name' => 'Boston, and Bunker Hill.' } },
-          "noteTypes" => ['Hand', 'Ink', 'Unknown']
+          "taxonomies" => ['Hand', 'Ink', 'Unknown']
         },
         "Groups" => {
           "1" => {"params" => {"type" => "Quire", "title" => "Quire 1", "nestLevel" => 1}, "tacketed" => [], "sewing" => [], "parentOrder" => nil, "memberOrders" => ["Leaf_1", "Leaf_2", "Group_2", "Leaf_5", "Leaf_6"]},
@@ -51,7 +51,7 @@ RSpec.describe ControllerHelper::StubbedImportHelper, type: :helper do
           "6" => {"params" => {"texture" => "Flesh", "image" => {}, "script_direction" => "None"}, "parentOrder" => 6}
         },
         "Terms" => {
-          "1" => {"params" => {"title" => "Test Term", "type" => "Ink", "description" => "This is a test", "show" => true}, "objects" => {"Group" => [1], "Leaf" => [5], "Recto" => [5], "Verso" => [5]}}
+          "1" => {"params" => {"title" => "Test Term", "taxonomy" => "Ink", "description" => "This is a test", "show" => true}, "objects" => {"Group" => [1], "Leaf" => [5], "Recto" => [5], "Verso" => [5]}}
         }
       }
     end
@@ -64,12 +64,12 @@ RSpec.describe ControllerHelper::StubbedImportHelper, type: :helper do
       expect(project.shelfmark).to eq 'Ravenna 384.2339'
       expect(project.metadata).to eq({ 'date' => '18th century' })
       expect(project.preferences).to eq({ 'showTips' => true })
-      expect(project.noteTypes).to eq ['Hand', 'Ink', 'Unknown']
+      expect(project.taxonomies).to eq ['Hand', 'Ink', 'Unknown']
       expect(project.manifests).to eq({ '12341234' => { 'id' => '12341234', 'url' => 'https://digital.library.villanova.edu/Item/vudl:99213/Manifest', 'name' => 'Boston, and Bunker Hill.' } })
       expect(project.leafs.count).to eq 6
       expect(project.sides.count).to eq 12
       expect(project.terms[0].title).to eq 'Test Term'
-      expect(project.terms[0].type).to eq 'Ink'
+      expect(project.terms[0].taxonomy).to eq 'Ink'
       expect(project.terms[0].description).to eq 'This is a test'
       expect(project.terms[0].objects).to eq({'Group' => [project.groups[0].id.to_s], 'Leaf' => [project.leafs[4].id.to_s], 'Recto' => [project.leafs[4].rectoID], 'Verso' => [project.leafs[4].versoID]})
     end
@@ -87,12 +87,12 @@ RSpec.describe ControllerHelper::StubbedImportHelper, type: :helper do
       expect(project.shelfmark).to eq 'Ravenna 384.2339'
       expect(project.metadata).to eq({ 'date' => '18th century' })
       expect(project.preferences).to eq({ 'showTips' => true })
-      expect(project.noteTypes).to eq ['Hand', 'Ink', 'Unknown']
+      expect(project.taxonomies).to eq ['Hand', 'Ink', 'Unknown']
       expect(project.manifests).to eq({ '12341234' => { 'id' => '12341234', 'url' => 'https://digital.library.villanova.edu/Item/vudl:99213/Manifest', 'name' => 'Boston, and Bunker Hill.' } })
       expect(project.leafs.count).to eq 6
       expect(project.sides.count).to eq 12
       expect(project.terms[0].title).to eq 'Test Term'
-      expect(project.terms[0].type).to eq 'Ink'
+      expect(project.terms[0].taxonomy).to eq 'Ink'
       expect(project.terms[0].description).to eq 'This is a test'
       expect(project.terms[0].objects).to eq({'Group' => [project.groups[0].id.to_s], 'Leaf' => [project.leafs[4].id.to_s], 'Recto' => [project.leafs[4].rectoID], 'Verso' => [project.leafs[4].versoID]})
     end
