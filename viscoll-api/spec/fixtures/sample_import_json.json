@@ -15,7 +15,7 @@
         "name": "Boston, and Bunker Hill."
       }
     },
-    "noteTypes": ["Hand", "Ink", "Unknown"]
+    "taxonomies": ["Hand", "Ink", "Unknown"]
   },
   "Groups": {
     "1": {
@@ -237,7 +237,7 @@
     "1": {
       "params": {
         "title": "Test Term",
-        "type": "Ink",
+        "taxonomy": "Ink",
         "description": "This is a test",
         "show": true
       },
