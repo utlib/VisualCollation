@@ -64,9 +64,9 @@
         <xsl:variable name="tbID" select="translate($shelfmark, ' ', '')"/>
         <xsl:for-each-group select="leaves/leaf"
                             group-by="if (contains(q[1]/@n, '.')) then substring-before(q[1]/@n, '.') else q[1]/@n">
-          
+
         </xsl:for-each-group>
-    
+
         <!-- Variable to store the image list information -->
         <xsl:result-document href="{concat($tbID, '-processed.xml')}">
             <viscoll>
@@ -103,7 +103,7 @@
                     </xsl:element>
                     <gatherings>
                         <!-- gatherings are formed by grouping leaves according to the gathering to which the are listed as belonging to;
-    if there are subgatherings, these are listed a gathering-number.subgathering-number.etc: this code will group all leaves 
+    if there are subgatherings, these are listed a gathering-number.subgathering-number.etc: this code will group all leaves
     in the same gathering regardless of subgatherings -->
                         <xsl:for-each-group select="leaves/leaf"
                             group-by="
@@ -463,6 +463,9 @@
             </xsl:attribute>
             <xsl:copy-of select="$thisLeaf/child::*" copy-namespaces="no"/>
         </leaf>
+    </xsl:template>
+    <xsl:template match="//(taxonomy|mapping)">
+        
     </xsl:template>
 
 </xsl:stylesheet>
