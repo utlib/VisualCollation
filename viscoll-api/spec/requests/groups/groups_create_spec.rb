@@ -9,7 +9,7 @@ describe "POST /groups", :type => :request do
   end
 
   before :each do
-    @project = FactoryGirl.create(:project, {user: @user, noteTypes: ["Ink"]})
+    @project = FactoryGirl.create(:project, {user: @user, taxonomies: ["Ink"]})
     @parameters = {
       "group": {
         "project_id": @project.id.to_str,
