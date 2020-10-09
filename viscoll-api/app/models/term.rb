@@ -4,7 +4,7 @@ class Term
 
   # Fields
   field :title, type: String, default: "None"
-  field :type, type: String, default: ""
+  field :taxonomy, type: String, default: ""
   field :description, type: String, default: ""
   field :uri, type: String, default: ""
   field :objects, type: Hash, default: {Group: [], Leaf: [], Recto: [], Verso: []}
@@ -16,7 +16,7 @@ class Term
   # Validations
   validates_presence_of :title, :message => "Note title is required."
   validates_uniqueness_of :title, :message => "Note title should be unique.", scope: :project
-  validates_presence_of :type, :message => "Type is required."
+  validates_presence_of :taxonomy, :message => "Taxonomy is required."
 
   # Callbacks
   before_destroy :update_objects_before_delete
