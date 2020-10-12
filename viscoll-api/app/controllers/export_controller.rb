@@ -98,8 +98,12 @@ class ExportController < ApplicationController
           image_list = build_image_list @project
           job_response = process_pipeline 'viscoll2html', xml.to_xml, config_xml, image_list
 
-          puts job_response
-          
+          outfile = "#{Rails.root}/public/xproc/#{@project.id}-html.zip"
+          File.open outfile, 'wb' do |f|
+            f.puts job_response.body
+          end
+          @zipFilePath = "#{@base_api_url}/transformations/zip/#{@project.id}-html"
+
           exportData = []
           render json: {data: exportData, type: @format, Images: {exportedImages:@zipFilePath ? @zipFilePath : false}}, status: :ok and return
         else
