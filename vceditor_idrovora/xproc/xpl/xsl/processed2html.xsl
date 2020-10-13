@@ -1438,12 +1438,12 @@
                 content="{format-dateTime(current-dateTime(), '[D] [MNn] [Y] at [H]:[m]:[s]')}"/>
             <meta name="rights" content="CC BY 3.0"/>
             <!-- Add jQuery library -->
-            <script src="https://cdn.rawgit.com/leoba/VisColl/master/data/support/fancybox/lib/jquery-1.10.1.min.js"/>
+            <script src="https://cdn.rawgit.com/leoba/VisColl/master/data/support/fancybox/lib/jquery-1.10.1.min.js"><xsl:text> </xsl:text></script>
             <!-- Add fancyBox main JS and CSS files -->
-            <script src="https://cdn.rawgit.com/leoba/VisColl/master/data/support/jquery.fancybox.js?v=2.1.5"/>
-            <script src="https://cdn.rawgit.com/leoba/VisColl/master/data/support/iframescript.js"/>
-            <script src="https://cdn.rawgit.com/leoba/VisColl/master/data/support/querys.js"/>
-            <script src="https://cdn.rawgit.com/leoba/VisColl/master/data/support/collation.js"/>
+            <script src="https://cdn.rawgit.com/leoba/VisColl/master/data/support/jquery.fancybox.js?v=2.1.5"><xsl:text> </xsl:text></script>
+            <script src="https://cdn.rawgit.com/leoba/VisColl/master/data/support/iframescript.js"><xsl:text> </xsl:text></script>
+            <script src="https://cdn.rawgit.com/leoba/VisColl/master/data/support/querys.js"><xsl:text> </xsl:text></script>
+            <script src="https://cdn.rawgit.com/leoba/VisColl/master/data/support/collation.js"><xsl:text> </xsl:text></script>
             <link rel="stylesheet" type="text/css"
                 href="https://cdn.rawgit.com/leoba/VisColl/master/data/support/jquery.fancybox.css?v=2.1.5"
                 media="screen"/>
@@ -1457,7 +1457,7 @@
                     height: 100%;
                     align-self: center;
                 }
-                
+
                 .bif {
                     display: flex;
                     align-items: center;
