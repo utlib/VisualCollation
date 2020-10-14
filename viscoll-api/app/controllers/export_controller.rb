@@ -81,9 +81,9 @@ class ExportController < ApplicationController
             formula_count = 0
             zip_file.each do |entry| 
               if File.basename(entry.name).include? "formula"
-                formula_count += 1
-                file_content = "Formula #{formula_count}: " + %r{>([^<]*)<}.match(entry.get_input_stream.read)[1]
-                files << file_content
+                nokogiri_entry = zip_file.read(entry) { |f| Nokogiri::XML(f) }
+                puts "Entry: #{nokogiri_entry}"
+                files << "test"
                 files << "\n"
               end
             end
