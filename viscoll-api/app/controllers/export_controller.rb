@@ -77,19 +77,22 @@ class ExportController < ApplicationController
           @zipFilePath = "#{@base_api_url}/transformations/zip/#{@project.id}-formula"
 
           files = []
+          sorted_files = []
           Zip::File.open(outfile) do |zip_file|
             formula_count = 0
             zip_file.each do |entry| 
               if File.basename(entry.name).include? "formula"
-                nokogiri_entry = zip_file.read(entry) { |f| Nokogiri::XML(f) }
-                puts "Entry: #{nokogiri_entry}"
-                files << "test"
-                files << "\n"
+                nokogiri_entry = zip_file.get_input_stream(entry) { |f| Nokogiri::XML(f) }
+                content = nokogiri_entry.xpath('//vc:formula/text()')
+                type = nokogiri_entry.xpath('//vc:formula/@type')
+                format = nokogiri_entry.xpath('//vc:formula/@format')
+                formula = "Type: #{type}, Format: #{format}, Formula: #{content}\n"
+                files << formula
+                sorted_files = files.sort
               end
             end
           end
-          puts files
-          exportData = files
+          exportData = sorted_files
           
           render json: {data: exportData, type: @format, Images: {exportedImages:@zipFilePath ? @zipFilePath : false}}, status: :ok and return
         else
