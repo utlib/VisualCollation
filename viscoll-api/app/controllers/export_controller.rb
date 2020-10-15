@@ -92,9 +92,7 @@ class ExportController < ApplicationController
               end
             end
           end
-<<<<<<< HEAD
-          puts files
-          exportData = files
+          exportData = sorted_files
 
           render json: {data: exportData, type: @format, Images: {exportedImages:@zipFilePath ? @zipFilePath : false}}, status: :ok and return
         when 'html'
@@ -110,10 +108,7 @@ class ExportController < ApplicationController
           @zipFilePath = "#{@base_api_url}/transformations/zip/#{@project.id}-html"
 
           exportData = []
-=======
-          exportData = sorted_files
           
->>>>>>> development
           render json: {data: exportData, type: @format, Images: {exportedImages:@zipFilePath ? @zipFilePath : false}}, status: :ok and return
         else
           render json: {error: "Export format must be one of [json, xml, svg, formula, html]"}, status: :unprocessable_entity and return
