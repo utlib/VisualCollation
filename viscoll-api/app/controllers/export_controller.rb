@@ -86,7 +86,7 @@ class ExportController < ApplicationController
                 content = nokogiri_entry.xpath('//vc:formula/text()')
                 type = nokogiri_entry.xpath('//vc:formula/@type')
                 format = nokogiri_entry.xpath('//vc:formula/@format')
-                formula = "Type: #{type}, Format: #{format}, Formula: #{content}\n"
+                formula = "Type: #{type}\nFormat: #{format}\nFormula: #{content}\n\n"
                 files << formula
                 sorted_files = files.sort
               end
