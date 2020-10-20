@@ -48,7 +48,6 @@ class TermsController < ApplicationController
         type = object[:type]
         id = object[:id]
         begin
-          binding.pry
           case type
           when "Group"
             @object = Group.find(id)
@@ -206,7 +205,7 @@ class TermsController < ApplicationController
     end
 
     def term_object_link_params
-      params.permit(:objects => [:id, :taxonomy])
+      params.permit(:objects => [:id, :type])
     end
 
     def taxonomy_params

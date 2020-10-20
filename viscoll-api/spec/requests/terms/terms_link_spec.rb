@@ -9,13 +9,13 @@ describe "PUT /terms/id/link", :type => :request do
   end
 
   before :each do
-    @project = FactoryGirl.create(:project, {user: @user, noteTypes: ["Ink"]})
+    @project = FactoryGirl.create(:project, {user: @user, taxonomies: ["Ink"]})
     @defaultGroup = FactoryGirl.create(:quire, project: @project)
     @project.add_groupIDs([@defaultGroup.id.to_s], 0)
     @term = FactoryGirl.create(:term, {
       project: @project,
       title: "some title for term",
-      type: "Ink",
+      taxonomy: "Ink",
       description: "blue ink"
     })
     @parameters = {
@@ -108,7 +108,7 @@ describe "PUT /terms/id/link", :type => :request do
     context 'and a project belonging to another user' do
       before :each do
         @user2 = FactoryGirl.create(:user)
-        @project2 = FactoryGirl.create(:project, { user: @user2, noteTypes: ["Ink"] })
+        @project2 = FactoryGirl.create(:project, {user: @user2, taxonomies: ["Ink"] })
       end
       context 'and group target' do
         before do
