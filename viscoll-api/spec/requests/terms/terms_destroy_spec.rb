@@ -10,11 +10,11 @@ describe "DELETE /terms/id", :type => :request do
 
   before :each do
     @project = FactoryGirl.create(:project, {
-      user: @user,
-      noteTypes: ["Ink"]
+        user: @user,
+        taxonomies: ["Ink"]
     })
     @term = FactoryGirl.create(:term, {
-      type: "Ink",
+        taxonomy: "Ink",
       project: @project
     })
     @parameters = {}
@@ -49,11 +49,11 @@ describe "DELETE /terms/id", :type => :request do
       before do
         @user2 = FactoryGirl.create(:user)
         @project2 = FactoryGirl.create(:project, {
-          user: @user2,
-          noteTypes: ["Hand"]
+            user: @user2,
+            taxonomies: ["Hand"]
         })
         @term2 = FactoryGirl.create(:term, {
-          type: "Hand",
+            taxonomy: "Hand",
           project: @project2
         })
         delete '/terms/'+@term2.id, params: @parameters.to_json, headers: {'Authorization' => @authToken, 'CONTENT_TYPE' => 'application/json', 'ACCEPT' => 'application/json'}
