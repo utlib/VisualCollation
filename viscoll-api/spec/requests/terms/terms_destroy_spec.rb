@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-describe "DELETE /terms/id", :type => :request do
+describe "DELETE /terms/id", :'type' => :request do
   before do
     @user = FactoryGirl.create(:user, {:password => "user"})
     put '/confirmation', params: {:confirmation_token => @user.confirmation_token}
