@@ -98,7 +98,7 @@ class TermsController < ApplicationController
             @object = Side.find(id)
             authorized = @object.project.user_id == current_user.id
           else
-            render json: {taxonomy: "object not found with taxonomy "+taxonomy}, status: :unprocessable_entity and return
+            render json: {type: "object not found with type "+type}, status: :unprocessable_entity and return
           end
           unless authorized
             render json: {error: ''}, status: :unauthorized and return
