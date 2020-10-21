@@ -924,7 +924,7 @@ class CollationManager extends Component {
             linkAndUnlinkTerms: this.linkAndUnlinkTerms,
           }}
           projectID={this.props.project.id}
-          noteTypes={this.props.project.noteTypes}
+          taxonomies={this.props.project.taxonomies}
           Terms={this.props.project.Terms}
           Groups={this.props.project.Groups}
           groupIDs={this.props.project.groupIDs}
