@@ -1,7 +1,7 @@
 import {
-  createNoteType,
-  updateNoteType,
-  deleteNoteType,
+  createTaxonomy,
+  updateTaxonomy,
+  deleteTaxonomy,
   createTerm,
   updateTerm,
   linkTerm,
@@ -14,78 +14,78 @@ import { projectState001 } from '../../testData/projectState001';
 import { cloneDeep } from 'lodash';
 
 describe('>>>A C T I O N --- Test term actions', () => {
-  it('+++ actionCreator createNoteType', () => {
-    const noteTypePayload = {
+  it('+++ actionCreator createTaxonomy', () => {
+    const taxonomyPayload = {
       payload: {
         request: {
-          url: `/terms/type`,
+          url: `/terms/taxonomy`,
           method: 'post',
           data: {
-            noteType: {
+            taxonomy: {
               project_id: '5951303fc9bf3c7b9a573a3f',
-              type: 'Watermark',
+              taxonomy: 'Watermark',
             },
           },
-          successMessage: 'Successfully created the note type',
+          successMessage: 'Successfully created the taxonomy',
           errorMessage: 'Ooops! Something went wrong',
         },
       },
     };
     const beforeState = cloneDeep(projectState001);
-    const createNoteTypeAction = createNoteType(noteTypePayload, beforeState);
+    const createTaxonomyAction = createTaxonomy(taxonomyPayload, beforeState);
     let afterState = cloneDeep(projectState001);
-    afterState.project.noteTypes.push('Watermark');
-    expect(createNoteTypeAction).toEqual(afterState);
+    afterState.project.taxonomies.push('Watermark');
+    expect(createTaxonomyAction).toEqual(afterState);
   });
 
-  it('+++ actionCreator updateNoteType', () => {
-    const noteTypePayload = {
+  it('+++ actionCreator updateTaxonomy', () => {
+    const taxonomyPayload = {
       payload: {
         request: {
-          url: '/terms/type',
+          url: '/terms/taxonomy',
           method: 'put',
           data: {
-            noteType: {
+            taxonomy: {
               project_id: '5951303fc9bf3c7b9a573a3f',
-              old_type: 'Damage',
-              type: 'Damages',
+              old_taxonomy: 'Damage',
+              taxonomy: 'Damages',
             },
           },
-          successMessage: 'Successfully updated the note type',
+          successMessage: 'Successfully updated the term taxonomy',
           errorMessage: 'Oops! Something went wrong',
         },
       },
     };
     const beforeState = cloneDeep(projectState001);
     let expectedState = cloneDeep(projectState001);
-    expectedState.project.noteTypes[3] = 'Damages';
-    expectedState.project.Terms['5a57825a4cfad13070870dfa'].type = 'Damages';
-    let gotState = updateNoteType(noteTypePayload, beforeState);
+    expectedState.project.taxonomies[3] = 'Damages';
+    expectedState.project.Terms['5a57825a4cfad13070870dfa'].taxonomy = 'Damages';
+    let gotState = updateTaxonomy(taxonomyPayload, beforeState);
     expect(gotState).toEqual(expectedState);
   });
 
-  it('+++ actionCreator deleteNoteType', () => {
-    const noteTypePayload = {
+  it('+++ actionCreator deleteTaxonomy', () => {
+    const taxonomyPayload = {
       payload: {
         request: {
-          url: '/terms/type',
+          url: '/terms/taxonomy',
           method: 'delete',
           data: {
-            noteType: {
+            taxonomy: {
               project_id: '5951303fc9bf3c7b9a573a3f',
-              type: 'Hand',
+              taxonomy: 'Hand',
             },
           },
-          successMessage: 'Successfully deleted the note type',
+          successMessage: 'Successfully deleted the term taxonomy',
           errorMessage: 'Oops! Something went wrong',
         },
       },
     };
     const beforeState = cloneDeep(projectState001);
     let expectedState = cloneDeep(projectState001);
-    expectedState.project.noteTypes = ['Unknown', 'Ink', 'Damage'];
-    expectedState.project.Terms['5a57825a4cfad13070870df9'].type = 'Unknown';
-    let gotState = deleteNoteType(noteTypePayload, beforeState);
+    expectedState.project.taxonomies = ['Unknown', 'Ink', 'Damage'];
+    expectedState.project.Terms['5a57825a4cfad13070870df9'].taxonomy = 'Unknown';
+    let gotState = deleteTaxonomy(taxonomyPayload, beforeState);
     expect(gotState).toEqual(expectedState);
   });
 
@@ -100,7 +100,7 @@ describe('>>>A C T I O N --- Test term actions', () => {
               id: 'f951303fc9bf3c7b9a573a3f',
               project_id: '5951303fc9bf3c7b9a573a3f',
               title: 'Example Term',
-              type: 'asd',
+              taxonomy: 'asd',
               description: 'example content',
               uri: 'https://www.test.com/',
               show: true,
@@ -116,7 +116,7 @@ describe('>>>A C T I O N --- Test term actions', () => {
     expectedState.project.Terms['f951303fc9bf3c7b9a573a3f'] = {
       id: 'f951303fc9bf3c7b9a573a3f',
       title: 'Example Term',
-      type: 'asd',
+      taxonomy: 'asd',
       description: 'example content',
       uri: 'https://www.test.com/',
       show: true,
@@ -136,7 +136,7 @@ describe('>>>A C T I O N --- Test term actions', () => {
             term: {
               description: 'Some lot of black ink over here',
               title: 'Black inks',
-              type: 'Ink',
+              taxonomy: 'Ink',
               uri: 'https://www.test2.com/',
             },
           },
@@ -149,7 +149,7 @@ describe('>>>A C T I O N --- Test term actions', () => {
     let expectedState = cloneDeep(beforeState);
     expectedState.project.Terms['5a57825a4cfad13070870df8'].title =
       'Black inks';
-    expectedState.project.Terms['5a57825a4cfad13070870df8'].type = 'Ink';
+    expectedState.project.Terms['5a57825a4cfad13070870df8'].taxonomy = 'Ink';
     expectedState.project.Terms['5a57825a4cfad13070870df8'].description =
       'Some lot of black ink over here';
     expectedState.project.Terms['5a57825a4cfad13070870df8'].uri =
