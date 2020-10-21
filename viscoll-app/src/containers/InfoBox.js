@@ -206,7 +206,7 @@ class InfoBox extends React.Component {
     );
   };
 
-  createAndAttachTerm = (termTitle, noteType, description, uri, show) => {
+  createAndAttachTerm = (termTitle, taxonomy, description, uri, show) => {
     let objects = [];
     let type = this.props.selectedObjects.type;
     if (type === 'Recto' || type === 'Verso') type = 'Side';
@@ -221,7 +221,7 @@ class InfoBox extends React.Component {
       project_id: this.props.projectID,
       id: id,
       title: termTitle,
-      type: noteType,
+      taxonomy: taxonomy,
       description: description,
       uri: uri,
       show: show,
@@ -374,7 +374,7 @@ class InfoBox extends React.Component {
             Rectos={this.props.Rectos}
             Versos={this.props.Versos}
             Terms={this.props.Terms}
-            noteTypes={this.props.noteTypes}
+            Taxonomies={this.props.Taxonomies}
             commonTerms={this.props.commonTerms}
             openTermDialog={this.props.openTermDialog}
             viewMode={this.props.collationManager.viewMode}
@@ -417,7 +417,7 @@ class InfoBox extends React.Component {
             Rectos={this.props.Rectos}
             Versos={this.props.Versos}
             Terms={this.props.Terms}
-            noteTypes={this.props.noteTypes}
+            Taxonomies={this.props.Taxonomies}
             commonTerms={this.props.commonTerms}
             openTermDialog={this.props.openTermDialog}
             viewMode={this.props.collationManager.viewMode}
@@ -462,7 +462,7 @@ class InfoBox extends React.Component {
             Versos={this.props.Versos}
             Sides={this.props[this.props.selectedObjects.type + 's']}
             Terms={this.props.Terms}
-            noteTypes={this.props.noteTypes}
+            Taxonomies={this.props.Taxonomies}
             commonTerms={this.props.commonTerms}
             openTermDialog={this.props.openTermDialog}
             viewMode={this.props.collationManager.viewMode}
@@ -498,7 +498,7 @@ const mapStateToProps = state => {
     Rectos: state.active.project.Rectos,
     Versos: state.active.project.Versos,
     Terms: state.active.project.Terms,
-    noteTypes: state.active.project.noteTypes,
+    Taxonomies: state.active.project.Taxonomies,
     selectedObjects: state.active.collationManager.selectedObjects,
     collationManager: state.active.collationManager,
     termsManager: state.active.termsManager,
