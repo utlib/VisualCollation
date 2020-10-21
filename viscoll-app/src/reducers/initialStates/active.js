@@ -28,7 +28,7 @@ export const initialState = {
     Leafs: {},
     Rectos: {},
     Versos: {},
-    noteTypes: [],
+    taxonomies: [],
     Terms: {},
     preferences: {
       showTips: true,
@@ -149,8 +149,8 @@ export const initialState = {
           displayName: 'Title',
         },
         {
-          name: 'type',
-          displayName: 'Type',
+          name: 'taxonomy',
+          displayName: 'Taxonomy',
           isDropdown: true,
         },
         {
