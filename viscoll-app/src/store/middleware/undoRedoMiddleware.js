@@ -35,9 +35,9 @@ import {
 } from '../../actions/undoRedo/manifestHelper';
 
 import {
-  undoCreateNoteType,
-  undoUpdateNoteType,
-  undoDeleteNoteType,
+  undoCreateTaxonomy,
+  undoUpdateTaxonomy,
+  undoDeleteTaxonomy,
   undoLinkTerm,
   undoUnlinkTerm,
   undoDeleteTerm,
@@ -153,14 +153,14 @@ const undoRedoMiddleware = store => next => action => {
     case 'DELETE_MANIFEST_FRONTEND':
       historyAction = undoDeleteManifest(action, store.getState().active);
       break;
-    case 'UPDATE_NOTETYPE_FRONTEND':
-      historyAction = undoUpdateNoteType(action, store.getState().active);
+    case 'UPDATE_TAXONOMY_FRONTEND':
+      historyAction = undoUpdateTaxonomy(action, store.getState().active);
       break;
-    case 'CREATE_NOTETYPE_FRONTEND':
-      historyAction = undoCreateNoteType(action, store.getState().active);
+    case 'CREATE_TAXONOMY_FRONTEND':
+      historyAction = undoCreateTaxonomy(action, store.getState().active);
       break;
-    case 'DELETE_NOTETYPE_FRONTEND':
-      historyAction = undoDeleteNoteType(action, store.getState().active);
+    case 'DELETE_TAXONOMY_FRONTEND':
+      historyAction = undoDeleteTaxonomy(action, store.getState().active);
       break;
     case 'LINK_TERM_FRONTEND':
       historyAction = undoLinkTerm(action, store.getState().active);
