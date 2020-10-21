@@ -7,9 +7,9 @@ import {
 } from '../../actions/frontend/before/projectActions';
 
 import {
-  createNoteType,
-  updateNoteType,
-  deleteNoteType,
+  createTaxonomy,
+  updateTaxonomy,
+  deleteTaxonomy,
   createTerm,
   updateTerm,
   linkTerm,
@@ -88,21 +88,21 @@ const frontendBeforeActionsMiddleware = store => next => action => {
         cloneDeep(store.getState().dashboard)
       );
       break;
-    // NoteType Actions
-    case 'CREATE_NOTETYPE_FRONTEND':
-      action.payload.response = createNoteType(
+    // Taxonomy Actions
+    case 'CREATE_TAXONOMY_FRONTEND':
+      action.payload.response = createTaxonomy(
         action,
         cloneDeep(store.getState().active)
       );
       break;
-    case 'UPDATE_NOTETYPE_FRONTEND':
-      action.payload.response = updateNoteType(
+    case 'UPDATE_TAXONOMY_FRONTEND':
+      action.payload.response = updateTaxonomy(
         action,
         cloneDeep(store.getState().active)
       );
       break;
-    case 'DELETE_NOTETYPE_FRONTEND':
-      action.payload.response = deleteNoteType(
+    case 'DELETE_TAXONOMY_FRONTEND':
+      action.payload.response = deleteTaxonomy(
         action,
         cloneDeep(store.getState().active)
       );
