@@ -10,11 +10,11 @@ describe "PUT /terms/id", :type => :request do
 
   before :each do
     @project = FactoryGirl.create(:project, {
-      user: @user,
-      noteTypes: ["Ink"]
+        user: @user,
+        taxonomies: ["Ink"]
     })
-    @term       = FactoryGirl.create(:term, {
-      type: "Ink",
+    @term = FactoryGirl.create(:term, {
+        taxonomy: "Ink",
       project: @project,
       description: "vermilion"
     })
@@ -22,7 +22,7 @@ describe "PUT /terms/id", :type => :request do
         term: {
         "project_id": @project.id.to_str,
         "title": "some title for term",
-        "type": "Ink",
+        "taxonomy": "Ink",
         "description": "sepia"
       }
     }
@@ -65,9 +65,9 @@ describe "PUT /terms/id", :type => :request do
       end
     end
 
-    context 'and out-of-context term type' do
+    context 'and out-of-context term taxonomy' do
       before do
-        @parameters[:term][:type] = "waahoo"
+        @parameters[:term][:taxonomy] = "waahoo"
         put '/terms/'+@term.id, params: @parameters.to_json, headers: {'Authorization' => @authToken, 'CONTENT_TYPE' => 'application/json', 'ACCEPT' => 'application/json'}
         @term.reload
         @body = JSON.parse(response.body)
@@ -78,12 +78,12 @@ describe "PUT /terms/id", :type => :request do
       end
 
       it 'shows the available options' do
-        expect(@body['type']).to eq 'should be one of ["Ink"]'
+        expect(@body['taxonomy']).to eq 'should be one of ["Ink"]'
       end
 
       it 'leaves the term alone' do
         expect(@term.description).to eq "vermilion"
-        expect(@term.type).to eq "Ink"
+        expect(@term.taxonomy).to eq "Ink"
       end
     end
 
@@ -91,11 +91,11 @@ describe "PUT /terms/id", :type => :request do
       before do
         @user2 = FactoryGirl.create(:user)
         @project2 = FactoryGirl.create(:project, {
-          user: @user2,
-          noteTypes: ["Ink"]
+            user: @user2,
+            taxonomies: ["Ink"]
         })
         @term2 = FactoryGirl.create(:term, {
-          type: "Ink",
+          taxonomy: "Ink",
           project: @project2,
           description: "Prussian blue"
         })
