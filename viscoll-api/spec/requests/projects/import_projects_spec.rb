@@ -63,14 +63,11 @@ describe "PUT /projects/import", :type => :request do
       expect(project.shelfmark).to eq 'Ravenna 384.2339'
       expect(project.metadata).to eq({ 'date' => '18th century' })
       expect(project.preferences).to eq({ 'showTips' => true })
-      expect(project.taxonomies).to include('Ink', 'Unknown')
+      # TODO: import taxonomies
       expect(project.manifests).to eq({ '12341234' => { 'id' => '12341234', 'url' => 'https://digital.library.villanova.edu/Item/vudl:99213/Manifest' } })
       expect(project.leafs.count).to eq 6
       expect(project.sides.count).to eq 12
-      expect(project.terms[0].title).to eq 'Test Term'
-      expect(project.terms[0].taxonomy).to eq 'Ink'
-      expect(project.terms[0].description).to eq 'This is a test'
-      expect(project.terms[0].objects).to eq({'Group' => [project.groups[0].id.to_s], 'Leaf' => [project.leafs[4].id.to_s], 'Recto' => [project.leafs[4].rectoID], 'Verso' => [project.leafs[4].versoID]})
+      # TODO: import terms
     end
 
     it 'should show error for invalid XML' do
