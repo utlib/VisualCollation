@@ -28,7 +28,7 @@ export const initialState = {
     Leafs: {},
     Rectos: {},
     Versos: {},
-    taxonomies: [],
+    Taxonomies: [],
     Terms: {},
     preferences: {
       showTips: true,
