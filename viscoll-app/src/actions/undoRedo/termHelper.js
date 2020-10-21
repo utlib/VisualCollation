@@ -1,46 +1,46 @@
 import {
-  deleteNoteType,
-  updateNoteType,
-  createNoteType,
+  deleteTaxonomy,
+  updateTaxonomy,
+  createTaxonomy,
   updateTerm,
   unlinkTerm,
   linkTerm,
   addTerm,
 } from '../backend/termActions';
 
-export function undoUpdateNoteType(action, state) {
-  const noteType = {
+export function undoUpdateTaxonomy(action, state) {
+  const taxonomy = {
     project_id: state.project.id,
-    old_type: action.payload.request.data.noteType.type,
-    type: action.payload.request.data.noteType.old_type,
+    old_taxonomy: action.payload.request.data.taxonomy.taxonomy,
+    taxonomy: action.payload.request.data.taxonomy.old_taxonomy,
   }
-  const historyAction = updateNoteType(noteType);
+  const historyAction = updateTaxonomy(taxonomy);
   return [historyAction];
 }
 
-export function undoCreateNoteType(action, state) {
-  const noteType = {
+export function undoCreateTaxonomy(action, state) {
+  const taxonomy = {
     project_id: state.project.id,
-    type: action.payload.request.data.noteType.type,
+    taxonomy: action.payload.request.data.taxonomy.taxonomy,
   }
-  const historyAction = deleteNoteType(noteType);
+  const historyAction = deleteTaxonomy(taxonomy);
   return [historyAction];
 }
 
-export function undoDeleteNoteType(action, state) {
+export function undoDeleteTaxonomy(action, state) {
   const historyActions = [];
-  // Create note type
-  const type = action.payload.request.data.noteType.type;
-  const noteType = {
+  // Create term taxonomy
+  const tax = action.payload.request.data.taxonomy.taxonomy;
+  const taxonomy = {
     project_id: state.project.id,
-    type,
+    tax,
   }
-  historyActions.push(createNoteType(noteType));
-  // Update terms that had this note type
+  historyActions.push(createTaxonomy(taxonomy));
+  // Update terms that had this taxonomy
   for (const key in state.project.Terms) {
     if (!state.project.Terms.hasOwnProperty(key)) continue;
-    if (state.project.Terms[key].type === type) {
-      historyActions.push(updateTerm(key, {type}));
+    if (state.project.Terms[key].taxonomy === tax) {
+      historyActions.push(updateTerm(key, {tax}));
     }
   }
   return historyActions;
@@ -70,7 +70,7 @@ export function undoDeleteTerm(action, state) {
     project_id: state.project.id,
     id: termID,
     title: term.title,
-    type: term.type,
+    taxonomy: term.taxonomy,
     description: term.description,
     show: term.show,
   }
