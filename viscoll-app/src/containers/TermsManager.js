@@ -14,9 +14,9 @@ import {
   addTerm,
   updateTerm,
   deleteTerm,
-  createNoteType,
-  updateNoteType,
-  deleteNoteType,
+  createTaxonomy,
+  updateTaxonomy,
+  deleteTaxonomy,
   linkTerm,
   unlinkTerm,
 } from '../actions/backend/termActions';
@@ -31,7 +31,7 @@ class TermsManager extends Component {
       value: '',
       filterTypes: {
         title: true,
-        type: true,
+        taxonomy: true,
         description: true,
         // TODO: add URI?
       },
@@ -91,7 +91,7 @@ class TermsManager extends Component {
         }
       }
       if (isNoneSelected)
-        filterTypes = { title: true, type: true, description: true };
+        filterTypes = { title: true, taxonomy: true, description: true };
       for (let termID in this.props.Terms) {
         const term = this.props.Terms[termID];
         for (let type of Object.keys(filterTypes)) {
@@ -148,7 +148,7 @@ class TermsManager extends Component {
           }}
           projectID={this.props.projectID}
           notification={this.props.notification}
-          noteTypes={this.props.noteTypes}
+          Taxonomies={this.props.taxonomies}
           Terms={this.state.Terms}
           Groups={this.props.Groups}
           Leafs={this.props.Leafs}
@@ -168,12 +168,12 @@ class TermsManager extends Component {
         <Taxonomy
           Terms={this.state.Terms}
           projectID={this.props.projectID}
-          noteTypes={this.props.noteTypes}
+          Taxonomies={this.props.Taxonomies}
           action={{
-            createNoteType: this.props.createNoteType,
-            updateNoteType: this.props.updateNoteType,
-            deleteNoteType: noteTypes =>
-              this.props.deleteNoteType(noteTypes, this.props),
+            createTaxonomy: this.props.createTaxonomy,
+            updateTaxonomy: this.props.updateTaxonomy,
+            deleteTaxonomy: taxonomies =>
+              this.props.deleteTaxonomy(taxonomies, this.props),
           }}
           togglePopUp={this.props.togglePopUp}
           tabIndex={this.props.popUpActive ? -1 : 0}
@@ -247,7 +247,7 @@ const mapStateToProps = state => {
     Rectos: state.active.project.Rectos,
     Versos: state.active.project.Versos,
     Terms: state.active.project.Terms,
-    noteTypes: state.active.project.noteTypes,
+    Taxonomies: state.active.project.Taxonomies,
     activeTab: state.active.termsManager.activeTab,
     termsManager: state.active.termsManager,
     managerMode: state.active.managerMode,
@@ -270,14 +270,14 @@ const mapDispatchToProps = dispatch => {
     deleteTerm: termID => {
       dispatch(deleteTerm(termID));
     },
-    createNoteType: noteType => {
-      dispatch(createNoteType(noteType));
+    createTaxonomy: taxonomy => {
+      dispatch(createTaxonomy(taxonomy));
     },
-    updateNoteType: noteType => {
-      dispatch(updateNoteType(noteType));
+    updateTaxonomy: taxonomy => {
+      dispatch(updateTaxonomy(taxonomy));
     },
-    deleteNoteType: (noteType, props) => {
-      dispatch(deleteNoteType(noteType));
+    deleteTaxonomy: (taxonomy, props) => {
+      dispatch(deleteTaxonomy(taxonomy));
     },
     linkTerm: (termID, object, props) => {
       dispatch(linkTerm(termID, object));
