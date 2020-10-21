@@ -319,7 +319,7 @@ class Filter extends Component {
             removeRow={this.removeRow}
             lastRow={i===this.state.queries.length-1}
             queriesLength={this.state.queries.length}
-            noteTypes={this.props.noteTypes}
+            Taxonomies={this.props.Taxonomies}
             clearFilterRowOnType={this.clearFilterRowOnType}
             clearFilterRowOnAttribute={this.clearFilterRowOnAttribute}
             conjoinedToAutoComplete={this.state.conjoinedToAutoComplete}
@@ -424,7 +424,7 @@ const mapStateToProps = (state) => {
     hideOthers: state.active.collationManager.filters.hideOthers,
     filterActive: state.active.collationManager.filters.active,
     filterSelection: state.active.collationManager.filters.selection,
-    noteTypes: state.active.project.noteTypes,
+    Taxonomies: state.active.project.Taxonomies,
     groupMatches: state.active.collationManager.filters.Groups,
     leafMatches: state.active.collationManager.filters.Leafs,
     sideMatches: state.active.collationManager.filters.Sides,
