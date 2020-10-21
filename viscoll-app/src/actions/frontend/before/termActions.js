@@ -1,33 +1,33 @@
-export function createNoteType(action, state) {
-  const newNoteType = action.payload.request.data.noteType.type;
-  state.project.noteTypes.push(newNoteType);
+export function createTaxonomy(action, state) {
+  const newTaxonomy = action.payload.request.data.taxonomy.taxonomy;
+  state.project.taxonomies.push(newTaxonomy);
   return state;
 }
 
-export function updateNoteType(action, state) {
-  const updatedNoteType = action.payload.request.data.noteType.type;
-  const oldNoteType = action.payload.request.data.noteType.old_type;
-  // Rename the noteType of each Note that had oldNoteType
+export function updateTaxonomy(action, state) {
+  const updatedTaxonomy = action.payload.request.data.taxonomy.taxonomy;
+  const oldTaxonomy = action.payload.request.data.taxonomy.old_taxonomy;
+  // Rename the taxonomy of each Note that had oldTaxonomy
   for (let termID in state.project.Terms) {
-    if (state.project.Terms[termID].type === oldNoteType)
-      state.project.Terms[termID].type = updatedNoteType;
+    if (state.project.Terms[termID].taxonomy === oldTaxonomy)
+      state.project.Terms[termID].taxonomy = updatedTaxonomy;
   }
-  // Rename the noteType in the noteTypes array
-  const oldNoteTypeIndex = state.project.noteTypes.indexOf(oldNoteType);
-  state.project.noteTypes[oldNoteTypeIndex] = updatedNoteType;
+  // Rename the taxonomy in the taxonomies array
+  const oldTaxonomyIndex = state.project.taxonomies.indexOf(oldTaxonomy);
+  state.project.taxonomies[oldTaxonomyIndex] = updatedTaxonomy;
   return state;
 }
 
-export function deleteNoteType(action, state) {
-  const deletedNoteType = action.payload.request.data.noteType.type;
-  // Rename the noteType of each Note that had deleteNoteType to Unknown
+export function deleteTaxonomy(action, state) {
+  const deletedTaxonomy = action.payload.request.data.taxonomy.taxonomy;
+  // Rename the taxonomy of each Note that had deleteTaxonomy to Unknown
   for (let termID in state.project.Terms) {
-    if (state.project.Terms[termID].type === deletedNoteType)
-      state.project.Terms[termID].type = 'Unknown';
+    if (state.project.Terms[termID].taxonomy === deletedTaxonomy)
+      state.project.Terms[termID].taxonomy = 'Unknown';
   }
-  // Delete the noteType from the noteTypes array
-  const deletedNoteTypeIndex = state.project.noteTypes.indexOf(deletedNoteType);
-  state.project.noteTypes.splice(deletedNoteTypeIndex, 1);
+  // Delete the taxonomy from the taxonomies array
+  const deletedTaxonomyIndex = state.project.taxonomies.indexOf(deletedTaxonomy);
+  state.project.taxonomies.splice(deletedTaxonomyIndex, 1);
   return state;
 }
 
@@ -37,7 +37,7 @@ export function createTerm(action, state) {
   state.project.Terms[newTerm.id] = {
     id: newTerm.id,
     title: newTerm.title,
-    type: newTerm.type,
+    taxonomy: newTerm.taxonomy,
     description: newTerm.description,
     uri: newTerm.uri,
     show: newTerm.show,
