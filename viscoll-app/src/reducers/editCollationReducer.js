@@ -124,9 +124,9 @@ export default function editCollationReducer(state = initialState, action) {
       break;
 
     // FRONT-END ACTIONS
-    case 'CREATE_NOTETYPE_FRONTEND':
-    case 'UPDATE_NOTETYPE_FRONTEND':
-    case 'DELETE_NOTETYPE_FRONTEND':
+    case 'CREATE_TAXONOMY_FRONTEND':
+    case 'UPDATE_TAXONOMY_FRONTEND':
+    case 'DELETE_TAXONOMY_FRONTEND':
     case 'UPDATE_TERM_FRONTEND':
     case 'DELETE_TERM_FRONTEND':
     case 'LINK_TERM_FRONTEND':
