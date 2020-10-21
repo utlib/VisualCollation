@@ -139,9 +139,9 @@ export function createTaxonomy(taxonomy) {
      */
   return {
     types: [
-      'CREATE_NOTETYPE_FRONTEND',
-      'CREATE_NOTETYPE_SUCCESS_BACKEND',
-      'CREATE_NOTETYPE_FAILED_BACKEND',
+      'CREATE_TAXONOMY_FRONTEND',
+      'CREATE_TAXONOMY_SUCCESS_BACKEND',
+      'CREATE_TAXONOMY_FAILED_BACKEND',
     ],
     payload: {
       request: {
@@ -166,9 +166,9 @@ export function updateTaxonomy(taxonomy) {
      */
   return {
     types: [
-      'UPDATE_NOTETYPE_FRONTEND',
-      'UPDATE_NOTETYPE_SUCCESS_BACKEND',
-      'UPDATE_NOTETYPE_FAILED_BACKEND',
+      'UPDATE_TAXONOMY_FRONTEND',
+      'UPDATE_TAXONOMY_SUCCESS_BACKEND',
+      'UPDATE_TAXONOMY_FAILED_BACKEND',
     ],
     payload: {
       request: {
@@ -192,9 +192,9 @@ export function deleteTaxonomy(taxonomy) {
      */
   return {
     types: [
-      'DELETE_NOTETYPE_FRONTEND',
-      'DELETE_NOTETYPE_SUCCESS_BACKEND',
-      'DELETE_NOTETYPE_FAILED_BACKEND',
+      'DELETE_TAXONOMY_FRONTEND',
+      'DELETE_TAXONOMY_SUCCESS_BACKEND',
+      'DELETE_TAXONOMY_FAILED_BACKEND',
     ],
     payload: {
       request: {
