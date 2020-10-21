@@ -158,7 +158,7 @@ class CollationManagerViewOnly extends Component {
             linkAndUnlinkNotes: () => { },
           }}
           projectID={this.props.project.id}
-          noteTypes={this.props.project.noteTypes}
+          Taxonomies={this.props.project.Taxonomies}
           Notes={this.props.project.Notes}
           Groups={this.props.project.Groups}
           groupIDs={this.props.project.groupIDs}
