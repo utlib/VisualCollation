@@ -4,7 +4,7 @@ export function addTerm(term) {
     "project_id": "5951303fc9bf3c7b9a573a3f",
     "id": "595130sadsadsa9bf3c7b9a573a3f"
     "title": "some title for term",
-    "type": "Ink",
+    "taxonomy": "Ink",
     "description": "blue ink",
     "uri": "https://www.test.com/",
     "show": "true"
@@ -32,7 +32,7 @@ export function updateTerm(termID, term) {
   /**
      term: {
     "title": "some title for term",
-    "type": "Ink",
+    "taxonomy": "Ink",
     "description": "blue ink"
     "uri": "https://www.test.com/",
   }
@@ -130,11 +130,11 @@ export function unlinkTerm(termID, objects) {
   };
 }
 
-export function createNoteType(noteType) {
+export function createTaxonomy(taxonomy) {
   /**
-     "noteType": {
+     "taxonomy": {
     "project_id": "5951303fc9bf3c7b9a573a3f",
-    "type": "Ink"
+    "taxonomy": "Ink"
   }
      */
   return {
@@ -145,10 +145,10 @@ export function createNoteType(noteType) {
     ],
     payload: {
       request: {
-        url: `/terms/type`,
+        url: `/terms/taxonomy`,
         method: 'post',
-        data: { noteType },
-        successMessage: 'Successfully created the note type',
+        data: { taxonomy },
+        successMessage: 'Successfully created the term taxonomy',
         errorMessage: 'Ooops! Something went wrong',
       },
     },
@@ -156,12 +156,12 @@ export function createNoteType(noteType) {
   };
 }
 
-export function updateNoteType(noteType) {
+export function updateTaxonomy(taxonomy) {
   /**
-     "noteType": {
+     "taxonomy": {
     "project_id": "5951303fc9bf3c7b9a573a3f",
-    "type": "Ink",
-    "old_type": "Inkss"
+    "taxonomy": "Ink",
+    "old_taxonomy": "Inkss"
   }
      */
   return {
@@ -172,10 +172,10 @@ export function updateNoteType(noteType) {
     ],
     payload: {
       request: {
-        url: `/terms/type`,
+        url: `/terms/taxonomy`,
         method: 'put',
-        data: { noteType },
-        successMessage: 'Successfully updated the note type',
+        data: { taxonomy },
+        successMessage: 'Successfully updated the term taxonomy',
         errorMessage: 'Ooops! Something went wrong',
       },
     },
@@ -183,11 +183,11 @@ export function updateNoteType(noteType) {
   };
 }
 
-export function deleteNoteType(noteType) {
+export function deleteTaxonomy(taxonomy) {
   /**
-     "noteType": {
+     "taxonomy": {
     "project_id": "5951303fc9bf3c7b9a573a3f",
-    "type": "Ink"
+    "taxonomy": "Ink"
   }
      */
   return {
@@ -198,10 +198,10 @@ export function deleteNoteType(noteType) {
     ],
     payload: {
       request: {
-        url: `/terms/type`,
+        url: `/terms/taxonomy`,
         method: 'delete',
-        data: { noteType },
-        successMessage: 'Successfully deleted the note type',
+        data: { taxonomy },
+        successMessage: 'Successfully deleted the term taxonomy',
         errorMessage: 'Ooops! Something went wrong',
       },
     },
