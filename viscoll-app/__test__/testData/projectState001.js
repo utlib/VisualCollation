@@ -9,7 +9,7 @@ export const projectState001 = {
     preferences: {
       showTips: true,
     },
-    noteTypes: ['Unknown', 'Ink', 'Hand', 'Damage'],
+    taxonomies: ['Unknown', 'Ink', 'Hand', 'Damage'],
     manifests: {
       DIYImages: {
         id: 'DIYImages',
@@ -5176,7 +5176,7 @@ export const projectState001 = {
       '5a57825a4cfad13070870df8': {
         id: '5a57825a4cfad13070870df8',
         title: 'Black ink',
-        type: 'Ink',
+        taxonomy: 'Ink',
         description: 'Some black ink over here\n',
         uri: 'https://www.test.com/',
         show: true,
@@ -5197,7 +5197,7 @@ export const projectState001 = {
       '5a57825a4cfad13070870df9': {
         id: '5a57825a4cfad13070870df9',
         title: "John's hand",
-        type: 'Hand',
+        taxonomy: 'Hand',
         description: 'Look ! ',
         uri: 'https://www.test.com/',
         show: false,
@@ -5214,7 +5214,7 @@ export const projectState001 = {
       '5a57825a4cfad13070870dfa': {
         id: '5a57825a4cfad13070870dfa',
         title: 'Fire',
-        type: 'Damage',
+        taxonomy: 'Damage',
         description: 'Some burnt marks',
         uri: 'https://www.test.com/',
         show: true,
