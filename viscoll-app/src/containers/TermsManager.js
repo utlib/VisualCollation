@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import TopBar from './TopBar';
 import ManageTerms from '../components/termsManager/ManageTerms';
-import NoteType from '../components/termsManager/NoteType';
+import Taxonomy from '../components/termsManager/Taxonomy';
 import { Tabs, Tab } from 'material-ui/Tabs';
 // import Panel from '../components/global/Panel';
 import topbarStyle from '../styles/topbar';
@@ -165,7 +165,7 @@ class TermsManager extends Component {
       );
     } else if (this.props.activeTab === 'TYPES') {
       content = (
-        <NoteType
+        <Taxonomy
           Terms={this.state.Terms}
           projectID={this.props.projectID}
           noteTypes={this.props.noteTypes}

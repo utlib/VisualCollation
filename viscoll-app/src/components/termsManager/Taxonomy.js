@@ -6,7 +6,7 @@ import IconSubmit from 'material-ui/svg-icons/action/done';
 import IconClear from 'material-ui/svg-icons/content/clear';
 
 /** Note type page to add, edit and delete note types */
-export default class NoteType extends Component {
+export default class Taxonomy extends Component {
   constructor(props) {
     super(props);
     this.state = {
