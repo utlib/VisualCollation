@@ -1322,7 +1322,7 @@ paths:
       tags: 
         - Notes
       summary: creates a note type
-      operationId: createNoteType
+      operationId: createTaxonomy
       description: |
         By passing in the appropriate options, you can create a note type
         - application/json
