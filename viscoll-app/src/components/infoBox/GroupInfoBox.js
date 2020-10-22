@@ -834,7 +834,7 @@ export default class GroupInfoBox extends React.Component {
                 linkTerm: this.props.action.linkTerm,
                 createAndAttachTerm: this.props.action.createAndAttachTerm,
               }}
-              noteTypes={this.props.noteTypes}
+              Taxonomies={this.props.Taxonomies}
               tabIndex={this.props.tabIndex}
               togglePopUp={this.props.togglePopUp}
               groupIDs={this.props.groupIDs}
