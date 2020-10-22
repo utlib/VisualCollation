@@ -21,7 +21,7 @@ describe "DELETE /terms/id", :'type' => :request do
   end
 
   context 'with valid authorization' do
-    context 'and valid note ID' do
+    context 'and valid term ID' do
       before do
         delete '/terms/'+@term.id, params: @parameters.to_json, headers: {'Authorization' => @authToken, 'CONTENT_TYPE' => 'application/json', 'ACCEPT' => 'application/json'}
       end
@@ -30,12 +30,12 @@ describe "DELETE /terms/id", :'type' => :request do
         expect(response).to have_http_status(:no_content)
       end
 
-      it 'deletes the note' do
+      it 'deletes the term' do
         expect(Term.where(id: @term.id).exists?).to be false
       end
     end
 
-    context 'and invalid note ID' do
+    context 'and invalid term ID' do
       before do
         delete '/terms/'+@term.id+'invalid', params: @parameters.to_json, headers: {'Authorization' => @authToken, 'CONTENT_TYPE' => 'application/json', 'ACCEPT' => 'application/json'}
       end
@@ -45,7 +45,7 @@ describe "DELETE /terms/id", :'type' => :request do
       end
     end
 
-    context "and someone else's notes" do
+    context "and someone else's terms" do
       before do
         @user2 = FactoryGirl.create(:user)
         @project2 = FactoryGirl.create(:project, {
@@ -63,7 +63,7 @@ describe "DELETE /terms/id", :'type' => :request do
         expect(response).to have_http_status(:unauthorized)
       end
 
-      it 'leaves the note alone' do
+      it 'leaves the term alone' do
         expect(Term.where(id: @term2.id).exists?).to be true
       end
     end
