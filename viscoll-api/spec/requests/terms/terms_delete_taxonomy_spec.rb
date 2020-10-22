@@ -45,7 +45,7 @@ describe "DELETE /terms/taxonomy", :type => :request do
         expect(@project.taxonomies).to include "Paper"
       end
 
-      it 'should change notes of the taxonomy to Unknown' do
+      it 'should change taxonomy of the term to Unknown' do
         expect(@project.terms).to include an_object_having_attributes(taxonomy: "Unknown")
         expect(@project.terms).to include an_object_having_attributes(taxonomy: "Paper")
       end
