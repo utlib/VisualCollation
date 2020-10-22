@@ -3,7 +3,7 @@ import TextField from 'material-ui/TextField';
 import Checkbox from 'material-ui/Checkbox';
 import {floatFieldLight} from '../../styles/textfield';
 
-/** Filter notes */
+/** Filter terms */
 class TermsFilter extends Component {
 
   constructor(props) {
@@ -15,12 +15,12 @@ class TermsFilter extends Component {
  
   render() {
     return ( 
-      <div className="noteSearch">
+      <div className="termSearch">
         <div className="searchTextbox">
           <TextField 
-            aria-label="Search notes"
-            id="searchNoteField"
-            hintText="Search notes ..."
+            aria-label="Search terms"
+            id="searchTermField"
+            hintText="Search terms ..."
             onChange={(e,value)=>{this.setState({value});this.props.onValueChange(e,value)}}
             style={window.innerWidth<=890?{marginLeft:10,marginRight:10, width:150}:{marginLeft:10,marginRight:10, width:200}}
             value={this.state.value}
@@ -30,7 +30,7 @@ class TermsFilter extends Component {
         </div>
         <div className={(this.state.value.length>0)?"searchOptions active":"searchOptions"}>
           <Checkbox 
-            aria-label="Search note titles"
+            aria-label="Search term titles"
             label="Title" 
             iconStyle={{marginRight: 0, height:20, width:20}} 
             style={{width: 60, paddingRight: 0, display: 'inline-flex', fontSize:14}}
@@ -48,7 +48,7 @@ class TermsFilter extends Component {
             tabIndex={this.props.tabIndex}
           />
           <Checkbox 
-            aria-label="Search note descriptions"
+            aria-label="Search term descriptions"
             label="Description" 
             iconStyle={{marginRight: 0, height:20, width:20}} 
             style={{width: 50, paddingRight: 0, display: 'inline-flex', fontSize:14}}
