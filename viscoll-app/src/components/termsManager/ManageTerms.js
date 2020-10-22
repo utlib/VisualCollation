@@ -12,7 +12,7 @@ export default class ManageTerms extends Component {
     this.state = {
       activeTerm: null,
       title: '',
-      type: '',
+      taxonomy: '',
       description: '',
     };
   }
@@ -54,7 +54,7 @@ export default class ManageTerms extends Component {
               ? term.title.substring(0, 80) + '...'
               : term.title}
           </div>
-          <div className="type">{term.type}</div>
+          <div className="taxonomy">{term.taxonomy}</div>
         </div>
       </button>
     );
@@ -66,7 +66,7 @@ export default class ManageTerms extends Component {
   reset = () => {
     this.setState({
       title: '',
-      type: '',
+      taxonomy: '',
       description: '',
     });
   };
@@ -191,7 +191,7 @@ export default class ManageTerms extends Component {
           Terms={this.props.Terms}
           projectID={this.props.projectID}
           action={{ addTerm: this.props.action.addTerm }}
-          noteTypes={this.props.noteTypes}
+          Taxonomies={this.props.Taxonomies}
           groupIDs={this.props.groupIDs}
           leafIDs={this.props.leafIDs}
           rectoIDs={this.props.rectoIDs}
@@ -212,7 +212,7 @@ export default class ManageTerms extends Component {
           projectID={this.props.projectID}
           Terms={this.props.Terms}
           term={this.state.activeTerm}
-          noteTypes={this.props.noteTypes}
+          Taxonomies={this.props.Taxonomies}
           Groups={this.props.Groups}
           Leafs={this.props.Leafs}
           Rectos={this.props.Rectos}
