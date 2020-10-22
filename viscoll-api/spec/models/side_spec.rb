@@ -19,7 +19,7 @@ RSpec.describe Side, type: :model do
   end
 
   describe "Destruction hooks" do
-    it "should unlink attached notes" do
+    it "should unlink attached terms" do
       term = FactoryGirl.create(:term, project: @project, objects: {Group: [], Leaf: [], Recto: [@side.id.to_s], Verso: []} )
       term2 = FactoryGirl.create(:term, project: @project, objects: {Group: [], Leaf: [], Recto: [], Verso: [@side.id.to_s]} )
       @side.terms << [term, term2]
