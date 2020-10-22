@@ -13,8 +13,8 @@ export function updateTaxonomy(action, state) {
       state.project.Terms[termID].taxonomy = updatedTaxonomy;
   }
   // Rename the taxonomy in the taxonomies array
-  const oldTaxonomyIndex = state.project.taxonomies.indexOf(oldTaxonomy);
-  state.project.taxonomies[oldTaxonomyIndex] = updatedTaxonomy;
+  const oldTaxonomyIndex = state.project.Taxonomies.indexOf(oldTaxonomy);
+  state.project.Taxonomies[oldTaxonomyIndex] = updatedTaxonomy;
   return state;
 }
 
@@ -26,8 +26,8 @@ export function deleteTaxonomy(action, state) {
       state.project.Terms[termID].taxonomy = 'Unknown';
   }
   // Delete the taxonomy from the taxonomies array
-  const deletedTaxonomyIndex = state.project.taxonomies.indexOf(deletedTaxonomy);
-  state.project.taxonomies.splice(deletedTaxonomyIndex, 1);
+  const deletedTaxonomyIndex = state.project.Taxonomies.indexOf(deletedTaxonomy);
+  state.project.Taxonomies.splice(deletedTaxonomyIndex, 1);
   return state;
 }
 
