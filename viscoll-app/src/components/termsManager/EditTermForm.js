@@ -15,7 +15,7 @@ export default class EditTermForm extends Component {
     this.state = {
       id: props.term.id,
       title: props.term.title,
-      type: props.term.type,
+      taxonomy: props.term.taxonomy,
       description: props.term.description,
       uri: props.term.uri,
       editing: {
@@ -32,7 +32,7 @@ export default class EditTermForm extends Component {
     this.setState({
       id: nextProps.term.id,
       title: nextProps.term.title,
-      type: nextProps.term.type,
+      taxonomy: nextProps.term.taxonomy,
       description: nextProps.term.description,
       uri: nextProps.term.uri, // added URI
       editing: {
@@ -70,10 +70,10 @@ export default class EditTermForm extends Component {
       editing: { ...this.state.editing, [name]: true },
     });
     if (name === 'title') this.validateTitle(value.trim());
-    if (name === 'type') {
+    if (name === 'taxonomy') {
       let editing = {
         title: this.state.title,
-        type: value,
+        taxonomy: value,
         description: this.state.description,
         uri: this.state.uri, // added URI
       };
@@ -87,7 +87,7 @@ export default class EditTermForm extends Component {
     if (this.props.term) {
       let editing = {
         title: this.state.title,
-        type: this.state.type,
+        taxonomy: this.state.taxonomy,
         description: this.state.description,
         uri: this.state.uri, // added URI
       };
@@ -113,7 +113,7 @@ export default class EditTermForm extends Component {
     });
   };
 
-  renderNoteTypes = name => {
+  renderTaxonomies = name => {
     return { value: name, text: name };
   };
 
@@ -331,20 +331,20 @@ export default class EditTermForm extends Component {
               </form>
             )}
           </div>
-          <div className="label" id="noteTypeLabel">
-            Type
+          <div className="label" id="taxonomyLabel">
+            Taxonomy
           </div>
           <div className="input">
             {this.props.isReadOnly ? (
-              <div className="textOnly">{this.state.type}</div>
+              <div className="textOnly">{this.state.taxonomy}</div>
             ) : (
               <SelectField
-                id="noteTypeSelect"
-                label="noteTypeLabel"
-                value={this.state.type}
-                onChange={v => this.onChange('type', v)}
+                id="taxonomySelect"
+                label="taxonomyLabel"
+                value={this.state.taxonomy}
+                onChange={v => this.onChange('taxonomy', v)}
                 tabIndex={this.props.tabIndex}
-                data={this.props.noteTypes.map(this.renderNoteTypes)}
+                data={this.props.Taxonomies.map(this.renderTaxonomies)}
               />
             )}
           </div>
@@ -405,7 +405,7 @@ export default class EditTermForm extends Component {
                   onClick={() =>
                     this.props.action.updateTerm(this.props.term.id, {
                       title: this.state.title,
-                      type: this.state.type,
+                      taxonomy: this.state.taxonomy,
                       description: this.state.description,
                       show: !this.props.term.show,
                     })
