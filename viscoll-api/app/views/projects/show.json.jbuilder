@@ -5,7 +5,7 @@ json.set! "active" do
   json.shelfmark @data[:project][:shelfmark]
   json.metadata @data[:project][:metadata]
   json.preferences @data[:project][:preferences]
-  json.taxonomies @data[:project][:taxonomies]
+  json.Taxonomies @data[:project][:taxonomies]
 
   json.set! "manifests" do
     json.set! "DIYImages" do
