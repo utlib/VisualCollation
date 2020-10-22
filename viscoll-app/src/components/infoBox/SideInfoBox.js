@@ -517,7 +517,7 @@ export default class SideInfoBox extends React.Component {
                   this.props.action.linkTerm(termID, this.props.sideIndex),
                 createAndAttachTerm: this.props.action.createAndAttachTerm,
               }}
-              noteTypes={this.props.noteTypes}
+              Taxonomies={this.props.Taxonomies}
               togglePopUp={this.props.togglePopUp}
               tabIndex={this.props.tabIndex}
               groupIDs={this.props.groupIDs}

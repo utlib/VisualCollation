@@ -817,7 +817,7 @@ export default class LeafInfoBox extends React.Component {
                   linkTerm: this.props.action.linkTerm,
                   createAndAttachTerm: this.props.action.createAndAttachTerm,
                 }}
-                noteTypes={this.props.noteTypes}
+                Taxonomies={this.props.Taxonomies}
                 togglePopUp={this.props.togglePopUp}
                 tabIndex={this.props.tabIndex}
                 groupIDs={this.props.groupIDs}
