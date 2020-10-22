@@ -114,6 +114,7 @@ const Export = props => {
               .map((value, index) => {
                 return (
                   <img
+                    alt={'Quire SVG'}
                     key={index}
                     src={`data:image/svg+xml;utf8,${encodeURIComponent(value)}`}
                   ></img>
