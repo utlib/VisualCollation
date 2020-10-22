@@ -177,7 +177,7 @@ class TermsController < ApplicationController
           render json: {error: ""}, status: :unauthorized and return
         end
       rescue Mongoid::Errors::DocumentNotFound
-        render json: {error: "note not found with id "+params[:id]}, status: :not_found and return
+        render json: {error: "term not found with id "+params[:id]}, status: :not_found and return
       rescue Exception => e
         render json: {error: e.message}, status: :unprocessable_entity and return
       end
