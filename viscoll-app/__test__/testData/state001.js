@@ -9,7 +9,7 @@ export const state001 = {
     preferences: {
       showTips: true
     },
-    noteTypes: [
+    Taxonomies: [
       'Unknown',
       'Ink',
       'Hand',
