@@ -21,7 +21,7 @@ module ControllerHelper
         "metadata": @project.metadata,
         "preferences": @project.preferences,
         "manifests": @project.manifests,
-        "taxonomies": @project.taxonomies
+        "Taxonomies": @project.Taxonomies
       }
 
       rootMemberOrder = 1
