@@ -5360,8 +5360,8 @@ export const projectState001 = {
           displayName: 'Title',
         },
         {
-          name: 'type',
-          displayName: 'Type',
+          name: 'taxonomy',
+          displayName: 'Taxonomy',
           isDropdown: true,
         },
         {
