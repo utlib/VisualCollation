@@ -9,7 +9,7 @@ export const projectState001 = {
     preferences: {
       showTips: true,
     },
-    taxonomies: ['Unknown', 'Ink', 'Hand', 'Damage'],
+    Taxonomies: ['Unknown', 'Ink', 'Hand', 'Damage'],
     manifests: {
       DIYImages: {
         id: 'DIYImages',

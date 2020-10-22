@@ -34,7 +34,7 @@ describe('>>>A C T I O N --- Test term actions', () => {
     const beforeState = cloneDeep(projectState001);
     const createTaxonomyAction = createTaxonomy(taxonomyPayload, beforeState);
     let afterState = cloneDeep(projectState001);
-    afterState.project.taxonomies.push('Watermark');
+    afterState.project.Taxonomies.push('Watermark');
     expect(createTaxonomyAction).toEqual(afterState);
   });
 
@@ -58,7 +58,7 @@ describe('>>>A C T I O N --- Test term actions', () => {
     };
     const beforeState = cloneDeep(projectState001);
     let expectedState = cloneDeep(projectState001);
-    expectedState.project.taxonomies[3] = 'Damages';
+    expectedState.project.Taxonomies[3] = 'Damages';
     expectedState.project.Terms['5a57825a4cfad13070870dfa'].taxonomy = 'Damages';
     let gotState = updateTaxonomy(taxonomyPayload, beforeState);
     expect(gotState).toEqual(expectedState);
@@ -83,7 +83,7 @@ describe('>>>A C T I O N --- Test term actions', () => {
     };
     const beforeState = cloneDeep(projectState001);
     let expectedState = cloneDeep(projectState001);
-    expectedState.project.taxonomies = ['Unknown', 'Ink', 'Damage'];
+    expectedState.project.Taxonomies = ['Unknown', 'Ink', 'Damage'];
     expectedState.project.Terms['5a57825a4cfad13070870df9'].taxonomy = 'Unknown';
     let gotState = deleteTaxonomy(taxonomyPayload, beforeState);
     expect(gotState).toEqual(expectedState);
