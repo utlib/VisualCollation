@@ -39,8 +39,8 @@ class TermsFilter extends Component {
             tabIndex={this.props.tabIndex}
           />
           <Checkbox 
-            aria-label="Search note types"
-            label="Type" 
+            aria-label="Search taxonomies"
+            label="Taxonomy"
             iconStyle={{marginRight: 0, height:20, width:20}} 
             style={{width: 55, paddingRight: 0, display: 'inline-flex', fontSize:14}}
             checked={this.props.filterTypes["type"]}
