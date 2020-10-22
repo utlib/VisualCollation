@@ -148,7 +148,7 @@ class TermsManager extends Component {
           }}
           projectID={this.props.projectID}
           notification={this.props.notification}
-          Taxonomies={this.props.taxonomies}
+          Taxonomies={this.props.Taxonomies}
           Terms={this.state.Terms}
           Groups={this.props.Groups}
           Leafs={this.props.Leafs}
