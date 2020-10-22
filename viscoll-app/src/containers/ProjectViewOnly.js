@@ -6,7 +6,7 @@ import Notification from "../components/global/Notification";
 import NetworkErrorScreen from "../components/global/NetworkErrorScreen";
 import { loadProjectViewOnly } from "../actions/backend/projectActions";
 
-/** Container for 'Manager (Collation or Notes or Image)', `LoadingScreen`, and `Notification`. */
+/** Container for 'Manager (Collation or Terms or Image)', `LoadingScreen`, and `Notification`. */
 class Project extends Component {
 
   constructor(props) {

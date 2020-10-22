@@ -24,7 +24,7 @@ describe "PUT /projects/id", :type => :request do
           {"name": "barrenlands",  "url": "https://iiif.library.utoronto.ca/presentation/v2/barrenlands:C10034/manifest"},
           {"name": "insulin", "url": "https://iiif.library.utoronto.ca/presentation/v2/insulin:E10016/manifest"}
         ],
-        "noteTypes": [
+        "taxonomies": [
             "Ink",
             "Hand"
       	],

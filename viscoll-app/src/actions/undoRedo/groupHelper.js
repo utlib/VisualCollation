@@ -10,8 +10,8 @@ import {
 } from './leafHelper';
 
 import {
-  linkNote,
-} from '../backend/noteActions';
+  linkTerm,
+} from '../backend/termActions';
 
 export function undoCreateGroups(action, state) {
   const groupIDs = action.payload.request.data.additional.groupIDs.map((id)=>{return ("Group_"+id)});
@@ -103,12 +103,12 @@ function helperUndoDeleteGroup(groupID, state) {
       historyActions = historyActions.concat(helperUndoDeleteGroup(members[0], state));
     }
   }
-  // Link notes to group
-  if (group.notes.length>0) {
+  // Link terms to group
+  if (group.terms.length>0) {
     const objects = [{ id: groupID, type: "Group" }];
-    for (const noteID of group.notes) {
-      const noteRequest = linkNote(noteID, objects);
-      historyActions.push(noteRequest);
+    for (const termID of group.terms) {
+      const termRequest = linkTerm(termID, objects);
+      historyActions.push(termRequest);
     }
   }
   return historyActions;

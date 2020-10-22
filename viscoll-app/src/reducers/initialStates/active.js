@@ -28,8 +28,8 @@ export const initialState = {
     Leafs: {},
     Rectos: {},
     Versos: {},
-    noteTypes: [],
-    Notes: {},
+    Taxonomies: [],
+    Terms: {},
     preferences: {
       showTips: true,
     },
@@ -143,14 +143,14 @@ export const initialState = {
           displayName: 'URI',
         },
       ],
-      note: [
+      term: [
         {
           name: 'title',
           displayName: 'Title',
         },
         {
-          name: 'type',
-          displayName: 'Type',
+          name: 'taxonomy',
+          displayName: 'Taxonomy',
           isDropdown: true,
         },
         {
@@ -168,13 +168,13 @@ export const initialState = {
       Groups: [],
       Leafs: [],
       Sides: [],
-      Notes: [],
+      Terms: [],
       GroupsOfMatchingLeafs: [],
       LeafsOfMatchingSides: [],
       GroupsOfMatchingSides: [],
-      GroupsOfMatchingNotes: [],
-      LeafsOfMatchingNotes: [],
-      SidesOfMatchingNotes: [],
+      GroupsOfMatchingTerms: [],
+      LeafsOfMatchingTerms: [],
+      SidesOfMatchingTerms: [],
       active: false,
       hideOthers: false,
       queries: [
@@ -198,7 +198,7 @@ export const initialState = {
       sewing: '',
     },
   },
-  notesManager: {
+  termsManager: {
     activeTab: 'MANAGE',
   },
   imageManager: {

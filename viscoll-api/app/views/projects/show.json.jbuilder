@@ -5,10 +5,10 @@ json.set! "active" do
   json.shelfmark @data[:project][:shelfmark]
   json.metadata @data[:project][:metadata]
   json.preferences @data[:project][:preferences]
-  json.noteTypes @data[:project][:noteTypes]
+  json.Taxonomies @data[:project][:taxonomies]
 
   json.set! "manifests" do
-    json.set! "DIYImages" do 
+    json.set! "DIYImages" do
       json.id "DIYImages"
       json.images @diyImages
       json.name "Uploaded Images"
@@ -25,7 +25,7 @@ json.set! "active" do
   json.Leafs @data[:leafs]
   json.Rectos @data[:rectos]
   json.Versos @data[:versos]
-  json.Notes @data[:notes]
+  json.Terms @data[:terms]
 end
 
 json.set! "dashboard" do
@@ -35,7 +35,7 @@ json.set! "dashboard" do
     end
   end
 
-  json.set! "images" do 
+  json.set! "images" do
     json.array!(@images) do | image |
       json.extract! image, :id, :projectIDs, :sideIDs
       json.url @base_api_url+"/images/"+image.id.to_s+"_"+image.filename

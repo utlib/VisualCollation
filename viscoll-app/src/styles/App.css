@@ -213,7 +213,7 @@
     .infoBox button.image + button {
       margin-left: 0.5em; }
 
-.workspace, .projectWorkspace, .dashboardWorkspace, .notesWorkspace, .imageWorkspace {
+.workspace, .projectWorkspace, .dashboardWorkspace, .termsWorkspace, .imageWorkspace {
   position: absolute;
   left: 18%;
   top: 56px; }
@@ -236,7 +236,7 @@
   .dashboardWorkspace.projectPanelOpen {
     width: 70%; }
 
-.notesWorkspace, .imageWorkspace {
+.termsWorkspace, .imageWorkspace {
   width: 82%; }
 
 .groupContainer {
@@ -475,13 +475,13 @@
         .topbar .logo img {
           width: 85%; } }
 
-.notesManager {
+.termsManager {
   height: 100%; }
-  .notesManager .container {
+  .termsManager .container {
     padding: 1em 2em 0em 2em; }
-  .notesManager .browse {
+  .termsManager .browse {
     height: 100%; }
-    .notesManager .browse .notesList {
+    .termsManager .browse .termsList {
       position: fixed;
       top: 56px;
       left: 18%;
@@ -490,7 +490,7 @@
       overflow-y: auto;
       text-align: center;
       background: #e5e5e5; }
-      .notesManager .browse .notesList .item {
+      .termsManager .browse .termsList .item {
         margin: 0.5em 0em 0em 0em;
         overflow: hidden;
         -webkit-transition: background 200ms ease-in-out;
@@ -502,49 +502,49 @@
         border: 0px;
         -webkit-box-shadow: 0px 0px 5px 0px rgba(0, 0, 0, 0.2);
         box-shadow: 0px 0px 5px 0px rgba(0, 0, 0, 0.2); }
-        .notesManager .browse .notesList .item:hover {
+        .termsManager .browse .termsList .item:hover {
           cursor: pointer;
           background: #FFFFFF; }
-        .notesManager .browse .notesList .item .title {
+        .termsManager .browse .termsList .item .title {
           padding-top: 10px;
           font-weight: 500;
           color: #4e4e4e; }
-        .notesManager .browse .notesList .item .type {
+        .termsManager .browse .termsList .item .taxonomy {
           padding-top: 5px;
           padding-bottom: 10px;
           color: #727272;
           font-style: italic;
           font-size: 0.9em; }
-        .notesManager .browse .notesList .item.active {
+        .termsManager .browse .termsList .item.active {
           background: #4ED6CB; }
-    .notesManager .browse .details {
+    .termsManager .browse .details {
       position: relative;
       width: calc(100% - 320px);
       left: 300px; }
-  .notesManager .noteType {
+  .termsManager .taxonomy {
     padding: 1em 2em; }
-    .notesManager .noteType .items {
+    .termsManager .taxonomy .items {
       display: flex;
       flex-wrap: wrap; }
-    .notesManager .noteType .item {
+    .termsManager .taxonomy .item {
       width: 220px;
       margin-right: 1em; }
-    .notesManager .noteType .create {
+    .termsManager .taxonomy .create {
       display: flex;
       margin-bottom: 2em; }
-      .notesManager .noteType .create .input {
+      .termsManager .taxonomy .create .input {
         margin-right: 1em; }
 
-.notesInfobox {
+.termsInfobox {
   display: flex;
   flex-wrap: wrap; }
 
-.noteSearch {
+.termSearch {
   height: 56px; }
   @media screen and (max-width: 890px) {
-    .noteSearch {
+    .termSearch {
       width: 170px; } }
-  .noteSearch .searchTextbox {
+  .termSearch .searchTextbox {
     padding-top: 5px; }
 
 .searchOptions {
@@ -567,32 +567,32 @@
     visibility: visible;
     opacity: 1; }
 
-.noteForm {
+.termForm {
   width: 100%;
   margin-left: 2%;
   display: flex;
   flex-wrap: wrap;
   align-items: flex-start; }
-  .noteForm .label {
+  .termForm .label {
     padding-top: 1em;
     width: 20%; }
     @media screen and (max-width: 768px) {
-      .noteForm .label {
+      .termForm .label {
         font-size: 0.8em; } }
-  .noteForm .input {
+  .termForm .input {
     width: 80%; }
     @media screen and (max-width: 768px) {
-      .noteForm .input {
+      .termForm .input {
         padding-left: 5%;
         width: 75%; } }
-    .noteForm .input .textOnly {
+    .termForm .input .textOnly {
       margin-top: 1em;
       color: #4e4e4e; }
-  .noteForm .buttons {
+  .termForm .buttons {
     text-align: right;
     width: 100%;
     padding-top: 2em; }
-  .noteForm .objectAttachments {
+  .termForm .objectAttachments {
     width: 100%; }
 
 .filter {

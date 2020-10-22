@@ -5,56 +5,56 @@ import TextField from 'material-ui/TextField';
 import IconSubmit from 'material-ui/svg-icons/action/done';
 import IconClear from 'material-ui/svg-icons/content/clear';
 
-/** Note type page to add, edit and delete note types */
-export default class NoteType extends Component {
+/** Taxonomy page to add, edit and delete taxonomies */
+export default class Taxonomy extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      newType: '',
-      types: [...props.noteTypes],
-      editing: new Array(props.noteTypes.length).fill(false),
-      errorNewType: '',
-      errorTypes: new Array(props.noteTypes.length).fill(''),
+      newTaxonomy: '',
+      Taxonomies: [...props.Taxonomies],
+      editing: new Array(props.Taxonomies.length).fill(false),
+      errorNewTaxonomy: '',
+      errorTypes: new Array(props.Taxonomies.length).fill(''),
       lastSubmitted: -2,
     };
   }
 
   componentWillReceiveProps(nextProps) {
     if (
-      this.state.types.length !== nextProps.noteTypes.length ||
-      this.props.noteTypes !== nextProps.noteTypes
+      this.state.Taxonomies.length !== nextProps.Taxonomies.length ||
+      this.props.Taxonomies !== nextProps.Taxonomies
     ) {
-      this.setState({ types: [...nextProps.noteTypes] });
+      this.setState({ Taxonomies: [...nextProps.Taxonomies] });
       this.resetEditing();
     }
   }
 
   resetEditing = () => {
     this.setState({
-      editing: new Array(this.props.noteTypes.length).fill(false),
-      newType: '',
+      editing: new Array(this.props.Taxonomies.length).fill(false),
+      newTaxonomy: '',
     });
   };
 
-  onNewTypeChange = newType => {
-    this.setState({ newType }, () => {
-      if (!this.isValid(newType.trim())) {
-        let errorMessage = `Note type with name ${newType} already exists in this project`;
-        if (newType.length === 0) errorMessage = '';
-        this.setState({ errorNewType: errorMessage });
+  onNewTaxonomyChange = newTaxonomy => {
+    this.setState({ newTaxonomy }, () => {
+      if (!this.isValid(newTaxonomy.trim())) {
+        let errorMessage = `Taxonomy with name ${newTaxonomy} already exists in this project`;
+        if (newTaxonomy.length === 0) errorMessage = '';
+        this.setState({ errorNewTaxonomy: errorMessage });
       } else {
-        this.setState({ errorNewType: '' });
+        this.setState({ errorNewTaxonomy: '' });
       }
     });
   };
 
-  onChange = (newType, index) => {
-    this.setType(index, newType);
+  onChange = (newTaxonomy, index) => {
+    this.setTaxonomy(index, newTaxonomy);
     this.setEditing(index, true);
-    if (!this.isValid(newType)) {
-      let errorMessage = `Note type with name ${newType} already exists in this project`;
-      if (newType === this.props.noteTypes[index]) errorMessage = '';
-      if (newType.length === 0) errorMessage = `Note type cannot be blank`;
+    if (!this.isValid(newTaxonomy)) {
+      let errorMessage = `Taxonomy with name ${newTaxonomy} already exists in this project`;
+      if (newTaxonomy === this.props.Taxonomies[index]) errorMessage = '';
+      if (newTaxonomy.length === 0) errorMessage = `Taxonomy cannot be blank`;
       this.setError(index, errorMessage);
     } else {
       this.setError(index, '');
@@ -63,56 +63,56 @@ export default class NoteType extends Component {
 
   onUpdate = (event, index) => {
     event.preventDefault();
-    const newNoteType = this.state.types[index];
-    if (newNoteType !== this.props.noteTypes[index]) {
+    const newTaxonomy = this.state.Taxonomies[index];
+    if (newTaxonomy !== this.props.Taxonomies[index]) {
       this.setState({ lastSubmitted: index });
-      let noteType = {
+      let taxonomy = {
         project_id: this.props.projectID,
-        type: newNoteType,
-        old_type: this.props.noteTypes[index],
+        taxonomy: newTaxonomy,
+        old_taxonomy: this.props.Taxonomies[index],
       };
-      this.props.action.updateNoteType(noteType);
+      this.props.action.updateTaxonomy(taxonomy);
     }
     this.setEditing(index, false);
   };
 
-  isValid = newType => {
-    return !this.props.noteTypes.includes(newType) && newType.length !== 0;
+  isValid = newTaxonomy => {
+    return !this.props.Taxonomies.includes(newTaxonomy) && newTaxonomy.length !== 0;
   };
 
   onDelete = index => {
-    let noteType = {
+    let taxonomy = {
       project_id: this.props.projectID,
-      type: this.state.types[index],
+      taxonomy: this.state.Taxonomies[index],
     };
     let updatedEditing = [...this.state.editing];
     updatedEditing.splice(index, 1);
     this.setState({ editing: updatedEditing }, () => {
-      this.props.action.deleteNoteType(noteType);
+      this.props.action.deleteTaxonomy(taxonomy);
     });
   };
 
   onCreate = event => {
     event.preventDefault();
-    let noteType = {
+    let taxonomy = {
       project_id: this.props.projectID,
-      type: this.state.newType.trim(),
+      taxonomy: this.state.newTaxonomy.trim(),
     };
-    this.props.action.createNoteType(noteType);
+    this.props.action.createTaxonomy(taxonomy);
     this.resetEditing();
     this.setState({ lastSubmitted: -1 });
   };
 
   onCancelUpdate = index => {
-    this.setType(index, this.props.noteTypes[index]);
+    this.setTaxonomy(index, this.props.Taxonomies[index]);
     this.setError(index, '');
     this.setEditing(index, false);
   };
 
-  setType = (index, value) => {
-    let newTypes = [...this.state.types];
-    newTypes[index] = value;
-    this.setState({ types: newTypes });
+  setTaxonomy = (index, value) => {
+    let newTaxonomies = [...this.state.Taxonomies];
+    newTaxonomies[index] = value;
+    this.setState({ Taxonomies: newTaxonomies });
   };
 
   setEditing = (index, value) => {
@@ -138,7 +138,7 @@ export default class NoteType extends Component {
             style={{ minWidth: '60px', marginLeft: '5px' }}
             name="submit"
             type="submit"
-            disabled={!this.isValid(this.state.types[index])}
+            disabled={!this.isValid(this.state.Taxonomies[index])}
           />
           <RaisedButton
             aria-label="Cancel"
@@ -154,14 +154,14 @@ export default class NoteType extends Component {
     }
   };
 
-  renderNoteType = (noteType, index) => {
+  renderTaxonomy = (taxonomy, index) => {
     return (
-      <div key={'type_' + index} className="item">
+      <div key={'taxonomy_' + index} className="item">
         <form onSubmit={e => this.onUpdate(e, index)}>
           <TextField
-            aria-label={noteType + ' note type'}
-            name={'type_' + index}
-            value={this.state.types[index]}
+            aria-label={taxonomy + ' taxonomy'}
+            name={'taxonomy_' + index}
+            value={this.state.Taxonomies[index]}
             onChange={(e, v) => this.onChange(v, index)}
             errorText={this.state.errorTypes[index]}
             aria-invalid={
@@ -171,14 +171,14 @@ export default class NoteType extends Component {
             style={{ width: '75%' }}
             tabIndex={this.props.tabIndex}
           />
-          {noteType === 'Unknown' ? (
+          {taxonomy === 'Unknown' ? (
             ''
           ) : (
             <DeleteConfirmation
-              item="note type"
+              item="taxonomy"
               onDelete={this.onDelete}
               index={index}
-              itemName={noteType}
+              itemName={taxonomy}
               togglePopUp={this.props.togglePopUp}
               tabIndex={this.props.tabIndex}
             />
@@ -189,24 +189,24 @@ export default class NoteType extends Component {
     );
   };
 
-  filterNoteType = (object, index) => {
-    return object.key !== 'type_0';
+  filterTaxonomy = (object, index) => {
+    return object.key !== 'taxonomy_0';
   };
 
   render() {
     return (
-      <div className="noteType" role="region" aria-label="main">
+      <div className="taxonomy" role="region" aria-label="main">
         <h2 style={{ paddingTop: 0 }}>Add a new taxonomy</h2>
         <form onSubmit={e => this.onCreate(e)}>
           <div className="create">
             <div className="input">
               <TextField
-                aria-label="New note type"
-                name="newType"
-                value={this.state.newType}
-                onChange={(e, v) => this.onNewTypeChange(v)}
-                errorText={this.state.errorNewType}
-                aria-invalid={this.state.errorNewType.length > 0}
+                aria-label="New taxonomy"
+                name="newTaxonomy"
+                value={this.state.newTaxonomy}
+                onChange={(e, v) => this.onNewTaxonomyChange(v)}
+                errorText={this.state.errorNewTaxonomy}
+                aria-invalid={this.state.errorNewTaxonomy.length > 0}
                 style={{ width: 300 }}
                 tabIndex={this.props.tabIndex}
               />
@@ -216,7 +216,7 @@ export default class NoteType extends Component {
                 label="Create"
                 primary
                 type="submit"
-                disabled={!this.isValid(this.state.newType)}
+                disabled={!this.isValid(this.state.newTaxonomy)}
                 tabIndex={this.props.tabIndex}
               />
             </div>
@@ -224,9 +224,9 @@ export default class NoteType extends Component {
         </form>
         <h2>Your taxonomies</h2>
         <div className="items">
-          {this.props.noteTypes
-            .map(this.renderNoteType)
-            .filter(this.filterNoteType)}
+          {this.props.Taxonomies
+            .map(this.renderTaxonomy)
+            .filter(this.filterTaxonomy)}
         </div>
       </div>
     );

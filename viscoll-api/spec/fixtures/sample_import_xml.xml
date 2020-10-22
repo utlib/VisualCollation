@@ -44,7 +44,7 @@
   </taxonomy>
   <taxonomy xml:id="note_title">
     <label>List of values for Note Titles</label>
-    <term xml:id="note_title_test_note">Test Note</term>
+    <term xml:id="note_title_test_note">Test Term</term>
   </taxonomy>
   <taxonomy xml:id="note_show">
     <label>Whether to show Note in Visualizations</label>
@@ -98,18 +98,12 @@
       <single val="yes"/>
     </leaf>
   </manuscript>
-  <notes>
-    <note xml:id="ravenna_384_2339-n-1" type="Ink">This is a test</note>
-  </notes>
   <mapping>
     <map target="#ravenna_384_2339-q-1">
-      <term target="#note_title_test_note #group_title_quire_1 #group_type_quire #group_members_ravenna_384_2339-q-1"/>
+      <term target="#group_title_quire_1 #group_type_quire #group_members_ravenna_384_2339-q-1"/>
     </map>
     <map target="#ravenna_384_2339-q-1-2">
       <term target=" #group_title_quire_2 #group_type_quire #group_members_ravenna_384_2339-q-1-2"/>
-    </map>
-    <map target="#ravenna_384_2339-1-3">
-      <term target="#note_title_test_note"/>
     </map>
     <map side="recto" target="#ravenna_384_2339-1-1">
       <term target="#side_texture_hair"/>
@@ -124,7 +118,7 @@
       <term target="#side_texture_hair"/>
     </map>
     <map side="recto" target="#ravenna_384_2339-1-3">
-      <term target="#note_title_test_note #side_texture_hair"/>
+      <term target="#side_texture_hair"/>
     </map>
     <map side="recto" target="#ravenna_384_2339-1-4">
       <term target="#side_texture_hair"/>
@@ -142,13 +136,10 @@
       <term target="#side_texture_flesh"/>
     </map>
     <map side="verso" target="#ravenna_384_2339-1-3">
-      <term target="#note_title_test_note #side_texture_flesh"/>
+      <term target="#side_texture_flesh"/>
     </map>
     <map side="verso" target="#ravenna_384_2339-1-4">
       <term target="#side_texture_flesh"/>
-    </map>
-    <map target="#ravenna_384_2339-n-1">
-      <term target="#note_title_test_note #note_show"/>
     </map>
   </mapping>
 </viscoll>

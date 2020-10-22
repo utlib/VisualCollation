@@ -13,11 +13,11 @@ class Group
 
   # Relations
   belongs_to :project
-  has_and_belongs_to_many :notes, inverse_of: nil
+  has_and_belongs_to_many :terms, inverse_of: nil
 
   # Callbacks
   before_create :edit_ID
-  before_destroy :unlink_notes, :unlink_project, :unlink_group, :destroy_members
+  before_destroy :unlink_terms, :unlink_project, :unlink_group, :destroy_members
 
 
   def edit_ID
@@ -26,7 +26,7 @@ class Group
 
   # Add new members to this group
   def add_members(memberIDs, startOrder, save=true)
-    if self.memberIDs.length==0 
+    if self.memberIDs.length==0
       self.memberIDs = memberIDs
     elsif
       self.memberIDs.insert(startOrder-1, *memberIDs)
@@ -43,12 +43,12 @@ class Group
     self.save
   end
 
-  # If linked to note(s), remove link from the note(s)'s side
-  def unlink_notes 
-    if self.notes
-      self.notes.each do | note | 
-        note.objects[:Group].delete(self.id.to_s)
-        note.save
+  # If linked to term(s), remove link from the term(s)'s side
+  def unlink_terms
+    if self.terms
+      self.terms.each do | term |
+        term.objects[:Group].delete(self.id.to_s)
+        term.save
       end
     end
   end
@@ -66,7 +66,7 @@ class Group
   end
 
   def destroy_members
-    self.memberIDs.each do | memberID | 
+    self.memberIDs.each do | memberID |
       if memberID[0] === "G"
         Group.find(memberID).destroy
       elsif memberID[0] === "L"

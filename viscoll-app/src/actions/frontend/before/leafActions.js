@@ -68,7 +68,7 @@ export function createLeaves(action, state, fromGroupCreation = false) {
       parentID: parentGroupID,
       rectoID: 'Recto_' + sideIDs[sideCount],
       versoID: 'Verso_' + sideIDs[sideCount + 1],
-      notes: [],
+      terms: [],
       memberType: 'Leaf',
     };
     newlyAddedLeafIDs.push('Leaf_' + leafIDs[count]);
@@ -80,7 +80,7 @@ export function createLeaves(action, state, fromGroupCreation = false) {
       texture: 'Hair',
       image: {},
       script_direction: 'None',
-      notes: [],
+      terms: [],
       memberType: 'Recto',
     };
     state.project.rectoIDs.push('Recto_' + sideIDs[sideCount]);
@@ -92,7 +92,7 @@ export function createLeaves(action, state, fromGroupCreation = false) {
       texture: 'Flesh',
       image: {},
       script_direction: 'None',
-      notes: [],
+      terms: [],
       memberType: 'Verso',
     };
     state.project.versoIDs.push('Verso_' + sideIDs[sideCount + 1]);
@@ -270,23 +270,23 @@ export function deleteLeaf(deletedLeafID, state) {
       deletedLeafIDIndex,
       1
     );
-  // Unlink all Notes of deletedLeafID. Also unlink Notes in Recto and Verso of deletedLeafID
-  for (let noteID in state.project.Notes) {
-    deletedLeafIDIndex = state.project.Notes[noteID].objects.Leaf.indexOf(
+  // Unlink all Terms of deletedLeafID. Also unlink Terms in Recto and Verso of deletedLeafID
+  for (let termID in state.project.Terms) {
+    deletedLeafIDIndex = state.project.Terms[termID].objects.Leaf.indexOf(
       deletedLeafID
     );
-    let rectoIDIndex = state.project.Notes[noteID].objects.Recto.indexOf(
+    let rectoIDIndex = state.project.Terms[termID].objects.Recto.indexOf(
       deletedLeaf.rectoID
     );
-    let versoIDIndex = state.project.Notes[noteID].objects.Verso.indexOf(
+    let versoIDIndex = state.project.Terms[termID].objects.Verso.indexOf(
       deletedLeaf.versoID
     );
     if (deletedLeafIDIndex !== -1)
-      state.project.Notes[noteID].objects.Leaf.splice(deletedLeafIDIndex, 1);
+      state.project.Terms[termID].objects.Leaf.splice(deletedLeafIDIndex, 1);
     if (rectoIDIndex !== -1)
-      state.project.Notes[noteID].objects.Recto.splice(rectoIDIndex, 1);
+      state.project.Terms[termID].objects.Recto.splice(rectoIDIndex, 1);
     if (versoIDIndex !== -1)
-      state.project.Notes[noteID].objects.Verso.splice(versoIDIndex, 1);
+      state.project.Terms[termID].objects.Verso.splice(versoIDIndex, 1);
   }
   // Remove deletedLeaf's Recto and Verso IDs from Rectos, rectoIDs, Versos, versoIDs
   delete state.project.Rectos[deletedLeaf.rectoID];

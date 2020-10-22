@@ -7,7 +7,7 @@ import IconButton from 'material-ui/IconButton';
 import Avatar from 'material-ui/Avatar';
 import UserProfileForm from '../components/topbar/UserProfileForm';
 import FlatButton from 'material-ui/FlatButton';
-import NotesFilter from '../components/notesManager/NotesFilter';
+import TermsFilter from '../components/termsManager/TermsFilter';
 import FilterIcon from 'material-ui/svg-icons/content/filter-list';
 import Undo from 'material-ui/svg-icons/content/undo';
 import Redo from 'material-ui/svg-icons/content/redo';
@@ -207,10 +207,10 @@ class TopBar extends Component {
                 </IconButton>
               </div>
             ) : null}
-            {this.props.notesFilter ? (
-              <NotesFilter
-                notes={this.props.notes}
-                filterNotes={this.props.filterNotes}
+            {this.props.termsFilter ? (
+              <TermsFilter
+                terms={this.props.terms}
+                filterTerms={this.props.filterTerms}
                 onValueChange={this.props.onValueChange}
                 onTypeChange={this.props.onTypeChange}
                 filterTypes={this.props.filterTypes}
@@ -238,7 +238,7 @@ class TopBar extends Component {
 const mapStateToProps = state => {
   return {
     user: state.user,
-    notes: state.active.notes,
+    terms: state.active.terms,
     actionHistory: state.history,
   };
 };

@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-describe "PUT /notes/id/link", :type => :request do
+describe "PUT /terms/id/unlink", :'type' => :request do
   before do
     @user = FactoryGirl.create(:user, {:password => "user"})
     put '/confirmation', params: {:confirmation_token => @user.confirmation_token}
@@ -9,13 +9,13 @@ describe "PUT /notes/id/link", :type => :request do
   end
 
   before :each do
-    @project = FactoryGirl.create(:project, {user: @user, noteTypes: ["Ink"]})
+    @project = FactoryGirl.create(:project, {user: @user, taxonomies: ["Ink"]})
     @defaultGroup = FactoryGirl.create(:quire, project: @project)
     @project.add_groupIDs([@defaultGroup.id.to_s], 0)
-    @note = FactoryGirl.create(:note, {
+    @term = FactoryGirl.create(:term, {
       project: @project,
-      title: "some title for note",
-      type: "Ink",
+      title: "some title for term",
+      taxonomy: "Ink",
       description: "blue ink"
     })
     @parameters = {
@@ -31,7 +31,7 @@ describe "PUT /notes/id/link", :type => :request do
   context 'with valid authorization' do
     context 'and correct group target' do
       before do
-        @group = FactoryGirl.create(:group, { project: @project })
+        @group = FactoryGirl.create(:group, {project: @project, terms: [@term] })
         @project.add_groupIDs([@group.id.to_s], 0)
         @parameters = {
           objects: [
@@ -41,7 +41,7 @@ describe "PUT /notes/id/link", :type => :request do
             }
           ]
         }
-        put '/notes/'+@note.id+'/link', params: @parameters.to_json, headers: {'Authorization' => @authToken, 'CONTENT_TYPE' => 'application/json', 'ACCEPT' => 'application/json'}
+        put '/terms/'+@term.id+'/unlink', params: @parameters.to_json, headers: {'Authorization' => @authToken, 'CONTENT_TYPE' => 'application/json', 'ACCEPT' => 'application/json'}
         @group.reload
       end
 
@@ -49,14 +49,13 @@ describe "PUT /notes/id/link", :type => :request do
         expect(response).to have_http_status(:no_content)
       end
 
-      it 'should add the note to the target' do
-        expect(@group.notes.length).to eq 1
-        expect(@group.notes[0].id).to eq @note.id
+      it 'should remove the term from the target' do
+        expect(@group.terms).to be_empty
       end
     end
     context 'and correct leaf target' do
       before do
-        @leaf = FactoryGirl.create(:leaf, { project: @project, parentID: @defaultGroup.id.to_s })
+        @leaf = FactoryGirl.create(:leaf, {project: @project, terms: [@term] })
         @defaultGroup.add_members([@leaf.id.to_s], 1)
         @parameters = {
           objects: [
@@ -66,7 +65,7 @@ describe "PUT /notes/id/link", :type => :request do
             }
           ]
         }
-        put '/notes/'+@note.id+'/link', params: @parameters.to_json, headers: {'Authorization' => @authToken, 'CONTENT_TYPE' => 'application/json', 'ACCEPT' => 'application/json'}
+        put '/terms/'+@term.id+'/unlink', params: @parameters.to_json, headers: {'Authorization' => @authToken, 'CONTENT_TYPE' => 'application/json', 'ACCEPT' => 'application/json'}
         @leaf.reload
       end
 
@@ -74,16 +73,17 @@ describe "PUT /notes/id/link", :type => :request do
         expect(response).to have_http_status(:no_content)
       end
 
-      it 'should add the note to the target' do
-        expect(@leaf.notes.length).to eq 1
-        expect(@leaf.notes[0].id).to eq @note.id
+      it 'should remove the term from the target' do
+        expect(@leaf.terms).to be_empty
       end
     end
     context 'and correct side target' do
       before do
-        @leaf = FactoryGirl.create(:leaf, { project: @project })
+        @leaf = FactoryGirl.create(:leaf, {project: @project, terms: [@term] })
         @defaultGroup.add_members([@leaf.id.to_s], 1)
-        @side = @project.sides[0]
+        @side = @project.sides.find(@leaf.rectoID)
+        @side.terms << @term
+        @side.save
         @parameters = {
           objects: [
             {
@@ -92,7 +92,7 @@ describe "PUT /notes/id/link", :type => :request do
             }
           ]
         }
-        put '/notes/'+@note.id+'/link', params: @parameters.to_json, headers: {'Authorization' => @authToken, 'CONTENT_TYPE' => 'application/json', 'ACCEPT' => 'application/json'}
+        put '/terms/'+@term.id+'/unlink', params: @parameters.to_json, headers: {'Authorization' => @authToken, 'CONTENT_TYPE' => 'application/json', 'ACCEPT' => 'application/json'}
         @side.reload
       end
 
@@ -100,15 +100,14 @@ describe "PUT /notes/id/link", :type => :request do
         expect(response).to have_http_status(:no_content)
       end
 
-      it 'should add the note to the target' do
-        expect(@side.notes.length).to eq 1
-        expect(@side.notes[0].id).to eq @note.id
+      it 'should remove the term from the target' do
+        expect(@side.terms).to be_empty
       end
     end
     context 'and a project belonging to another user' do
       before :each do
         @user2 = FactoryGirl.create(:user)
-        @project2 = FactoryGirl.create(:project, { user: @user2, noteTypes: ["Ink"] })
+        @project2 = FactoryGirl.create(:project, {user: @user2, taxonomies: ["Ink"] })
       end
       context 'and group target' do
         before do
@@ -121,7 +120,7 @@ describe "PUT /notes/id/link", :type => :request do
               }
             ]
           }
-          put '/notes/'+@note.id+'/link', params: @parameters2.to_json, headers: {'Authorization' => @authToken, 'CONTENT_TYPE' => 'application/json', 'ACCEPT' => 'application/json'}
+          put '/terms/'+@term.id+'/unlink', params: @parameters2.to_json, headers: {'Authorization' => @authToken, 'CONTENT_TYPE' => 'application/json', 'ACCEPT' => 'application/json'}
           @group2.reload
         end
 
@@ -130,7 +129,7 @@ describe "PUT /notes/id/link", :type => :request do
         end
 
         it 'should leave the group alone' do
-          expect(@group2.notes).to be_empty
+          expect(@group2.terms).to be_empty
         end
       end
       context 'and a leaf target' do
@@ -145,7 +144,7 @@ describe "PUT /notes/id/link", :type => :request do
               }
             ]
           }
-          put '/notes/'+@note.id+'/link', params: @parameters2.to_json, headers: {'Authorization' => @authToken, 'CONTENT_TYPE' => 'application/json', 'ACCEPT' => 'application/json'}
+          put '/terms/'+@term.id+'/unlink', params: @parameters2.to_json, headers: {'Authorization' => @authToken, 'CONTENT_TYPE' => 'application/json', 'ACCEPT' => 'application/json'}
           @leaf2.reload
         end
 
@@ -154,14 +153,12 @@ describe "PUT /notes/id/link", :type => :request do
         end
 
         it 'should leave the leaf alone' do
-          expect(@leaf2.notes).to be_empty
+          expect(@leaf2.terms).to be_empty
         end
       end
       context 'and a side target' do
         before do
-          @leaf2 = FactoryGirl.create(:leaf, { project: @project2 })
-          @defaultGroup.add_members([@leaf2.id.to_s], 1)
-          @side2 = @project2.sides[0]
+          @side2 = FactoryGirl.create(:side, { project: @project2 })
           @parameters2 = {
             objects: [
               {
@@ -170,7 +167,7 @@ describe "PUT /notes/id/link", :type => :request do
               }
             ]
           }
-          put '/notes/'+@note.id+'/link', params: @parameters2.to_json, headers: {'Authorization' => @authToken, 'CONTENT_TYPE' => 'application/json', 'ACCEPT' => 'application/json'}
+          put '/terms/'+@term.id+'/unlink', params: @parameters2.to_json, headers: {'Authorization' => @authToken, 'CONTENT_TYPE' => 'application/json', 'ACCEPT' => 'application/json'}
           @side2.reload
         end
 
@@ -179,14 +176,14 @@ describe "PUT /notes/id/link", :type => :request do
         end
 
         it 'should leave the side alone' do
-          expect(@side2.notes).to be_empty
+          expect(@side2.terms).to be_empty
         end
       end
     end
     context 'and unknown target type' do
       before do
         @parameters[:objects][0][:type] = "unknown"
-        put '/notes/'+@note.id+'/link', params: @parameters.to_json, headers: {'Authorization' => @authToken, 'CONTENT_TYPE' => 'application/json', 'ACCEPT' => 'application/json'}
+        put '/terms/'+@term.id+'/unlink', params: @parameters.to_json, headers: {'Authorization' => @authToken, 'CONTENT_TYPE' => 'application/json', 'ACCEPT' => 'application/json'}
         @body = JSON.parse(response.body)
       end
 
@@ -198,9 +195,9 @@ describe "PUT /notes/id/link", :type => :request do
         expect(@body['type']).to eq "object not found with type unknown"
       end
     end
-    context 'and missing note' do
+    context 'and missing term' do
       before do
-        put '/notes/'+@note.id+'missing/link', params: @parameters.to_json, headers: {'Authorization' => @authToken, 'CONTENT_TYPE' => 'application/json', 'ACCEPT' => 'application/json'}
+        put '/terms/'+@term.id+'missing/unlink', params: @parameters.to_json, headers: {'Authorization' => @authToken, 'CONTENT_TYPE' => 'application/json', 'ACCEPT' => 'application/json'}
         @body = JSON.parse(response.body)
       end
 
@@ -219,7 +216,7 @@ describe "PUT /notes/id/link", :type => :request do
             }
           ]
         }
-        put '/notes/'+@note.id+'/link', params: @parameters.to_json, headers: {'Authorization' => @authToken, 'CONTENT_TYPE' => 'application/json', 'ACCEPT' => 'application/json'}
+        put '/terms/'+@term.id+'/unlink', params: @parameters.to_json, headers: {'Authorization' => @authToken, 'CONTENT_TYPE' => 'application/json', 'ACCEPT' => 'application/json'}
         @group.reload
         @body = JSON.parse(response.body)
       end
@@ -234,7 +231,7 @@ describe "PUT /notes/id/link", :type => :request do
     end
     context 'and uncaught exception' do
       before do
-        allow_any_instance_of(Note).to receive(:save).and_raise("Exception!")
+        allow_any_instance_of(Term).to receive(:save).and_raise("Exception!")
         @group = FactoryGirl.create(:group, { project: @project })
         @parameters = {
           objects: [
@@ -244,7 +241,7 @@ describe "PUT /notes/id/link", :type => :request do
             }
           ]
         }
-        put '/notes/'+@note.id+'/link', params: @parameters.to_json, headers: {'Authorization' => @authToken, 'CONTENT_TYPE' => 'application/json', 'ACCEPT' => 'application/json'}
+        put '/terms/'+@term.id+'/unlink', params: @parameters.to_json, headers: {'Authorization' => @authToken, 'CONTENT_TYPE' => 'application/json', 'ACCEPT' => 'application/json'}
         @group.reload
         @body = JSON.parse(response.body)
       end
@@ -257,7 +254,7 @@ describe "PUT /notes/id/link", :type => :request do
 
   context 'with corrupted authorization' do
     before do
-      put '/notes/'+@note.id+'/link', params: @parameters.to_json, headers: {'Authorization' => @authToken+'asdf', 'CONTENT_TYPE' => 'application/json', 'ACCEPT' => 'application/json'}
+      put '/terms/'+@term.id+'/unlink', params: @parameters.to_json, headers: {'Authorization' => @authToken+'asdf', 'CONTENT_TYPE' => 'application/json', 'ACCEPT' => 'application/json'}
       @body = JSON.parse(response.body)
     end
 
@@ -272,7 +269,7 @@ describe "PUT /notes/id/link", :type => :request do
 
   context 'with empty authorization' do
     before do
-      put '/notes/'+@note.id+'/link', params: @parameters.to_json, headers: {'Authorization' => ""}
+      put '/terms/'+@term.id+'/unlink', params: @parameters.to_json, headers: {'Authorization' => ""}
     end
 
     it 'returns an bad request error' do
@@ -286,7 +283,7 @@ describe "PUT /notes/id/link", :type => :request do
 
   context 'invalid authorization' do
     before do
-      put '/notes/'+@note.id+'/link', params: @parameters.to_json, headers: {'Authorization' => "123456789"}
+      put '/terms/'+@term.id+'/unlink', params: @parameters.to_json, headers: {'Authorization' => "123456789"}
     end
 
     it 'returns an bad request error' do
@@ -300,7 +297,7 @@ describe "PUT /notes/id/link", :type => :request do
 
   context 'without authorization' do
     before do
-      put '/notes/'+@note.id+'/link'
+      put '/terms/'+@term.id+'/unlink'
     end
 
     it 'returns an unauthorized action error' do

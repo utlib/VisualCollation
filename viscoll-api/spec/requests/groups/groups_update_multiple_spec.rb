@@ -11,7 +11,7 @@ describe "PUT /groups", :type => :request do
   before :each do
     @project = FactoryGirl.create(:project, {
       user: @user,
-      noteTypes: ["Ink"],
+      taxonomies: ["Ink"],
     })
     5.times do |n|
       @project.groups << FactoryGirl.create(:quire, { 

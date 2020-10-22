@@ -1,7 +1,7 @@
 class FilterController < ApplicationController
   before_action :authenticate!
   before_action :set_project, only: [:show]
-  
+
   # PUT /projects/filter
   def show
     begin
@@ -10,7 +10,7 @@ class FilterController < ApplicationController
       if errors != []
         render json: {errors: errors}, status: :unprocessable_entity and return
       end
-      @objectIDs = {Groups: [], Leafs: [], Sides: [], Notes: []}
+      @objectIDs = {Groups: [], Leafs: [], Sides: [], Terms: []}
       @visibleAttributes = {
         group: {type:false, title:false},
         leaf: {type:false, material:false, conjoined_leaf_order:false, attached_below:false, attached_above:false, stub:false},
@@ -21,13 +21,13 @@ class FilterController < ApplicationController
       @groups = finalResponse[:Groups]
       @leafs = finalResponse[:Leafs]
       @sides = finalResponse[:Sides]
-      @notes = finalResponse[:Notes] 
+      @terms = finalResponse[:Terms]
       @groupsOfMatchingLeafs = finalResponse[:GroupsOfMatchingLeafs]
       @leafsOfMatchingSides = finalResponse[:LeafsOfMatchingSides]
       @groupsOfMatchingSides = finalResponse[:GroupsOfMatchingSides]
-      @groupsOfMatchingNotes = finalResponse[:GroupsOfMatchingNotes]
-      @leafsOfMatchingNotes = finalResponse[:LeafsOfMatchingNotes]
-      @sidesOfMatchingNotes = finalResponse[:SidesOfMatchingNotes]
+      @groupsOfMatchingTerms = finalResponse[:GroupsOfMatchingTerms]
+      @leafsOfMatchingTerms = finalResponse[:LeafsOfMatchingTerms]
+      @sidesOfMatchingTerms = finalResponse[:SidesOfMatchingTerms]
       if @groups == []
         @visibleAttributes[:group] = {type:false, title:false}
       end
@@ -57,8 +57,8 @@ class FilterController < ApplicationController
       groups = []
       leafs = []
       sides = []
-      notes = []
-      
+      terms = []
+
       if attribute == 'conjoined_leaf_order'
         old_attribute = attribute
         attribute = 'conjoined_to'
@@ -80,7 +80,7 @@ class FilterController < ApplicationController
       when 'not contains'
         query_condition_params = { attribute => (values.length > 1) ? { '$nin': values.map { |x| /^#{Regexp.escape(x)}/} } : { '$not': /#{Regexp.escape(values[0])}/} }
       end
-      
+
       case type
       when 'group'
         groupQueryResult = @project.groups.only(:id).where(query_condition_params)
@@ -110,18 +110,18 @@ class FilterController < ApplicationController
           @visibleAttributes[:side][attribute] = true
         end
         @objectIDs[:Sides] += sides
-      when 'note'
-        noteQueryResult = @project.notes.only(:id).where(query_condition_params)
-        notes = noteQueryResult.collect { |nqr| nqr.id.to_s }
-        @objectIDs[:Notes] += notes
+      when 'term'
+        termQueryResult = @project.terms.only(:id).where(query_condition_params)
+        terms = termQueryResult.collect { |nqr| nqr.id.to_s }
+        @objectIDs[:Terms] += terms
       end
-      sets.push(Set.new([*groups, *leafs, *sides, *notes]))
+      sets.push(Set.new([*groups, *leafs, *sides, *terms]))
       conjunctions.push(conjunction)
     end
     conjunctions.pop
-    result = sets[0] 
+    result = sets[0]
     conjunctions.each_with_index do |conjunction, index|
-      if (index+1 <= sets.length-1) 
+      if (index+1 <= sets.length-1)
         if conjunction == "AND"
           result = result & sets[index+1]
         else
@@ -134,7 +134,7 @@ class FilterController < ApplicationController
 
 
   def buildResponse(combinedResult)
-    response = {Groups: [], Leafs: [], Sides: [], Notes: [], GroupsOfMatchingNotes: [], LeafsOfMatchingNotes: [], SidesOfMatchingNotes:[], LeafsOfMatchingSides:[], GroupsOfMatchingSides:[], GroupsOfMatchingLeafs:[]}
+    response = {Groups: [], Leafs: [], Sides: [], Terms: [], GroupsOfMatchingTerms: [], LeafsOfMatchingTerms: [], SidesOfMatchingTerms:[], LeafsOfMatchingSides:[], GroupsOfMatchingSides:[], GroupsOfMatchingLeafs:[]}
     combinedResult.each do |objectID|
       if @objectIDs[:Groups].include?(objectID)
         response[:Groups].push(objectID)
@@ -142,37 +142,37 @@ class FilterController < ApplicationController
         response[:Leafs].push(objectID)
       elsif @objectIDs[:Sides].include?(objectID)
         response[:Sides].push(objectID)
-      elsif @objectIDs[:Notes].include?(objectID)
-        note = Note.find(objectID)
-        groupIDs = note.objects[:Group] 
-        leafIDs = note.objects[:Leaf] 
-        rectoIDs = note.objects[:Recto]
-        versoIDs = note.objects[:Verso]
+      elsif @objectIDs[:Terms].include?(objectID)
+        term = Term.find(objectID)
+        groupIDs = term.objects[:Group]
+        leafIDs = term.objects[:Leaf]
+        rectoIDs = term.objects[:Recto]
+        versoIDs = term.objects[:Verso]
         groupIDs.each do |groupID|
           if !(response[:Groups].include?(groupID))
             response[:Groups].push(groupID)
-            response[:GroupsOfMatchingNotes].push(groupID)
+            response[:GroupsOfMatchingTerms].push(groupID)
           end
         end
         leafIDs.each do |leafID|
           if !(response[:Leafs].include?(leafID))
             response[:Leafs].push(leafID)
-            response[:LeafsOfMatchingNotes].push(leafID)
+            response[:LeafsOfMatchingTerms].push(leafID)
           end
         end
         rectoIDs.each do |sideID|
           if !(response[:Sides].include?(sideID))
             response[:Sides].push(sideID)
-            response[:SidesOfMatchingNotes].push(sideID)
+            response[:SidesOfMatchingTerms].push(sideID)
           end
         end
         versoIDs.each do |sideID|
           if !(response[:Sides].include?(sideID))
             response[:Sides].push(sideID)
-            response[:SidesOfMatchingNotes].push(sideID)
+            response[:SidesOfMatchingTerms].push(sideID)
           end
         end
-        response[:Notes].push(objectID)
+        response[:Terms].push(objectID)
       end
     end
     response[:Sides].each do |sideID|
@@ -214,6 +214,6 @@ class FilterController < ApplicationController
   def filter_params
     params.permit(:queries => [:type, :attribute, :condition, :conjunction, :values => []])
   end
-  
+
 
 end

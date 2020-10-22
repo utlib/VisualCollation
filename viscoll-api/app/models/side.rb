@@ -12,22 +12,22 @@ class Side
 
   # Relations
   belongs_to :project
-  has_and_belongs_to_many :notes, inverse_of: nil
+  has_and_belongs_to_many :terms, inverse_of: nil
 
   # Callbacks
-  before_destroy :unlink_notes, :unlink_image
+  before_destroy :unlink_terms, :unlink_image
 
   def parent_leaf
     Leaf.find(parentID)
   end
 
   protected
-  # If linked to note(s), remove link from the note(s)'s side
-  def unlink_notes
-    self.notes.each do | note |
-      note.objects[:Recto].delete(self.id.to_s)
-      note.objects[:Verso].delete(self.id.to_s)
-      note.save
+  # If linked to term(s), remove link from the term(s)'s side
+  def unlink_terms
+    self.terms.each do | term |
+      term.objects[:Recto].delete(self.id.to_s)
+      term.objects[:Verso].delete(self.id.to_s)
+      term.save
     end
   end
 

@@ -6,7 +6,7 @@ RSpec.describe ControllerHelper::FilterHelper, type: :helper do
   end
   
   it 'should reject unrecognized types' do
-    expect(runValidations([{ 'type' => 'foobar' }])).to include a_hash_including('type' => 'type should be one of: [group, leaf, side, note]')
+    expect(runValidations([{ 'type' => 'foobar' }])).to include a_hash_including('type' => 'type should be one of: [group, leaf, side, term]')
   end
   
   it 'should reject unrecognized conjunctions' do
@@ -135,25 +135,25 @@ RSpec.describe ControllerHelper::FilterHelper, type: :helper do
     end
   end
   
-  describe 'Note queries' do
+  describe 'Term queries' do
     it 'should reject invalid attribute for sides' do
       result = runValidations([
-        { 'type' => 'note', 'attribute' => 'waahoo', 'condition' => 'equals', 'values' => ['hint'] }
+        { 'type' => 'term', 'attribute' => 'waahoo', 'condition' => 'equals', 'values' => ['hint'] }
       ])
-      expect(result).to include a_hash_including('attribute' => 'valid attributes for note: [title, type, description]')
+      expect(result).to include a_hash_including('attribute' => 'valid attributes for term: [title, type, description]')
     end
     
     it 'should reject invalid conditions for type' do
       result = runValidations([
-        { 'type' => 'note', 'attribute' => 'type', 'condition' => 'waahoo', 'values' => ['hint'] }
+        { 'type' => 'term', 'attribute' => 'type', 'condition' => 'waahoo', 'values' => ['hint'] }
       ])
-      expect(result).to include a_hash_including('condition' => 'valid conditions for note attribute type : [equals, not equals]')
+      expect(result).to include a_hash_including('condition' => 'valid conditions for term attribute type : [equals, not equals]')
     end
     
     it 'should accept valid conditions for type' do
       ['equals', 'not equals'].each do |condition|
         result = runValidations([
-          { 'type' => 'note', 'attribute' => 'type', 'condition' => condition, 'values' => ['hint'] }
+          { 'type' => 'term', 'attribute' => 'type', 'condition' => condition, 'values' => ['hint'] }
         ])
         expect(result).to be_empty
       end
@@ -162,9 +162,9 @@ RSpec.describe ControllerHelper::FilterHelper, type: :helper do
     it 'should reject invalid conditions for title and description' do
       ['title', 'description'].each do |attribute|
         result = runValidations([
-          { 'type' => 'note', 'attribute' => attribute, 'condition' => 'waahoo', 'values' => ['hint'] }
+          { 'type' => 'term', 'attribute' => attribute, 'condition' => 'waahoo', 'values' => ['hint'] }
         ])
-        expect(result).to include a_hash_including('condition' => "valid conditions for note attribute #{attribute} : [equals, not equals, contains, not contains]")
+        expect(result).to include a_hash_including('condition' => "valid conditions for term attribute #{attribute} : [equals, not equals, contains, not contains]")
       end
     end
     
@@ -172,7 +172,7 @@ RSpec.describe ControllerHelper::FilterHelper, type: :helper do
       ['title', 'description'].each do |attribute|
         ['equals', 'not equals', 'contains', 'not contains'].each do |condition|
           result = runValidations([
-            { 'type' => 'note', 'attribute' => attribute, 'condition' => condition, 'values' => ['hint'] }
+            { 'type' => 'term', 'attribute' => attribute, 'condition' => condition, 'values' => ['hint'] }
           ])
           expect(result).to be_empty
         end

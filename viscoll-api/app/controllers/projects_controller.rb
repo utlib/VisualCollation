@@ -38,9 +38,9 @@ class ProjectsController < ApplicationController
       end
       # Instantiate a new project with the given params
       @project = Project.new(project_params)
-      # If the project contains noteTypes, add the 'Unknown' type if its not present
-      if (not @project.noteTypes.empty? and not @project.noteTypes.include?('Unknown'))
-        @project.noteTypes.push('Unknown')
+      # If the project contains taxonomies, add the 'Unknown' type if its not present
+      if (not @project.taxonomies.empty? and not @project.taxonomies.include?('Unknown'))
+        @project.taxonomies.push('Unknown')
       end
        # Associate the current logged_in user to this project
       @project.user = current_user
@@ -82,7 +82,7 @@ class ProjectsController < ApplicationController
     deleteUnlinkedImages = project_delete_params.to_h["deleteUnlinkedImages"]
     begin
       # Skip some callbacks
-      Leaf.skip_callback(:destroy, :before, :unlink_notes)
+      Leaf.skip_callback(:destroy, :before, :unlink_terms)
       if deleteUnlinkedImages
         Image.skip_callback(:destroy, :before, :unlink_sides_before_delete)
         current_user.images.where({ "projectIDs" => { '$eq': [@project.id.to_s] } }).each do | image |
@@ -98,7 +98,7 @@ class ProjectsController < ApplicationController
     ensure
       # Enable callbacks again
       Image.set_callback(:destroy, :before, :unlink_sides_before_delete)
-      Leaf.set_callback(:destroy, :before, :unlink_notes)
+      Leaf.set_callback(:destroy, :before, :unlink_terms)
     end
   end
 
@@ -166,12 +166,12 @@ class ProjectsController < ApplicationController
     begin
       exportedData = buildJSON(@project)
       export = {
-        project: exportedData[:project],
-        Groups: exportedData[:groups],
-        Leafs: exportedData[:leafs],
-        Rectos: exportedData[:rectos],
-        Versos: exportedData[:versos],
-        Notes: exportedData[:notes],
+          project: exportedData[:project],
+          Groups: exportedData[:groups],
+          Leafs: exportedData[:leafs],
+          Rectos: exportedData[:rectos],
+          Versos: exportedData[:versos],
+          Terms: exportedData[:terms],
       }
       handleJSONImport(JSON.parse(export.to_json))
       newProject = current_user.projects.order_by(:updated_at => 'desc').first
@@ -207,7 +207,7 @@ class ProjectsController < ApplicationController
 
   # Never trust parameters from the scary Internet, only allow the white list through.
   def project_params
-    params.require(:project).permit(:title, :shelfmark, :notationStyle, :metadata=>{}, :noteTypes=>[], :preferences=>{})
+    params.require(:project).permit(:title, :shelfmark, :notationStyle, :metadata=>{}, :taxonomies=>[], :preferences=>{})
   end
 
   def project_delete_params

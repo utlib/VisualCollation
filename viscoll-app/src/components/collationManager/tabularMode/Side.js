@@ -9,7 +9,7 @@ const Side = (props) => {
     defaultAttributes, 
   } = props.collationManager;
   const isActive = selectedObjects.members.includes(activeSide.id);
-  const sidesOfMatchingElements = filters.SidesOfMatchingNotes;
+  const sidesOfMatchingElements = filters.SidesOfMatchingTerms;
   const isFiltered = filters.Sides.includes(activeSide.id);
   const isAffectedFiltered = sidesOfMatchingElements.includes(activeSide.id) && !isFiltered;
   const hideOthers = filters.hideOthers;

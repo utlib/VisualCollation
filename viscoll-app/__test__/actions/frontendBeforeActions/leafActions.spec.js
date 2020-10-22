@@ -55,7 +55,7 @@ describe('>>>A C T I O N --- Test leaf actions', () => {
       type: 'None',
       memberType: 'Leaf',
       nestLevel: 1,
-      notes: [],
+      terms: [],
       parentID: 'Group_5a57825a4cfad13070870df5',
       rectoID: 'Recto_11',
       versoID: 'Verso_22',
@@ -67,7 +67,7 @@ describe('>>>A C T I O N --- Test leaf actions', () => {
       script_direction: 'None',
       texture: 'Hair',
       image: {},
-      notes: [],
+      terms: [],
       memberType: 'Recto',
     };
     expectedState.project.Versos['Verso_22'] = {
@@ -77,7 +77,7 @@ describe('>>>A C T I O N --- Test leaf actions', () => {
       script_direction: 'None',
       texture: 'Flesh',
       image: {},
-      notes: [],
+      terms: [],
       memberType: 'Verso',
     };
     expectedState.project.leafIDs.push('Leaf_111');
@@ -177,14 +177,14 @@ describe('>>>A C T I O N --- Test leaf actions', () => {
     expectedState.project.Groups[
       'Group_5a57825a4cfad13070870df4'
     ].memberIDs.splice(0, 1);
-    expectedState.project.Notes['5a57825a4cfad13070870df9'].objects.Leaf.splice(
+    expectedState.project.Terms['5a57825a4cfad13070870df9'].objects.Leaf.splice(
       0,
       1
     );
-    expectedState.project.Notes[
+    expectedState.project.Terms[
       '5a57825a4cfad13070870df9'
     ].objects.Verso.splice(0, 1);
-    expectedState.project.Notes[
+    expectedState.project.Terms[
       '5a57825a4cfad13070870dfa'
     ].objects.Verso.splice(0, 1);
     expectedState.project.leafIDs.splice(0, 1);
@@ -230,14 +230,14 @@ describe('>>>A C T I O N --- Test leaf actions', () => {
     expectedState.project.Groups[
       'Group_5a57825a4cfad13070870df4'
     ].memberIDs.splice(0, 1);
-    expectedState.project.Notes['5a57825a4cfad13070870df9'].objects.Leaf.splice(
+    expectedState.project.Terms['5a57825a4cfad13070870df9'].objects.Leaf.splice(
       0,
       1
     );
-    expectedState.project.Notes[
+    expectedState.project.Terms[
       '5a57825a4cfad13070870df9'
     ].objects.Verso.splice(0, 1);
-    expectedState.project.Notes[
+    expectedState.project.Terms[
       '5a57825a4cfad13070870dfa'
     ].objects.Verso.splice(0, 1);
     expectedState.project.leafIDs.splice(0, 1);

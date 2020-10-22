@@ -35,7 +35,7 @@ export default class ViewingMode extends React.Component {
         Leafs: this.props.project.Leafs,
         Rectos: this.props.project.Rectos,
         Versos: this.props.project.Versos,
-        Notes: this.props.project.Notes,
+        Terms: this.props.project.Terms,
         activeGroups: this.props.collationManager.selectedObjects.type==="Group"? this.props.collationManager.selectedObjects.members : [],
         activeLeafs: this.props.collationManager.selectedObjects.type==="Leaf"? this.props.collationManager.selectedObjects.members : [],
         activeRectos: this.props.collationManager.selectedObjects.type==="Recto"? this.props.collationManager.selectedObjects.members : [],
@@ -55,7 +55,7 @@ export default class ViewingMode extends React.Component {
       this.props.collationManager.selectedObjects!==nextProps.collationManager.selectedObjects ||
       this.props.collationManager.filters !== nextProps.collationManager.filters ||
       this.props.project.preferences !== nextProps.project.preferences ||
-      this.props.project.Notes!==nextProps.project.Notes ||
+      this.props.project.Terms!==nextProps.project.Terms ||
       this.state.viewingMode !== nextState.viewingMode ||
       this.props.imageViewerEnabled !== nextProps.imageViewerEnabled
     );

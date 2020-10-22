@@ -3,7 +3,7 @@ import { connect } from "react-redux";
 
 import InfoBox from './InfoBox';
 import ViewingMode from '../components/collationManager/ViewingMode';
-import NoteDialog from '../components/collationManager/dialog/NoteDialog';
+import TermDialog from '../components/collationManager/dialog/TermDialog';
 import {
   changeViewMode,
   handleObjectClick,
@@ -20,7 +20,7 @@ class CollationManagerViewOnly extends Component {
         top: 40,
       },
       leftSideBarOpen: false,
-      activeNote: null
+      activeTerm: null
     };
   }
 
@@ -50,26 +50,26 @@ class CollationManagerViewOnly extends Component {
     );
   }
 
-  closeNoteDialog = () => {
-    this.setState({ activeNote: null, clickedFromDiagram: false }, () => this.props.togglePopUp(false));
+  closeTermDialog = () => {
+    this.setState({ activeTerm: null, clickedFromDiagram: false }, () => this.props.togglePopUp(false));
   }
 
-  openNoteDialog = (note, clickedFromDiagram = false) => {
-    this.setState({ activeNote: note, clickedFromDiagram }, () => this.props.togglePopUp(true));
+  openTermDialog = (term, clickedFromDiagram = false) => {
+    this.setState({ activeTerm: term, clickedFromDiagram }, () => this.props.togglePopUp(true));
   }
 
-  getCommonNotes = (props = this.props) => {
-    // Find the common notes of all currently selected objects
+  getCommonTerms = (props = this.props) => {
+    // Find the common terms of all currently selected objects
     const memberType = props.selectedObjects.type;
     const members = props.selectedObjects.members;
-    let notes = [];
+    let terms = [];
     if (members.length > 0) {
-      notes = props.project[memberType + "s"][members[0]].notes;
+      terms = props.project[memberType + "s"][members[0]].terms;
       for (let id of members) {
-        notes = this.intersect(notes, props.project[memberType + "s"][id].notes);
+        terms = this.intersect(terms, props.project[memberType + "s"][id].terms);
       }
     }
-    return notes;
+    return terms;
   }
 
   /**
@@ -97,12 +97,12 @@ class CollationManagerViewOnly extends Component {
         <InfoBox
           type={this.props.selectedObjects.type}
           user={this.props.user}
-          closeNoteDialog={this.closeNoteDialog}
-          commonNotes={this.getCommonNotes()}
-          openNoteDialog={this.openNoteDialog}
+          closeTermDialog={this.closeTermDialog}
+          commonTerms={this.getCommonTerms()}
+          openTermDialog={this.openTermDialog}
           action={{
-            linkNote: () => { },
-            unlinkNote: () => { },
+            linkTerm: () => { },
+            unlinkTerm: () => { },
             updatePreferences: () => { }
           }}
           togglePopUp={this.props.togglePopUp}
@@ -145,21 +145,21 @@ class CollationManagerViewOnly extends Component {
     return (
       <div className="collationManager">
         {workspace}
-        <NoteDialog
-          open={this.state.activeNote !== null}
-          commonNotes={this.getCommonNotes()}
-          activeNote={this.state.activeNote ? this.state.activeNote : { id: null }}
-          closeNoteDialog={this.closeNoteDialog}
+        <TermDialog
+          open={this.state.activeTerm !== null}
+          commonTerms={this.getCommonTerms()}
+          activeTerm={this.state.activeTerm ? this.state.activeTerm : { id: null }}
+          closeTermDialog={this.closeTermDialog}
           action={{
-            updateNote: () => { },
-            deleteNote: () => { },
-            linkNote: () => { },
-            unlinkNote: () => { },
-            linkAndUnlinkNotes: () => { },
+            updateTerm: () => { },
+            deleteTerm: () => { },
+            linkTerm: () => { },
+            unlinkTerm: () => { },
+            linkAndUnlinkTerms: () => { },
           }}
           projectID={this.props.project.id}
-          noteTypes={this.props.project.noteTypes}
-          Notes={this.props.project.Notes}
+          Taxonomies={this.props.project.Taxonomies}
+          Terms={this.props.project.Terms}
           Groups={this.props.project.Groups}
           groupIDs={this.props.project.groupIDs}
           Leafs={this.props.project.Leafs}

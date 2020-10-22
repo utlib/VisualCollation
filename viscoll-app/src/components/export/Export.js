@@ -109,14 +109,17 @@ const Export = props => {
           : props.exportedData} */}
         {props.exportedType === 'svg' ? (
           <div>
-            {Array.from(props.exportedData).map((value, index) => {
-              return (
-                <img
-                  key={index}
-                  src={`data:image/svg+xml;utf8,${encodeURIComponent(value)}`}
-                ></img>
-              );
-            })}
+            {Array.from(props.exportedData)
+              .reverse()
+              .map((value, index) => {
+                return (
+                  <img
+                    alt={'Quire SVG'}
+                    key={index}
+                    src={`data:image/svg+xml;utf8,${encodeURIComponent(value)}`}
+                  ></img>
+                );
+              })}
           </div>
         ) : (
           <pre>{props.exportedData}</pre>
@@ -143,10 +146,10 @@ const Export = props => {
         <br />
         <br />
         <Checkbox
-          label="Show notes in exported image"
-          id="exportNotes"
-          checked={props.exportNotes}
-          onCheck={() => props.setExport('exportNotes', !props.exportNotes)}
+          label="Show terms in exported image"
+          id="exportTerms"
+          checked={props.exportTerms}
+          onCheck={() => props.setExport('exportTerms', !props.exportTerms)}
         />
 
         <div style={{ width: 1, height: 1, overflow: 'hidden' }}>
