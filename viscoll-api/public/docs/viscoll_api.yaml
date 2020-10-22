@@ -19,8 +19,8 @@ tags:
   description: Operations on Leaf model
 - name: Sides
   description: Operations on Side model
-- name: Notes
-  description: Operations on Note model
+- name: Terms
+  description: Operations on Term model
   
 paths:
   /session:
@@ -540,14 +540,14 @@ paths:
                 example: project not found
         401:
           description: Unauthorized Action
-  /projects/{projectID}/notes:
+  /projects/{projectID}/terms:
     get:
       tags: 
         - Projects
-      summary: gets all notes in a project
-      operationId: getNotes
+      summary: gets all terms in a project
+      operationId: getTerms
       description: |
-        By passing in the appropriate options, you can view all notes in a project
+        By passing in the appropriate options, you can view all terms in a project
       consumes:
         - application/json
       produces:
@@ -565,9 +565,9 @@ paths:
           description: ID of the project
       responses:
         200:
-          description: successfully retrieved all notes for the project
+          description: successfully retrieved all terms for the project
           schema:
-            $ref: '#/definitions/NotesFullResponse'
+            $ref: '#/definitions/TermsFullResponse'
         401:
           description: Unauthorized Action
         404:
@@ -1098,14 +1098,14 @@ paths:
                 type: string
                 example: side not found
 
-  /notes:
+  /terms:
     post:
       tags: 
-        - Notes
-      summary: creates a new note
-      operationId: createNote
+        - Terms
+      summary: creates a new term
+      operationId: createTerm
       description: |
-        By passing in the appropriate options, you can create a new note
+        By passing in the appropriate options, you can create a new term
       consumes:
         - application/json
       produces:
@@ -1117,33 +1117,33 @@ paths:
           required: true
           description: authentication token
         - in: body
-          name: note
+          name: term
           required: true
-          description: note information
+          description: term information
           schema:
-            $ref: '#/definitions/NoteCreateParams'
+            $ref: '#/definitions/TermCreateParams'
       responses:
         200:
-          description: successfully created the note
+          description: successfully created the term
           schema:
-            $ref: '#/definitions/NotesFullResponse'
+            $ref: '#/definitions/TermsFullResponse'
         422:
           description: bad input parameter
           schema:
-            $ref: '#/definitions/NoteCreateError'
+            $ref: '#/definitions/TermCreateError'
         401:
           description: Unauthorized Action
 
 
 
-  /notes/{noteID}:
+  /terms/{termID}:
     put:
       tags: 
-        - Notes
-      summary: updates a notes
-      operationId: updateNote
+        - Terms
+      summary: updates a terms
+      operationId: updateTerm
       description: |
-        By passing in the appropriate options, you can update a note
+        By passing in the appropriate options, you can update a term
       consumes:
         - application/json
       produces:
@@ -1155,42 +1155,42 @@ paths:
           required: true
           description: authentication token
         - in: path
-          name: noteID
+          name: termID
           type: string
           required: true
-          description: ID of the note
+          description: ID of the term
         - in: body
-          name: note
+          name: term
           required: true
-          description: note information
+          description: term information
           schema:
-            $ref: '#/definitions/NoteUpdateParams'
+            $ref: '#/definitions/TermUpdateParams'
       responses:
         200:
           description: successfully updated the leaf
           schema:
-            $ref: '#/definitions/NotesFullResponse'
+            $ref: '#/definitions/TermsFullResponse'
         422:
           description: bad input parameter
           schema:
-            $ref: '#/definitions/NoteCreateError'
+            $ref: '#/definitions/TermCreateError'
         401:
           description: Unauthorized Action
         404:
-          description: note with noteID not found
+          description: term with termID not found
           schema:
             type: object
             properties:
               error:
                 type: string
-                example: note not found
+                example: term not found
     delete:
       tags: 
-        - Notes
-      summary: deletes a note
-      operationId: deleteNote
+        - Terms
+      summary: deletes a term
+      operationId: deleteTerm
       description: |
-        By passing in the appropriate options, you can delete a note
+        By passing in the appropriate options, you can delete a term
       consumes:
         - application/json
       produces:
@@ -1202,33 +1202,33 @@ paths:
           required: true
           description: authentication token
         - in: path
-          name: noteID
+          name: termID
           type: string
           required: true
-          description: ID of the note
+          description: ID of the term
       responses:
         204:
-          description: successfully deleted the note
+          description: successfully deleted the term
           schema:
-            $ref: '#/definitions/NotesFullResponse'
+            $ref: '#/definitions/termsFullResponse'
         401:
           description: Unauthorized Action
         404:
-          description: note with noteID not found
+          description: term with termID not found
           schema:
             type: object
             properties:
               error:
                 type: string
-                example: note not found
-  /notes/{noteID}/link:
+                example: term not found
+  /terms/{termID}/link:
     put:
       tags: 
-        - Notes
-      summary: links a note to the given objects
-      operationId: linkNote
+        - Terms
+      summary: links a term to the given objects
+      operationId: linkTerm
       description: |
-        By passing in the appropriate options, you can link a note to objects
+        By passing in the appropriate options, you can link a term to objects
       consumes:
         - application/json
       produces:
@@ -1240,43 +1240,43 @@ paths:
           required: true
           description: authentication token
         - in: path
-          name: noteID
+          name: termID
           type: string
           required: true
-          description: ID of the note
+          description: ID of the term
         - in: body
-          name: note
+          name: term
           required: true
-          description: note information
+          description: term information
           schema:
-            $ref: '#/definitions/NoteLinkParams'
+            $ref: '#/definitions/TermLinkParams'
       responses:
         200:
-          description: successfully linked the note
+          description: successfully linked the term
           schema:
-            $ref: '#/definitions/NotesFullResponse'
+            $ref: '#/definitions/TermsFullResponse'
         422:
           description: bad input parameter
           schema:
-            $ref: '#/definitions/NoteLinkError'
+            $ref: '#/definitions/TermLinkError'
         401:
           description: Unauthorized Action
         404:
-          description: note with noteID not found
+          description: term with termID not found
           schema:
             type: object
             properties:
               error:
                 type: string
-                example: note not found
-  /notes/{noteID}/unlink:
+                example: term not found
+  /terms/{termID}/unlink:
     put:
       tags: 
-        - Notes
-      summary: unlinks a note from the given objects
-      operationId: unlinkNote
+        - Terms
+      summary: unlinks a term from the given objects
+      operationId: unlinkTerm
       description: |
-        By passing in the appropriate options, you can unlink a note from objects
+        By passing in the appropriate options, you can unlink a term from objects
       consumes:
         - application/json
       produces:
@@ -1288,43 +1288,43 @@ paths:
           required: true
           description: authentication token
         - in: path
-          name: noteID
+          name: termID
           type: string
           required: true
-          description: ID of the note
+          description: ID of the term
         - in: body
-          name: note
+          name: term
           required: true
-          description: note information
+          description: term information
           schema:
-            $ref: '#/definitions/NoteLinkParams'
+            $ref: '#/definitions/TermLinkParams'
       responses:
         200:
-          description: successfully unlinked the note
+          description: successfully unlinked the term
           schema:
-            $ref: '#/definitions/NotesFullResponse'
+            $ref: '#/definitions/TermsFullResponse'
         422:
           description: bad input parameter
           schema:
-            $ref: '#/definitions/NoteLinkError'
+            $ref: '#/definitions/TermLinkError'
         401:
           description: Unauthorized Action
         404:
-          description: note with noteID not found
+          description: term with termID not found
           schema:
             type: object
             properties:
               error:
                 type: string
-                example: note not found
-  /notes/type:
+                example: term not found
+  /terms/type:
     post:
       tags: 
-        - Notes
-      summary: creates a note type
+        - Terms
+      summary: creates a term type
       operationId: createTaxonomy
       description: |
-        By passing in the appropriate options, you can create a note type
+        By passing in the appropriate options, you can create a term type
         - application/json
       produces:
         - application/json
@@ -1335,29 +1335,29 @@ paths:
           required: true
           description: authentication token
         - in: body
-          name: noteType
+          name: taxonomy
           required: true
-          description: note information
+          description: term information
           schema:
-            $ref: '#/definitions/NoteTypeCreateParams'
+            $ref: '#/definitions/TaxonomyCreateParams'
       responses:
         200:
-          description: successfully created the note type
+          description: successfully created the taxonomy
           schema:
-            $ref: '#/definitions/NoteTypeResponse'
+            $ref: '#/definitions/TaxonomyResponse'
         422:
           description: bad input parameter
           schema:
-            $ref: '#/definitions/NoteTypeCreateError'
+            $ref: '#/definitions/TaxonomyCreateError'
         401:
           description: Unauthorized Action
     put:
       tags: 
-        - Notes
-      summary: updates a note type
-      operationId: updateNoteType
+        - Terms
+      summary: updates a taxonomy
+      operationId: updateTaxonomy
       description: |
-        By passing in the appropriate options, you can update a note type
+        By passing in the appropriate options, you can update a taxonomy
         - application/json
       produces:
         - application/json
@@ -1368,29 +1368,29 @@ paths:
           required: true
           description: authentication token
         - in: body
-          name: noteType
+          name: taxonomy
           required: true
-          description: note information
+          description: term information
           schema:
-            $ref: '#/definitions/NoteTypeUpdateParams'
+            $ref: '#/definitions/TaxonomyUpdateParams'
       responses:
         200:
-          description: successfully updated the note type
+          description: successfully updated the taxonomy
           schema:
-            $ref: '#/definitions/NoteTypeResponse'
+            $ref: '#/definitions/TaxonomyResponse'
         422:
           description: bad input parameter
           schema:
-            $ref: '#/definitions/NoteTypeUpdateError'
+            $ref: '#/definitions/TaxonomyUpdateError'
         401:
           description: Unauthorized Action
     delete:
       tags: 
-        - Notes
-      summary: deletes a note type
-      operationId: deleteNoteType
+        - Terms
+      summary: deletes a taxonomy
+      operationId: deleteTaxonomy
       description: |
-        By passing in the appropriate options, you can delete a note type
+        By passing in the appropriate options, you can delete a taxonomy
         - application/json
       produces:
         - application/json
@@ -1401,20 +1401,20 @@ paths:
           required: true
           description: authentication token
         - in: body
-          name: noteType
+          name: taxonomy
           required: true
-          description: note information
+          description: term information
           schema:
-            $ref: '#/definitions/NoteTypeCreateParams'
+            $ref: '#/definitions/TaxonomyCreateParams'
       responses:
         200:
-          description: successfully deleted the note type
+          description: successfully deleted the taxonomy
           schema:
-            $ref: '#/definitions/NoteTypeResponse'
+            $ref: '#/definitions/TaxonomyResponse'
         422:
           description: bad input parameter
           schema:
-            $ref: '#/definitions/NoteTypeDeleteError'
+            $ref: '#/definitions/TaxonomyDeleteError'
         401:
           description: Unauthorized Action
                 
@@ -1875,13 +1875,13 @@ definitions:
       updated_at:
         type: string
         example: "2017-07-12T14:04:34.799Z"
-      noteTypes:
+      taxonomies:
         type: array
         items:
           type: string
         example: [Unknown, Ink, Hand]
-      notes:
-        $ref: '#/definitions/NotesFullResponse'
+      terms:
+        $ref: '#/definitions/TermsFullResponse'
       manuscript:
         $ref: '#/definitions/ManuscriptResponseFull'
   ManuscriptResponseFull:
@@ -2598,10 +2598,10 @@ definitions:
                 type: string
                 example: side not found with id 5951303fc9bf3c7b9a573a3f
   
-  NoteCreateParams:
+  TermCreateParams:
     type: object
     properties:
-      note:
+      term:
         type: object
         properties:
           project_id:
@@ -2610,36 +2610,36 @@ definitions:
           title:
             type: string
             example: some title for term
-          type:
+          taxonomy:
             type: string
             example: Ink
           description:
             type: string
             example: blue ink
   
-  NoteUpdateParams:
+  TermUpdateParams:
     type: object
     properties:
-      note:
+      term:
         type: object
         properties:
           title:
             type: string
             example: some title for term
-          type:
+          taxonomy:
             type: string
             example: Ink
           description:
             type: string
             example: blue ink
             
-  NotesFullResponse:
+  TermsFullResponse:
     type: array
     items:
-      $ref: '#definitions/NoteFullResponse'
+      $ref: '#definitions/TermFullResponse'
       
   
-  NoteFullResponse:
+  TermFullResponse:
     type: object
     properties:
       id:
@@ -2682,7 +2682,7 @@ definitions:
                 type: string
                 example: 1
 
-  NoteLinkParams:
+  TermLinkParams:
     type: object
     properties:
       objects:
@@ -2697,17 +2697,17 @@ definitions:
               type: string
               example: Group
 
-  NoteCreateError:
+  TermCreateError:
     type: object
     properties:
       title:
         type: array
-        example: [Note title should be uniue]
+        example: [Term title should be uniue]
       type:
         type: array
-        example: [Note type is required]
+        example: [Taxonomy is required]
               
-  NoteLinkError:
+  TermLinkError:
     type: object
     properties:
       id:
@@ -2717,36 +2717,36 @@ definitions:
         type: string
         example: object not found with type Groupssss
               
-  NoteTypeCreateParams:
+  TermTypeCreateParams:
     type: object
     properties:
-      noteType:
+      taxonomy:
         type: object
         properties:
           project_id:
             type: string
             example: 5951303fc9bf3c7b9a573a3f
-          type:
+          taxonomy:
             type: string
             example: Ink
             
-  NoteTypeUpdateParams:
+  TermTypeUpdateParams:
     type: object
     properties:
-      noteType:
+      taxonomy:
         type: object
         properties:
           project_id:
             type: string
             example: 5951303fc9bf3c7b9a573a3f
-          type:
+          taxonomy:
             type: string
             example: Ink
-          old_type:
+          old_taxonomy:
             type: string
             example: Inkss
             
-  NoteTypeCreateError:
+  TermTypeCreateError:
     type: object
     properties:
       project_id:
@@ -2757,7 +2757,7 @@ definitions:
         example: already exists in the project
             
             
-  NoteTypeUpdateError:
+  TaxonomyUpdateError:
     type: object
     properties:
       project_id:
@@ -2771,7 +2771,7 @@ definitions:
         example: doesn't exist in the project
             
             
-  NoteTypeDeleteError:
+  TaxonomyDeleteError:
     type: object
     properties:
       project_id:
@@ -2781,10 +2781,10 @@ definitions:
         type: string
         example: doesn't exist in the project
             
-  NoteTypeResponse:
+  TaxonomyResponse:
     type: object
     properties:
-      noteTypes:
+      taxonomies:
         type: array
         items:
           type: string
@@ -2833,7 +2833,7 @@ definitions:
         items:
           type: string
         example: [5984d709c9bf3c1f76fd3fb, 5984d709c9bf3c1f76asdsadb, sad84d709c9bf3c1f76fd3fb]
-      Notes:
+      Terms:
         type: array
         items:
           type: string
