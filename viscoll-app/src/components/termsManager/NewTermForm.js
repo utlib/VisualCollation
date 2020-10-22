@@ -11,7 +11,7 @@ export default class NewTermForm extends Component {
     this.state = {
       //the state is managed from the component itself
       title: '', //this is why a class component was used
-      type: '',
+      taxonomy: '',
       description: '',
       uri: '',
       show: false,
@@ -49,10 +49,10 @@ export default class NewTermForm extends Component {
       editing: { ...this.state.editing, [name]: true },
     });
     if (name === 'title') this.validateTitle(value.trim());
-    if (name === 'type') {
+    if (name === 'taxonomy') {
       let editing = {
         title: this.state.title,
-        type: value,
+        taxonomy: value,
         description: this.state.description,
         show: this.state.show,
       };
@@ -65,7 +65,7 @@ export default class NewTermForm extends Component {
     let term = {
       project_id: this.props.projectID,
       title: this.state.title,
-      type: this.state.type,
+      taxonomy: this.state.taxonomy,
       description: this.state.description,
       uri: this.state.uri,
       show: this.state.show,
@@ -74,7 +74,7 @@ export default class NewTermForm extends Component {
     // Reset form
     this.setState({
       title: '',
-      type: '',
+      taxonomy: '',
       description: '',
       uri: '',
       show: false,
@@ -91,12 +91,12 @@ export default class NewTermForm extends Component {
   reset = props => {
     this.setState({
       title: '',
-      type: '',
+      taxonomy: '',
       description: '',
       uri: '',
       errors: {
         title: '',
-        type: '',
+        taxonomy: '',
         description: '',
         uri: '',
         show: false,
@@ -104,7 +104,7 @@ export default class NewTermForm extends Component {
     });
   };
 
-  renderNoteTypes = name => {
+  renderTaxonomies = name => {
     return { value: name, text: name };
   };
 
@@ -142,7 +142,7 @@ export default class NewTermForm extends Component {
           onClick={() => this.create()}
           disabled={
             this.state.errors.title !== '' ||
-            this.state.type === '' ||
+            this.state.taxonomy === '' ||
             this.state.title === ''
           }
         />
@@ -167,16 +167,16 @@ export default class NewTermForm extends Component {
               aria-invalid={this.state.errors.title.length > 0}
             />
           </div>
-          <div className="label" id="newNoteType">
-            Type
+          <div className="label" id="newTaxonomy">
+            Taxonomy
           </div>
           <div className="input">
             <SelectField
-              label="newNoteType"
-              id="newNoteType"
-              value={this.state.type}
-              onChange={(v, i) => this.onChange('type', v)}
-              data={this.props.noteTypes.map(this.renderNoteTypes)}
+              label="newTaxonomy"
+              id="newTaxonomy"
+              value={this.state.taxonomy}
+              onChange={(v, i) => this.onChange('taxonomy', v)}
+              data={this.props.Taxonomies.map(this.renderTaxonomies)}
             ></SelectField>
           </div>
           <div className="label" id="newTermDescription">
