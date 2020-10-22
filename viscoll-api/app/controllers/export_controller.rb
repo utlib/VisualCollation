@@ -44,8 +44,8 @@ class ExportController < ApplicationController
         when "json"
           @data = buildJSON(@project)
           render :'exports/show', status: :ok and return
-        when 'svg', 'svg2'
-          collation_file = @format == 'svg2' ? 'collation2.css' : 'collation.css'
+        when 'svg'
+          collation_file = 'collation.css'
           config_xml = %Q{<config><css xml:id="css">#{collation_file}</css></config>}
           
           job_response = process_pipeline 'viscoll2svg', xml.to_xml, config_xml
@@ -77,19 +77,22 @@ class ExportController < ApplicationController
           @zipFilePath = "#{@base_api_url}/transformations/zip/#{@project.id}-formula"
 
           files = []
+          sorted_files = []
           Zip::File.open(outfile) do |zip_file|
             formula_count = 0
             zip_file.each do |entry| 
               if File.basename(entry.name).include? "formula"
-                formula_count += 1
-                file_content = "Formula #{formula_count}: " + %r{>([^<]*)<}.match(entry.get_input_stream.read)[1]
-                files << file_content
-                files << "\n"
+                nokogiri_entry = zip_file.get_input_stream(entry) { |f| Nokogiri::XML(f) }
+                content = nokogiri_entry.xpath('//vc:formula/text()')
+                type = nokogiri_entry.xpath('//vc:formula/@type')
+                format = nokogiri_entry.xpath('//vc:formula/@format')
+                formula = "Type: #{type}\nFormat: #{format}\nFormula: #{content}\n\n"
+                files << formula
+                sorted_files = files.sort
               end
             end
           end
-          puts files
-          exportData = files
+          exportData = sorted_files
           
           render json: {data: exportData, type: @format, Images: {exportedImages:@zipFilePath ? @zipFilePath : false}}, status: :ok and return
         else

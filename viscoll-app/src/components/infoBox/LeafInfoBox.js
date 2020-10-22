@@ -758,7 +758,7 @@ export default class LeafInfoBox extends React.Component {
               tabIndex={this.props.tabIndex}
             >
               <img
-                alt={recto.id}
+                alt={recto.memberType}
                 src={
                   isRectoDIY ? rectoURL : rectoURL + '/full/80,/0/default.jpg'
                 }
@@ -766,7 +766,7 @@ export default class LeafInfoBox extends React.Component {
                 width={80}
               />
               <br />
-              {recto.id}
+              {recto.memberType}
             </button>
           );
         }
@@ -781,7 +781,7 @@ export default class LeafInfoBox extends React.Component {
               tabIndex={this.props.tabIndex}
             >
               <img
-                alt={verso.id}
+                alt={verso.memberType}
                 src={
                   isVersoDIY ? versoURL : versoURL + '/full/80,/0/default.jpg'
                 }
@@ -789,7 +789,7 @@ export default class LeafInfoBox extends React.Component {
                 width={80}
               />
               <br />
-              {verso.id}
+              {verso.memberType}
             </button>
           );
         }

@@ -107,7 +107,7 @@ const Export = props => {
         {/* {props.exportedType === 'share'
           ? window.location.href + '/viewOnly'
           : props.exportedData} */}
-        {props.exportedType === 'svg' || props.exportedType === 'svg2' ? (
+        {props.exportedType === 'svg' ? (
           <div>
             {Array.from(props.exportedData)
               .reverse()
