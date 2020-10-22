@@ -4466,11 +4466,11 @@ export const state001 = {
         memberType: 'Verso'
       }
     },
-    Notes: {
+    Terms: {
       '5a57825a4cfad13070870df8': {
         id: '5a57825a4cfad13070870df8',
         title: 'Black ink',
-        type: 'Ink',
+        taxonomy: 'Ink',
         description: 'Some black ink over here\n',
         show: true,
         objects: {
@@ -4490,7 +4490,7 @@ export const state001 = {
       '5a57825a4cfad13070870df9': {
         id: '5a57825a4cfad13070870df9',
         title: 'John\'s hand',
-        type: 'Hand',
+        taxonomy: 'Hand',
         description: 'Look ! ',
         show: false,
         objects: {
@@ -4508,7 +4508,7 @@ export const state001 = {
       '5a57825a4cfad13070870dfa': {
         id: '5a57825a4cfad13070870dfa',
         title: 'Fire',
-        type: 'Damage',
+        taxonomy: 'Damage',
         description: 'Some burnt marks',
         show: true,
         objects: {
@@ -4674,14 +4674,14 @@ export const state001 = {
           displayName: 'URI'
         }
       ],
-      note: [
+      term: [
         {
           name: 'title',
           displayName: 'Title'
         },
         {
-          name: 'type',
-          displayName: 'Type',
+          name: 'taxonomy',
+          displayName: 'Taxonomy',
           isDropdown: true
         },
         {
