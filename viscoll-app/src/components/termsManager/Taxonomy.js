@@ -96,7 +96,7 @@ export default class Taxonomy extends Component {
     event.preventDefault();
     let taxonomy = {
       project_id: this.props.projectID,
-      taxonomy: this.state.taxonomy.trim(),
+      taxonomy: this.state.newTaxonomy.trim(),
     };
     this.props.action.createTaxonomy(taxonomy);
     this.resetEditing();
