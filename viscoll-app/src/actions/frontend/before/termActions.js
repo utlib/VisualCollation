@@ -1,6 +1,6 @@
 export function createTaxonomy(action, state) {
   const newTaxonomy = action.payload.request.data.taxonomy.taxonomy;
-  state.project.taxonomies.push(newTaxonomy);
+  state.project.Taxonomies.push(newTaxonomy);
   return state;
 }
 
