@@ -21,7 +21,7 @@ describe "POST /terms", :type => :request do
   end
 
   context 'and valid authorization' do
-    context 'and standard notes' do
+    context 'and standard terms' do
       before do
         post '/terms', params: @parameters.to_json, headers: {'Authorization' => @authToken, 'CONTENT_TYPE' => 'application/json', 'ACCEPT' => 'application/json'}
       end
