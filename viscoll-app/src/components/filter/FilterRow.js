@@ -19,8 +19,8 @@ class FilterRow extends Component {
     }
   }
 
-  mapTermAttributeMenuItems = (noteType, index) => {
-    return { key:noteType+index, value:noteType, text:noteType }
+  mapTermAttributeMenuItems = (taxonomy, index) => {
+    return { key:taxonomy+index, value:taxonomy, text:taxonomy }
   }
 
   mapAttributeMenuItems = (item, index) => {
@@ -79,13 +79,13 @@ class FilterRow extends Component {
           );
         } 
         else if (this.props.defaultAttributes[this.props.type] && this.props.defaultAttributes[this.props.type][this.props.attributeIndex]['name']==="type"){
-          let dataSource = this.props.noteTypes.map((noteType) => {
-            return {text: noteType, value: noteType}
+          let dataSource = this.props.Taxonomies.map((taxonomy) => {
+            return {text: taxonomy, value: taxonomy}
           })
           input = 
             (
               <SelectField
-                id="noteTypeSelectField"
+                id="taxonomySelectField"
                 label="Select a value"
                 floatingLabelText="Value"
                 data={dataSource}
