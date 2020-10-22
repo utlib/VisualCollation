@@ -43,7 +43,7 @@ class Group
     self.save
   end
 
-  # If linked to note(s), remove link from the note(s)'s side
+  # If linked to term(s), remove link from the term(s)'s side
   def unlink_terms
     if self.terms
       self.terms.each do | term |
