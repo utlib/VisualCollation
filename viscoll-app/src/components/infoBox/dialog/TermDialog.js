@@ -91,7 +91,7 @@ export default class TermDialog extends React.Component {
           term = {this.props.activeTerm}
           createErrors={this.props.createErrors} 
           updateErrors={this.props.updateErrors} 
-          noteTypes={this.props.noteTypes}
+          Taxonomies={this.props.Taxonomies}
           Groups={this.props.Groups}
           Leafs={this.props.Leafs}
           Rectos={this.props.Rectos}
