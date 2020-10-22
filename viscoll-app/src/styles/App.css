@@ -509,7 +509,7 @@
           padding-top: 10px;
           font-weight: 500;
           color: #4e4e4e; }
-        .termsManager .browse .termsList .item .type {
+        .termsManager .browse .termsList .item .taxonomy {
           padding-top: 5px;
           padding-bottom: 10px;
           color: #727272;
@@ -521,18 +521,18 @@
       position: relative;
       width: calc(100% - 320px);
       left: 300px; }
-  .termsManager .noteType {
+  .termsManager .taxonomy {
     padding: 1em 2em; }
-    .termsManager .noteType .items {
+    .termsManager .taxonomy .items {
       display: flex;
       flex-wrap: wrap; }
-    .termsManager .noteType .item {
+    .termsManager .taxonomy .item {
       width: 220px;
       margin-right: 1em; }
-    .termsManager .noteType .create {
+    .termsManager .taxonomy .create {
       display: flex;
       margin-bottom: 2em; }
-      .termsManager .noteType .create .input {
+      .termsManager .taxonomy .create .input {
         margin-right: 1em; }
 
 .termsInfobox {
