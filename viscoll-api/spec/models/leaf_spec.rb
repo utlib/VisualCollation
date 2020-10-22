@@ -50,7 +50,7 @@ RSpec.describe Leaf, type: :model do
   end
 
   describe "Destruction" do
-    it "should unlink its notes" do
+    it "should unlink its terms" do
       subterm = FactoryGirl.create(:term, project: @project, objects: {Group: [], Leaf: [@leaf.id], Recto: [], Verso: []})
       @leaf.terms << subterm
       @leaf.save
