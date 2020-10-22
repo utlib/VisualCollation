@@ -16,7 +16,7 @@ export default class AddTerm extends React.Component {
     super(props);
     this.state = {
       open: false,
-      type: '',
+      taxonomy: '',
       description: '',
       show: false,
       searchText: '',
@@ -28,7 +28,7 @@ export default class AddTerm extends React.Component {
   handleOpen = () => {
     this.setState({
       open: true,
-      type: '',
+      taxonomy: '',
       description: '',
       show: false,
       searchText: '',
@@ -82,7 +82,7 @@ export default class AddTerm extends React.Component {
         // Did not find term, so create and attach new term to object
         this.props.action.createAndAttachTerm(
           this.state.searchText,
-          this.state.type,
+          this.state.taxonomy,
           this.state.description,
           this.state.show
         );
@@ -102,9 +102,9 @@ export default class AddTerm extends React.Component {
   };
 
   /**
-   * Mapping function to render one term type menu item
+   * Mapping function to render one term taxonomy menu item
    */
-  renderNoteTypes = name => {
+  renderTaxonomies = name => {
     return <MenuItem key={name} value={name} primaryText={name} />;
   };
 
@@ -140,7 +140,7 @@ export default class AddTerm extends React.Component {
         primary
         onClick={this.submit}
         style={{ width: '49%' }}
-        disabled={!this.termExists() && this.state.type === ''}
+        disabled={!this.termExists() && this.state.taxonomy === ''}
       />,
     ];
 
@@ -149,13 +149,13 @@ export default class AddTerm extends React.Component {
       newTermForm = (
         <div>
           <SelectField
-            value={this.state.type}
-            onChange={(e, i, v) => this.onChange('type', v)}
+            value={this.state.taxonomy}
+            onChange={(e, i, v) => this.onChange('taxonomy', v)}
             floatingLabelText="Taxonomy"
             fullWidth
             style={{ marginTop: -20 }}
           >
-            {this.props.noteTypes.map(this.renderNoteTypes)}
+            {this.props.Taxonomies.map(this.renderTaxonomies)}
           </SelectField>
           <TextField
             floatingLabelText="Description"
