@@ -105,6 +105,21 @@ class ExportController < ApplicationController
           File.open outfile, 'wb' do |f|
             f.puts job_response.body
           end
+          Zip::File.open(outfile) do |zip_file|
+            zip_file.mkdir "SVG"
+            zip_file.mkdir "XML"
+            zip_file.mkdir "HTML"
+            zip_file.mkdir "CSS"
+            zip_file.each do |file|
+              if File.extname(file.name) == '.html'
+                zip_file.rename(file.name, "HTML/#{file.name}")
+              elsif File.extname(file.name) == '.xml'
+                zip_file.rename(file.name, "XML/#{file.name}")
+              elsif File.extname(file.name) == '.svg'
+                zip_file.rename(file.name, "SVG/#{file.name}")
+              end
+            end
+          end
           @zipFilePath = "#{@base_api_url}/transformations/zip/#{@project.id}-html"
 
           exportData = []
