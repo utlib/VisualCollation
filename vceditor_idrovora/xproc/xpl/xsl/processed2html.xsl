@@ -384,7 +384,7 @@
                                     <xsl:call-template name="SVGobject">
                                         <xsl:with-param name="idno" select="$idno"/>
                                         <xsl:with-param name="gatheringNo" select="$gatheringNo"/>
-                                        <xsl:with-param name="relativePath" select="'./'"/>
+                                        <xsl:with-param name="relativePath" select="'../SVG/'"/>
                                     </xsl:call-template>
                                 </div>
                                 <!-- Division with img1 -->
@@ -761,7 +761,7 @@
                             <xsl:call-template name="SVGobject">
                                 <xsl:with-param name="idno" select="$idno"/>
                                 <xsl:with-param name="gatheringNo" select="$gatheringNo"/>
-                                <xsl:with-param name="relativePath" select="'./'"/>
+                                <xsl:with-param name="relativePath" select="'../SVG/'"/>
                             </xsl:call-template>
                         </div>
                     </xsl:for-each>
@@ -1050,7 +1050,7 @@
                             <xsl:call-template name="SVGobject">
                                 <xsl:with-param name="idno" select="$idno"/>
                                 <xsl:with-param name="gatheringNo" select="$gatheringNo"/>
-                                <xsl:with-param name="relativePath" select="'./'"/>
+                                <xsl:with-param name="relativePath" select="'../../SVG/'"/>
                             </xsl:call-template>
                             <!-- Division with img1 -->
                             <xsl:call-template name="img1">
