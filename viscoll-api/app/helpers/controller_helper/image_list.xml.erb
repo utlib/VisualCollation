@@ -43,11 +43,19 @@
       <% project.leafs.each do |leaf| %>
         <Row>
           <Cell><Data ss:Type="String"><%= leaf.folio_number %>r</Data></Cell>
-          <Cell><Data ss:Type="String"><%= Side.find(leaf.rectoID).image["url"] %></Data></Cell>
+          <% if Side.find(leaf.rectoID).image["url"].present? %>
+            <Cell><Data ss:Type="String"><%= Side.find(leaf.rectoID).image["url"] %></Data></Cell>
+          <% else %>
+            <Cell><Data ss:Type="String">https://cdn.rawgit.com/leoba/VisColl/master/data/support/images/x.jpg</Data></Cell>
+          <% end %>
         </Row>
         <Row>
           <Cell><Data ss:Type="String"><%= leaf.folio_number %>v</Data></Cell>
-          <Cell><Data ss:Type="String"><%= Side.find(leaf.versoID).image["url"] %></Data></Cell>
+          <% if Side.find(leaf.versoID).image["url"].present? %>
+            <Cell><Data ss:Type="String"><%= Side.find(leaf.versoID).image["url"] %></Data></Cell>
+          <% else %>
+            <Cell><Data ss:Type="String">https://cdn.rawgit.com/leoba/VisColl/master/data/support/images/x.jpg</Data></Cell>
+          <% end %>
         </Row>
       <% end %>
     </Table>
