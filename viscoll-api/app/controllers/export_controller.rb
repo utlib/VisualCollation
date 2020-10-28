@@ -109,7 +109,6 @@ class ExportController < ApplicationController
             zip_file.mkdir "SVG"
             zip_file.mkdir "XML"
             zip_file.mkdir "HTML"
-            zip_file.mkdir "CSS"
             zip_file.each do |file|
               if File.extname(file.name) == '.html'
                 zip_file.rename(file.name, "HTML/#{file.name}")
