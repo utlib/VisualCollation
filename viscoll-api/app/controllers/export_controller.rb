@@ -106,10 +106,6 @@ class ExportController < ApplicationController
             f.puts job_response.body
           end
           Zip::File.open(outfile) do |zip_file|
-            # zip_file.mkdir "SVG"
-            # zip_file.mkdir "XML"
-            # zip_file.mkdir "HTML"
-            zip_file.mkdir "test"
             zip_file.each do |file|
               if File.extname(file.name) == '.html'
                 zip_file.rename(file.name, "HTML/#{file.name}")
