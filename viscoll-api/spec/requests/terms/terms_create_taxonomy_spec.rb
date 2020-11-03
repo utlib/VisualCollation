@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-describe "POST /notes/type", :type => :request do
+describe "POST /terms/taxonomy", :type => :request do
   before do
     @user = FactoryGirl.create(:user, {:password => "user"})
     put '/confirmation', params: {:confirmation_token => @user.confirmation_token}
@@ -9,11 +9,11 @@ describe "POST /notes/type", :type => :request do
   end
 
   before :each do
-    @project = FactoryGirl.create(:project, {user: @user, noteTypes: ["Ink"]})
+    @project = FactoryGirl.create(:project, {user: @user, taxonomies: ["Ink"]})
     @parameters = {
-      "noteType": {
+      "taxonomy": {
         "project_id": @project.id.to_str,
-        "type": "Paper"
+        "taxonomy": "Paper"
       }
     }
   end
@@ -21,7 +21,7 @@ describe "POST /notes/type", :type => :request do
   context 'with valid authorization' do
     context 'with valid parameters' do
       before do
-        post '/notes/type', params: @parameters.to_json, headers: {'Authorization' => @authToken, 'CONTENT_TYPE' => 'application/json', 'ACCEPT' => 'application/json'}
+        post '/terms/taxonomy', params: @parameters.to_json, headers: {'Authorization' => @authToken, 'CONTENT_TYPE' => 'application/json', 'ACCEPT' => 'application/json'}
         @project.reload
       end
 
@@ -29,16 +29,16 @@ describe "POST /notes/type", :type => :request do
         expect(response).to have_http_status(:no_content)
       end
 
-      it 'should add the type to the project' do
-        expect(@project.noteTypes).to include "Ink"
-        expect(@project.noteTypes).to include "Paper"
+      it 'should add the taxonomy to the project' do
+        expect(@project.taxonomies).to include "Ink"
+        expect(@project.taxonomies).to include "Paper"
       end
     end
 
     context 'with missing project' do
       before do
-        @parameters[:noteType][:project_id] += 'missing'
-        post '/notes/type', params: @parameters.to_json, headers: {'Authorization' => @authToken, 'CONTENT_TYPE' => 'application/json', 'ACCEPT' => 'application/json'}
+        @parameters[:taxonomy][:project_id] += 'missing'
+        post '/terms/taxonomy', params: @parameters.to_json, headers: {'Authorization' => @authToken, 'CONTENT_TYPE' => 'application/json', 'ACCEPT' => 'application/json'}
         @project.reload
         @body = JSON.parse(response.body)
       end
@@ -52,10 +52,10 @@ describe "POST /notes/type", :type => :request do
       end
     end
 
-    context 'with duplicated type' do
+    context 'with duplicated taxonomy' do
       before do
-        @parameters[:noteType][:type] = "Ink"
-        post '/notes/type', params: @parameters.to_json, headers: {'Authorization' => @authToken, 'CONTENT_TYPE' => 'application/json', 'ACCEPT' => 'application/json'}
+        @parameters[:taxonomy][:taxonomy] = "Ink"
+        post '/terms/taxonomy', params: @parameters.to_json, headers: {'Authorization' => @authToken, 'CONTENT_TYPE' => 'application/json', 'ACCEPT' => 'application/json'}
         @project.reload
         @body = JSON.parse(response.body)
       end
@@ -65,20 +65,20 @@ describe "POST /notes/type", :type => :request do
       end
 
       it 'should return the right error message' do
-        expect(@body['type']).to eq "Ink type already exists in the project"
+        expect(@body['taxonomy']).to eq "Ink taxonomy already exists in the project"
       end
 
       it 'should leave the project alone' do
-        expect(@project.noteTypes).to eq ["Ink"]
+        expect(@project.taxonomies).to eq ["Ink"]
       end
     end
     
     context 'with unauthorized project' do
       before do
         @user2 = FactoryGirl.create(:user)
-        @project2 = FactoryGirl.create(:project, {user: @user2, noteTypes: ["Ink"]})
-        @parameters[:noteType][:project_id] = @project2.id.to_str
-        post '/notes/type', params: @parameters.to_json, headers: {'Authorization' => @authToken, 'CONTENT_TYPE' => 'application/json', 'ACCEPT' => 'application/json'}
+        @project2 = FactoryGirl.create(:project, {user: @user2, taxonomies: ["Ink"]})
+        @parameters[:taxonomy][:project_id] = @project2.id.to_str
+        post '/terms/taxonomy', params: @parameters.to_json, headers: {'Authorization' => @authToken, 'CONTENT_TYPE' => 'application/json', 'ACCEPT' => 'application/json'}
         @project2.reload
       end
       
@@ -86,15 +86,15 @@ describe "POST /notes/type", :type => :request do
         expect(response).to have_http_status(:unauthorized)
       end
       
-      it 'should leave the types alone' do
-        expect(@project2.noteTypes).not_to include("Paper")
+      it 'should leave the taxonomies alone' do
+        expect(@project2.taxonomies).not_to include("Paper")
       end
     end
   end
 
   context 'with corrupted authorization' do
     before do
-      post '/notes/type', params: @parameters.to_json, headers: {'Authorization' => @authToken+'asdf', 'CONTENT_TYPE' => 'application/json', 'ACCEPT' => 'application/json'}
+      post '/terms/taxonomy', params: @parameters.to_json, headers: {'Authorization' => @authToken+'asdf', 'CONTENT_TYPE' => 'application/json', 'ACCEPT' => 'application/json'}
       @body = JSON.parse(response.body)
     end
 
@@ -109,7 +109,7 @@ describe "POST /notes/type", :type => :request do
 
   context 'with empty authorization' do
     before do
-      post '/notes/type', params: @parameters.to_json, headers: {'Authorization' => ""}
+      post '/terms/taxonomy', params: @parameters.to_json, headers: {'Authorization' => ""}
     end
 
     it 'returns an bad request error' do
@@ -123,7 +123,7 @@ describe "POST /notes/type", :type => :request do
 
   context 'invalid authorization' do
     before do
-      post '/notes/type', params: @parameters.to_json, headers: {'Authorization' => "123456789"}
+      post '/terms/taxonomy', params: @parameters.to_json, headers: {'Authorization' => "123456789"}
     end
 
     it 'returns an bad request error' do
@@ -137,7 +137,7 @@ describe "POST /notes/type", :type => :request do
 
   context 'without authorization' do
     before do
-      post '/notes/type'
+      post '/terms/taxonomy'
     end
 
     it 'returns an unauthorized action error' do

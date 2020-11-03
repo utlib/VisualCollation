@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-describe "PUT /notes/type", :type => :request do
+describe "DELETE /terms/taxonomy", :type => :request do
   before do
     @user = FactoryGirl.create(:user, {:password => "user"})
     put '/confirmation', params: {:confirmation_token => @user.confirmation_token}
@@ -9,26 +9,22 @@ describe "PUT /notes/type", :type => :request do
   end
 
   before :each do
-    @project = FactoryGirl.create(:project, {
-      user: @user,
-      noteTypes: ["Ink", "Paper"]
-    })
-    @project.notes << FactoryGirl.create(:note, {
+    @project = FactoryGirl.create(:project, {user: @user, taxonomies: ["Ink", "Paper"]})
+    @project.terms << FactoryGirl.create(:term, {
       project_id: @project.id,
-      type: "Ink",
+      taxonomy: "Ink",
       description: "Sepia"
     })
-    @project.notes << FactoryGirl.create(:note, {
+    @project.terms << FactoryGirl.create(:term, {
       project_id: @project.id,
-      type: "Paper",
+      taxonomy: "Paper",
       description: "Parchment"
     })
     @project.save
     @parameters = {
-      "noteType": {
+      "taxonomy": {
         "project_id": @project.id.to_str,
-        "type": "New Paper",
-        "old_type": "Paper"
+        "taxonomy": "Ink"
       }
     }
   end
@@ -36,7 +32,7 @@ describe "PUT /notes/type", :type => :request do
   context 'with valid authorization' do
     context 'with valid parameters' do
       before do
-        put '/notes/type', params: @parameters.to_json, headers: {'Authorization' => @authToken, 'CONTENT_TYPE' => 'application/json', 'ACCEPT' => 'application/json'}
+        delete '/terms/taxonomy', params: @parameters.to_json, headers: {'Authorization' => @authToken, 'CONTENT_TYPE' => 'application/json', 'ACCEPT' => 'application/json'}
         @project.reload
       end
 
@@ -44,23 +40,21 @@ describe "PUT /notes/type", :type => :request do
         expect(response).to have_http_status(:no_content)
       end
 
-      it 'should remove the type from the project' do
-        expect(@project.noteTypes).to include "Ink"
-        expect(@project.noteTypes).to include "New Paper"
-        expect(@project.noteTypes).not_to include "Paper"
+      it 'should remove the taxonomy from the project' do
+        expect(@project.taxonomies).not_to include "Ink"
+        expect(@project.taxonomies).to include "Paper"
       end
 
-      it 'should rename notes with that type' do
-        expect(@project.notes).to include an_object_having_attributes(type: "Ink")
-        expect(@project.notes).to include an_object_having_attributes(type: "New Paper")
-        expect(@project.notes).not_to include an_object_having_attributes(type: "Paper")
+      it 'should change taxonomy of the term to Unknown' do
+        expect(@project.terms).to include an_object_having_attributes(taxonomy: "Unknown")
+        expect(@project.terms).to include an_object_having_attributes(taxonomy: "Paper")
       end
     end
 
     context 'with missing project' do
       before do
-        @parameters[:noteType][:project_id] += 'missing'
-        put '/notes/type', params: @parameters.to_json, headers: {'Authorization' => @authToken, 'CONTENT_TYPE' => 'application/json', 'ACCEPT' => 'application/json'}
+        @parameters[:taxonomy][:project_id] += 'missing'
+        delete '/terms/taxonomy', params: @parameters.to_json, headers: {'Authorization' => @authToken, 'CONTENT_TYPE' => 'application/json', 'ACCEPT' => 'application/json'}
         @project.reload
         @body = JSON.parse(response.body)
       end
@@ -74,10 +68,10 @@ describe "PUT /notes/type", :type => :request do
       end
     end
 
-    context 'with out-of-context type' do
+    context 'with out-of-context taxonomy' do
       before do
-        @parameters[:noteType][:old_type] = "Waahoo"
-        put '/notes/type', params: @parameters.to_json, headers: {'Authorization' => @authToken, 'CONTENT_TYPE' => 'application/json', 'ACCEPT' => 'application/json'}
+        @parameters[:taxonomy][:taxonomy] = "Waahoo"
+        delete '/terms/taxonomy', params: @parameters.to_json, headers: {'Authorization' => @authToken, 'CONTENT_TYPE' => 'application/json', 'ACCEPT' => 'application/json'}
         @project.reload
         @body = JSON.parse(response.body)
       end
@@ -87,57 +81,36 @@ describe "PUT /notes/type", :type => :request do
       end
 
       it 'should return the right error message' do
-        expect(@body['old_type']).to eq "Waahoo type doesn't exist in the project"
+        expect(@body['taxonomy']).to eq "Waahoo taxonomy doesn't exist in the project"
       end
 
       it 'should leave the project alone' do
-        expect(@project.noteTypes).to eq ["Ink", "Paper"]
+        expect(@project.taxonomies).to eq ["Ink", "Paper"]
       end
     end
 
-    context 'with duplicated target type' do
-      before do
-        @parameters[:noteType][:type] = "Ink"
-        put '/notes/type', params: @parameters.to_json, headers: {'Authorization' => @authToken, 'CONTENT_TYPE' => 'application/json', 'ACCEPT' => 'application/json'}
-        @project.reload
-        @body = JSON.parse(response.body)
-      end
-
-      it 'should return 422' do
-        expect(response).to have_http_status(:unprocessable_entity)
-      end
-
-      it 'should return the right error message' do
-        expect(@body['type']).to eq "Ink already exists in the project"
-      end
-
-      it 'should leave the project alone' do
-        expect(@project.noteTypes).to eq ["Ink", "Paper"]
-      end
-    end
-    
     context 'with unauthorized project' do
       before do
         @user2 = FactoryGirl.create(:user)
         @project.user = @user2
         @project.save
-        put '/notes/type', params: @parameters.to_json, headers: {'Authorization' => @authToken, 'CONTENT_TYPE' => 'application/json', 'ACCEPT' => 'application/json'}
+        delete '/terms/taxonomy', params: @parameters.to_json, headers: {'Authorization' => @authToken, 'CONTENT_TYPE' => 'application/json', 'ACCEPT' => 'application/json'}
         @project.reload
       end
-      
+
       it 'should return 403' do
         expect(response).to have_http_status(:unauthorized)
       end
-      
-      it 'should leave the types alone' do
-        expect(@project.noteTypes).to eq ["Ink", "Paper"]
+
+      it 'should leave the taxonomies alone' do
+        expect(@project.taxonomies).to eq ["Ink", "Paper"]
       end
     end
   end
 
   context 'with corrupted authorization' do
     before do
-      put '/notes/type', params: @parameters.to_json, headers: {'Authorization' => @authToken+'asdf', 'CONTENT_TYPE' => 'application/json', 'ACCEPT' => 'application/json'}
+      delete '/terms/taxonomy', params: @parameters.to_json, headers: {'Authorization' => @authToken+'asdf', 'CONTENT_TYPE' => 'application/json', 'ACCEPT' => 'application/json'}
       @body = JSON.parse(response.body)
     end
 
@@ -152,7 +125,7 @@ describe "PUT /notes/type", :type => :request do
 
   context 'with empty authorization' do
     before do
-      put '/notes/type', params: @parameters.to_json, headers: {'Authorization' => ""}
+      delete '/terms/taxonomy', params: @parameters.to_json, headers: {'Authorization' => ""}
     end
 
     it 'returns an bad request error' do
@@ -166,7 +139,7 @@ describe "PUT /notes/type", :type => :request do
 
   context 'invalid authorization' do
     before do
-      put '/notes/type', params: @parameters.to_json, headers: {'Authorization' => "123456789"}
+      delete '/terms/taxonomy', params: @parameters.to_json, headers: {'Authorization' => "123456789"}
     end
 
     it 'returns an bad request error' do
@@ -180,7 +153,7 @@ describe "PUT /notes/type", :type => :request do
 
   context 'without authorization' do
     before do
-      put '/notes/type'
+      delete '/terms/taxonomy'
     end
 
     it 'returns an unauthorized action error' do

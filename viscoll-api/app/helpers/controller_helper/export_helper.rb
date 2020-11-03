@@ -16,7 +16,7 @@ module ControllerHelper
       @leafs = {}
       @rectos = {}
       @versos = {}
-      @notes = {}
+      @terms = {}
 
       @projectInformation = {
         "title": @project.title,
@@ -25,7 +25,7 @@ module ControllerHelper
         "metadata": @project.metadata,
         "preferences": @project.preferences,
         "manifests": @project.manifests,
-        "noteTypes": @project.noteTypes
+        "taxonomies": @project.taxonomies
       }
 
       rootMemberOrder = 1
@@ -123,33 +123,33 @@ module ControllerHelper
         }
       end
 
-      @project.notes.each_with_index do | note, index |
-        @notes[index + 1] = {
+      @project.terms.each_with_index do | term, index |
+        @terms[index + 1] = {
           "params": {
-            "title": note.title,
-            "type": note.type,
-            "description": note.description,
-            "show": note.show
+            "title": term.title,
+            "taxonomy": term.taxonomy,
+            "description": term.description,
+            "show": term.show
           },
           "objects": {}
         }
-        if note.uri.present?
-          @notes[index + 1][:params][:uri] = note.uri
+        if term.uri.present?
+          @terms[index + 1][:params][:uri] = term.uri
         end
 
-        @notes[index + 1][:objects][:Group] = note.objects["Group"].map { |groupID| @groupIDs.index(groupID)+1 }
-        @notes[index + 1][:objects][:Leaf] = note.objects["Leaf"].map { |leafID| @leafIDs.index(leafID)+1 }
-        @notes[index + 1][:objects][:Recto] = note.objects["Recto"].map { |rectoID| @rectoIDs.index(rectoID)+1 }
-        @notes[index + 1][:objects][:Verso] = note.objects["Verso"].map { |versoID| @versoIDs.index(versoID)+1 }
+        @terms[index + 1][:objects][:Group] = term.objects["Group"].map { |groupID| @groupIDs.index(groupID)+1 }
+        @terms[index + 1][:objects][:Leaf] = term.objects["Leaf"].map { |leafID| @leafIDs.index(leafID)+1 }
+        @terms[index + 1][:objects][:Recto] = term.objects["Recto"].map { |rectoID| @rectoIDs.index(rectoID)+1 }
+        @terms[index + 1][:objects][:Verso] = term.objects["Verso"].map { |versoID| @versoIDs.index(versoID)+1 }
       end
 
       return {
-        "project": @projectInformation,
-        "groups": @groups,
-        "leafs": @leafs,
-        "rectos": @rectos,
-        "versos": @versos,
-        "notes": @notes,
+          "project": @projectInformation,
+          "groups":  @groups,
+          "leafs":   @leafs,
+          "rectos":  @rectos,
+          "versos":  @versos,
+          "terms":     @terms,
       }
     end
 
@@ -172,8 +172,8 @@ module ControllerHelper
       @leafs = {}
       @rectos = {}
       @versos = {}
-      @notes = {}
-      @noteTitles = []
+      @terms = {}
+      @termTitles = []
       @allGroupAttributeValues = []
       @allLeafAttributeValues = []
       @allSideAttributeValues = []
@@ -332,26 +332,26 @@ module ControllerHelper
             end
           end
 
-          # Creating taxonomies from note types
-          if not project.notes.empty?
-            project.noteTypes.each do |noteType|
-              unless noteType == 'Unknown'
-                taxAtt = {'xml:id': "taxonomy_#{noteType.parameterize.underscore}"}
+          # Creating taxonomies
+          if not project.terms.empty?
+            project.taxonomies.each do |taxonomy|
+              unless taxonomy == 'Unknown'
+                taxAtt = {'xml:id': "taxonomy_#{taxonomy.parameterize.underscore}"}
                 xml.taxonomy taxAtt do
                   xml.label do
-                    xml.text noteType
+                    xml.text taxonomy
                   end
-                  # grab an array of notes with the current noteType
-                  children = project.notes.select {|note| note.type == noteType}
+                  # grab an array of terms with the current taxonomy
+                  children = project.terms.select {|term| term.taxonomy == taxonomy}
 
                   # add proper attributes and crete term elements
-                  children.each do |childNote|
-                    termAttributes = {'xml:id': "term_#{childNote._id}"}
-                    if childNote.uri.present?
-                      termAttributes['ref'] = childNote.uri
+                  children.each do |childTerm|
+                    termAttributes = {'xml:id': "term_#{childTerm._id}"}
+                    if childTerm.uri.present?
+                      termAttributes['ref'] = childTerm.uri
                     end
                     xml.term termAttributes do
-                      xml.text childNote.title
+                      xml.text childTerm.title
                     end
                   end
                 end
@@ -558,31 +558,32 @@ module ControllerHelper
             end
           end
 
-          # Note Attributes Taxonomy
-          if not project.notes.empty?
-            noteTitle = {"xml:id": 'note_title'}
-            xml.taxonomy noteTitle do
+          # Term Attributes Taxonomy
+          if not project.terms.empty?
+            termTitle = {"xml:id": 'term_title'}
+            xml.taxonomy termTitle do
               xml.label do
-                xml.text 'List of values for Note Titles'
+                xml.text 'List of values for Term Titles'
               end
-              project.notes.each_with_index do |note, index|
-                if not @noteTitles.include? note.title
-                  @noteTitles.push(note.title)
+              project.terms.each_with_index do |term, index|
+                if not @termTitles.include? term.title
+                  @termTitles.push(term.title)
                 end
               end
-              @noteTitles.each do |noteTitle|
-                termID = {"xml:id": "note_title"+"_"+noteTitle.parameterize.underscore}
+              @termTitles.each do |termTitle|
+                termID = {"xml:id": "term_title"+"_"+termTitle.parameterize.underscore}
                 xml.term termID do
-                  xml.text noteTitle
+                  xml.text termTitle
                 end
               end
             end
-            noteShow = {"xml:id": 'note_show'}
-            xml.taxonomy noteShow do
+
+            termShow = {"xml:id": 'term_show'}
+            xml.taxonomy termShow do
               xml.label do
-                xml.text 'Whether to show Note in Visualizations'
+                xml.text 'Whether to show Term in Visualizations'
               end
-              termID = {"xml:id": "note_show"}
+              termID = {"xml:id": "term_show"}
               xml.term termID do
                 xml.text true
               end
@@ -608,7 +609,7 @@ module ControllerHelper
 
           # MAPPING
           xml.mapping do
-            # Map quires to attributes and notes and memberIDs
+            # Map quires to attributes and terms and memberIDs
             @groupIDs.each do |groupID|
               group = @groups[groupID]
               parents = parentsOrders(groupID, project)
@@ -616,7 +617,7 @@ module ControllerHelper
               groupMemberOrder = group["memberOrder"]
               idPrefix = project.shelfmark.parameterize.underscore
               idPostfix = parents.empty? ? groupOrder.to_s : parents.join("-")+"-"+groupOrder.to_s
-              linkedNotes = (group.notes.map {|note| "#note_title"+"_"+note.title.parameterize.underscore}).join(" ")
+              linkedTerms = (group.terms.map {|term| "#term_title"+"_"+term.title.parameterize.underscore}).join(" ")
               linkedAttributes = []
               ['title', 'type'].each do |attribute|
                 attributeValue = group[attribute]
@@ -642,23 +643,23 @@ module ControllerHelper
                 end
               end
               linkedAttributes = linkedAttributes.join(" #")
-              if linkedNotes+linkedAttributes != ""
+              if linkedTerms+linkedAttributes != ""
                 xml.map :target => "#"+idPrefix+"-q-"+idPostfix do
                   if linkedAttributes != ""
-                    xml.term :target => linkedNotes+" #"+linkedAttributes+" #group_members_"+idPrefix+"-q-"+idPostfix
+                    xml.term :target => linkedTerms+" #"+linkedAttributes+" #group_members_"+idPrefix+"-q-"+idPostfix
                   else
-                    xml.term :target => linkedNotes+" #group_members_"+idPrefix+"-q-"+idPostfix
+                    xml.term :target => linkedTerms+" #group_members_"+idPrefix+"-q-"+idPostfix
                   end
                 end
               end
             end
-            # Map leaves to attributes and notes
+            # Map leaves to attributes and terms
             @leafIDs.each do |leafID|
               leaf = @leafs[leafID]
               parents = parentsOrders(leafID, project)
               leafemberOrder = parents.pop
               idPostfix = parents.join("-")+"-"+leafemberOrder.to_s
-              linkedNotes = (leaf.notes.map {|note| "#note_title"+"_"+note.title.parameterize.underscore}).join(" ")
+              linkedTerms = (leaf.terms.map {|term| "#term_title"+"_"+term.title.parameterize.underscore}).join(" ")
               attachementMethods = []
               if leaf.attached_above != "None"
                 if leaf.attached_above == "Other"
@@ -679,16 +680,16 @@ module ControllerHelper
               if @allLeafAttributeValues.include? leaf.material and material != ""
                 material = "#leaf_material_"+leaf.material.parameterize.underscore.strip
               end
-              if linkedNotes+attachementMethods+material != ""
+              if linkedTerms+attachementMethods+material != ""
                 xml.map :target => "#"+idPrefix+"-"+idPostfix do
-                  xml.term :target => (linkedNotes+" "+material+attachementMethods).strip
+                  xml.term :target => (linkedTerms+" "+material+attachementMethods).strip
                 end
               end
             end
-            # Map rectos to attributes and notes and sides
+            # Map rectos to attributes and terms and sides
             @rectos.each do |rectoID, attributes|
               recto = attributes["recto"]
-              linkedNotes = (recto.notes.map {|note| "#note_title"+"_"+note.title.parameterize.underscore}).join(" ")
+              linkedTerms = (recto.terms.map {|term| "#term_title"+"_"+term.title.parameterize.underscore}).join(" ")
               linkedImage = recto.image.empty? ? "" : recto.image[:url]
               linkedAttributes = []
               ['texture', 'script_direction', 'page_number'].each do |attribute|
@@ -700,9 +701,9 @@ module ControllerHelper
                 end
               end
               linkedAttributes = linkedAttributes.empty? ? "" : linkedAttributes.join(" #")
-              if linkedNotes+linkedImage+linkedAttributes.strip != ""
+              if linkedTerms+linkedImage+linkedAttributes.strip != ""
                 if linkedAttributes != ""
-                  termText = linkedNotes.strip+" #"+linkedAttributes
+                  termText = linkedTerms.strip+" #"+linkedAttributes
                   if linkedImage != ""
                     termText = termText+" "+linkedImage+" #manifest_"+recto.image[:manifestID]
                   end
@@ -710,7 +711,7 @@ module ControllerHelper
                     xml.term :target => termText.strip
                   end
                 else
-                  termText = linkedNotes.strip
+                  termText = linkedTerms.strip
                   if linkedImage != ""
                     termText = termText+" "+linkedImage+" #manifest_"+recto.image[:manifestID]
                   end
@@ -720,10 +721,10 @@ module ControllerHelper
                 end
               end
             end
-            # Map versos to attributes and notes and sides
+            # Map versos to attributes and terms and sides
             @versos.each do |versoID, attributes|
               verso = attributes["verso"]
-              linkedNotes = (verso.notes.map {|note| "#note_title"+"_"+note.title.parameterize.underscore}).join(" ")
+              linkedTerms = (verso.terms.map {|term| "#term_title"+"_"+term.title.parameterize.underscore}).join(" ")
               linkedImage = verso.image.empty? ? "" : verso.image[:url]
               linkedAttributes = []
               ['texture', 'script_direction', 'page_number'].each do |attribute|
@@ -735,9 +736,9 @@ module ControllerHelper
                 end
               end
               linkedAttributes = linkedAttributes.empty? ? "" : linkedAttributes.join(" #")
-              if linkedNotes+linkedImage+linkedAttributes.strip != ""
+              if linkedTerms+linkedImage+linkedAttributes.strip != ""
                 if linkedAttributes != ""
-                  termText = linkedNotes.strip+" #"+linkedAttributes
+                  termText = linkedTerms.strip+" #"+linkedAttributes
                   if linkedImage != ""
                     termText = termText+" "+linkedImage+" #manifest_"+verso.image[:manifestID]
                   end
@@ -745,7 +746,7 @@ module ControllerHelper
                     xml.term :target => termText.strip
                   end
                 else
-                  termText = linkedNotes.strip
+                  termText = linkedTerms.strip
                   if linkedImage != ""
                     termText = termText+" "+linkedImage+" #manifest_"+verso.image[:manifestID]
                   end
@@ -755,16 +756,16 @@ module ControllerHelper
                 end
               end
             end
-            # Map notes to noteTitles
-            @notes.each do |noteID, attributes|
-              note = attributes[:note]
+            # Map terms to termTitles
+            @terms.each do |termID, attributes|
+              term = attributes[:term]
               xml.map :target => attributes["xml:id"] do
                 termText = []
-                if @noteTitles.include? note.title
-                  termText.push("note_title"+"_"+note.title.parameterize.underscore)
+                if @termTitles.include? term.title
+                  termText.push("term_title"+"_"+term.title.parameterize.underscore)
                 end
                 termText = termText.empty? ? "" : termText.join(" #")
-                note.show ? termText=termText+" #note_show" : nil
+                term.show ? termText=termText+" #term_show" : nil
                 xml.term :target => "#"+termText.strip
               end
             end

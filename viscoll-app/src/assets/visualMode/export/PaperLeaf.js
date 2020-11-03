@@ -58,9 +58,9 @@ PaperLeaf.prototype = {
         this.showAttributes();
         this.createAttachments();
 
-        const leafNotesToShow = this.leaf.notes.filter((noteID)=>{return this.Notes[noteID].show}).reverse();
-        const rectoNotesToShow = this.recto.notes.filter((noteID)=>{return this.Notes[noteID].show}).reverse();
-        const versoNotesToShow = this.verso.notes.filter((noteID)=>{return this.Notes[noteID].show});
+        const leafTermsToShow = this.leaf.terms.filter((termID)=>{return this.Terms[termID].show}).reverse();
+        const rectoTermsToShow = this.recto.terms.filter((termID)=>{return this.Terms[termID].show}).reverse();
+        const versoTermsToShow = this.verso.terms.filter((termID)=>{return this.Terms[termID].show});
 
         let textX = 0;
         let textY = this.y;
@@ -83,55 +83,55 @@ PaperLeaf.prototype = {
             textY -= this.spacing*0.7;
         } 
         let that = this;
-        let clickListener = function(note) {
+        let clickListener = function(term) {
             return function(event) {
-                that.openNoteDialog(note);
+                that.openTermDialog(term);
             }
         }
-        if (this.showNotes) {
-            // Draw recto note text
-            for (let noteIndex = 0; noteIndex < rectoNotesToShow.length; noteIndex++) {
-                const note = this.Notes[rectoNotesToShow[noteIndex]];
-                const noteTitle = this.recto.folio_number?  "▼ " + this.recto.folio_number + " : " + note.title.substr(0,numChars) : "▼ R : " + note.title.substr(0,numChars) ;
-                let textNote = new paper.PointText({
-                    content: noteTitle,
-                    point: [textX, textY - noteIndex*(this.spacing*0.7) - this.spacing*0.3],
+        if (this.showTerms) {
+            // Draw recto term text
+            for (let termIndex = 0; termIndex < rectoTermsToShow.length; termIndex++) {
+                const term = this.Terms[rectoTermsToShow[termIndex]];
+                const termTitle = this.recto.folio_number?  "▼ " + this.recto.folio_number + " : " + term.title.substr(0,numChars) : "▼ R : " + term.title.substr(0,numChars) ;
+                let textTerm = new paper.PointText({
+                    content: termTitle,
+                    point: [textX, textY - termIndex*(this.spacing*0.7) - this.spacing*0.3],
                     fillColor: this.strokeColor,
                     fontSize: fontSize,
                 });
-                textNote.onClick = !this.viewingMode && clickListener(note);
-                this.textNotes.addChild(textNote);
+                textTerm.onClick = !this.viewingMode && clickListener(term);
+                this.textTerms.addChild(textTerm);
             }
-            // Draw leaf note text
-            for (let noteIndex = 0; noteIndex < leafNotesToShow.length; noteIndex++) {
-                const note = this.Notes[leafNotesToShow[noteIndex]];
+            // Draw leaf term text
+            for (let termIndex = 0; termIndex < leafTermsToShow.length; termIndex++) {
+                const term = this.Terms[leafTermsToShow[termIndex]];
                 
-                let textNote = new paper.PointText({
-                    content: "▼ L" + this.order + " : " + note.title.substr(0,numChars),
-                    point: [textX, textY - rectoNotesToShow.length*(this.spacing*0.7) - noteIndex*(this.spacing*0.7) - this.spacing*0.3],
+                let textTerm = new paper.PointText({
+                    content: "▼ L" + this.order + " : " + term.title.substr(0,numChars),
+                    point: [textX, textY - rectoTermsToShow.length*(this.spacing*0.7) - termIndex*(this.spacing*0.7) - this.spacing*0.3],
                     fillColor: this.strokeColor,
                     fontSize: fontSize,
                 });
-                textNote.onClick = !this.viewingMode && clickListener(note);
-                this.textNotes.addChild(textNote);
+                textTerm.onClick = !this.viewingMode && clickListener(term);
+                this.textTerms.addChild(textTerm);
             }
-            // Draw verso note text
-            for (let noteIndex = 0; noteIndex < versoNotesToShow.length; noteIndex++) {
-                const note = this.Notes[versoNotesToShow[noteIndex]];
-                const noteTitle = this.verso.folio_number? "▲ " + this.verso.folio_number + " : " + note.title.substr(0,numChars) : "▲ V : " + note.title.substr(0,numChars);
-                let textNote = new paper.PointText({
-                    content: noteTitle,
-                    point: [textX, this.y + noteIndex*(this.spacing*0.7) + this.spacing*0.8],
+            // Draw verso term text
+            for (let termIndex = 0; termIndex < versoTermsToShow.length; termIndex++) {
+                const term = this.Terms[versoTermsToShow[termIndex]];
+                const termTitle = this.verso.folio_number? "▲ " + this.verso.folio_number + " : " + term.title.substr(0,numChars) : "▲ V : " + term.title.substr(0,numChars);
+                let textTerm = new paper.PointText({
+                    content: termTitle,
+                    point: [textX, this.y + termIndex*(this.spacing*0.7) + this.spacing*0.8],
                     fillColor: this.strokeColor,
                     fontSize: fontSize,
                 });
-                textNote.onClick = !this.viewingMode && clickListener(note);
-                this.textNotes.addChild(textNote);
+                textTerm.onClick = !this.viewingMode && clickListener(term);
+                this.textTerms.addChild(textTerm);
             }
-            this.textNotes.onMouseEnter = function(event) {
+            this.textTerms.onMouseEnter = function(event) {
                 document.body.style.cursor = "pointer";
             }
-            this.textNotes.onMouseLeave = function(event) {
+            this.textTerms.onMouseLeave = function(event) {
                 document.body.style.cursor = "default";
             }
         }
@@ -485,7 +485,7 @@ PaperLeaf.prototype = {
 // Constructor for leaf
 function PaperLeaf(args) {
     this.manager = args.manager;
-    this.Notes = args.Notes;
+    this.Terms = args.Terms;
     this.leafIDs = args.leafIDs;
     this.allLeafIDs = args.allLeafIDs;
     this.Leafs = args.Leafs;
@@ -515,9 +515,9 @@ function PaperLeaf(args) {
     this.handleObjectClick = args.handleObjectClick;
     this.multiplier = args.multiplier;
     this.attachment = new paper.Group();
-    this.textNotes = new paper.Group();
-    this.openNoteDialog = args.openNoteDialog;
-    this.showNotes = args.showNotes;
+    this.textTerms = new paper.Group();
+    this.openTermDialog = args.openTermDialog;
+    this.showTerms = args.showTerms;
 
     this.textLeafOrder = new paper.PointText({
         point: [this.width, this.y+5],

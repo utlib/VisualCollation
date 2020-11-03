@@ -54,7 +54,7 @@ export default class TabularMode extends React.Component {
     }
 
     let emptyResults = false;
-    const activeFiltersLength = this.props.collationManager.filters.Groups.length + this.props.collationManager.filters.Leafs.length + this.props.collationManager.filters.Sides.length + this.props.collationManager.filters.Notes.length;
+    const activeFiltersLength = this.props.collationManager.filters.Groups.length + this.props.collationManager.filters.Leafs.length + this.props.collationManager.filters.Sides.length + this.props.collationManager.filters.Terms.length;
     if (activeFiltersLength===0)
       emptyResults = true && this.props.collationManager.filters.hideOthers && this.props.collationManager.filters.active
 

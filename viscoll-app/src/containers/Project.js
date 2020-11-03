@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import { connect } from "react-redux";
 import CollationManager from './CollationManager'
-import NotesManager from './NotesManager';
+import TermsManager from './TermsManager';
 import ImageManager from './ImageManager';
 import LoadingScreen from "../components/global/LoadingScreen";
 import Notification from "../components/global/Notification";
@@ -10,7 +10,7 @@ import NetworkErrorScreen from "../components/global/NetworkErrorScreen";
 import Feedback from "./Feedback";
 import { loadProject } from "../actions/backend/projectActions";
 
-/** Container for 'Manager (Collation or Notes or Image)', `LoadingScreen`, and `Notification`. */
+/** Container for 'Manager (Collation or Terms or Image)', `LoadingScreen`, and `Notification`. */
 class Project extends Component {
 
   constructor(props) {
@@ -35,15 +35,15 @@ class Project extends Component {
 
   render() { 
     const collationManager = (<CollationManager history={this.props.history} togglePopUp={this.togglePopUp} popUpActive={this.state.popUpActive||this.props.loading} />);
-    const notesManager = (<NotesManager history={this.props.history} togglePopUp={this.togglePopUp} popUpActive={this.state.popUpActive||this.props.loading} />);
+    const termsManager = (<TermsManager history={this.props.history} togglePopUp={this.togglePopUp} popUpActive={this.state.popUpActive||this.props.loading} />);
     const imageManager = (<ImageManager history={this.props.history} togglePopUp={this.togglePopUp} popUpActive={this.state.popUpActive||this.props.loading} />);
     let manager;
     switch (this.props.managerMode) {
       case "collationManager":
         manager = collationManager;
         break;
-      case "notesManager":
-        manager = notesManager;
+      case "termsManager":
+        manager = termsManager;
         break;
       case "imageManager":
         manager = imageManager;

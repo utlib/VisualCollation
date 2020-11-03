@@ -12,7 +12,7 @@ const Leaf = (props) => {
   } = props.collationManager;
   const isActive = selectedObjects.members.includes(activeLeaf.id);
   const isFiltered = filters.Leafs.includes(activeLeaf.id);
-  const leafsOfMatchingElements = filters.LeafsOfMatchingSides + filters.LeafsOfMatchingNotes;
+  const leafsOfMatchingElements = filters.LeafsOfMatchingSides + filters.LeafsOfMatchingTerms;
   const isAffectedFiltered = leafsOfMatchingElements.includes(activeLeaf.id) && !isFiltered;
   const hideOthers = filters.hideOthers;
   const isFilterActive = filters.active;

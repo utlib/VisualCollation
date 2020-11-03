@@ -37,7 +37,7 @@ export default class VisualMode extends React.Component {
           Leafs: this.props.project.Leafs,
           Rectos: this.props.project.Rectos,
           Versos: this.props.project.Versos,
-          Notes: this.props.project.Notes,
+          Terms: this.props.project.Terms,
           activeGroups:
             this.props.collationManager.selectedObjects.type === 'Group'
               ? this.props.collationManager.selectedObjects.members
@@ -59,7 +59,7 @@ export default class VisualMode extends React.Component {
           visibleAttributes: this.props.project.preferences,
           toggleVisualizationDrawing: this.props.toggleVisualizationDrawing,
           addVisualization: this.addVisualization,
-          openNoteDialog: this.props.openNoteDialog,
+          openTermDialog: this.props.openTermDialog,
           notationStyle: this.props.project.notationStyle,
         }),
       },
@@ -81,7 +81,7 @@ export default class VisualMode extends React.Component {
       this.props.project.Sides !== nextProps.project.Sides ||
       this.props.project.Rectos !== nextProps.project.Rectos ||
       this.props.project.Versos !== nextProps.project.Versos ||
-      this.props.project.Notes !== nextProps.project.Notes ||
+      this.props.project.Terms !== nextProps.project.Terms ||
       this.props.collationManager.selectedObjects !==
         nextProps.collationManager.selectedObjects ||
       this.props.collationManager.flashItems !==

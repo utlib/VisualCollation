@@ -1,37 +1,37 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import TopBar from './TopBar';
-import ManageNotes from '../components/notesManager/ManageNotes';
-import NoteType from '../components/notesManager/NoteType';
+import ManageTerms from '../components/termsManager/ManageTerms';
+import Taxonomy from '../components/termsManager/Taxonomy';
 import { Tabs, Tab } from 'material-ui/Tabs';
 // import Panel from '../components/global/Panel';
 import topbarStyle from '../styles/topbar';
 import {
   changeManagerMode,
-  changeNotesTab,
+  changeTermsTab,
 } from '../actions/backend/interactionActions';
 import {
-  addNote,
-  updateNote,
-  deleteNote,
-  createNoteType,
-  updateNoteType,
-  deleteNoteType,
-  linkNote,
-  unlinkNote,
-} from '../actions/backend/noteActions';
+  addTerm,
+  updateTerm,
+  deleteTerm,
+  createTaxonomy,
+  updateTaxonomy,
+  deleteTaxonomy,
+  linkTerm,
+  unlinkTerm,
+} from '../actions/backend/termActions';
 import { sendFeedback } from '../actions/backend/userActions';
 import ManagersPanel from '../components/global/ManagersPanel';
 
-class NotesManager extends Component {
+class TermsManager extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      Notes: props.Notes,
+      Terms: props.Terms,
       value: '',
       filterTypes: {
         title: true,
-        type: true,
+        taxonomy: true,
         description: true,
         // TODO: add URI?
       },
@@ -48,7 +48,7 @@ class NotesManager extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    this.setState({ Notes: nextProps.Notes }, () => this.applyFilter());
+    this.setState({ Terms: nextProps.Terms }, () => this.applyFilter());
   }
 
   resizeHandler = () => {
@@ -56,7 +56,7 @@ class NotesManager extends Component {
   };
 
   applyFilter = () => {
-    this.filterNotes(this.state.value, this.state.filterTypes);
+    this.filterTerms(this.state.value, this.state.filterTypes);
   };
 
   onValueChange = (e, value) => {
@@ -70,19 +70,19 @@ class NotesManager extends Component {
     );
   };
 
-  handleAddNote = note => {
+  handleAddTerm = term => {
     const userID = this.props.user.id;
     const date = Date.now().toString();
     const IDHash = userID + date;
-    note['id'] = IDHash.substr(IDHash.length - 24);
-    this.props.addNote(note);
+    term['id'] = IDHash.substr(IDHash.length - 24);
+    this.props.addTerm(term);
   };
 
-  filterNotes = (value, filterTypes) => {
+  filterTerms = (value, filterTypes) => {
     if (value === '') {
-      this.setState({ Notes: this.props.Notes });
+      this.setState({ Terms: this.props.Terms });
     } else {
-      let filteredNotes = {};
+      let filteredTerms = {};
       let isNoneSelected = true;
       for (let type of Object.keys(filterTypes)) {
         if (filterTypes[type]) {
@@ -91,19 +91,19 @@ class NotesManager extends Component {
         }
       }
       if (isNoneSelected)
-        filterTypes = { title: true, type: true, description: true };
-      for (let noteID in this.props.Notes) {
-        const note = this.props.Notes[noteID];
+        filterTypes = { title: true, taxonomy: true, description: true };
+      for (let termID in this.props.Terms) {
+        const term = this.props.Terms[termID];
         for (let type of Object.keys(filterTypes)) {
           if (
             filterTypes[type] &&
-            note[type].toUpperCase().includes(value.toUpperCase())
+            term[type].toUpperCase().includes(value.toUpperCase())
           )
-            if (filteredNotes[noteID]) break;
-            else filteredNotes[noteID] = note;
+            if (filteredTerms[termID]) break;
+            else filteredTerms[termID] = term;
         }
       }
-      this.setState({ Notes: filteredNotes });
+      this.setState({ Terms: filteredTerms });
     }
   };
 
@@ -111,21 +111,21 @@ class NotesManager extends Component {
     this.setState({ filterOpen: !this.state.filterOpen });
   };
 
-  updateNote = (noteID, note) => {
-    this.props.updateNote(noteID, note, this.props);
+  updateTerm = (termID, term) => {
+    this.props.updateTerm(termID, term, this.props);
   };
 
-  linkNote = (noteID, object) => {
-    this.props.linkNote(noteID, object, this.props);
+  linkTerm = (termID, object) => {
+    this.props.linkTerm(termID, object, this.props);
   };
 
-  unlinkNote = (noteID, object) => {
-    this.props.unlinkNote(noteID, object, this.props);
+  unlinkTerm = (termID, object) => {
+    this.props.unlinkTerm(termID, object, this.props);
   };
 
-  linkAndUnlinkNotes = (noteID, linkObjects, unlinkObjects) => {
-    this.props.linkAndUnlinkNotes(
-      noteID,
+  linkAndUnlinkTerms = (termID, linkObjects, unlinkObjects) => {
+    this.props.linkAndUnlinkTerms(
+      termID,
       linkObjects,
       unlinkObjects,
       this.props
@@ -137,19 +137,19 @@ class NotesManager extends Component {
 
     if (this.props.activeTab === 'MANAGE') {
       content = (
-        <ManageNotes
+        <ManageTerms
           action={{
-            updateNote: this.updateNote,
-            addNote: this.handleAddNote,
-            deleteNote: this.props.deleteNote,
-            linkNote: this.linkNote,
-            unlinkNote: this.unlinkNote,
-            linkAndUnlinkNotes: this.linkAndUnlinkNotes,
+            updateTerm: this.updateTerm,
+            addTerm: this.handleAddTerm,
+            deleteTerm: this.props.deleteTerm,
+            linkTerm: this.linkTerm,
+            unlinkTerm: this.unlinkTerm,
+            linkAndUnlinkTerms: this.linkAndUnlinkTerms,
           }}
           projectID={this.props.projectID}
           notification={this.props.notification}
-          noteTypes={this.props.noteTypes}
-          Notes={this.state.Notes}
+          Taxonomies={this.props.Taxonomies}
+          Terms={this.state.Terms}
           Groups={this.props.Groups}
           Leafs={this.props.Leafs}
           Rectos={this.props.Rectos}
@@ -165,15 +165,15 @@ class NotesManager extends Component {
       );
     } else if (this.props.activeTab === 'TYPES') {
       content = (
-        <NoteType
-          Notes={this.state.Notes}
+        <Taxonomy
+          Terms={this.state.Terms}
           projectID={this.props.projectID}
-          noteTypes={this.props.noteTypes}
+          Taxonomies={this.props.Taxonomies}
           action={{
-            createNoteType: this.props.createNoteType,
-            updateNoteType: this.props.updateNoteType,
-            deleteNoteType: noteTypes =>
-              this.props.deleteNoteType(noteTypes, this.props),
+            createTaxonomy: this.props.createTaxonomy,
+            updateTaxonomy: this.props.updateTaxonomy,
+            deleteTaxonomy: taxonomies =>
+              this.props.deleteTaxonomy(taxonomies, this.props),
           }}
           togglePopUp={this.props.togglePopUp}
           tabIndex={this.props.popUpActive ? -1 : 0}
@@ -196,10 +196,10 @@ class NotesManager extends Component {
     );
 
     return (
-      <div className="notesManager">
+      <div className="termsManager">
         <TopBar
-          notesFilter={this.props.activeTab === 'MANAGE'}
-          filterNotes={this.filterNotes}
+          termsFilter={this.props.activeTab === 'MANAGE'}
+          filterTerms={this.filterTerms}
           onValueChange={this.onValueChange}
           onTypeChange={this.onTypeChange}
           filterTypes={this.state.filterTypes}
@@ -212,7 +212,7 @@ class NotesManager extends Component {
           <Tabs
             tabItemContainerStyle={{ backgroundColor: '#ffffff' }}
             value={this.props.activeTab}
-            onChange={v => this.props.changeNotesTab(v)}
+            onChange={v => this.props.changeTermsTab(v)}
           >
             <Tab
               label="Manage Terms"
@@ -229,7 +229,7 @@ class NotesManager extends Component {
           </Tabs>
         </TopBar>
         {sidebar}
-        <div className="notesWorkspace">{content}</div>
+        <div className="termsWorkspace">{content}</div>
       </div>
     );
   }
@@ -246,10 +246,10 @@ const mapStateToProps = state => {
     Leafs: state.active.project.Leafs,
     Rectos: state.active.project.Rectos,
     Versos: state.active.project.Versos,
-    Notes: state.active.project.Notes,
-    noteTypes: state.active.project.noteTypes,
-    activeTab: state.active.notesManager.activeTab,
-    notesManager: state.active.notesManager,
+    Terms: state.active.project.Terms,
+    Taxonomies: state.active.project.Taxonomies,
+    activeTab: state.active.termsManager.activeTab,
+    termsManager: state.active.termsManager,
     managerMode: state.active.managerMode,
   };
 };
@@ -258,39 +258,39 @@ const mapDispatchToProps = dispatch => {
     changeManagerMode: managerMode => {
       dispatch(changeManagerMode(managerMode));
     },
-    changeNotesTab: tabName => {
-      dispatch(changeNotesTab(tabName));
+    changeTermsTab: tabName => {
+      dispatch(changeTermsTab(tabName));
     },
-    addNote: note => {
-      dispatch(addNote(note));
+    addTerm: term => {
+      dispatch(addTerm(term));
     },
-    updateNote: (noteID, note, props) => {
-      dispatch(updateNote(noteID, note));
+    updateTerm: (termID, term, props) => {
+      dispatch(updateTerm(termID, term));
     },
-    deleteNote: noteID => {
-      dispatch(deleteNote(noteID));
+    deleteTerm: termID => {
+      dispatch(deleteTerm(termID));
     },
-    createNoteType: noteType => {
-      dispatch(createNoteType(noteType));
+    createTaxonomy: taxonomy => {
+      dispatch(createTaxonomy(taxonomy));
     },
-    updateNoteType: noteType => {
-      dispatch(updateNoteType(noteType));
+    updateTaxonomy: taxonomy => {
+      dispatch(updateTaxonomy(taxonomy));
     },
-    deleteNoteType: (noteType, props) => {
-      dispatch(deleteNoteType(noteType));
+    deleteTaxonomy: (taxonomy, props) => {
+      dispatch(deleteTaxonomy(taxonomy));
     },
-    linkNote: (noteID, object, props) => {
-      dispatch(linkNote(noteID, object));
+    linkTerm: (termID, object, props) => {
+      dispatch(linkTerm(termID, object));
     },
-    unlinkNote: (noteID, object, props) => {
-      dispatch(unlinkNote(noteID, object));
+    unlinkTerm: (termID, object, props) => {
+      dispatch(unlinkTerm(termID, object));
     },
-    linkAndUnlinkNotes: (noteID, linkObjects, unlinkObjects, props) => {
+    linkAndUnlinkTerms: (termID, linkObjects, unlinkObjects, props) => {
       if (linkObjects.length > 0) {
-        dispatch(linkNote(noteID, linkObjects));
+        dispatch(linkTerm(termID, linkObjects));
       }
       if (unlinkObjects.length > 0) {
-        dispatch(unlinkNote(noteID, unlinkObjects));
+        dispatch(unlinkTerm(termID, unlinkObjects));
       }
     },
     sendFeedback: (title, message, userID) => {
@@ -298,4 +298,4 @@ const mapDispatchToProps = dispatch => {
     },
   };
 };
-export default connect(mapStateToProps, mapDispatchToProps)(NotesManager);
+export default connect(mapStateToProps, mapDispatchToProps)(TermsManager);

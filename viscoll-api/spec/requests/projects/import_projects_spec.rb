@@ -7,7 +7,7 @@ describe "PUT /projects/import", :type => :request do
     post '/session', params: {:session => { :email => @user.email, :password => "user" }}
     @authToken = JSON.parse(response.body)['session']['jwt']
   end
-  
+
   before :each do
     @parameters = {
       "importData": nil,
@@ -15,13 +15,13 @@ describe "PUT /projects/import", :type => :request do
       "imageData": nil
     }
   end
-  
+
   describe 'JSON imports' do
     let(:import_data) { File.open(File.dirname(__FILE__) + '/../../fixtures/sample_import_json.json', 'r') { |file| file.read } }
     before :each do
       @parameters[:importFormat] = 'json'
     end
-    
+
     it 'should import properly' do
       @parameters[:importData] = import_data
       expect{ put '/projects/import', params: @parameters.to_json, headers: {'Authorization' => @authToken, 'CONTENT_TYPE' => 'application/json', 'ACCEPT' => 'application/json'} }.to change{Project.count}.by(1)
@@ -31,16 +31,16 @@ describe "PUT /projects/import", :type => :request do
       expect(project.shelfmark).to eq 'Ravenna 384.2339'
       expect(project.metadata).to eq({ 'date' => '18th century' })
       expect(project.preferences).to eq({ 'showTips' => true })
-      expect(project.noteTypes).to eq ['Hand', 'Ink', 'Unknown']
+      expect(project.taxonomies).to eq ['Hand', 'Ink', 'Unknown']
       expect(project.manifests).to eq({ '12341234' => { 'id' => '12341234', 'url' => 'https://digital.library.villanova.edu/Item/vudl:99213/Manifest', 'name' => 'Boston, and Bunker Hill.' } })
       expect(project.leafs.count).to eq 6
       expect(project.sides.count).to eq 12
-      expect(project.notes[0].title).to eq 'Test Note'
-      expect(project.notes[0].type).to eq 'Ink'
-      expect(project.notes[0].description).to eq 'This is a test'
-      expect(project.notes[0].objects).to eq({'Group' => [project.groups[0].id.to_s], 'Leaf' => [project.leafs[4].id.to_s], 'Recto' => [project.leafs[4].rectoID], 'Verso' => [project.leafs[4].versoID]})
+      expect(project.terms[0].title).to eq 'Test Term'
+      expect(project.terms[0].taxonomy).to eq 'Ink'
+      expect(project.terms[0].description).to eq 'This is a test'
+      expect(project.terms[0].objects).to eq({'Group' => [project.groups[0].id.to_s], 'Leaf' => [project.leafs[4].id.to_s], 'Recto' => [project.leafs[4].rectoID], 'Verso' => [project.leafs[4].versoID]})
     end
-    
+
     it 'should show error for invalid JSON' do
       @parameters[:importData] = import_data + '{}[];;'
       expect{ put '/projects/import', params: @parameters.to_json, headers: {'Authorization' => @authToken, 'CONTENT_TYPE' => 'application/json', 'ACCEPT' => 'application/json'} }.not_to change{Project.count}
@@ -48,13 +48,13 @@ describe "PUT /projects/import", :type => :request do
       expect(JSON.parse(response.body)['error']).to eq("Sorry, the imported data cannot be validated. Please check your file for errors and make sure the correct import format is selected above.")
     end
   end
-  
+
   describe 'XML imports' do
     let(:import_data) { File.open(File.dirname(__FILE__) + '/../../fixtures/sample_import_xml.xml', 'r') { |file| file.read } }
     before :each do
       @parameters[:importFormat] = 'xml'
     end
-  
+
     it 'should import properly' do
       @parameters[:importData] = import_data
       expect{ put '/projects/import', params: @parameters.to_json, headers: {'Authorization' => @authToken, 'CONTENT_TYPE' => 'application/json', 'ACCEPT' => 'application/json'} }.to change{Project.count}.by(1)
@@ -63,16 +63,13 @@ describe "PUT /projects/import", :type => :request do
       expect(project.shelfmark).to eq 'Ravenna 384.2339'
       expect(project.metadata).to eq({ 'date' => '18th century' })
       expect(project.preferences).to eq({ 'showTips' => true })
-      expect(project.noteTypes).to include('Ink', 'Unknown')
+      # TODO: import taxonomies
       expect(project.manifests).to eq({ '12341234' => { 'id' => '12341234', 'url' => 'https://digital.library.villanova.edu/Item/vudl:99213/Manifest' } })
       expect(project.leafs.count).to eq 6
       expect(project.sides.count).to eq 12
-      expect(project.notes[0].title).to eq 'Test Note'
-      expect(project.notes[0].type).to eq 'Ink'
-      expect(project.notes[0].description).to eq 'This is a test'
-      expect(project.notes[0].objects).to eq({'Group' => [project.groups[0].id.to_s], 'Leaf' => [project.leafs[4].id.to_s], 'Recto' => [project.leafs[4].rectoID], 'Verso' => [project.leafs[4].versoID]})
+      # TODO: import terms
     end
-    
+
     it 'should show error for invalid XML' do
       @parameters[:import_data] = import_data + '<junk'
       expect{ put '/projects/import', params: @parameters.to_json, headers: {'Authorization' => @authToken, 'CONTENT_TYPE' => 'application/json', 'ACCEPT' => 'application/json'} }.not_to change{Project.count}
@@ -80,13 +77,13 @@ describe "PUT /projects/import", :type => :request do
       expect(JSON.parse(response.body)['error']).not_to be_blank
     end
   end
-  
+
   describe 'Invalid situations' do
     let(:import_data) { File.open(File.dirname(__FILE__) + '/../../fixtures/sample_import_json.json', 'r') { |file| file.read } }
     before :each do
       @parameters[:importFormat] = 'json'
     end
-    
+
     context 'with corrupted authorization' do
       before do
         put '/projects/import', params: @parameters.to_json, headers: {'Authorization' => @authToken+'asdf', 'CONTENT_TYPE' => 'application/json', 'ACCEPT' => 'application/json'}

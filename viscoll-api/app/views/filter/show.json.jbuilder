@@ -1,11 +1,11 @@
 json.Groups @groups
 json.Leafs @leafs
 json.Sides @sides
-json.Notes @notes
+json.Terms @terms
 json.GroupsOfMatchingLeafs @groupsOfMatchingLeafs
 json.LeafsOfMatchingSides @leafsOfMatchingSides
 json.GroupsOfMatchingSides @groupsOfMatchingSides
-json.GroupsOfMatchingNotes @groupsOfMatchingNotes
-json.LeafsOfMatchingNotes @leafsOfMatchingNotes
-json.SidesOfMatchingNotes @sidesOfMatchingNotes
+json.groupsOfMatchingTerms @groupsOfMatchingTerms
+json.LeafsOfMatchingTerms @leafsOfMatchingTerms
+json.SidesOfMatchingTerms @sidesOfMatchingTerms
 json.visibleAttributes @visibleAttributes

@@ -50,7 +50,7 @@ describe('>>>A C T I O N --- Test group actions', () => {
       sewing: [],
       nestLevel: 1,
       parentID: null,
-      notes: [],
+      terms: [],
       memberIDs: ['Leaf_111'],
       memberType: 'Group',
     };
@@ -62,7 +62,7 @@ describe('>>>A C T I O N --- Test group actions', () => {
       sewing: [],
       nestLevel: 1,
       parentID: null,
-      notes: [],
+      terms: [],
       memberIDs: ['Leaf_222'],
       memberType: 'Group',
     };
@@ -77,7 +77,7 @@ describe('>>>A C T I O N --- Test group actions', () => {
       type: 'None',
       memberType: 'Leaf',
       nestLevel: 1,
-      notes: [],
+      terms: [],
       parentID: 'Group_123123',
       rectoID: 'Recto_11',
       versoID: 'Verso_22',
@@ -93,7 +93,7 @@ describe('>>>A C T I O N --- Test group actions', () => {
       type: 'None',
       memberType: 'Leaf',
       nestLevel: 1,
-      notes: [],
+      terms: [],
       parentID: 'Group_456456',
       rectoID: 'Recto_33',
       versoID: 'Verso_44',
@@ -105,7 +105,7 @@ describe('>>>A C T I O N --- Test group actions', () => {
       script_direction: 'None',
       texture: 'Hair',
       image: {},
-      notes: [],
+      terms: [],
       memberType: 'Recto',
     };
     expectedState.project.Rectos['Recto_33'] = {
@@ -115,7 +115,7 @@ describe('>>>A C T I O N --- Test group actions', () => {
       script_direction: 'None',
       texture: 'Hair',
       image: {},
-      notes: [],
+      terms: [],
       memberType: 'Recto',
     };
     expectedState.project.Versos['Verso_22'] = {
@@ -125,7 +125,7 @@ describe('>>>A C T I O N --- Test group actions', () => {
       script_direction: 'None',
       texture: 'Flesh',
       image: {},
-      notes: [],
+      terms: [],
       memberType: 'Verso',
     };
     expectedState.project.Versos['Verso_44'] = {
@@ -135,7 +135,7 @@ describe('>>>A C T I O N --- Test group actions', () => {
       script_direction: 'None',
       texture: 'Flesh',
       image: {},
-      notes: [],
+      terms: [],
       memberType: 'Verso',
     };
     expectedState.project.groupIDs.push('Group_123123');

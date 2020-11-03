@@ -20,7 +20,7 @@ export const side0_leaf1 = {
   texture: "None",
   uri: "None",
   script_direction: "None",
-  notes: []
+  terms: []
 }
 
 export const side1_leaf1 = {
@@ -32,7 +32,7 @@ export const side1_leaf1 = {
   texture: "None",
   uri: "None",
   script_direction: "None",
-  notes: []
+  terms: []
 }
 
 export const side0_leaf2 = {
@@ -44,7 +44,7 @@ export const side0_leaf2 = {
   texture: "None",
   uri: "None",
   script_direction: "None",
-  notes: []
+  terms: []
 }
 
 
@@ -57,7 +57,7 @@ export const side1_leaf2 = {
   texture: "None",
   uri: "None",
   script_direction: "None",
-  notes: []
+  terms: []
 }
 
 export const side0_leaf3 = {
@@ -69,7 +69,7 @@ export const side0_leaf3 = {
   texture: "None",
   uri: "None",
   script_direction: "None",
-  notes: []
+  terms: []
 }
 
 export const side1_leaf3 = {
@@ -81,7 +81,7 @@ export const side1_leaf3 = {
   texture: "None",
   uri: "None",
   script_direction: "None",
-  notes: []
+  terms: []
 }
 
 export const side0_leaf4 = {
@@ -93,7 +93,7 @@ export const side0_leaf4 = {
   texture: "None",
   uri: "None",
   script_direction: "None",
-  notes: []
+  terms: []
 }
 
 export const side1_leaf4 = {
@@ -105,7 +105,7 @@ export const side1_leaf4 = {
   texture: "None",
   uri: "None",
   script_direction: "None",
-  notes: []
+  terms: []
 }
 
 export const side0_leaf5 = {
@@ -117,7 +117,7 @@ export const side0_leaf5 = {
   texture: "None",
   uri: "None",
   script_direction: "None",
-  notes: []
+  terms: []
 }
 
 export const side1_leaf5 = {
@@ -129,7 +129,7 @@ export const side1_leaf5 = {
   texture: "None",
   uri: "None",
   script_direction: "None",
-  notes: []
+  terms: []
 }
 
 
@@ -148,7 +148,7 @@ export const leaf1 = {
     belowMethod: ""
   },
   stub: "None",
-  notes: [],
+  terms: [],
   sides: [
     side0_leaf1,
     side1_leaf1
@@ -170,7 +170,7 @@ export const leaf2 = {
     belowMethod: ""
   },
   stub: "None",
-  notes: [],
+  terms: [],
   sides: [
     side0_leaf2,
     side1_leaf2
@@ -192,7 +192,7 @@ export const leaf3 = {
     belowMethod: ""
   },
   stub: "None",
-  notes: [],
+  terms: [],
   sides: [
     side0_leaf3,
     side1_leaf3
@@ -214,7 +214,7 @@ export const leaf4 = {
     belowMethod: ""
   },
   stub: "None",
-  notes: [],
+  terms: [],
   sides: [
     side0_leaf4,
     side1_leaf4
@@ -236,7 +236,7 @@ export const leaf5 = {
     belowMethod: ""
   },
   stub: "None",
-  notes: [],
+  terms: [],
   sides: [
     side0_leaf5,
     side1_leaf5
@@ -250,7 +250,7 @@ export const group1 = {
   order: 1,
   title: "Default",
   type: "Quire",
-  notes: [],
+  terms: [],
   members: [
     leaf1,
     leaf2
@@ -265,7 +265,7 @@ export const group4 = {
   order: 4,
   title: "Default",
   type: "Quire",
-  notes: [],
+  terms: [],
   members: [
     leaf4
   ]
@@ -278,7 +278,7 @@ export const group3 = {
   order: 3,
   title: "Default",
   type: "Quire",
-  notes: [],
+  terms: [],
   members: [
     leaf3,
     group4
@@ -292,7 +292,7 @@ export const group2 = {
   order: 2,
   title: "Default",
   type: "Quire",
-  notes: [],
+  terms: [],
   members: [
     group3,
     leaf5

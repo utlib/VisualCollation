@@ -1,53 +1,53 @@
 import React from 'react';
-import EditNoteForm from '../../notesManager/EditNoteForm';
+import EditTermForm from '../../termsManager/EditTermForm';
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
 
-/** Note dialog */
-export default class NoteDialog extends React.Component {
+/** Term dialog */
+export default class TermDialog extends React.Component {
   getLinkedGroups = () => {
-    const groupsWithCurrentNote = Object.keys(this.props.Groups).filter((groupID) => {
-      return (this.props.Groups[groupID].notes.includes(this.props.activeNote.id))
+    const groupsWithCurrentTerm = Object.keys(this.props.Groups).filter((groupID) => {
+      return (this.props.Groups[groupID].terms.includes(this.props.activeTerm.id))
     });
-    return groupsWithCurrentNote.map((value) => {
+    return groupsWithCurrentTerm.map((value) => {
       const label = `Group ${this.props.groupIDs.indexOf(value)+1}`;
       return {label, value};
     });
   }
 
   getLinkedLeaves = () => {
-    const leafsWithCurrentNote = Object.keys(this.props.Leafs).filter((leafID) => {
-      return (this.props.Leafs[leafID].notes.includes(this.props.activeNote.id))
+    const leafsWithCurrentTerm = Object.keys(this.props.Leafs).filter((leafID) => {
+      return (this.props.Leafs[leafID].terms.includes(this.props.activeTerm.id))
     });
-    return leafsWithCurrentNote.map((value)=>{
+    return leafsWithCurrentTerm.map((value)=>{
       const label = `Leaf ${this.props.leafIDs.indexOf(value)+1}`;
       return {label, value};
     });
   }
 
   getLinkedSides = () => {
-    const rectosWithCurrentNote = Object.keys(this.props.Rectos).filter((rectoID) => {
-      return (this.props.Rectos[rectoID].notes.includes(this.props.activeNote.id))
+    const rectosWithCurrentTerm = Object.keys(this.props.Rectos).filter((rectoID) => {
+      return (this.props.Rectos[rectoID].terms.includes(this.props.activeTerm.id))
     });
-    const versosWithCurrentNote = Object.keys(this.props.Versos).filter((versoID) => {
-      return (this.props.Versos[versoID].notes.includes(this.props.activeNote.id))
+    const versosWithCurrentTerm = Object.keys(this.props.Versos).filter((versoID) => {
+      return (this.props.Versos[versoID].terms.includes(this.props.activeTerm.id))
     });
-    const sidesWithCurrentNote = [];
-    for (let value of rectosWithCurrentNote){
+    const sidesWithCurrentTerm = [];
+    for (let value of rectosWithCurrentTerm){
       const leafOrder = this.props.leafIDs.indexOf(this.props.Rectos[value].parentID) + 1;
       const folioNumber = this.props.Rectos[value].folio_number && this.props.Rectos[value].folio_number!==""? `(${this.props.Rectos[value].folio_number})`:"";
       const pageNumber = this.props.Rectos[value].page_number && this.props.Rectos[value].page_number!==""? `(${this.props.Rectos[value].page_number})`:"";
       const label = `L${leafOrder} Recto ${folioNumber} ${pageNumber}`;
-      sidesWithCurrentNote.push({label, value})
+      sidesWithCurrentTerm.push({label, value})
     }
-    for (let value of versosWithCurrentNote){
+    for (let value of versosWithCurrentTerm){
       const leafOrder = this.props.leafIDs.indexOf(this.props.Versos[value].parentID) + 1;
       const folioNumber = this.props.Versos[value].folio_number && this.props.Versos[value].folio_number!==""? `(${this.props.Versos[value].folio_number})`:"";
       const pageNumber = this.props.Versos[value].page_number && this.props.Versos[value].page_number!==""? `(${this.props.Versos[value].page_number})`:"";
       const label = `L${leafOrder} Verso ${folioNumber} ${pageNumber}`;
-      sidesWithCurrentNote.push({label, value})
+      sidesWithCurrentTerm.push({label, value})
     }
-    return sidesWithCurrentNote;
+    return sidesWithCurrentTerm;
   }
 
   getRectosAndVersos = () => {
@@ -68,7 +68,7 @@ export default class NoteDialog extends React.Component {
       <FlatButton
         label="Close"
         primary={true}
-        onClick={this.props.closeNoteDialog}
+        onClick={this.props.closeTermDialog}
       />,
     ];
     return (
@@ -76,26 +76,26 @@ export default class NoteDialog extends React.Component {
         actions={actions}
         modal={false}
         open={this.props.open}
-        onRequestClose={this.props.closeNoteDialog}
+        onRequestClose={this.props.closeTermDialog}
         autoScrollBodyContent
         contentStyle={{width:500}}
       >
       {this.props.open? 
-        <EditNoteForm 
+        <EditTermForm
           action={{ 
-            addNote: this.props.action.addNote, 
-            updateNote: this.props.action.updateNote, 
-            deleteNote: this.props.action.deleteNote, 
-            linkNote: this.props.action.linkNote, 
-            unlinkNote: this.props.action.unlinkNote,
-            linkAndUnlinkNotes: this.props.action.linkAndUnlinkNotes,
+            addTerm: this.props.action.addTerm,
+            updateTerm: this.props.action.updateTerm,
+            deleteTerm: this.props.action.deleteTerm,
+            linkTerm: this.props.action.linkTerm,
+            unlinkTerm: this.props.action.unlinkTerm,
+            linkAndUnlinkTerms: this.props.action.linkAndUnlinkTerms,
           }} 
           projectID={this.props.projectID}
-          Notes={this.props.Notes}
-          note = {this.props.activeNote}
+          Terms={this.props.Terms}
+          term = {this.props.activeTerm}
           createErrors={this.props.createErrors} 
           updateErrors={this.props.updateErrors} 
-          noteTypes={this.props.noteTypes}
+          Taxonomies={this.props.Taxonomies}
           Groups={this.props.Groups}
           Leafs={this.props.Leafs}
           Rectos={this.props.Rectos}

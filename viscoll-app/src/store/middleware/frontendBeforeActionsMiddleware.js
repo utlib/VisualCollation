@@ -7,15 +7,15 @@ import {
 } from '../../actions/frontend/before/projectActions';
 
 import {
-  createNoteType,
-  updateNoteType,
-  deleteNoteType,
-  createNote,
-  updateNote,
-  linkNote,
-  unlinkNote,
-  deleteNote,
-} from '../../actions/frontend/before/noteActions';
+  createTaxonomy,
+  updateTaxonomy,
+  deleteTaxonomy,
+  createTerm,
+  updateTerm,
+  linkTerm,
+  unlinkTerm,
+  deleteTerm,
+} from '../../actions/frontend/before/termActions';
 
 import {
   createGroups,
@@ -88,52 +88,52 @@ const frontendBeforeActionsMiddleware = store => next => action => {
         cloneDeep(store.getState().dashboard)
       );
       break;
-    // NoteType Actions
-    case 'CREATE_NOTETYPE_FRONTEND':
-      action.payload.response = createNoteType(
+    // Taxonomy Actions
+    case 'CREATE_TAXONOMY_FRONTEND':
+      action.payload.response = createTaxonomy(
         action,
         cloneDeep(store.getState().active)
       );
       break;
-    case 'UPDATE_NOTETYPE_FRONTEND':
-      action.payload.response = updateNoteType(
+    case 'UPDATE_TAXONOMY_FRONTEND':
+      action.payload.response = updateTaxonomy(
         action,
         cloneDeep(store.getState().active)
       );
       break;
-    case 'DELETE_NOTETYPE_FRONTEND':
-      action.payload.response = deleteNoteType(
+    case 'DELETE_TAXONOMY_FRONTEND':
+      action.payload.response = deleteTaxonomy(
         action,
         cloneDeep(store.getState().active)
       );
       break;
-    // Note Actions
-    case 'CREATE_NOTE_FRONTEND':
-      action.payload.response = createNote(
+    // Tern Actions
+    case 'CREATE_TERM_FRONTEND':
+      action.payload.response = createTerm(
         action,
         cloneDeep(store.getState().active)
       );
       break;
-    case 'UPDATE_NOTE_FRONTEND':
-      action.payload.response = updateNote(
+    case 'UPDATE_TERM_FRONTEND':
+      action.payload.response = updateTerm(
         action,
         cloneDeep(store.getState().active)
       );
       break;
-    case 'LINK_NOTE_FRONTEND':
-      action.payload.response = linkNote(
+    case 'LINK_TERM_FRONTEND':
+      action.payload.response = linkTerm(
         action,
         cloneDeep(store.getState().active)
       );
       break;
-    case 'UNLINK_NOTE_FRONTEND':
-      action.payload.response = unlinkNote(
+    case 'UNLINK_TERM_FRONTEND':
+      action.payload.response = unlinkTerm(
         action,
         cloneDeep(store.getState().active)
       );
       break;
-    case 'DELETE_NOTE_FRONTEND':
-      action.payload.response = deleteNote(
+    case 'DELETE_TERM_FRONTEND':
+      action.payload.response = deleteTerm(
         action,
         cloneDeep(store.getState().active)
       );

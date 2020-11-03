@@ -25,7 +25,7 @@ export default class Group extends React.Component {
 
     const isActive = this.props.collationManager.selectedObjects.members.includes(this.props.activeGroup.id);
     const isFiltered = this.props.collationManager.filters.Groups.includes(this.props.activeGroup.id);
-    const groupsOfMatchingElements = this.props.collationManager.filters.GroupsOfMatchingLeafs + this.props.collationManager.filters.GroupsOfMatchingSides + this.props.collationManager.filters.GroupsOfMatchingNotes;
+    const groupsOfMatchingElements = this.props.collationManager.filters.GroupsOfMatchingLeafs + this.props.collationManager.filters.GroupsOfMatchingSides + this.props.collationManager.filters.GroupsOfMatchingTerms;
     const isAffectedFiltered = groupsOfMatchingElements.includes(this.props.activeGroup.id) && !isFiltered;
     const hideOthers = this.props.collationManager.filters.hideOthers;
     const isFilterActive = this.props.collationManager.filters.active;

@@ -73,9 +73,9 @@ class Filter extends Component {
       let plural = nextProps.sideMatches.length>1? "s" : "";
       matches.push(nextProps.sideMatches.length + " side" + plural);
     }
-    if (nextProps.noteMatches.length>0) {
-      let plural = nextProps.noteMatches.length>1? "s" : "";
-      matches.push(nextProps.noteMatches.length + " note" + plural);
+    if (nextProps.termMatches.length>0) {
+      let plural = nextProps.termMatches.length>1? "s" : "";
+      matches.push(nextProps.termMatches.length + " term" + plural);
     }
     let message = "No matches found."; 
     if (matches.length>0) {
@@ -135,7 +135,7 @@ class Filter extends Component {
       }
     }
     let updatedQueries = this.state.queries;
-    if (["group", "leaf", "side", "note"].includes(value))
+    if (["group", "leaf", "side", "term"].includes(value))
       updatedQueries = this.clearFilterRowOnType(queryIndex, value); 
     if (fieldName==="attribute") {
       updatedQueries[queryIndex]["attributeIndex"] = index;
@@ -160,7 +160,7 @@ class Filter extends Component {
     let toFilter = true;
     for (let query of this.state.queries){
       if ((query.type==="leaf" && query.attribute==="conjoined_leaf_order") ||
-        (query.type==="note" && query.attribute==="type")){
+        (query.type==="term" && query.attribute==="type")){
         if (!Array.isArray(query.values)){
           toFilter = false;
           break;
@@ -319,7 +319,7 @@ class Filter extends Component {
             removeRow={this.removeRow}
             lastRow={i===this.state.queries.length-1}
             queriesLength={this.state.queries.length}
-            noteTypes={this.props.noteTypes}
+            Taxonomies={this.props.Taxonomies}
             clearFilterRowOnType={this.clearFilterRowOnType}
             clearFilterRowOnAttribute={this.clearFilterRowOnAttribute}
             conjoinedToAutoComplete={this.state.conjoinedToAutoComplete}
@@ -418,17 +418,17 @@ const mapStateToProps = (state) => {
     Leafs: state.active.project.Leafs,
     Rectos: state.active.project.Rectos,
     Versos: state.active.project.Versos,
-    Notes: state.active.project.Notes,
+    Terms: state.active.project.Terms,
     attachedToLeafs: state.active.project.attachedToLeafs,
     queries: state.active.collationManager.filters.queries,
     hideOthers: state.active.collationManager.filters.hideOthers,
     filterActive: state.active.collationManager.filters.active,
     filterSelection: state.active.collationManager.filters.selection,
-    noteTypes: state.active.project.noteTypes,
+    Taxonomies: state.active.project.Taxonomies,
     groupMatches: state.active.collationManager.filters.Groups,
     leafMatches: state.active.collationManager.filters.Leafs,
     sideMatches: state.active.collationManager.filters.Sides,
-    noteMatches: state.active.collationManager.filters.Notes,
+    termMatches: state.active.collationManager.filters.Terms,
     matchingFilterObjects: state.active.collationManager.filters,
     leafIDs: state.active.project.leafIDs,
     groupIDs: state.active.project.groupIDs,

@@ -9,7 +9,7 @@ describe "POST /groups", :type => :request do
   end
 
   before :each do
-    @project = FactoryGirl.create(:project, {user: @user, noteTypes: ["Ink"]})
+    @project = FactoryGirl.create(:project, {user: @user, taxonomies: ["Ink"]})
     @parameters = {
       "group": {
         "project_id": @project.id.to_str,
@@ -94,7 +94,7 @@ describe "POST /groups", :type => :request do
       end
     end
 
-    context 'and failing params for the note' do
+    context 'and failing params for the term' do
       before do
         allow_any_instance_of(Group).to receive(:save).and_return(false)
         post '/groups', params: @parameters.to_json, headers: {'Authorization' => @authToken, 'CONTENT_TYPE' => 'application/json', 'ACCEPT' => 'application/json'}

@@ -5,7 +5,7 @@ import RaisedButton from 'material-ui/RaisedButton';
 import IconDelete from 'material-ui/svg-icons/action/delete';
 import IconButton from 'material-ui/IconButton';
 
-/** Delete confirmation dialog for deleting notes and note types */
+/** Delete confirmation dialog for deleting terms and term taxonomies */
 export default class DeleteConfirmation extends React.Component {
   state = {
     open: false,
@@ -22,8 +22,8 @@ export default class DeleteConfirmation extends React.Component {
   };
 
   submit = () => {
-    if (this.props.item==="note") {
-      this.props.action.deleteNote(this.props.noteID);
+    if (this.props.item==="term") {
+      this.props.action.deleteTerm(this.props.termID);
     } else {
       this.props.onDelete(this.props.index)
     }
@@ -47,18 +47,18 @@ export default class DeleteConfirmation extends React.Component {
     ];
     let deleteIcon = <div style={{paddingTop: 50}} >
             <RaisedButton 
-              aria-label={"Delete note"}
-              label="Delete note" 
+              aria-label={"Delete term"}
+              label="Delete term"
               onClick={this.handleOpen} 
               backgroundColor="#b53c3c"
               labelColor="#ffffff"
               tabIndex={this.props.tabIndex}
             />
           </div>
-    let message = "This note will be removed from all groups/sides/leaves that have this note.";
-    if (this.props.item==="note type") {
+    let message = "This term will be removed from all groups/sides/leaves that have this term.";
+    if (this.props.item==="taxonomy") {
       deleteIcon = <IconButton
-                      aria-label={"Delete " + this.props.itemName + " note type"}
+                      aria-label={"Delete " + this.props.itemName + " taxonomy"}
                       onClick={this.handleOpen}
                       tooltip={"Delete " + this.props.itemName}
                       tabIndex={this.props.tabIndex}
@@ -68,11 +68,11 @@ export default class DeleteConfirmation extends React.Component {
                         hoverColor="#4a4a4a"
                       />
                     </IconButton >
-      message = "Any existing notes associated with this note type will be assigned to the note type 'Unknown'.";
+      message = "Any existing terms associated with this term taxonomy will be assigned to the taxonomy 'Unknown'.";
     }
     if (this.props.item!=="") {
       return (
-        <div style={this.props.item==="note type"?{float:"right"}:{}}>
+        <div style={this.props.item==="taxonomy"?{float:"right"}:{}}>
           {deleteIcon}
           <Dialog
             title={"Are you sure you want to delete this " + this.props.item + "?"}

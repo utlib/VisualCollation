@@ -60,7 +60,7 @@ PaperManager.prototype = {
             allLeafIDs: this.allLeafIDs,
             Groups: this.Groups,
             Leafs: this.Leafs,
-            Notes: this.Notes,
+            Terms: this.Terms,
             y: this.leafYs[this.leafIDs.indexOf(leaf.id)],
             isActive: this.activeLeafs.includes(leaf.id) || this.activeRectos.includes(leaf.rectoID) || this.activeVersos.includes(leaf.versoID),
             customSpacings: this.customSpacings,
@@ -69,8 +69,8 @@ PaperManager.prototype = {
             strokeColorFilter: this.strokeColorFilter,
             visibleAttributes: this.visibleAttributes,
             viewingMode: this.viewingMode,
-            openNoteDialog: this.openNoteDialog,
-            showNotes: this.showNotes,
+            openTermDialog: this.openTermDialog,
+            showTerms: this.showTerms,
         });
         this.paperLeaves.push(l);
         this.groupLeaves.addChild(l.path);
@@ -78,7 +78,7 @@ PaperManager.prototype = {
         this.groupLeaves.addChild(l.textRecto);
         this.groupLeaves.addChild(l.textVerso);
         this.groupLeaves.addChild(l.attachment);
-        this.groupLeaves.addChild(l.textNotes);
+        this.groupLeaves.addChild(l.textTerms);
         if (this.flashItems.leaves.includes(leaf.id)) {
             this.flashLeaves.push(l);
         }
@@ -473,30 +473,30 @@ PaperManager.prototype = {
         }
         members.forEach((memberID, i)=> {
             let memberObject = this[memberID.split("_")[0]+"s"][memberID];
-            let notesToShowAbove = memberObject.notes.filter((noteID)=>{return this.Notes[noteID].show&&this.showNotes}).length;
-            let notesToShowBelow = 0;
+            let termsToShowAbove = memberObject.terms.filter((termID)=>{return this.Terms[termID].show&&this.showTerms}).length;
+            let termsToShowBelow = 0;
             let glueSpacing = 0;
             if (memberObject.memberType==="Leaf") {
-                // Find if it has side notes 
-                notesToShowAbove += this.Rectos[memberObject.rectoID].notes.filter((noteID)=>{return this.Notes[noteID].show&&this.showNotes}).length;
-                notesToShowBelow += this.Versos[memberObject.versoID].notes.filter((noteID)=>{return this.Notes[noteID].show&&this.showNotes}).length;
+                // Find if it has side terms
+                termsToShowAbove += this.Rectos[memberObject.rectoID].terms.filter((termID)=>{return this.Terms[termID].show&&this.showTerms}).length;
+                termsToShowBelow += this.Versos[memberObject.versoID].terms.filter((termID)=>{return this.Terms[termID].show&&this.showTerms}).length;
                 // Find if leaf has glue that's not a partial glue
-                glueSpacing = (notesToShowAbove>0 && memberObject.attached_above.includes("Glued") && !memberObject.attached_above.includes("Partial"))? 1 : 0;
+                glueSpacing = (termsToShowAbove>0 && memberObject.attached_above.includes("Glued") && !memberObject.attached_above.includes("Partial"))? 1 : 0;
             }
             
-            if (memberObject.memberType === "Leaf" && getMemberOrder(memberObject, this.Groups, this.groupIDs)===1 && notesToShowAbove>0) {
-                // First leaf in the group with a note
+            if (memberObject.memberType === "Leaf" && getMemberOrder(memberObject, this.Groups, this.groupIDs)===1 && termsToShowAbove>0) {
+                // First leaf in the group with a term
                 this.multipliers[this.leafIDs.indexOf(memberObject.id)+1] = multiplier;
-                currentY = currentY + spacing*(notesToShowAbove+1);
+                currentY = currentY + spacing*(termsToShowAbove+1);
                 this.leafYs.push(currentY);
-                currentY = currentY + spacing*notesToShowBelow*0.8;
+                currentY = currentY + spacing*termsToShowBelow*0.8;
                 if (i===(members.length-1)) {
                     // Last member of group
                     currentY = currentY + (memberObject.nestLevel)*spacing;
                 }
             } else if (memberObject.memberType==="Leaf" && this.leafIDs.indexOf(memberObject.id)+1 > 0) {
                 this.multipliers[this.leafIDs.indexOf(memberObject.id)+1] = multiplier;
-                currentY = currentY + spacing*(Math.max(1,notesToShowAbove)) + spacing*glueSpacing;
+                currentY = currentY + spacing*(Math.max(1,termsToShowAbove)) + spacing*glueSpacing;
                 if (i > 0 && members[i-1].includes("Group") && this.Groups[members[i-1]].memberIDs.length) {
                     // Previous sibling is a group with children
                     // Find difference of nest level between current leaf and previous group's last member
@@ -504,7 +504,7 @@ PaperManager.prototype = {
                     currentY = currentY + (previousMember.nestLevel - memberObject.nestLevel)*spacing;
                 }
                 this.leafYs.push(currentY); 
-                currentY = currentY + spacing*notesToShowBelow*0.8;
+                currentY = currentY + spacing*termsToShowBelow*0.8;
             } else if (memberObject.memberType==="Group") {
                 currentY = currentY + spacing;
                 if (i > 0 && members[i-1].includes("Group") && this.Groups[members[i-1]].memberIDs.length>0) {
@@ -537,7 +537,7 @@ PaperManager.prototype = {
         this.Leafs = project.Leafs;
         this.Rectos = project.Rectos;
         this.Versos = project.Versos;
-        this.Notes = project.Notes;
+        this.Terms = project.Terms;
     },
     setActiveGroups: function(value) {
         this.activeGroups = value;
@@ -636,7 +636,7 @@ function PaperManager(args) {
     this.Leafs = args.Leafs;
     this.Rectos = args.Rectos;
     this.Versos = args.Versos;
-    this.Notes = args.Notes;
+    this.Terms = args.Terms;
     this.origin = args.origin;
     this.width = paper.view.viewSize.width;
     this.spacing = this.width*args.spacing;
@@ -678,9 +678,9 @@ function PaperManager(args) {
     this.tacketToolIsActive = false;
     this.tacketToolOriginalPosition = 0;
     this.slideForward = true;
-    this.openNoteDialog = args.openNoteDialog;
+    this.openTermDialog = args.openTermDialog;
     this.leafIDs = args.leafIDs;
-    this.showNotes = args.showNotes;
+    this.showTerms = args.showTerms;
 
     let that = this;
     // Flash newly added items

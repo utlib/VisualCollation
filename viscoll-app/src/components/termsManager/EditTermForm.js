@@ -8,16 +8,16 @@ import Checkbox from 'material-ui/Checkbox';
 import SelectField from '../global/SelectField';
 import ChipInput from 'material-ui-chip-input';
 
-/** Create New Note tab in the Note Manager */
-export default class EditNoteForm extends Component {
+/** Create New Term tab in the Term Manager */
+export default class EditTermForm extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      id: props.note.id,
-      title: props.note.title,
-      type: props.note.type,
-      description: props.note.description,
-      uri: props.note.uri,
+      id: props.term.id,
+      title: props.term.title,
+      taxonomy: props.term.taxonomy,
+      description: props.term.description,
+      uri: props.term.uri,
       editing: {
         title: false,
         description: false,
@@ -30,11 +30,11 @@ export default class EditNoteForm extends Component {
 
   componentWillReceiveProps(nextProps) {
     this.setState({
-      id: nextProps.note.id,
-      title: nextProps.note.title,
-      type: nextProps.note.type,
-      description: nextProps.note.description,
-      uri: nextProps.note.uri, // added URI
+      id: nextProps.term.id,
+      title: nextProps.term.title,
+      taxonomy: nextProps.term.taxonomy,
+      description: nextProps.term.description,
+      uri: nextProps.term.uri, // added URI
       editing: {
         title: false,
         description: false,
@@ -46,10 +46,10 @@ export default class EditNoteForm extends Component {
   }
 
   validateTitle = title => {
-    for (let noteID in this.props.Notes) {
-      const note = this.props.Notes[noteID];
-      if (note.title === title && note.id !== this.state.id) {
-        this.setState({ errors: { title: 'This note title already exists.' } });
+    for (let termID in this.props.Terms) {
+      const term = this.props.Terms[termID];
+      if (term.title === title && term.id !== this.state.id) {
+        this.setState({ errors: { title: 'This term title already exists.' } });
         return;
       }
     }
@@ -70,29 +70,29 @@ export default class EditNoteForm extends Component {
       editing: { ...this.state.editing, [name]: true },
     });
     if (name === 'title') this.validateTitle(value.trim());
-    if (name === 'type') {
+    if (name === 'taxonomy') {
       let editing = {
         title: this.state.title,
-        type: value,
+        taxonomy: value,
         description: this.state.description,
         uri: this.state.uri, // added URI
       };
-      if (this.props.note)
-        this.props.action.updateNote(this.props.note.id, editing);
+      if (this.props.term)
+        this.props.action.updateTerm(this.props.term.id, editing);
     }
   };
 
   update = (event, name) => {
     event.preventDefault();
-    if (this.props.note) {
+    if (this.props.term) {
       let editing = {
         title: this.state.title,
-        type: this.state.type,
+        taxonomy: this.state.taxonomy,
         description: this.state.description,
         uri: this.state.uri, // added URI
       };
       this.setState({ editing: { ...this.state.editing, [name]: false } });
-      this.props.action.updateNote(this.props.note.id, editing);
+      this.props.action.updateTerm(this.props.term.id, editing);
     }
   };
 
@@ -101,7 +101,7 @@ export default class EditNoteForm extends Component {
    */
   onCancelUpdate = name => {
     this.setState({
-      [name]: this.props.note[name],
+      [name]: this.props.term[name],
       editing: {
         ...this.state.editing,
         [name]: false,
@@ -113,15 +113,15 @@ export default class EditNoteForm extends Component {
     });
   };
 
-  renderNoteTypes = name => {
+  renderTaxonomies = name => {
     return { value: name, text: name };
   };
 
   renderSubmitButtons = name => {
     if (
       this.state.editing[name] &&
-      this.props.note !== null &&
-      this.props.note !== undefined
+      this.props.term !== null &&
+      this.props.term !== undefined
     ) {
       return (
         <div style={{ width: '100%', textAlign: 'right' }}>
@@ -149,17 +149,17 @@ export default class EditNoteForm extends Component {
   };
 
   handleAddChip = (chip, type) => {
-    this.props.action.linkNote(this.props.note.id, [{ type, id: chip.value }]);
+    this.props.action.linkTerm(this.props.term.id, [{ type, id: chip.value }]);
   };
 
   handleDeleteChip = (id, index, type) => {
-    this.props.action.unlinkNote(this.props.note.id, [{ type, id }]);
+    this.props.action.unlinkTerm(this.props.term.id, [{ type, id }]);
   };
 
   render() {
     let title = this.props.isReadOnly
-      ? this.props.note.title
-      : 'Edit ' + this.props.note.title;
+      ? this.props.term.title
+      : 'Edit ' + this.props.term.title;
     let linkedObjects = '';
     let deleteButton = '';
     let sideData = [];
@@ -221,7 +221,7 @@ export default class EditNoteForm extends Component {
             openOnFocus={true}
             fullWidth={true}
             fullWidthInput={false}
-            hintText="Click here to attach groups to this note"
+            hintText="Click here to attach groups to this term"
             menuProps={{ maxHeight: 200 }}
             tabIndex={this.props.tabIndex}
           />
@@ -245,7 +245,7 @@ export default class EditNoteForm extends Component {
             openOnFocus={true}
             fullWidth={true}
             fullWidthInput={false}
-            hintText="Click here to attach leaves to this note"
+            hintText="Click here to attach leaves to this term"
             menuProps={{ maxHeight: 200 }}
             tabIndex={this.props.tabIndex}
           />
@@ -267,7 +267,7 @@ export default class EditNoteForm extends Component {
             openOnFocus={true}
             fullWidth={true}
             fullWidthInput={false}
-            hintText="Click here to attach sides to this note"
+            hintText="Click here to attach sides to this term"
             menuProps={{ maxHeight: 200 }}
             tabIndex={this.props.tabIndex}
           />
@@ -275,7 +275,7 @@ export default class EditNoteForm extends Component {
       </div>
     );
 
-    if (this.props.note) {
+    if (this.props.term) {
       linkedObjects = (
         <div className="objectAttachments">
           {this.props.isReadOnly ? (
@@ -295,9 +295,9 @@ export default class EditNoteForm extends Component {
       ) : (
         <div style={{ width: '100%', textAlign: 'right' }}>
           <DeleteConfirmation
-            item={this.props.note ? 'note' : ''}
-            noteID={this.props.note ? this.props.note.id : ''}
-            action={{ deleteNote: this.props.action.deleteNote }}
+            item={this.props.term ? 'term' : ''}
+            termID={this.props.term ? this.props.term.id : ''}
+            action={{ deleteTerm: this.props.action.deleteTerm }}
             togglePopUp={this.props.togglePopUp}
             tabIndex={this.props.tabIndex}
           />
@@ -307,8 +307,8 @@ export default class EditNoteForm extends Component {
     return (
       <div className="container">
         <h1>{title}</h1>
-        <div className="noteForm">
-          <div className="label" id="noteTitleLabel">
+        <div className="termForm">
+          <div className="label" id="termTitleLabel">
             Title
           </div>
           <div className="input">
@@ -317,7 +317,7 @@ export default class EditNoteForm extends Component {
             ) : (
               <form onSubmit={e => this.update(e, 'title')}>
                 <TextField
-                  aria-labelledby="noteTitleLabel"
+                  aria-labelledby="termTitleLabel"
                   name="title"
                   value={this.state.title}
                   errorText={this.state.errors.title}
@@ -331,24 +331,24 @@ export default class EditNoteForm extends Component {
               </form>
             )}
           </div>
-          <div className="label" id="noteTypeLabel">
-            Type
+          <div className="label" id="taxonomyLabel">
+            Taxonomy
           </div>
           <div className="input">
             {this.props.isReadOnly ? (
-              <div className="textOnly">{this.state.type}</div>
+              <div className="textOnly">{this.state.taxonomy}</div>
             ) : (
               <SelectField
-                id="noteTypeSelect"
-                label="noteTypeLabel"
-                value={this.state.type}
-                onChange={v => this.onChange('type', v)}
+                id="taxonomySelect"
+                label="taxonomyLabel"
+                value={this.state.taxonomy}
+                onChange={v => this.onChange('taxonomy', v)}
                 tabIndex={this.props.tabIndex}
-                data={this.props.noteTypes.map(this.renderNoteTypes)}
+                data={this.props.Taxonomies.map(this.renderTaxonomies)}
               />
             )}
           </div>
-          <div className="label" id="noteDescriptionLabel">
+          <div className="label" id="termDescriptionLabel">
             Description
           </div>
           <div className="input">
@@ -357,7 +357,7 @@ export default class EditNoteForm extends Component {
             ) : (
               <form onSubmit={e => this.update(e, 'description')}>
                 <TextField
-                  aria-labelledby="noteDescriptionLabel"
+                  aria-labelledby="termDescriptionLabel"
                   name="description"
                   value={this.state.description}
                   onChange={(e, v) => this.onChange('description', v)}
@@ -370,7 +370,7 @@ export default class EditNoteForm extends Component {
             )}
           </div>
           {/* added URI input to view */}
-          <div className="label" id="noteURILabel">
+          <div className="label" id="termURILabel">
             URI
           </div>
           <div className="input">
@@ -379,7 +379,7 @@ export default class EditNoteForm extends Component {
             ) : (
               <form onSubmit={e => this.update(e, 'uri')}>
                 <TextField
-                  aria-labelledby="noteURILabel"
+                  aria-labelledby="termURILabel"
                   name="uri"
                   value={this.state.uri}
                   //value="URI"
@@ -394,20 +394,20 @@ export default class EditNoteForm extends Component {
           </div>
           {!this.props.isReadOnly && (
             <div>
-              <div className="label" id="noteShowLabel">
+              <div className="label" id="termShowLabel">
                 Show in diagram
               </div>
               <div className="input">
                 <Checkbox
-                  aria-labelledby="noteShowLabel"
-                  checked={this.props.note.show}
+                  aria-labelledby="termShowLabel"
+                  checked={this.props.term.show}
                   style={{ paddingTop: 20 }}
                   onClick={() =>
-                    this.props.action.updateNote(this.props.note.id, {
+                    this.props.action.updateTerm(this.props.term.id, {
                       title: this.state.title,
-                      type: this.state.type,
+                      taxonomy: this.state.taxonomy,
                       description: this.state.description,
-                      show: !this.props.note.show,
+                      show: !this.props.term.show,
                     })
                   }
                   tabIndex={this.props.tabIndex}

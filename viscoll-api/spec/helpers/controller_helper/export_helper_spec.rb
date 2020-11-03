@@ -9,22 +9,22 @@ RSpec.describe ControllerHelper::ExportHelper, type: :helper do
       'notationStyle' => 'r-v',
       'metadata' => { date: '18th century' },
       'preferences' => { 'showTips' => true },
-      'noteTypes' => ['Ink', 'Unknown'],
+      'taxonomies' => ['Ink', 'Unknown'],
       'manifests' => { '12341234': { 'id' => '12341234', 'url' => 'https://digital.library.villanova.edu/Item/vudl:99213/Manifest', 'name' => 'Boston, and Bunker Hill.' } }
     )
     # Attach group with 2 leafs - (group with 2 leafs) - 2 conjoined leafs
     @testgroup = FactoryGirl.create(:group, project: @project, nestLevel: 1, title: 'Group 1')
     @upleafs = 2.times.collect { FactoryGirl.create(:leaf, project: @project, parentID: @testgroup.id.to_s, nestLevel: 1) }
     @testmidgroup = FactoryGirl.create(:group, project: @project, parentID: @testgroup.id.to_s, nestLevel: 2, title: 'Group 2')
-    @midleafs = 2.times.collect { FactoryGirl.create(:leaf, project: @project, parentID: @testmidgroup.id.to_s, nestLevel: 2) }  
+    @midleafs = 2.times.collect { FactoryGirl.create(:leaf, project: @project, parentID: @testmidgroup.id.to_s, nestLevel: 2) }
     @botleafs = 2.times.collect { FactoryGirl.create(:leaf, project: @project, parentID: @testgroup.id.to_s, nestLevel: 1) }
     @botleafs[1].update(type: 'Endleaf')
     @project.add_groupIDs([@testgroup.id.to_s, @testmidgroup.id.to_s], 0)
     @testgroup.add_members([@upleafs[0].id.to_s, @upleafs[1].id.to_s, @testmidgroup.id.to_s, @botleafs[0].id.to_s, @botleafs[1].id.to_s], 0)
     @testmidgroup.add_members([@midleafs[0].id.to_s, @midleafs[1].id.to_s], 0)
-    @testnote = FactoryGirl.create(:note, project: @project, title: 'Test Note', type: 'Ink', description: 'This is a test', uri: 'https://www.test.com/', show: true, objects: {Group: [@testgroup.id.to_s], Leaf: [@botleafs[0].id.to_s], Recto: [@botleafs[0].rectoID], Verso: [@botleafs[0].versoID]})
+    @testterm = FactoryGirl.create(:term, project: @project, title: 'Test Note', taxonomy: 'Ink', description: 'This is a test', uri: 'https://www.test.com/', show: true, objects: {Group: [@testgroup.id.to_s], Leaf: [@botleafs[0].id.to_s], Recto: [@botleafs[0].rectoID], Verso: [@botleafs[0].versoID]})
   end
-  
+
   it 'builds the right JSON' do
     result = buildJSON(@project)
     expect(result[:project]).to eq({
@@ -34,7 +34,7 @@ RSpec.describe ControllerHelper::ExportHelper, type: :helper do
       metadata: { 'date' => '18th century' },
       preferences: { 'showTips' => true },
       manifests: { '12341234' => { 'id' => '12341234', 'url' => 'https://digital.library.villanova.edu/Item/vudl:99213/Manifest', 'name' => 'Boston, and Bunker Hill.' } },
-      noteTypes: ['Ink', 'Unknown']
+      taxonomies: ['Ink', 'Unknown']
     })
     expect(result[:groups]).to eq({
       1 => {:params=>{:type=>"Quire", :title=>"Group 1", :nestLevel=>1}, :tacketed=>[], :sewing=>[], :parentOrder=>nil, :memberOrders=>["Leaf_1", "Leaf_2", "Group_2", "Leaf_5", "Leaf_6"]},
@@ -64,11 +64,11 @@ RSpec.describe ControllerHelper::ExportHelper, type: :helper do
       5 => {:params=>{:page_number=>"", :texture=>"None", :image=>{}, :script_direction=>"None"}, :parentOrder=>5},
       6 => {:params=>{:page_number=>"", :texture=>"None", :image=>{}, :script_direction=>"None"}, :parentOrder=>6}
     })
-    expect(result[:notes]).to eq({
-      1 => {:params=>{:title=>"Test Note", :type=>"Ink", :description=>"This is a test", :uri=>"https://www.test.com/", :show=>true}, :objects=>{:Group=>[1], :Leaf=>[5], :Recto=>[5], :Verso=>[5]}}
+    expect(result[:terms]).to eq({
+      1 => {:params=>{:title=>"Test Note", :taxonomy=>"Ink", :description=>"This is a test", :uri=>"https://www.test.com/", :show=>true}, :objects=>{:Group=>[1], :Leaf=>[5], :Recto=>[5], :Verso=>[5]}}
     })
   end
-  
+
   it 'builds the right XML' do
     result = Nokogiri::XML(buildDotModel(@project))
     # Metadata elements

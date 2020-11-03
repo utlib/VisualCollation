@@ -1,60 +1,60 @@
 import React, { Component } from 'react';
 import RaisedButton from 'material-ui/RaisedButton';
-import EditNoteForm from './EditNoteForm';
-import NewNoteForm from './NewNoteForm';
+import EditTermForm from './EditTermForm';
+import NewTermForm from './NewTermForm';
 import Add from 'material-ui/svg-icons/content/add';
 import { btnMd, btnBase } from '../../styles/button';
 
-/** Create New Note tab in the Note Manager */
-export default class ManageNotes extends Component {
+/** Create New Term tab in the Term Manager */
+export default class ManageTerms extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      activeNote: null,
+      activeTerm: null,
       title: '',
-      type: '',
+      taxonomy: '',
       description: '',
     };
   }
 
   /**
-   * Update state when user clicks on new note item
+   * Update state when user clicks on new term item
    */
-  onItemChange = activeNote => {
-    this.setState({ activeNote });
+  onItemChange = activeTerm => {
+    this.setState({ activeTerm });
   };
 
   componentWillReceiveProps(nextProps) {
-    if (this.state.activeNote)
-      this.setState({ activeNote: nextProps.Notes[this.state.activeNote.id] });
+    if (this.state.activeTerm)
+      this.setState({ activeTerm: nextProps.Terms[this.state.activeTerm.id] });
   }
 
   /**
-   * Mapping function to render a note thumbnail
+   * Mapping function to render a term thumbnail
    */
-  renderList = noteID => {
-    const note = this.props.Notes[noteID];
+  renderList = termID => {
+    const term = this.props.Terms[termID];
     return (
       <button
         type="button"
-        name="noteButton"
-        aria-label={'Note: ' + note.title}
+        name="termButton"
+        aria-label={'Term: ' + term.title}
         className={
-          this.state.activeNote && this.state.activeNote.id === noteID
-            ? 'noteButton item active'
-            : 'noteButton item'
+          this.state.activeTerm && this.state.activeTerm.id === termID
+            ? 'termButton item active'
+            : 'termButton item'
         }
-        onClick={() => this.onItemChange(note)}
+        onClick={() => this.onItemChange(term)}
         tabIndex={this.props.tabIndex}
-        key={noteID}
+        key={termID}
       >
         <div>
           <div className="title">
-            {note.title.length > 80
-              ? note.title.substring(0, 80) + '...'
-              : note.title}
+            {term.title.length > 80
+              ? term.title.substring(0, 80) + '...'
+              : term.title}
           </div>
-          <div className="type">{note.type}</div>
+          <div className="taxonomy">{term.taxonomy}</div>
         </div>
       </button>
     );
@@ -66,77 +66,77 @@ export default class ManageNotes extends Component {
   reset = () => {
     this.setState({
       title: '',
-      type: '',
+      taxonomy: '',
       description: '',
     });
   };
 
-  deleteNote = noteID => {
-    this.props.action.deleteNote(noteID);
-    this.setState({ activeNote: null });
+  deleteTerm = termID => {
+    this.props.action.deleteTerm(termID);
+    this.setState({ activeTerm: null });
   };
 
-  updateNote = (noteID, note) => {
-    this.props.action.updateNote(noteID, note);
+  updateTerm = (termID, term) => {
+    this.props.action.updateTerm(termID, term);
   };
 
-  linkNote = (noteID, object) => {
-    this.props.action.linkNote(noteID, object);
+  linkTerm = (termID, object) => {
+    this.props.action.linkTerm(termID, object);
   };
 
-  unlinkNote = (noteID, object) => {
-    this.props.action.unlinkNote(noteID, object);
+  unlinkTerm = (termID, object) => {
+    this.props.action.unlinkTerm(termID, object);
   };
 
-  linkAndUnlinkNotes = (noteID, linkObjects, unlinkObjects) => {
-    this.props.action.linkAndUnlinkNotes(noteID, linkObjects, unlinkObjects);
+  linkAndUnlinkTerms = (termID, linkObjects, unlinkObjects) => {
+    this.props.action.linkAndUnlinkTerms(termID, linkObjects, unlinkObjects);
   };
 
   getLinkedGroups = () => {
-    const groupsWithCurrentNote = Object.keys(this.props.Groups).filter(
+    const groupsWithCurrentTerm = Object.keys(this.props.Groups).filter(
       groupID => {
-        return this.props.Groups[groupID].notes.includes(
-          this.state.activeNote.id
+        return this.props.Groups[groupID].terms.includes(
+          this.state.activeTerm.id
         );
       }
     );
-    return groupsWithCurrentNote.map(value => {
+    return groupsWithCurrentTerm.map(value => {
       const label = `Group ${this.props.groupIDs.indexOf(value) + 1}`;
       return { label, value };
     });
   };
 
   getLinkedLeaves = () => {
-    const leafsWithCurrentNote = Object.keys(this.props.Leafs).filter(
+    const leafsWithCurrentTerm = Object.keys(this.props.Leafs).filter(
       leafID => {
-        return this.props.Leafs[leafID].notes.includes(
-          this.state.activeNote.id
+        return this.props.Leafs[leafID].terms.includes(
+          this.state.activeTerm.id
         );
       }
     );
-    return leafsWithCurrentNote.map(value => {
+    return leafsWithCurrentTerm.map(value => {
       const label = `Leaf ${this.props.leafIDs.indexOf(value) + 1}`;
       return { label, value };
     });
   };
 
   getLinkedSides = () => {
-    const rectosWithCurrentNote = Object.keys(this.props.Rectos).filter(
+    const rectosWithCurrentTerm = Object.keys(this.props.Rectos).filter(
       rectoID => {
-        return this.props.Rectos[rectoID].notes.includes(
-          this.state.activeNote.id
+        return this.props.Rectos[rectoID].terms.includes(
+          this.state.activeTerm.id
         );
       }
     );
-    const versosWithCurrentNote = Object.keys(this.props.Versos).filter(
+    const versosWithCurrentTerm = Object.keys(this.props.Versos).filter(
       versoID => {
-        return this.props.Versos[versoID].notes.includes(
-          this.state.activeNote.id
+        return this.props.Versos[versoID].terms.includes(
+          this.state.activeTerm.id
         );
       }
     );
-    const sidesWithCurrentNote = [];
-    for (let value of rectosWithCurrentNote) {
+    const sidesWithCurrentTerm = [];
+    for (let value of rectosWithCurrentTerm) {
       const leafOrder =
         this.props.leafIDs.indexOf(this.props.Rectos[value].parentID) + 1;
       const folioNumber =
@@ -150,9 +150,9 @@ export default class ManageNotes extends Component {
           ? `(${this.props.Rectos[value].page_number})`
           : '';
       const label = `L${leafOrder} Recto ${folioNumber} ${pageNumber}`;
-      sidesWithCurrentNote.push({ label, value });
+      sidesWithCurrentTerm.push({ label, value });
     }
-    for (let value of versosWithCurrentNote) {
+    for (let value of versosWithCurrentTerm) {
       const leafOrder =
         this.props.leafIDs.indexOf(this.props.Versos[value].parentID) + 1;
       const folioNumber =
@@ -166,9 +166,9 @@ export default class ManageNotes extends Component {
           ? `(${this.props.Versos[value].page_number})`
           : '';
       const label = `L${leafOrder} Verso ${folioNumber} ${pageNumber}`;
-      sidesWithCurrentNote.push({ label, value });
+      sidesWithCurrentTerm.push({ label, value });
     }
-    return sidesWithCurrentNote;
+    return sidesWithCurrentTerm;
   };
 
   getRectosAndVersos = () => {
@@ -184,14 +184,14 @@ export default class ManageNotes extends Component {
   };
 
   render() {
-    let noteForm;
-    if (!this.state.activeNote) {
-      noteForm = (
-        <NewNoteForm
-          Notes={this.props.Notes}
+    let termForm;
+    if (!this.state.activeTerm) {
+      termForm = (
+        <NewTermForm
+          Terms={this.props.Terms}
           projectID={this.props.projectID}
-          action={{ addNote: this.props.action.addNote }}
-          noteTypes={this.props.noteTypes}
+          action={{ addTerm: this.props.action.addTerm }}
+          Taxonomies={this.props.Taxonomies}
           groupIDs={this.props.groupIDs}
           leafIDs={this.props.leafIDs}
           rectoIDs={this.props.rectoIDs}
@@ -199,20 +199,20 @@ export default class ManageNotes extends Component {
         />
       );
     } else {
-      noteForm = (
-        <EditNoteForm
+      termForm = (
+        <EditTermForm
           action={{
-            addNote: this.props.action.addNote,
-            updateNote: this.updateNote,
-            deleteNote: this.deleteNote,
-            linkNote: this.linkNote,
-            unlinkNote: this.unlinkNote,
-            linkAndUnlinkNotes: this.linkAndUnlinkNotes,
+            addTerm: this.props.action.addTerm,
+            updateTerm: this.updateTerm,
+            deleteTerm: this.deleteTerm,
+            linkTerm: this.linkTerm,
+            unlinkTerm: this.unlinkTerm,
+            linkAndUnlinkTerms: this.linkAndUnlinkTerms,
           }}
           projectID={this.props.projectID}
-          Notes={this.props.Notes}
-          note={this.state.activeNote}
-          noteTypes={this.props.noteTypes}
+          Terms={this.props.Terms}
+          term={this.state.activeTerm}
+          Taxonomies={this.props.Taxonomies}
           Groups={this.props.Groups}
           Leafs={this.props.Leafs}
           Rectos={this.props.Rectos}
@@ -233,10 +233,10 @@ export default class ManageNotes extends Component {
 
     return (
       <div className="browse">
-        <div className="notesList">
-          <div role="region" aria-label="browse note titles">
+        <div className="termsList">
+          <div role="region" aria-label="browse term titles">
             <RaisedButton
-              primary={!this.state.activeNote ? false : true}
+              primary={!this.state.activeTerm ? false : true}
               className={'item add item'}
               onClick={() => this.onItemChange(null)}
               style={{ width: '90%' }}
@@ -248,11 +248,11 @@ export default class ManageNotes extends Component {
               backgroundColor={'#566476'}
               tabIndex={this.props.tabIndex}
             ></RaisedButton>
-            {Object.keys(this.props.Notes).map(this.renderList)}
+            {Object.keys(this.props.Terms).map(this.renderList)}
           </div>
         </div>
-        <div className="details" role="region" aria-label="note details">
-          {noteForm}
+        <div className="details" role="region" aria-label="term details">
+          {termForm}
         </div>
       </div>
     );
