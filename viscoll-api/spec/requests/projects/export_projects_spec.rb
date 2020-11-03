@@ -216,7 +216,7 @@ describe "GET /projects/:id/export/:format", :type => :request do
       end
       
       it 'should show error' do
-        expect(@body['error']).to eq "Export format must be one of [json, xml, svg, formula]"
+        expect(@body['error']).to eq "Export format must be one of [json, xml, svg, formula, html]"
       end
     end
   end
