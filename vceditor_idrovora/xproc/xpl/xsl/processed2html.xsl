@@ -151,7 +151,6 @@
                 <xsl:value-of select="$shelfmark"/>
                 <xsl:text>.</xsl:text>
             </xsl:variable>
-            <xsl:call-template name="DoctypeDeclaration"/>
             <!-- Record date and time of transformation -->
             <xsl:call-template name="DateTimeTransformationNote"/>
             <html lang="en">
@@ -206,7 +205,6 @@
                     <xsl:with-param name="shelfmark" select="$shelfmark"/>
                 </xsl:call-template>
             </xsl:variable>
-            <xsl:call-template name="DoctypeDeclaration"/>
             <!-- Call template to record the date and time of the transformation -->
             <xsl:call-template name="DateTimeTransformationNote"/>
             <html lang="en">
@@ -486,7 +484,6 @@
                         <xsl:with-param name="shelfmark"/>
                     </xsl:call-template>
                 </xsl:variable>
-                <xsl:call-template name="DoctypeDeclaration"/>
                 <!-- Record date and time of transformation -->
                 <xsl:call-template name="DateTimeTransformationNote"/>
                 <html lang="en">
@@ -543,7 +540,6 @@
                         <xsl:with-param name="shelfmark"/>
                     </xsl:call-template>
                 </xsl:variable>
-                <xsl:call-template name="DoctypeDeclaration"/>
                 <!-- Record date and time of transformation -->
                 <xsl:call-template name="DateTimeTransformationNote"/>
                 <html lang="en">
@@ -653,7 +649,6 @@
                     <xsl:with-param name="shelfmark" select="$shelfmark"/>
                 </xsl:call-template>
             </xsl:variable>
-            <xsl:call-template name="DoctypeDeclaration"/>
             <!-- Call template to record the date and time of the transformation -->
             <xsl:call-template name="DateTimeTransformationNote"/>
             <html lang="en">
@@ -875,7 +870,6 @@
         <xsl:param name="positions"/>
         <xsl:param name="empty"/>
         <xsl:result-document href="{$href}" format="html5">
-            <xsl:call-template name="DoctypeDeclaration"/>
             <!-- Call template to record the date and time of the transformation -->
             <xsl:call-template name="DateTimeTransformationNote"/>
             <html lang="en">
@@ -1397,16 +1391,6 @@
         </div>
     </xsl:template>
     
-    <xd:doc>
-        <xd:desc>
-            <xd:p>Doctype Declaration</xd:p>
-        </xd:desc>
-    </xd:doc>
-    <xsl:template name="DoctypeDeclaration">
-            <!-- <xsl:text disable-output-escaping='yes'>&lt;!DOCTYPE html&gt;</xsl:text> -->
-            <xsl:text disable-output-escaping='yes'><!DOCTYPE html></xsl:text>
-    </xsl:template>
-
     <xd:doc>
         <xd:desc>
             <xd:p>Record date and time of transformation</xd:p>
