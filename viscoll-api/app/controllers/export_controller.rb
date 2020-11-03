@@ -108,6 +108,7 @@ class ExportController < ApplicationController
           Zip::File.open(outfile) do |zip_file|
             zip_file.each do |file|
               if File.extname(file.name) == '.html'
+                add_doctype(zip_file, file)
                 zip_file.rename(file.name, "HTML/#{file.name}")
               elsif File.extname(file.name) == '.xml'
                 zip_file.rename(file.name, "XML/#{file.name}")
@@ -143,6 +144,12 @@ class ExportController < ApplicationController
     rescue Exception => e
       render json: {error: "project not found with id "+params[:id]}, status: :not_found and return
     end
+  end
+
+  def add_doctype(zip_file, input_file)
+    contents = zip_file.read(input_file.name)
+    zip_file.get_output_stream(input_file.name) { |f| f.puts "<!DOCTYPE html>" + contents}
+    zip_file.commit
   end
 
   def process_pipeline pipeline, xml_string, config_xml = nil, image_list = nil
