@@ -743,6 +743,23 @@ class CollationManager extends Component {
               tabIndex={this.props.popUpActive ? -1 : 0}
             />
           </div>
+          <h2>Export HTML</h2>
+          <div className="export">
+            <FlatButton
+              label="HTML"
+              aria-label="Export HTML"
+              labelStyle={{
+                color: '#ffffff',
+                fontSize: this.state.windowWidth <= 768 ? '0.75em' : null,
+              }}
+              backgroundColor="rgba(255, 255, 255, 0.05)"
+              style={{ width: '100%' }}
+              onClick={() => {
+                this.handleExportToggle(true, 'html', 'HTML');
+              }}
+              tabIndex={this.props.popUpActive ? -1 : 0}
+            />
+          </div>
         </Panel>
       </div>
     );

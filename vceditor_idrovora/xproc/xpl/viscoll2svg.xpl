@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <p:declare-step xmlns:p="http://www.w3.org/ns/xproc"
                 xmlns:c="http://www.w3.org/ns/xproc-step"
+                xmlns:vc="http://schoenberginstitute.org/schema/collation"
+                type="vc:viscoll2svg"
                 version="1.0">
   <p:option name="job-dir" required="true"/>
   <p:variable name="css-base" select="'../css/'"/>
-
   <p:load name="read-from-input">
     <p:with-option name="href" select="concat($job-dir,'input.xml')"/>
   </p:load>
@@ -29,5 +30,5 @@
       <p:store encoding="utf-8" indent="false" omit-xml-declaration="false">
          <p:with-option name="href" select="p:base-uri()"/>
       </p:store>
-   </p:for-each>
+  </p:for-each>
 </p:declare-step>

@@ -1,5 +1,9 @@
+require 'erb'
+
 module ControllerHelper
   module ExportHelper
+
+    IMAGE_LIST_ERB = File.expand_path '../image_list.xml.erb', __FILE__
 
     def buildJSON(project)
       @project.reload
@@ -258,11 +262,11 @@ module ControllerHelper
                   xml.mode mode
 
                   qAttributes = {}
+                  qAttributes[:target] = "#"+idPrefix+"-q-"+parents.join("-")
                   qAttributes[:position] = project.groups.find(leaf.parentID).memberIDs.index(leafID)+1
+                  qAttributes[:n] = parents[-1]
                   qAttributes[:leafno] = leafemberOrder
                   qAttributes[:certainty] = 1
-                  qAttributes[:target] = "#"+idPrefix+"-q-"+parents.join("-")
-                  qAttributes[:n] = parents[-1]
                   xml.q qAttributes do
                     if leaf.conjoined_to
                       idPostfix = parents.join("-")+"-"+@leafs[leaf.conjoined_to][:memberOrder].to_s
@@ -573,6 +577,7 @@ module ControllerHelper
                 end
               end
             end
+
             termShow = {"xml:id": 'term_show'}
             xml.taxonomy termShow do
               xml.label do
@@ -807,7 +812,11 @@ module ControllerHelper
       return result
     end
 
-
+    def build_image_list project
+      erb = ERB.new open(IMAGE_LIST_ERB).read
+      image_list = erb.result binding
+      image_list
+    end
 
   end
 end
