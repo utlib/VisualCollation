@@ -230,18 +230,41 @@ PaperLeaf.prototype = {
     this.textVerso.onMouseLeave = function (event) {};
   },
   createAttachments: function () {
-    console.log(`Order: ${this.order} Leaf: ${this.leaf.id}`)
-    let attachment_methods = ['Sewn', 'Pasted', 'Tipped', 'Drummed', 'Stitched']
-    // ignore first leaf, then start checking for attachment method in above leaf
-    if (this.order > 1 && attachment_methods.includes(this.leaf.attached_above))
-    {
-      // create the glue texture
-      this.createGlue();
-    } else if (this.order > 1 && this.leaf.attached_above === 'Other') {
-      this.createOtherAttachment();
-    }
-    if (this.order > 1 && this.leaf.conjoin_type === 'Sewn') {
-      this.createSewn();
+    // let attachment_methods = ['Pasted', 'Tipped', 'Drummed', 'Stitched']
+    // // ignore first leaf, then start checking for attachment method in above leaf
+    // if (this.order > 1 && attachment_methods.includes(this.leaf.attached_above))
+    // {
+    //   // create the glue texture
+    //   this.createGlue();
+    // } else if (this.order > 1 && this.leaf.attached_above === 'Other') {
+    //   this.createOtherAttachment();
+    // }
+    // if (this.order > 1 && this.leaf.conjoin_type === 'Sewn') {
+    //   this.createSewn();
+    // }
+    if (this.order > 1) {
+      switch(this.leaf.attached_above){
+        case "Pasted":
+          this.createGlue();
+          break; 
+        case "Tipped":
+          this.createGlue();
+          break; 
+        case "Drummed":
+          this.createGlue();
+          break; 
+        case "Stitched":
+          this.createGlue();
+          break;
+        case "Other":
+          this.createOtherAttachment();
+          break;
+        default:
+          console.log("Attachment method matches none of the conditions.")
+      }
+      if (this.leaf.conjoin_type === 'Sewn') {
+        this.createSewn();
+      }
     }
   },
   createGlue: function () {
@@ -253,7 +276,7 @@ PaperLeaf.prototype = {
         x = this.prevPaperLeaf().path.segments[0].point.x;
       }
     }
-    if (this.leaf.attached_above.includes('Partial')) {
+    if (this.prevPaperLeaf().leaf.stub !== 'None') {
       for (let i = 0; i < 6; i++) {
         let glueLine = new paper.Path();
         glueLine.add(new paper.Point(x, this.y - this.spacing * 0.3));
