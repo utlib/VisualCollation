@@ -230,18 +230,7 @@ PaperLeaf.prototype = {
     this.textVerso.onMouseLeave = function (event) {};
   },
   createAttachments: function () {
-    // let attachment_methods = ['Pasted', 'Tipped', 'Drummed', 'Stitched']
-    // // ignore first leaf, then start checking for attachment method in above leaf
-    // if (this.order > 1 && attachment_methods.includes(this.leaf.attached_above))
-    // {
-    //   // create the glue texture
-    //   this.createGlue();
-    // } else if (this.order > 1 && this.leaf.attached_above === 'Other') {
-    //   this.createOtherAttachment();
-    // }
-    // if (this.order > 1 && this.leaf.conjoin_type === 'Sewn') {
-    //   this.createSewn();
-    // }
+    // determine what attachment is drawn based on method indicated
     if (this.order > 1) {
       switch(this.leaf.attached_above){
         case "Pasted":
@@ -262,6 +251,7 @@ PaperLeaf.prototype = {
         default:
           console.log("Attachment method matches none of the conditions.")
       }
+      // TODO: what is sewn?
       if (this.leaf.conjoin_type === 'Sewn') {
         this.createSewn();
       }
