@@ -230,9 +230,12 @@ PaperLeaf.prototype = {
     this.textVerso.onMouseLeave = function (event) {};
   },
   createAttachments: function () {
+    console.log(`Order: ${this.order} Leaf: ${this.leaf.id}`)
     let attachment_methods = ['Sewn', 'Pasted', 'Tipped', 'Drummed', 'Stitched']
+    // ignore first leaf, then start checking for attachment method in above leaf
     if (this.order > 1 && attachment_methods.includes(this.leaf.attached_above))
     {
+      // create the glue texture
       this.createGlue();
     } else if (this.order > 1 && this.leaf.attached_above === 'Other') {
       this.createOtherAttachment();
@@ -260,7 +263,7 @@ PaperLeaf.prototype = {
         this.attachment.addChild(glueLine);
         x += 5;
       }
-    } else if (this.leaf.attached_above.includes('Drumming')) {
+    } else if (this.leaf.attached_above.includes('Drummed')) {
       let glueLineCount = 15;
       if (this.leaf.stub !== 'None') glueLineCount = 4;
       // Draw left drum glue
