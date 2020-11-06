@@ -156,8 +156,7 @@ class ExportController < ApplicationController
 
   def add_doctype zip_file, input_file
     content = zip_file.read(input_file.name)
-    new_content = content.lines.to_a[1..-1].join
-    zip_file.get_output_stream(input_file.name) { |f| f.puts "<!-- Generated with VCEditor -->\n<!DOCTYPE html>\n" + new_content}
+    zip_file.get_output_stream(input_file.name) { |f| f.puts "<!-- Generated with VCEditor -->\n<!DOCTYPE html>\n" + content}
     zip_file.commit
   end
 
