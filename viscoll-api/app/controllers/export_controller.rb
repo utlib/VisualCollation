@@ -148,7 +148,7 @@ class ExportController < ApplicationController
 
   def add_doctype(zip_file, input_file)
     contents = zip_file.read(input_file.name)
-    zip_file.get_output_stream(input_file.name) { |f| f.puts "<!DOCTYPE html>" + contents}
+    zip_file.get_output_stream(input_file.name) { |f| f.puts "<!DOCTYPE html>\n" + contents}
     zip_file.commit
   end
 
