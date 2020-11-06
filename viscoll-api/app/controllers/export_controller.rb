@@ -108,6 +108,7 @@ class ExportController < ApplicationController
           Zip::File.open(outfile) do |zip_file|
             zip_file.each do |file|
               if File.extname(file.name) == '.html'
+                remove_xml_declaration(zip_file, file)
                 add_doctype(zip_file, file)
                 zip_file.rename(file.name, "HTML/#{file.name}")
               elsif File.extname(file.name) == '.xml'
@@ -146,9 +147,16 @@ class ExportController < ApplicationController
     end
   end
 
-  def add_doctype(zip_file, input_file)
-    contents = zip_file.read(input_file.name)
-    zip_file.get_output_stream(input_file.name) { |f| f.puts "<!DOCTYPE html>" + contents}
+  def remove_xml_declaration zip_file, input_file
+    content = zip_file.read(input_file.name)
+    new_content = content.lines.to_a[1..-1].join
+    zip_file.get_output_stream(input_file.name) { |f| f.puts new_content}
+    zip_file.commit
+  end
+
+  def add_doctype zip_file, input_file
+    content = zip_file.read(input_file.name)
+    zip_file.get_output_stream(input_file.name) { |f| f.puts "<!-- Generated with VCEditor -->\n<!DOCTYPE html>\n" + content}
     zip_file.commit
   end
 
