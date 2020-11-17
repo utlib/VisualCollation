@@ -246,17 +246,7 @@ PaperLeaf.prototype = {
         x = this.prevPaperLeaf().path.segments[0].point.x;
       }
     }
-    if (this.prevPaperLeaf().leaf.stub !== 'None') {
-      for (let i = 0; i < 6; i++) {
-        let glueLine = new paper.Path();
-        glueLine.add(new paper.Point(x, this.y - this.spacing * 0.3));
-        glueLine.add(new paper.Point(x + 10, this.y - this.spacing * 0.7));
-        glueLine.strokeColor = '#707070';
-        glueLine.strokeWidth = 2;
-        this.attachment.addChild(glueLine);
-        x += 5;
-      }
-    } else if (this.leaf.attached_above.includes('Sewn')) {
+      if (this.leaf.attached_above.includes('Sewn')) {
       let glueLineCount = 4;
       // Draw tip glue
       for (let i = 0; i < glueLineCount; i++) {
