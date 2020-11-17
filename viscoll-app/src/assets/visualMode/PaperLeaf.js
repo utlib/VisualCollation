@@ -232,35 +232,12 @@ PaperLeaf.prototype = {
   createAttachments: function () {
     // determine what attachment is drawn based on method indicated
     if (this.order > 1) {
-      switch(this.leaf.attached_above){
-        case "Sewn":
-          this.createGlue();
-          break;
-        case "Pasted":
-          this.createGlue();
-          break; 
-        case "Tipped":
-          this.createGlue();
-          break; 
-        case "Drummed":
-          this.createGlue();
-          break; 
-        case "Stitched":
-          this.createGlue();
-          break;
-        case "Other":
-          this.createOtherAttachment();
-          break;
-        default:
-          console.log("Attachment method matches none of the conditions.")
-      }
-      // TODO: what is sewn?
-      if (this.leaf.conjoin_type === 'Sewn') {
-        this.createSewn();
+      if (this.leaf.attached_above !== 'None'){
+          this.createAttachment();
       }
     }
   },
-  createGlue: function () {
+  createAttachment: function () {
     let x = this.path.segments[0].point.x;
     if (this.isConjoined() && this.conjoined_to < this.order) {
       if (this.conjoined_to + 1 === this.order) {
@@ -354,25 +331,6 @@ PaperLeaf.prototype = {
         glueLine.strokeWidth = 2;
         this.attachment.addChild(glueLine);
         x += 5;
-      }
-    }
-  },
-  // Sewing of conjoined leaves
-  createSewn: function () {
-    if (this.isConjoined() && this.conjoined_to < this.order) {
-      let x = this.path.segments[0].point.x;
-      for (let i = 0; i < 2; i++) {
-        let thread = new paper.Path();
-        thread.add(
-          new paper.Point(x - 1, this.y_conjoin_center(this.conjoined_to) - 5)
-        );
-        thread.add(
-          new paper.Point(x - 1, this.y_conjoin_center(this.conjoined_to) + 5)
-        );
-        thread.strokeColor = '#ffffff';
-        thread.strokeWidth = 1;
-        this.attachment.addChild(thread);
-        x += 3;
       }
     }
   },
