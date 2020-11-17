@@ -317,7 +317,7 @@ PaperLeaf.prototype = {
         this.leaf.stub === 'None' &&
         this.prevPaperLeaf().leaf.stub === 'None'
       ) {
-        // Draw right drum glue
+        // Draw right drum glue if above or below are not stubs
         x = this.path.segments[this.path.segments.length - 1].point.x;
         for (let i = 0; i < glueLineCount; i++) {
           let glueLine = new paper.Path();
@@ -329,19 +329,35 @@ PaperLeaf.prototype = {
           x -= 5;
         }
       }
-    } else {
+    } else if (this.leaf.attached_above.includes('Pasted')) {
       // Complete glue
-      while (
-        x <=
-        this.path.segments[this.path.segments.length - 1].point.x - 10
+      if (
+        this.leaf.stub !== 'None' ||
+        this.prevPaperLeaf().leaf.stub !== 'None'
       ) {
-        let glueLine = new paper.Path();
-        glueLine.add(new paper.Point(x, this.y - this.spacing * 0.3));
-        glueLine.add(new paper.Point(x + 10, this.y - this.spacing * 0.7));
-        glueLine.strokeColor = '#707070';
-        glueLine.strokeWidth = 2;
-        this.attachment.addChild(glueLine);
-        x += 5;
+        let glueLineCount = 15;
+        for (let i = 0; i < glueLineCount; i++) {
+          let glueLine = new paper.Path();
+          glueLine.add(new paper.Point(x + 10, this.y - this.spacing * 0.3));
+          glueLine.add(new paper.Point(x, this.y - this.spacing * 0.7));
+          glueLine.strokeColor = '#707070';
+          glueLine.strokeWidth = 2;
+          this.attachment.addChild(glueLine);
+          x += 5;
+        }
+      } else {
+        while (
+          x <=
+          this.path.segments[this.path.segments.length - 1].point.x - 10
+        ) {
+          let glueLine = new paper.Path();
+          glueLine.add(new paper.Point(x + 10, this.y - this.spacing * 0.3));
+          glueLine.add(new paper.Point(x, this.y - this.spacing * 0.7));
+          glueLine.strokeColor = '#707070';
+          glueLine.strokeWidth = 2;
+          this.attachment.addChild(glueLine);
+          x += 5;
+        }
       }
     }
   },
