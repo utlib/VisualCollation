@@ -313,16 +313,21 @@ PaperLeaf.prototype = {
         this.attachment.addChild(glueLine);
         x += 5;
       }
-      // Draw right drum glue
-      x = this.path.segments[this.path.segments.length - 1].point.x;
-      for (let i = 0; i < glueLineCount; i++) {
-        let glueLine = new paper.Path();
-        glueLine.add(new paper.Point(x - 10, this.y - this.spacing * 0.3));
-        glueLine.add(new paper.Point(x, this.y - this.spacing * 0.7));
-        glueLine.strokeColor = '#707070';
-        glueLine.strokeWidth = 2;
-        this.attachment.addChild(glueLine);
-        x -= 5;
+      if (
+        this.leaf.stub === 'None' &&
+        this.prevPaperLeaf().leaf.stub === 'None'
+      ) {
+        // Draw right drum glue
+        x = this.path.segments[this.path.segments.length - 1].point.x;
+        for (let i = 0; i < glueLineCount; i++) {
+          let glueLine = new paper.Path();
+          glueLine.add(new paper.Point(x - 10, this.y - this.spacing * 0.3));
+          glueLine.add(new paper.Point(x, this.y - this.spacing * 0.7));
+          glueLine.strokeColor = '#707070';
+          glueLine.strokeWidth = 2;
+          this.attachment.addChild(glueLine);
+          x -= 5;
+        }
       }
     } else {
       // Complete glue
