@@ -232,8 +232,8 @@ PaperLeaf.prototype = {
   createAttachments: function () {
     // determine what attachment is drawn based on method indicated
     if (this.order > 1) {
-      if (this.leaf.attached_above !== 'None'){
-          this.createAttachment();
+      if (this.leaf.attached_above !== 'None') {
+        this.createAttachment();
       }
     }
   },
@@ -246,13 +246,13 @@ PaperLeaf.prototype = {
         x = this.prevPaperLeaf().path.segments[0].point.x;
       }
     }
-      if (this.leaf.attached_above.includes('Sewn')) {
+    if (this.leaf.attached_above.includes('Sewn')) {
       let glueLineCount = 4;
       // Draw tip glue
       for (let i = 0; i < glueLineCount; i++) {
         let glueLine = new paper.Path();
-        glueLine.add(new paper.Point(x+10, this.y - this.spacing * 0.3));
-        glueLine.add(new paper.Point(x+10, this.y - this.spacing * 0.7));
+        glueLine.add(new paper.Point(x + 10, this.y - this.spacing * 0.3));
+        glueLine.add(new paper.Point(x + 10, this.y - this.spacing * 0.7));
         glueLine.strokeColor = '#707070';
         glueLine.strokeWidth = 2;
         this.attachment.addChild(glueLine);
@@ -265,8 +265,8 @@ PaperLeaf.prototype = {
         this.path.segments[this.path.segments.length - 1].point.x - 10
       ) {
         let glueLine = new paper.Path();
-        glueLine.add(new paper.Point(x+10, this.y - this.spacing * 0.3));
-        glueLine.add(new paper.Point(x+10, this.y - this.spacing * 0.7));
+        glueLine.add(new paper.Point(x + 10, this.y - this.spacing * 0.3));
+        glueLine.add(new paper.Point(x + 10, this.y - this.spacing * 0.7));
         glueLine.strokeColor = '#707070';
         glueLine.strokeWidth = 2;
         this.attachment.addChild(glueLine);
