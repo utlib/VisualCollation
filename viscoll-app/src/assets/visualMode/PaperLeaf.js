@@ -302,7 +302,6 @@ PaperLeaf.prototype = {
       }
     } else if (this.leaf.attached_above.includes('Drummed')) {
       let glueLineCount = 15;
-      if (this.leaf.stub !== 'None') glueLineCount = 4;
       // Draw left drum glue
       for (let i = 0; i < glueLineCount; i++) {
         let glueLine = new paper.Path();
