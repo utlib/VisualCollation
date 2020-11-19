@@ -259,34 +259,17 @@ PaperLeaf.prototype = {
         x += 5;
       }
     } else if (this.leaf.attached_above.includes('Stitched')) {
+      console.log(this)
       // Complete stitch
-      if (
-        this.leaf.stub !== 'None' ||
-        this.prevPaperLeaf().leaf.stub !== 'None'
-      ) {
-        let glueLineCount = 15;
+        let glueLineCount = 1;
         for (let i = 0; i < glueLineCount; i++) {
           let glueLine = new paper.Path();
-          glueLine.add(new paper.Point(x + 10, this.y - this.spacing * 0.3));
-          glueLine.add(new paper.Point(x + 10, this.y - this.spacing * 0.7));
+          glueLine.add(new paper.Point(x + 10, this.y - this.spacing));
+          glueLine.add(new paper.Point(x + 10, this.y - (this.spacing * 0.1)));
           glueLine.strokeColor = '#707070';
           glueLine.strokeWidth = 2;
           this.attachment.addChild(glueLine);
           x += 5;
-        }
-      } else {
-        while (
-          x <=
-          this.path.segments[this.path.segments.length - 1].point.x - 10
-        ) {
-          let glueLine = new paper.Path();
-          glueLine.add(new paper.Point(x + 10, this.y - this.spacing * 0.3));
-          glueLine.add(new paper.Point(x + 10, this.y - this.spacing * 0.7));
-          glueLine.strokeColor = '#707070';
-          glueLine.strokeWidth = 2;
-          this.attachment.addChild(glueLine);
-          x += 5;
-        }
       }
     } else if (this.leaf.attached_above.includes('Tipped')) {
       let glueLineCount = 4;
