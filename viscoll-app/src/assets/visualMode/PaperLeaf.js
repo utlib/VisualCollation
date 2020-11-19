@@ -247,12 +247,12 @@ PaperLeaf.prototype = {
       }
     }
     if (this.leaf.attached_above.includes('Sewn')) {
-      let glueLineCount = 4;
+      let glueLineCount = 2;
       // Draw tip glue
       for (let i = 0; i < glueLineCount; i++) {
         let glueLine = new paper.Path();
-        glueLine.add(new paper.Point(x + 10, this.y - this.spacing * 0.3));
-        glueLine.add(new paper.Point(x + 10, this.y - this.spacing * 0.7));
+        glueLine.add(new paper.Point(x + 10, this.y));
+        glueLine.add(new paper.Point(x + 10, this.y * 0.5));
         glueLine.strokeColor = '#707070';
         glueLine.strokeWidth = 2;
         this.attachment.addChild(glueLine);
