@@ -251,8 +251,8 @@ PaperLeaf.prototype = {
       // Draw tip glue
       for (let i = 0; i < glueLineCount; i++) {
         let glueLine = new paper.Path();
-        glueLine.add(new paper.Point(x + 10, this.y));
-        glueLine.add(new paper.Point(x + 10, this.y * 0.5));
+        glueLine.add(new paper.Point(x + 10, this.y - this.spacing));
+        glueLine.add(new paper.Point(x + 10, this.y - this.spacing * 0.1));
         glueLine.strokeColor = '#707070';
         glueLine.strokeWidth = 2;
         this.attachment.addChild(glueLine);
