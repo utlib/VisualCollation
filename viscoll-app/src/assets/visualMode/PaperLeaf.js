@@ -230,23 +230,14 @@ PaperLeaf.prototype = {
     this.textVerso.onMouseLeave = function (event) {};
   },
   createAttachments: function () {
-    if (
-      (this.order > 1 && this.leaf.attached_above === 'Sewn') ||
-      (this.order > 1 && this.leaf.attached_above === 'Pasted') ||
-      (this.order > 1 && this.leaf.attached_above === 'Tipped') ||
-      (this.order > 1 && this.leaf.attached_above === 'Drummed') ||
-      (this.order > 1 && this.leaf.attached_above === 'Stitched')
-    ) {
-      console.log(this.leaf.attached_above);
-      this.createGlue();
-    } else if (this.order > 1 && this.leaf.attached_above === 'Other') {
-      this.createOtherAttachment();
-    }
-    if (this.order > 1 && this.leaf.conjoin_type === 'Sewn') {
-      this.createSewn();
+    // determine what attachment is drawn based on method indicated
+    if (this.order > 1) {
+      if (this.leaf.attached_above !== 'None') {
+        this.createAttachment();
+      }
     }
   },
-  createGlue: function () {
+  createAttachment: function () {
     let x = this.path.segments[0].point.x;
     if (this.isConjoined() && this.conjoined_to < this.order) {
       if (this.conjoined_to + 1 === this.order) {
@@ -255,72 +246,100 @@ PaperLeaf.prototype = {
         x = this.prevPaperLeaf().path.segments[0].point.x;
       }
     }
-    if (this.leaf.attached_above.includes('Partial')) {
-      for (let i = 0; i < 6; i++) {
+    if (this.leaf.attached_above.includes('Sewn')) {
+      let glueLineCount = 2;
+      // Draw tip glue
+      for (let i = 0; i < glueLineCount; i++) {
         let glueLine = new paper.Path();
-        glueLine.add(new paper.Point(x, this.y - this.spacing * 0.3));
-        glueLine.add(new paper.Point(x + 10, this.y - this.spacing * 0.7));
+        glueLine.add(new paper.Point(x + 10, this.y - this.spacing));
+        glueLine.add(new paper.Point(x + 10, this.y - this.spacing * 0.1));
         glueLine.strokeColor = '#707070';
         glueLine.strokeWidth = 2;
         this.attachment.addChild(glueLine);
         x += 5;
       }
-    } else if (this.leaf.attached_above.includes('Drumming')) {
+    } else if (this.leaf.attached_above.includes('Stitched')) {
+      console.log(this)
+      // Complete stitch
+        let glueLineCount = 1;
+        for (let i = 0; i < glueLineCount; i++) {
+          let glueLine = new paper.Path();
+          glueLine.add(new paper.Point(x + 10, this.y - this.spacing));
+          glueLine.add(new paper.Point(x + 10, this.y - (this.spacing * 0.1)));
+          glueLine.strokeColor = '#707070';
+          glueLine.strokeWidth = 2;
+          this.attachment.addChild(glueLine);
+          x += 5;
+      }
+    } else if (this.leaf.attached_above.includes('Tipped')) {
+      let glueLineCount = 4;
+      // Draw tip glue
+      for (let i = 0; i < glueLineCount; i++) {
+        let glueLine = new paper.Path();
+        glueLine.add(new paper.Point(x, this.y - this.spacing * 0.3));
+        glueLine.add(new paper.Point(x - 10, this.y - this.spacing * 0.7));
+        glueLine.strokeColor = '#707070';
+        glueLine.strokeWidth = 2;
+        this.attachment.addChild(glueLine);
+        x += 5;
+      }
+    } else if (this.leaf.attached_above.includes('Drummed')) {
       let glueLineCount = 15;
-      if (this.leaf.stub !== 'None') glueLineCount = 4;
       // Draw left drum glue
       for (let i = 0; i < glueLineCount; i++) {
         let glueLine = new paper.Path();
         glueLine.add(new paper.Point(x, this.y - this.spacing * 0.3));
-        glueLine.add(new paper.Point(x + 10, this.y - this.spacing * 0.7));
+        glueLine.add(new paper.Point(x - 10, this.y - this.spacing * 0.7));
         glueLine.strokeColor = '#707070';
         glueLine.strokeWidth = 2;
         this.attachment.addChild(glueLine);
         x += 5;
       }
-      // Draw right drum glue
-      x = this.path.segments[this.path.segments.length - 1].point.x;
-      for (let i = 0; i < glueLineCount; i++) {
-        let glueLine = new paper.Path();
-        glueLine.add(new paper.Point(x - 10, this.y - this.spacing * 0.3));
-        glueLine.add(new paper.Point(x, this.y - this.spacing * 0.7));
-        glueLine.strokeColor = '#707070';
-        glueLine.strokeWidth = 2;
-        this.attachment.addChild(glueLine);
-        x -= 5;
-      }
-    } else {
-      // Complete glue
-      while (
-        x <=
-        this.path.segments[this.path.segments.length - 1].point.x - 10
+      if (
+        this.leaf.stub === 'None' &&
+        this.prevPaperLeaf().leaf.stub === 'None'
       ) {
-        let glueLine = new paper.Path();
-        glueLine.add(new paper.Point(x, this.y - this.spacing * 0.3));
-        glueLine.add(new paper.Point(x + 10, this.y - this.spacing * 0.7));
-        glueLine.strokeColor = '#707070';
-        glueLine.strokeWidth = 2;
-        this.attachment.addChild(glueLine);
-        x += 5;
+        // Draw right drum glue if above or below are not stubs
+        x = this.path.segments[this.path.segments.length - 1].point.x;
+        for (let i = 0; i < glueLineCount; i++) {
+          let glueLine = new paper.Path();
+          glueLine.add(new paper.Point(x - 10, this.y - this.spacing * 0.3));
+          glueLine.add(new paper.Point(x, this.y - this.spacing * 0.7));
+          glueLine.strokeColor = '#707070';
+          glueLine.strokeWidth = 2;
+          this.attachment.addChild(glueLine);
+          x -= 5;
+        }
       }
-    }
-  },
-  // Sewing of conjoined leaves
-  createSewn: function () {
-    if (this.isConjoined() && this.conjoined_to < this.order) {
-      let x = this.path.segments[0].point.x;
-      for (let i = 0; i < 2; i++) {
-        let thread = new paper.Path();
-        thread.add(
-          new paper.Point(x - 1, this.y_conjoin_center(this.conjoined_to) - 5)
-        );
-        thread.add(
-          new paper.Point(x - 1, this.y_conjoin_center(this.conjoined_to) + 5)
-        );
-        thread.strokeColor = '#ffffff';
-        thread.strokeWidth = 1;
-        this.attachment.addChild(thread);
-        x += 3;
+    } else if (this.leaf.attached_above.includes('Pasted')) {
+      // Complete glue
+      if (
+        this.leaf.stub !== 'None' ||
+        this.prevPaperLeaf().leaf.stub !== 'None'
+      ) {
+        let glueLineCount = 15;
+        for (let i = 0; i < glueLineCount; i++) {
+          let glueLine = new paper.Path();
+          glueLine.add(new paper.Point(x + 10, this.y - this.spacing * 0.3));
+          glueLine.add(new paper.Point(x, this.y - this.spacing * 0.7));
+          glueLine.strokeColor = '#707070';
+          glueLine.strokeWidth = 2;
+          this.attachment.addChild(glueLine);
+          x += 5;
+        }
+      } else {
+        while (
+          x <=
+          this.path.segments[this.path.segments.length - 1].point.x - 10
+        ) {
+          let glueLine = new paper.Path();
+          glueLine.add(new paper.Point(x + 10, this.y - this.spacing * 0.3));
+          glueLine.add(new paper.Point(x, this.y - this.spacing * 0.7));
+          glueLine.strokeColor = '#707070';
+          glueLine.strokeWidth = 2;
+          this.attachment.addChild(glueLine);
+          x += 5;
+        }
       }
     }
   },
