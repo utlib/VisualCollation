@@ -10,6 +10,7 @@ import AddCircle from 'material-ui/svg-icons/content/add-circle';
 import RemoveCircle from 'material-ui/svg-icons/content/remove-circle-outline';
 import light from '../../../styles/light';
 import { getMemberOrder } from '../../../helpers/getMemberOrder';
+import SelectField from '../../global/SelectField';
 
 
 /** Dialog to add groups in a collation.  This component is used in the visual and tabular edit modes.  It is mounted by `InfoBox` and `GroupInfoBox` components. */
@@ -23,18 +24,22 @@ export default class AddGroupDialog extends React.Component {
       conjoin: false,
       oddLeaf: 2,
       copies: 1,
-      location: "inside",
+      location: "",
+      placementLocation: "",
+      selectedChild: "",
       errorText: {
         numberOfGroups: "",
         numberOfLeaves: "",
         oddLeaf: "",
         copies: "",
       },
+      memberOrder: 1,
     }
   };
 
   componentWillReceiveProps() {
     this.resetForm();
+    this.setState({selectedChild: this.props.Groups[this.props.selectedGroups]['memberIDs'][0]})
   }
 
   /**
@@ -66,6 +71,61 @@ export default class AddGroupDialog extends React.Component {
     newState[name]=(isNaN(newCount))?min:newCount;
     newState.errorText[name]="";
     this.setState({...newState});
+  }
+
+  /**
+   * get all children of a given group, including the children of child groups
+   */
+  getAllChildrenOfGroup = (inputGroupID) => {
+    let allChildrenOfGroup = []
+    let group = this.props.Groups[inputGroupID]
+    group.memberIDs.forEach(memberID => {
+      if (memberID[0] === 'L') {
+        if (!allChildrenOfGroup.includes(memberID)) {
+          allChildrenOfGroup.push(memberID);
+        } else {
+          allChildrenOfGroup.push(this.getAllChildrenOfGroup(memberID))
+        }
+      }
+    })
+    return allChildrenOfGroup;
+  }
+
+  countGroupChildren = (inputGroupID) => {
+    let group = this.props.Groups[inputGroupID]
+    let groupCount = 0;
+    group.memberIDs.forEach(memberID => {
+      if (memberID[0] === 'G') {
+        groupCount++;
+        // go into group
+        groupCount += this.countGroupChildren(memberID)
+      }
+    })
+    return groupCount;
+  }
+
+  /**
+   * Generate group notation for dropdown.
+   * Code here must mirror PaperGroup and Group model notation logic.
+   */
+  groupNotation = (group) => {
+    // get all groups as base nest level
+    let outerGroups = Object.values(this.props.Groups).filter(g => g.nestLevel === 1);
+    let outerGroupIDs = outerGroups.map(g => g.id);
+    let notation = '';
+    if (group.nestLevel === 1){
+      // get index of current group within the context of all outer groups
+      let groupOrder = outerGroupIDs.indexOf(group.id) + 1;
+      notation =  `${groupOrder}`;
+    } else {
+      // get parent of current group
+      let parentGroup = this.props.Groups[group.parentID];
+      // get children of parent group
+      let parentGroupChildren = parentGroup.memberIDs.filter(g => g[0] === 'G');
+      let subquireNotation = parentGroupChildren.indexOf(group.id) + 1;
+      notation = `${this.groupNotation(parentGroup)}.${subquireNotation}`;
+    }
+    return notation;
   }
   
   /**
@@ -108,10 +168,24 @@ export default class AddGroupDialog extends React.Component {
   }
 
   /**
+   * Change dropdown value
+   */ 
+  dropDownChange = (value, stateValue) => {
+    if (Object.keys(this.props.selectedGroups).length === 1) {
+      let updatedStateValue = {};
+      updatedStateValue[stateValue] = value;
+      this.setState(updatedStateValue);
+    }
+  }
+
+  /**
    * Update location radio button group
    */
   onLocationChange = (value) => {
     this.setState({location: value});;
+  }
+  onPlacementLocationChange = (value) => {
+    this.setState({placementLocation: value});;
   }
   /**
    * Returns next sibling of a group
@@ -213,9 +287,44 @@ export default class AddGroupDialog extends React.Component {
             }
           }
         } else if (this.state.location==="inside") {
-          // Add group inside
-          groupOrder += 1;
-          memberOrder = 1;
+          // two values need to be calculated here. these values are memberOrder and groupOrder.
+          // memberOrder represents the placement of the new group in context of it's parent group's memberIDs
+          let selectedChildIndex = this.props.Groups[this.props.selectedGroups]['memberIDs'].indexOf(this.state.selectedChild)
+          if (this.state.placementLocation==="above") {
+            memberOrder = selectedChildIndex + 1
+          } else if (this.state.placementLocation==="below") {
+            memberOrder = selectedChildIndex + 2
+          }
+          //// determine groupOrder
+          // generate an array of all groups and leaves in the project in order
+          let orderedElements = []
+          this.props.groupIDs.forEach(groupID => {
+            if (!orderedElements.includes(groupID)) {
+              orderedElements.push(groupID)
+              // recursively get group children for nested subquires
+              orderedElements.push(...this.getAllChildrenOfGroup(groupID))
+            }
+          })
+          // find the user selected leaf/group in this array
+          let selectedChildIndexInOrderedElements = orderedElements.indexOf(this.state.selectedChild)
+          let orderedElementsSliced = []
+          if (this.state.placementLocation==='above') {
+            orderedElementsSliced = orderedElements.slice(0, selectedChildIndexInOrderedElements)
+          } else if (this.state.placementLocation==='below') {
+            orderedElementsSliced = orderedElements.slice(0, selectedChildIndexInOrderedElements + 1)
+          }
+          // count how many groups occur before this value in the array
+          let groupCount = 0;
+          orderedElementsSliced.forEach(member => {
+            if (member[0]==='G') {
+              groupCount++;
+            }
+          })
+          // add 1 to determine the new groupOrder
+          if (this.state.selectedChild[0] === 'G') {
+            groupCount += this.countGroupChildren(this.state.selectedChild)
+          }
+          groupOrder = groupCount + 1;
           data.additional["parentGroupID"] = group.id;
         }
         data.group = {
@@ -233,7 +342,8 @@ export default class AddGroupDialog extends React.Component {
     }
   }
 
-   /**
+
+  /**
    * Return `true` if there are any errors in the input fields
    */
   isDisabled = () => {
@@ -256,12 +366,15 @@ export default class AddGroupDialog extends React.Component {
       oddLeaf: 2,
       copies: 1,
       location: this.props.selectedGroups.length>0?"":"inside",
+      placementLocation: "",
+      selectedChild: "",
       errorText: {
         numberOfGroups: "",
         numberOfLeaves: "",
         oddLeaf: "",
         copies: "",
       },
+      memberOrder: 1,
     });
   }
 
@@ -438,6 +551,51 @@ export default class AddGroupDialog extends React.Component {
                                 />
                               </div>
                             </div> : "";
+    let groupPosition = this.state.location !== '' && this.state.location === "inside" ? <div>
+                          <div className="label">
+                            <h4
+                              style={{marginBottom: "1em"}}
+                            >Group position</h4>
+                          </div>
+                          <div>
+                            <RadioButtonGroup name="group_position" defaultSelected={this.state.placementLocation} onChange={(e,v)=>this.onPlacementLocationChange(v)}>
+                              <RadioButton
+                                aria-label="Add new group above selected leaf"
+                                value="above"
+                                label="above"
+                                style={styles.radioButton}
+                                autoFocus
+                              />
+                              <RadioButton
+                                aria-label="Add new group below selected leaf"
+                                value="below"
+                                label="below"
+                                style={styles.radioButton}
+                              />
+                            </RadioButtonGroup>
+                          </div>
+                          <div className="input">
+                            <SelectField
+                              id='leafSelect'
+                              label='select where the quire should be positioned'
+                              onChange={v => this.dropDownChange(v, 'selectedChild')}
+                              value={this.props.Groups[this.props.selectedGroups]['memberIDs'][0]}
+                              data={this.props.Groups[this.props.selectedGroups]['memberIDs'].map((itemID) => {
+                                if(itemID[0]==='L') {
+                                  return { value: itemID, text: `Leaf ${this.props.leafIDs.indexOf(itemID) + 1}`}
+                                } else if (itemID[0]==='G') {
+                                  let groupType = this.props.Groups[itemID].type
+                                  // quireNumber should be the notation value, which means we have to have
+                                  // the notation logic here as well
+                                  let groupNotation = this.groupNotation(this.props.Groups[itemID])
+                                  return { value: itemID, text: `${groupType} ${groupNotation}`}
+                                }
+                                
+                              })}
+                              width={250}
+                            />
+                          </div>
+                        </div> : "";
 
 
     if (!this.props.selectedGroups) {
@@ -470,6 +628,7 @@ export default class AddGroupDialog extends React.Component {
         >
           {radioButtonGroupHeader}
           {radioButtonGroup}
+          {groupPosition}
           {numberOfGroups}
           {addLeafsCheckbox}         
           {numberOfLeaves}

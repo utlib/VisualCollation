@@ -19,6 +19,21 @@ class Group
   before_create :edit_ID
   before_destroy :unlink_terms, :unlink_project, :unlink_group, :destroy_members
 
+  # code here must mirror groupNotation function in PaperManager.js:44
+  def group_notation
+    outer_groups = project.groups.where(nestLevel: 1).to_a
+    outer_groupIDs = outer_groups.map(&:id)
+    if self.nestLevel == 1
+      group_order = outer_groupIDs.index(self.id) + 1 # index of this group (self.id) in context of outer_groups + 1
+      notation = group_order.to_s
+    else
+      parent_group = Group.find(self.parentID)
+      parent_group_children = parent_group.memberIDs.select{ |g| g.start_with? 'G'}
+      subquire_notation = parent_group_children.index(self.id) + 1 # index of this group in context of all children of this group's parent
+      notation = "#{parent_group.group_notation}.#{subquire_notation}"
+    end
+    notation
+  end
 
   def edit_ID
     self.id = "Group_"+self.id.to_s unless self.id.to_s[0] == "G"
@@ -73,6 +88,19 @@ class Group
         Leaf.find(memberID).destroy
       end
     end
+  end
+
+  def all_leafIDs_in_order
+    return @child_leafs if @child_leafs.present?
+    @child_leafs = []
+    memberIDs.each do |memberID|
+      if memberID[0] === "G"
+        @child_leafs += Group.find(memberID).all_leafIDs_in_order
+      elsif memberID[0] === "L"
+        @child_leafs << memberID
+      end
+    end
+    @child_leafs
   end
 
 end

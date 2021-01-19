@@ -205,19 +205,21 @@ module ControllerHelper
             xml.quires do
               @groupIDs.each_with_index do |groupID, index|
                 group = @groups[groupID]
+                next if group.parentID.present?
                 parents = parentsOrders(groupID, project)
                 groupOrder = parents.pop
                 groupMemberOrder = group["memberOrder"]
                 idPostfix = parents.empty? ? groupOrder.to_s : parents.join("-")+"-"+groupOrder.to_s
                 quireAttributes = {}
-                quireAttributes["xml:id"] = idPrefix+"-q-"+idPostfix
-                quireAttributes[:n] = index + 1
+                quireAttributes["xml:id"] = group.id
+                quireAttributes[:n] = group.group_notation
                 quireAttributes[:certainty] = 1
                 if group.parentID
                   quireAttributes[:parent] = idPrefix+"-q-"+parents.join("-")
                 end
                 xml.quire quireAttributes do
-                  xml.text index + 1
+                  # xml.text index + 1
+                  # TODO: loop though quire's subquires
                 end
                 @groups[groupID]["xmlID"] = quireAttributes["xml:id"]
               end
@@ -229,7 +231,7 @@ module ControllerHelper
                 leafemberOrder = parents.pop
                 idPostfix = parents.join("-")+"-"+leafemberOrder.to_s
                 leafAttributes = {}
-                leafAttributes["xml:id"] = idPrefix+"-"+idPostfix
+                leafAttributes["xml:id"] = leaf.id
                 leafAttributes["stub"] = "yes" if leaf.stubType != "None"
                 xml.leaf leafAttributes do
 
@@ -261,16 +263,17 @@ module ControllerHelper
                   end
                   xml.mode mode
 
+                  # TODO: come up with consistent way of caching and assigning xml IDs
                   qAttributes = {}
-                  qAttributes[:target] = "#"+idPrefix+"-q-"+parents.join("-")
-                  qAttributes[:position] = project.groups.find(leaf.parentID).memberIDs.index(leafID)+1
-                  qAttributes[:n] = parents[-1]
+                  qAttributes[:target] = "#"+leaf.parentID
+                  qAttributes[:position] = leaf.position_in_top_level_group
+                  qAttributes[:n] = project.groups.find(leaf.parentID).group_notation
                   qAttributes[:leafno] = leafemberOrder
                   qAttributes[:certainty] = 1
                   xml.q qAttributes do
                     if leaf.conjoined_to
                       idPostfix = parents.join("-")+"-"+@leafs[leaf.conjoined_to][:memberOrder].to_s
-                      xml.conjoin :certainty => 1, :target => "#"+idPrefix+"-"+idPostfix
+                      xml.conjoin :certainty => 1, :target => "#"+leaf.conjoined_to
                     else
                       xml.single :val => "yes"
                     end
@@ -283,14 +286,14 @@ module ControllerHelper
                   if leaf.attached_above != "None"
                     attachmentAttributes[:type] = leaf.attached_above.downcase
                     idPostfix = parents.join("-") + "-" + (@leafs[leaf.id][:memberOrder] - 1).to_s
-                    attachmentAttributes[:target] = "#"+idPrefix+"-"+idPostfix
+                    attachmentAttributes[:target] = "#"+@leafIDs[@leafIDs.index(leaf.id) - 1]
                     xml.send('attachment-method', attachmentAttributes)
                   end
 
                   if leaf.attached_below != "None"
                     attachmentAttributes[:type] = leaf.attached_below.downcase
                     idPostfix = parents.join("-") + "-" + (@leafs[leaf.id][:memberOrder] + 1).to_s
-                    attachmentAttributes[:target] = "#"+idPrefix+"-"+idPostfix
+                    attachmentAttributes[:target] = "#"+@leafIDs[@leafIDs.index(leaf.id) + 1]
                     xml.send('attachment-method', attachmentAttributes)
                   end
 

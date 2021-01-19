@@ -91,9 +91,29 @@ PaperGroup.prototype = {
       1
     );
   },
+  // code here must mirror group_notation function in group.rb:23
+  groupNotation: function(group) {
+    // get all groups as base nest level
+    let outerGroups = Object.values(this.Groups).filter(g => g.nestLevel === 1);
+    let outerGroupIDs = outerGroups.map(g => g.id);
+    let notation = '';
+    if (group.nestLevel === 1){
+      // get index of current group within the context of all outer groups
+      let groupOrder = outerGroupIDs.indexOf(group.id) + 1;
+      notation =  `${groupOrder}`;
+    } else {
+      // get parent of current group
+      let parentGroup = this.Groups[group.parentID];
+      // get children of parent group
+      let parentGroupChildren = parentGroup.memberIDs.filter(g => g[0] === 'G');
+      let subquireNotation = parentGroupChildren.indexOf(group.id) + 1;
+      notation = `${this.groupNotation(parentGroup)}.${subquireNotation}`;
+    }
+    return notation;
+  },
   setVisibility: function (visibleAttributes) {
     this.visibleAttributes = visibleAttributes;
-    let groupText = this.group.type + ' ' + this.groupOrder;
+    let groupText = this.group.type + ' ' + this.groupNotation(this.group);
     if (this.visibleAttributes && this.visibleAttributes.title)
       groupText = groupText + ': ' + this.group.title;
     this.text.set({
@@ -105,7 +125,9 @@ PaperGroup.prototype = {
 function PaperGroup(args) {
   this.manager = args.manager;
   this.group = args.group;
+  this.Groups = args.Groups;
   this.groupOrder = args.groupIDs.indexOf(args.group.id) + 1;
+  this.notation = this.groupNotation(this.group);
   this.y = args.y;
   this.x = args.x;
   this.width = args.width;

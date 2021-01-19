@@ -453,8 +453,11 @@ PaperLeaf.prototype = {
     ) {
       // Leaf is a sibling of previous leaf, so copy sibling's indent
       this.indent = this.prevPaperLeaf().indent;
+    } else if (this.order > 1 && this.prevPaperLeaf().parentID !== this.leaf.parentID) {
+      this.indent = this.prevPaperLeaf().indent
     }
-  },
+  }
+  ,
   isBelowAConjoined: function () {
     return (
       this.order > 1 &&
