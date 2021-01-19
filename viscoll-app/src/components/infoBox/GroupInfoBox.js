@@ -876,6 +876,7 @@ export default class GroupInfoBox extends React.Component {
           projectID={this.props.projectID}
           Groups={this.props.Groups}
           groupIDs={this.props.groupIDs}
+          leafIDs={this.props.leafIDs}
           selectedGroups={this.props.selectedGroups}
           action={{ addGroups: this.props.action.addGroups }}
           open={this.state.addGroupDialogOpen}
@@ -885,6 +886,7 @@ export default class GroupInfoBox extends React.Component {
           projectID={this.props.projectID}
           Groups={this.props.Groups}
           groupIDs={this.props.groupIDs}
+          leafIDs={this.props.leafIDs}
           selectedGroups={this.props.selectedGroups}
           addLeafs={true}
           action={{ addLeafs: this.props.action.addLeafs }}

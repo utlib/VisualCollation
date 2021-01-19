@@ -28,10 +28,23 @@ class Leaf
     Project.find(group.parentID)
   end
 
-
   # Remove itself from its parent group
   def remove_from_group
     Group.find(self.parentID).remove_members([self.id.to_s])
+  end
+
+  def top_level_group
+    parent = Group.find(self.parentID)
+    nest_level = parent.nestLevel
+    while nest_level > 1
+      parent = Group.find(parent.parentID)
+      nest_level = parent.nestLevel
+    end
+    parent
+  end
+
+  def position_in_top_level_group
+    self.top_level_group.all_leafIDs_in_order.index(self.id) + 1
   end
 
   protected

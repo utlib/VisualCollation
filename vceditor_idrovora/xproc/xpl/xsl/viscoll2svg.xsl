@@ -21,11 +21,16 @@
             <xd:p><xd:b>Modified by:</xd:b> Alberto Campagnolo</xd:p>
             <xd:p><xd:b>Modified on:</xd:b>2020-08-14</xd:p>
             <xd:p><xd:b>Modified by:</xd:b> Alberto Campagnolo</xd:p>
+            <xd:p><xd:b>Modified on:</xd:b>2020-12-04</xd:p>
+            <xd:p><xd:b>Modified by:</xd:b> Alberto Campagnolo</xd:p>
             <xd:p>This document takes as its input the output from the Collation Modeler. It
                 generates one SVG diagram per gathering. A general parameter permits to insert the
                 CSS information directly into the SVG file. </xd:p>
         </xd:desc>
     </xd:doc>
+
+    <!-- Write all page numbers in SVG file? 0 = no 1 = yes -->
+    <xsl:param name="allNumbers" select="0"/>
 
     <!--
         CSS
@@ -252,6 +257,12 @@
                                 satisfies $leaf/q[1]/single[@val = 'yes']">
                         <xsl:value-of select="count(current-group())"/>
                     </xsl:when>
+                    <!-- Orphan subquires, i.e. subquires without (a) parent leaf/leaves from a main quire -->
+                    <xsl:when test="
+                            every $leaf in current-group()
+                                satisfies $leaf/q/contains(@n, '.')">
+                        <xsl:value-of select="count(current-group())"/>
+                    </xsl:when>
                     <!-- For normal and complex quires, the variable returns the position of the last leaf
                 to be drawn in the left (upper) part of the quire -->
                     <xsl:otherwise>
@@ -399,7 +410,7 @@
                     </xsl:attribute>
                     <g>
                         <!-- Writing Direction -->
-                        <xsl:variable name="direction" select="parent::textblock/direction/@val"/>
+                        <xsl:variable name="direction" select="ancestor::textblock/direction/@val"/>
                         <xsl:call-template name="writingDirRotation">
                             <xsl:with-param name="direction" select="$direction"/>
                             <xsl:with-param name="countRegularBifolia" select="$countRegularBifolia"/>
@@ -1470,7 +1481,9 @@
             <xsl:variable name="ID-conjoined">
                 <xsl:call-template name="ID-conjoined">
                     <xsl:with-param name="currentPosition" select="$currentPosition_SQ"/>
-                    <xsl:with-param name="conjoinPosition" select="$conjoinPosition"/>
+                    <xsl:with-param name="conjoinPosition"
+                        select="if ($conjoinPosition = '') then xs:integer(0) else $conjoinPosition "
+                        as="xs:integer"/>
                 </xsl:call-template>
             </xsl:variable>
             <!-- Set group and drawing direction -->
@@ -1632,24 +1645,37 @@
     <xsl:template name="centralLeftLeafPos_SQ">
         <xsl:param name="subquires"/>
         <xsl:param name="counter"/>
-        <xsl:for-each select="$subquires/tp:subquire[$counter]/vc:leaf">
-            <xsl:variable name="ownIdRef_SQ">
-                <xsl:value-of select="concat('#', @xml:id)"/>
-            </xsl:variable>
-            <xsl:variable name="subquireN" select="vc:q[1]/@n"/>
-            <!-- The pattern looks for the next regular folio -->
-            <xsl:variable name="followingConjoinID_SQ">
-                <xsl:value-of
-                    select="(following-sibling::vc:leaf[not(vc:q[1]/vc:single/@val = 'yes') and vc:q[1]/@n = $subquireN])[1]/vc:q[1]/vc:conjoin/@target"
-                />
-            </xsl:variable>
-            <!--  -->
-            <xsl:choose>
-                <xsl:when test="$followingConjoinID_SQ = $ownIdRef_SQ">
-                    <xsl:value-of select="xs:integer(vc:q[1]/@position)"/>
-                </xsl:when>
+        <xsl:choose>
+            <!-- If a subquire is composed by all singletons, then there cannot be a middle leaf
+                and there are no conjoines, so the variable simply returns the number of singletons in that quire -->
+            <xsl:when test="
+                    every $vc:leaf in $subquires/tp:subquire[$counter]/vc:leaf
+                        satisfies $vc:leaf/q[1]/single[@val = 'yes']">
+                <xsl:value-of select="count($subquires/tp:subquire[$counter]/vc:leaf)"/>
+            </xsl:when>
+            <!-- For normal and complex subquires, the variable returns the position of the last leaf
+                to be drawn in the left (upper) part of the quire -->
+            <xsl:otherwise>
+                <xsl:for-each select="$subquires/tp:subquire[$counter]/vc:leaf">
+                    <xsl:variable name="ownIdRef_SQ">
+                        <xsl:value-of select="concat('#', @xml:id)"/>
+                    </xsl:variable>
+                    <xsl:variable name="subquireN" select="vc:q[1]/@n"/>
+                    <!-- The pattern looks for the next regular folio -->
+                    <xsl:variable name="followingConjoinID_SQ">
+                        <xsl:value-of
+                            select="(following-sibling::vc:leaf[not(vc:q[1]/vc:single/@val = 'yes') and vc:q[1]/@n = $subquireN])[1]/vc:q[1]/vc:conjoin/@target"
+                        />
+                    </xsl:variable>
+                    <!--  -->
+                    <xsl:choose>
+                        <xsl:when test="$followingConjoinID_SQ = $ownIdRef_SQ">
+                            <xsl:value-of select="xs:integer(vc:q[1]/@position)"/>
+                        </xsl:when>
+                    </xsl:choose>
+                </xsl:for-each>
+            </xsl:otherwise>
             </xsl:choose>
-        </xsl:for-each>
     </xsl:template>
 
     <xd:doc>
@@ -2119,7 +2145,41 @@
         <xsl:param name="folioNumber"/>
         <xsl:param name="direction" tunnel="yes"/>
         <xsl:choose>
-            <xsl:when test="@xml:id eq $first">
+            <xsl:when test="$allNumbers = 0">
+                <xsl:choose>
+                    <xsl:when test="@xml:id eq $first">
+                        <text xmlns="http://www.w3.org/2000/svg" dy="{$Cy + $parametricY}"
+                            dx="{(($Cx + ($delta * $countRegularBifolia - 2)) + $lineLength) + ($delta div 2)}"
+                            class="folioNumber">
+                            <xsl:call-template name="writingDirRotation">
+                                <xsl:with-param name="direction" select="$direction"/>
+                                <xsl:with-param name="Cx" select="$Cx"/>
+                                <xsl:with-param name="leafLength" select="$leafLength"/>
+                                <xsl:with-param name="countRegularBifolia"
+                                    select="$countRegularBifolia"/>
+                                <xsl:with-param name="text" select="1"/>
+                            </xsl:call-template>
+                            <xsl:value-of select="$folioNumber"/>
+                        </text>
+                        </xsl:when>
+                    <xsl:when test="@xml:id eq $last">
+                        <text xmlns="http://www.w3.org/2000/svg" dy="{$Cy + $parametricY}"
+                            dx="{(($Cx + ($delta * $countRegularBifolia - 2)) + $lineLength) + ($delta div 2)}"
+                            class="folioNumber">
+                            <xsl:call-template name="writingDirRotation">
+                                <xsl:with-param name="direction" select="$direction"/>
+                                <xsl:with-param name="Cx" select="$Cx"/>
+                                <xsl:with-param name="leafLength" select="$leafLength"/>
+                                <xsl:with-param name="countRegularBifolia"
+                                    select="$countRegularBifolia"/>
+                                <xsl:with-param name="text" select="1"/>
+                            </xsl:call-template>
+                            <xsl:value-of select="$folioNumber"/>
+                        </text>
+                    </xsl:when>
+                </xsl:choose>
+            </xsl:when>
+            <xsl:otherwise>
                 <text xmlns="http://www.w3.org/2000/svg" dy="{$Cy + $parametricY}"
                     dx="{(($Cx + ($delta * $countRegularBifolia - 2)) + $lineLength) + ($delta div 2)}"
                     class="folioNumber">
@@ -2132,21 +2192,7 @@
                     </xsl:call-template>
                     <xsl:value-of select="$folioNumber"/>
                 </text>
-            </xsl:when>
-            <xsl:when test="@xml:id eq $last">
-                <text xmlns="http://www.w3.org/2000/svg" dy="{$Cy + $parametricY}"
-                    dx="{(($Cx + ($delta * $countRegularBifolia - 2)) + $lineLength) + ($delta div 2)}"
-                    class="folioNumber">
-                    <xsl:call-template name="writingDirRotation">
-                        <xsl:with-param name="direction" select="$direction"/>
-                        <xsl:with-param name="Cx" select="$Cx"/>
-                        <xsl:with-param name="leafLength" select="$leafLength"/>
-                        <xsl:with-param name="countRegularBifolia" select="$countRegularBifolia"/>
-                        <xsl:with-param name="text" select="1"/>
-                    </xsl:call-template>
-                    <xsl:value-of select="$folioNumber"/>
-                </text>
-            </xsl:when>
+            </xsl:otherwise>
         </xsl:choose>
     </xsl:template>
 
@@ -2306,7 +2352,7 @@
                                 <xsl:value-of select="$delta"/>
                             </xsl:when>
                             <xsl:otherwise>
-                                <xsl:value-of select="2 * $delta - (2*($delta div 3))"/>
+                                <xsl:value-of select="2 * $delta - (2 * ($delta div 3))"/>
                             </xsl:otherwise>
                         </xsl:choose>
                     </xsl:variable>
@@ -2364,8 +2410,7 @@
     <xsl:template name="defs">
         <defs xmlns="http://www.w3.org/2000/svg">
             <style type="text/css">
-            <!-- copy the CSS file content into the SVG -->
-            <xsl:value-of select="$css"/>
+                <xsl:value-of select="$css"/>
             </style>
             <!-- Uncertainty can have three values: 1 = very certain, 2 = fairly certain, 3 = not certain -->
             <filter id="f1" filterUnits="userSpaceOnUse">
