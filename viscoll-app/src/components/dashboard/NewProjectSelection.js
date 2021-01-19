@@ -27,25 +27,25 @@ const NewProjectSelection = (props) => {
         </div>
       </button>
       
-      <button 
-        type="button" 
-        name="Import" 
-        aria-labelledby="importTitle" 
-        aria-describedby="importDescription" 
-        className="btnSelection"
-        onClick={() => props.setProjectType("import")}
-        tabIndex="2"
-      >
-        <div className="selectItem">
-          <div className="icon" aria-hidden="true">
-            <ImportIcon />
-          </div>
-          <div className="text">
-            <span id="importTitle">Import</span>
-            <span id="importDescription">Import a collation from VisColl XML or JSON</span>
-          </div>
-        </div>
-      </button>
+      {/*<button */}
+      {/*  type="button" */}
+      {/*  name="Import" */}
+      {/*  aria-labelledby="importTitle" */}
+      {/*  aria-describedby="importDescription" */}
+      {/*  className="btnSelection"*/}
+      {/*  onClick={() => props.setProjectType("import")}*/}
+      {/*  tabIndex="2"*/}
+      {/*>*/}
+      {/*  <div className="selectItem">*/}
+      {/*    <div className="icon" aria-hidden="true">*/}
+      {/*      <ImportIcon />*/}
+      {/*    </div>*/}
+      {/*    <div className="text">*/}
+      {/*      <span id="importTitle">Import</span>*/}
+      {/*      <span id="importDescription">Import a collation from VisColl XML or JSON</span>*/}
+      {/*    </div>*/}
+      {/*  </div>*/}
+      {/*</button>*/}
 
       <button 
         type="button" 
