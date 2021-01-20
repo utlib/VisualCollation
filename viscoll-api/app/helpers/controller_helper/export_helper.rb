@@ -621,11 +621,11 @@ module ControllerHelper
               end
               linkedAttributes = linkedAttributes.join(" #")
               if linkedTerms+linkedAttributes != ""
-                xml.map :target => "#"+idPrefix+"-q-"+idPostfix do
+                xml.map :target => group.id do
                   if linkedAttributes != ""
-                    xml.term :target => linkedTerms+" #"+linkedAttributes+" #group_members_"+idPrefix+"-q-"+idPostfix
+                    xml.term :target => linkedTerms+" #"+linkedAttributes+" #group_members_"+group.id
                   else
-                    xml.term :target => linkedTerms+" #group_members_"+idPrefix+"-q-"+idPostfix
+                    xml.term :target => linkedTerms+" #group_members_"+group.id
                   end
                 end
               end
@@ -658,7 +658,7 @@ module ControllerHelper
                 material = "#leaf_material_"+leaf.material.parameterize.underscore.strip
               end
               if linkedTerms+attachementMethods+material != ""
-                xml.map :target => "#"+idPrefix+"-"+idPostfix do
+                xml.map :target => "#"+group.id do
                   xml.term :target => (linkedTerms+" "+material+attachementMethods).strip
                 end
               end
