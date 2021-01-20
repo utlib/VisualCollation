@@ -206,16 +206,12 @@ module ControllerHelper
               @groupIDs.each_with_index do |groupID, index|
                 group = @groups[groupID]
                 next if group.parentID.present?
-                parents = parentsOrders(groupID, project)
-                groupOrder = parents.pop
-                groupMemberOrder = group["memberOrder"]
-                idPostfix = parents.empty? ? groupOrder.to_s : parents.join("-")+"-"+groupOrder.to_s
                 quireAttributes = {}
                 quireAttributes["xml:id"] = group.id
                 quireAttributes[:n] = group.group_notation
                 quireAttributes[:certainty] = 1
                 if group.parentID
-                  quireAttributes[:parent] = idPrefix+"-q-"+parents.join("-")
+                  quireAttributes[:parent] = group.parentID
                 end
                 xml.quire quireAttributes do
                   # xml.text index + 1
@@ -227,17 +223,12 @@ module ControllerHelper
             xml.leaves do
               @leafIDs.each_with_index do |leafID, index|
                 leaf = project.leafs.find(leafID)
-                parents = parentsOrders(leafID, project)
-                leafemberOrder = parents.pop
-                idPostfix = parents.join("-")+"-"+leafemberOrder.to_s
                 leafAttributes = {}
                 leafAttributes["xml:id"] = leaf.id
                 leafAttributes["stub"] = "yes" if leaf.stubType != "None"
                 xml.leaf leafAttributes do
-
                   rectoSide = project.sides.find(leaf.rectoID)
                   versoSide = project.sides.find(leaf.versoID)
-
                   if leaf.folio_number
                     folioNumberAttr = {}
                     folioNumberAttr[:certainty] = 1
@@ -268,11 +259,9 @@ module ControllerHelper
                   qAttributes[:target] = "#"+leaf.parentID
                   qAttributes[:position] = leaf.position_in_top_level_group
                   qAttributes[:n] = project.groups.find(leaf.parentID).group_notation
-                  qAttributes[:leafno] = leafemberOrder
                   qAttributes[:certainty] = 1
                   xml.q qAttributes do
                     if leaf.conjoined_to
-                      idPostfix = parents.join("-")+"-"+@leafs[leaf.conjoined_to][:memberOrder].to_s
                       xml.conjoin :certainty => 1, :target => "#"+leaf.conjoined_to
                     else
                       xml.single :val => "yes"
@@ -285,14 +274,12 @@ module ControllerHelper
 
                   if leaf.attached_above != "None"
                     attachmentAttributes[:type] = leaf.attached_above.downcase
-                    idPostfix = parents.join("-") + "-" + (@leafs[leaf.id][:memberOrder] - 1).to_s
                     attachmentAttributes[:target] = "#"+@leafIDs[@leafIDs.index(leaf.id) - 1]
                     xml.send('attachment-method', attachmentAttributes)
                   end
 
                   if leaf.attached_below != "None"
                     attachmentAttributes[:type] = leaf.attached_below.downcase
-                    idPostfix = parents.join("-") + "-" + (@leafs[leaf.id][:memberOrder] + 1).to_s
                     attachmentAttributes[:target] = "#"+@leafIDs[@leafIDs.index(leaf.id) + 1]
                     xml.send('attachment-method', attachmentAttributes)
                   end
@@ -318,7 +305,7 @@ module ControllerHelper
                   versoAttributes["xml:id"] = leafAttributes["xml:id"]
                   versoAttributes[:type] = "Verso"
                   if versoSide.page_number
-                    versoAttributes[:page_number] = versoSide.page_number
+                   versoAttributes[:page_number] = versoSide.page_number
                   else
                     versoAttributes[:page_number] = "EMPTY"
                   end
@@ -458,23 +445,10 @@ module ControllerHelper
               group = @groups[groupID]
               memberIDs = []
               group.memberIDs.each do |memberID|
-                parents = parentsOrders(memberID, project)
-                memberOrder = parents.pop
-                if memberID[0]=="G"
-                  idPostfix = parents.empty? ? memberOrder.to_s : parents.join("-")+"-"+memberOrder.to_s
-                  memberIDs.push(idPrefix+"-q-"+idPostfix)
-                else
-                  idPostfix = parents.join("-")+"-"+memberOrder.to_s
-                  memberIDs.push(idPrefix+"-"+idPostfix)
-                end
-
+                memberIDs.push(memberID)
               end
               memberIDs = memberIDs.join(" #").strip
-              parents = parentsOrders(groupID, project)
-              groupOrder = parents.pop
-              groupMemberOrder = group["memberOrder"]
-              idPostfix = parents.empty? ? groupOrder.to_s : parents.join("-")+"-"+groupOrder.to_s
-              termID = {"xml:id": "group_members_"+idPrefix+"-q-"+idPostfix}
+              termID = {"xml:id": "group_members_"+groupID}
               xml.term termID do
                 xml.text "#"+memberIDs
               end
