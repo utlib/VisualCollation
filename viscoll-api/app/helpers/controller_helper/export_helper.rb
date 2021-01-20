@@ -621,7 +621,7 @@ module ControllerHelper
               end
               linkedAttributes = linkedAttributes.join(" #")
               if linkedTerms+linkedAttributes != ""
-                xml.map :target => group.id do
+                xml.map :target => '#' + group.id do
                   if linkedAttributes != ""
                     xml.term :target => linkedTerms+" #"+linkedAttributes+" #group_members_"+group.id
                   else
