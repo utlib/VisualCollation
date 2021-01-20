@@ -147,10 +147,15 @@ describe "GET /projects/:id/export/:format", :type => :request do
           ['group_title_group_1', 'Group 1'],
           ['group_title_group_2', 'Group 2'],
         )
-        expect(result.css("taxonomy[xml|id='group_members'] term").collect { |t| [t['xml:id'], t.text] }).to include(
-          ['group_members_ravenna_384_2339-q-1', '#ravenna_384_2339-1-1 #ravenna_384_2339-1-2 #ravenna_384_2339-q-1-2 #ravenna_384_2339-1-3 #ravenna_384_2339-1-4'],
-          ['group_members_ravenna_384_2339-q-1-2', '#ravenna_384_2339-1-2-3 #ravenna_384_2339-1-2-4'],
-        )
+        # expect(result.css("taxonomy[xml|id='group_members'] term").collect { |t| [t['xml:id'], t.text] }).to include(
+        #   ['group_members_ravenna_384_2339-q-1', '#ravenna_384_2339-1-1 #ravenna_384_2339-1-2 #ravenna_384_2339-q-1-2 #ravenna_384_2339-1-3 #ravenna_384_2339-1-4'],
+        #   ['group_members_ravenna_384_2339-q-1-2', '#ravenna_384_2339-1-2-3 #ravenna_384_2339-1-2-4'],
+        # )
+        groups_and_members = result.css("taxonomy[xml|id='group_members'] term").collect { |t| [t['xml:id'], t.text] }
+        groups_and_members.each do |gm|
+          expect(gm[0]).to match /^group_members_Group/
+          expect(gm[1]).to match /^#Leaf/
+        end
         # Leaves
         expect(result.css("taxonomy[xml|id='leaf_material'] term").collect { |t| [t['xml:id'], t.text] }).to include(
           ['leaf_material_paper', 'Paper']
