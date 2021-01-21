@@ -99,23 +99,19 @@ RSpec.describe ControllerHelper::ExportHelper, type: :helper do
     expect(result.css("taxonomy[xml|id='leaf_material'] term").collect { |t| [t['xml:id'], t.text] }).to include(
       ['leaf_material_paper', 'Paper']
     )
-    #TODO test for folio number element generation
-    # Sides and Notes
+    # Check that there are 6 rectos and 6 versos
     ns = {n: "http://schoenberginstitute.org/schema/collation"}
     expect(result.xpath("//n:mapping/n:map[@side='recto']", ns).size).to eq(6)
-    # mappings = result.css("mapping map").collect { |t| [t['target'], t['side'], t.css('term').first['target']]}
-    # puts mappings.inspect
-    # # expect each mapping to have a target:
-    # mappings.each do |mapping|
-    #   # temp fix, we need to be testing for the right content
-    #   # and not just making it work
-    #   expect(mapping.first).to match /^#(Leaf|Group|ravenna)/
-    #   expect(mapping[1]).to match /^#(recto|verso)/
-    #   expect(mapping[2]).to match /^#side_page_number_EMPTY|#group/
-    # end
-    # temporarily disabling note functionality
-    # expect(result.css("mapping map").collect { |t| [t['target'], t.css('term').first['target']]}).to include(
-    #   ['#ravenna_384_2339-n-1', '#note_title_test_note #note_show'],
-    # )
+    expect(result.xpath("//n:mapping/n:map[@side='verso']", ns).size).to eq(6)
+    # Check that the @target contains either Group or Leaf
+    map_targets = result.xpath("//n:mapping/n:map[@target]/@target", ns)
+    map_targets.each do |t|
+      expect(t).to match /^#(Leaf|Group)/
+    end
+    # check that mapping/map/term/@target matches either Group or #side_page_number_EMPTY
+    term_targets = result.xpath("//n:mapping/n:map/n:term[@target]/@target", ns)
+    term_targets.each do |t|
+      expect(t.to_s).to match /^\s?#(side_page_number_EMPTY|group)/
+    end
   end
 end
