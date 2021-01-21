@@ -89,42 +89,29 @@ RSpec.describe ControllerHelper::ExportHelper, type: :helper do
       ['group_title_group_1', 'Group 1'],
       ['group_title_group_2', 'Group 2'],
     )
-    expect(result.css("taxonomy[xml|id='group_members'] term").collect { |t| [t['xml:id'], t.text] }).to include(
-      ['group_members_ravenna_384_2339-q-1', '#ravenna_384_2339-1-1 #ravenna_384_2339-1-2 #ravenna_384_2339-q-1-2 #ravenna_384_2339-1-3 #ravenna_384_2339-1-4'],
-      ['group_members_ravenna_384_2339-q-1-2', '#ravenna_384_2339-1-2-3 #ravenna_384_2339-1-2-4'],
-    )
+    # first element should be a group, second element should be a string of all leaves in that group, separated by a space
+    groups_and_members = result.css("taxonomy[xml|id='group_members'] term").collect { |t| [t['xml:id'], t.text] }
+    groups_and_members.each do |gm|
+      expect(gm[0]).to match /^group_members_Group/
+      expect(gm[1]).to match /^#Leaf/
+    end
     # Leaves
     expect(result.css("taxonomy[xml|id='leaf_material'] term").collect { |t| [t['xml:id'], t.text] }).to include(
       ['leaf_material_paper', 'Paper']
     )
-    #TODO test for folio number element generation
-    # Sides and Notes
-    # expect(result.css("mapping map").collect { |t| [t['target'], t['side'], t.css('term').first['target']]}).to include(
-    #   ['#ravenna_384_2339-1-1', 'recto', '#side_page_number_EMPTY'],
-    #   ['#ravenna_384_2339-1-2', 'recto', '#side_page_number_EMPTY'],
-    #   ['#ravenna_384_2339-1-2-3', 'recto', '#side_page_number_EMPTY'],
-    #   ['#ravenna_384_2339-1-2-4', 'recto', '#side_page_number_EMPTY'],
-    #   ['#ravenna_384_2339-1-3', 'recto', '#side_page_number_EMPTY'],
-    #   ['#ravenna_384_2339-1-4', 'recto', '#side_page_number_EMPTY'],
-    #   ['#ravenna_384_2339-1-1', 'verso', '#side_page_number_EMPTY'],
-    #   ['#ravenna_384_2339-1-2', 'verso', '#side_page_number_EMPTY'],
-    #   ['#ravenna_384_2339-1-2-3', 'verso', '#side_page_number_EMPTY'],
-    #   ['#ravenna_384_2339-1-2-4', 'verso', '#side_page_number_EMPTY'],
-    #   ['#ravenna_384_2339-1-3', 'verso', '#side_page_number_EMPTY'],
-    #   ['#ravenna_384_2339-1-4', 'verso', '#side_page_number_EMPTY']
-    # )
-    mappings = result.css("mapping map").collect { |t| [t['target'], t['side'], t.css('term').first['target']]}
-    # expect each mapping to have a target:
-    mappings.each do |mapping|
-      # temp fix, we need to be testing for the right content
-      # and not just making it work
-      expect(mapping.first).to match /^#(Leaf|Group|ravenna)/
-      expect(['recto', 'verso', nil]).to include mapping[1]
-      expect(mapping[2]).to match /^#side_page_number_EMPTY|#group/
+    # Check that there are 6 rectos and 6 versos
+    ns = {n: "http://schoenberginstitute.org/schema/collation"}
+    expect(result.xpath("//n:mapping/n:map[@side='recto']", ns).size).to eq(6)
+    expect(result.xpath("//n:mapping/n:map[@side='verso']", ns).size).to eq(6)
+    # Check that the @target contains either Group or Leaf
+    map_targets = result.xpath("//n:mapping/n:map[@target]/@target", ns)
+    map_targets.each do |t|
+      expect(t).to match /^#(Leaf|Group)/
     end
-    # temporarily disabling note functionality
-    # expect(result.css("mapping map").collect { |t| [t['target'], t.css('term').first['target']]}).to include(
-    #   ['#ravenna_384_2339-n-1', '#note_title_test_note #note_show'],
-    # )
+    # check that mapping/map/term/@target matches either Group or #side_page_number_EMPTY
+    term_targets = result.xpath("//n:mapping/n:map/n:term[@target]/@target", ns)
+    term_targets.each do |t|
+      expect(t.to_s).to match /^\s?#(side_page_number_EMPTY|group)/
+    end
   end
 end
