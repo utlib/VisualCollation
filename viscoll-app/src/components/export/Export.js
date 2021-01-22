@@ -75,7 +75,7 @@ const Export = props => {
       .then(function (zip) {
         zip.generateAsync({ type: 'blob' }).then(
           function (blob) {
-            saveAs(blob, `${props.projectID}_images.zip`);
+            saveAs(blob, `${props.projectID}_${props.exportedType}.zip`);
           },
           function (err) {
             console.log('error saving zip file!');
