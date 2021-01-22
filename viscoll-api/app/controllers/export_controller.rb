@@ -120,8 +120,8 @@ class ExportController < ApplicationController
           end
           @zipFilePath = "#{@base_api_url}/transformations/zip/#{@project.id}-html"
 
-          exportData = []
-          
+          exportData = 'No preview available. Please download your HTML below.'
+
           render json: {data: exportData, type: @format, Images: {exportedImages:@zipFilePath ? @zipFilePath : false}}, status: :ok and return
         else
           render json: {error: "Export format must be one of [json, xml, svg, formula, html]"}, status: :unprocessable_entity and return
