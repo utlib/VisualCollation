@@ -11,10 +11,10 @@
   - [ ] TODO: Test Idrovora integration
 
 - [ ] TODO: Refactor Idrovora interface components
-  - [ ] TODO: Revisit filenames in `public/xproc/zip`; perhaps use 
+  - [X] TODO: Revisit filenames in `public/xproc/zip`; perhaps use 
               `<PROJECT_ID>-<FORMAT>.zip`; like `987654321-svg2.zip`
-  - [ ] TODO: Have `Export.js` -- `downloadZip()` return zip with file name on disk
-  - [ ] TODO: Refactor `export_controller.rb` SVG generation
+  - [X] TODO: Have `Export.js` -- `downloadZip()` return zip with file name on disk
+  - [X] TODO: Refactor `export_controller.rb` SVG generation
   - [ ] TODO: Create job to cleanup zip files in `public/xproc/zip`
   - [X] TODO: Change Idrovora XPL/XSL config to pass job-dir to XSL
  
