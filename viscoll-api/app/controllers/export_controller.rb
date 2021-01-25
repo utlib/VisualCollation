@@ -47,39 +47,27 @@ class ExportController < ApplicationController
         when 'svg'
           collation_file = 'collation.css'
           config_xml = %Q{<config><css xml:id="css">#{collation_file}</css></config>}
-
           job_response = process_pipeline 'viscoll2svg', xml.to_xml, config_xml
-
-          outfile = "#{Rails.root}/public/xproc/#{@project.id}-svg.zip"
-          File.open outfile, 'wb' do |f|
-            f.puts job_response.body
-          end
+          outfile = write_zip_file job_response, 'svg'
           @zipFilePath = "#{@base_api_url}/transformations/zip/#{@project.id}-svg"
-
-          files = []
+          exportData = []
           Zip::File.open(outfile) do |zip_file|
             zip_file.each do |entry|
               if File.extname(entry.name) === '.svg'
-                files<<entry.get_input_stream.read
+                exportData<<entry.get_input_stream.read
               end
             end
           end
-          exportData = files
 
           render json: {data: exportData, type: @format, Images: {exportedImages:@zipFilePath ? @zipFilePath : false}}, status: :ok and return
         when 'formula'
           job_response = process_pipeline 'viscoll2formulas', xml.to_xml
 
-          outfile = "#{Rails.root}/public/xproc/#{@project.id}-formula.zip"
-          File.open outfile, 'wb' do |f|
-            f.puts job_response.body
-          end
+          outfile = write_zip_file job_response, 'formula'
           @zipFilePath = "#{@base_api_url}/transformations/zip/#{@project.id}-formula"
 
           files = []
-          sorted_files = []
           Zip::File.open(outfile) do |zip_file|
-            formula_count = 0
             zip_file.each do |entry|
               if File.basename(entry.name).include? "formula"
                 nokogiri_entry = zip_file.get_input_stream(entry) { |f| Nokogiri::XML(f) }
@@ -88,11 +76,10 @@ class ExportController < ApplicationController
                 format = nokogiri_entry.xpath('//vc:formula/@format')
                 formula = "Type: #{type}\nFormat: #{format}\nFormula: #{content}\n\n"
                 files << formula
-                sorted_files = files.sort
               end
             end
           end
-          exportData = sorted_files
+          exportData = files.sort
 
           render json: {data: exportData, type: @format, Images: {exportedImages:@zipFilePath ? @zipFilePath : false}}, status: :ok and return
         when 'html'
@@ -100,11 +87,7 @@ class ExportController < ApplicationController
           config_xml = %Q{<config><css xml:id="css">#{collation_file}</css></config>}
           image_list = build_image_list @project
           job_response = process_pipeline 'viscoll2html', xml.to_xml, config_xml, image_list
-
-          outfile = "#{Rails.root}/public/xproc/#{@project.id}-html.zip"
-          File.open outfile, 'wb' do |f|
-            f.puts job_response.body
-          end
+          outfile = write_zip_file job_response, 'html'
           Zip::File.open(outfile) do |zip_file|
             zip_file.each do |file|
               if File.extname(file.name) == '.html'
@@ -120,9 +103,9 @@ class ExportController < ApplicationController
           end
           @zipFilePath = "#{@base_api_url}/transformations/zip/#{@project.id}-html"
 
-          exportData = 'No preview available. Please download your HTML below.'
+          exportData = 'cat'
 
-          render json: {data: exportData, type: @format, Images: {exportedImages:@zipFilePath ? @zipFilePath : false}}, status: :ok and return
+          render json: {data: exportData, type: 'formula', Images: {exportedImages:@zipFilePath ? @zipFilePath : false}}, status: :ok and return
         else
           render json: {error: "Export format must be one of [json, xml, svg, formula, html]"}, status: :unprocessable_entity and return
         end
@@ -184,5 +167,13 @@ class ExportController < ApplicationController
       http.request(job_req)
     end
     job_response
+  end
+
+  def write_zip_file response, format
+    outfile = "#{Rails.root}/public/xproc/#{@project.id}-#{format}.zip"
+    File.open outfile, 'wb' do |f|
+      f.puts response.body
+    end
+    outfile
   end
 end
