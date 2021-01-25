@@ -1,7 +1,6 @@
 import React from 'react';
 import AddIcon from 'material-ui/svg-icons/content/add';
 import CopyIcon from 'material-ui/svg-icons/content/content-copy';
-import ImportIcon from 'material-ui/svg-icons/action/system-update-alt';
 
 /** New Project dialog - select between creating new, importing and cloning project  */
 const NewProjectSelection = (props) => {
@@ -26,7 +25,8 @@ const NewProjectSelection = (props) => {
           </div>
         </div>
       </button>
-      
+
+      {/*disabled XML upload functionality*/}
       {/*<button */}
       {/*  type="button" */}
       {/*  name="Import" */}
