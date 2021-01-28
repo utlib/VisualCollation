@@ -258,7 +258,7 @@ module ControllerHelper
                   page_number = pages.empty? ? nil : pages.join('-')
                   numbers[1] = page_number
                   pageNotation = nil
-                  pageNotation = numbers.nil? ? nil : numbers.compact!.join('; ')
+                  pageNotation = numbers.empty? ? nil : numbers.compact!.join('; ')
 
                   # folioNumber element
                   folioNumberAttr = {}
