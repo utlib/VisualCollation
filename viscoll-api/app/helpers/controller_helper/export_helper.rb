@@ -227,24 +227,45 @@ module ControllerHelper
                 leafAttributes["xml:id"] = leaf.id
                 leafAttributes["stub"] = "yes" if leaf.stubType != "None"
                 xml.leaf leafAttributes do
+                  
+                  # if leaf.folio_number
+                  #   folioNumberAttr = {}
+                  #   folioNumberAttr[:certainty] = 1
+                  #   folioNumber = leaf.folio_number
+                  #   folioNumberAttr[:val] = folioNumber
+                  #   xml.folioNumber folioNumberAttr do
+                  #     xml.text folioNumber
+                  #   end
+                  # elsif rectoSide.page_number && leaf.folio_number.nil?
+                  #   pageNumberAttr = {}
+                  #   pageNumberAttr[:certainty] = 1
+                  #   pageNumber = "#{rectoSide.page_number.to_s}-#{versoSide.page_number.to_s}"
+                  #   pageNumberAttr[:val] = pageNumber
+                  #   xml.folioNumber pageNumberAttr do
+                  #     xml.text pageNumber
+                  #   end
+                  # end
+
+                  # get side objects
                   rectoSide = project.sides.find(leaf.rectoID)
                   versoSide = project.sides.find(leaf.versoID)
-                  if leaf.folio_number
-                    folioNumberAttr = {}
-                    folioNumberAttr[:certainty] = 1
-                    folioNumber = leaf.folio_number
-                    folioNumberAttr[:val] = folioNumber
-                    xml.folioNumber folioNumberAttr do
-                      xml.text folioNumber
-                    end
-                  elsif rectoSide.page_number && leaf.folio_number.nil?
-                    pageNumberAttr = {}
-                    pageNumberAttr[:certainty] = 1
-                    pageNumber = "#{rectoSide.page_number.to_s}-#{versoSide.page_number.to_s}"
-                    pageNumberAttr[:val] = pageNumber
-                    xml.folioNumber pageNumberAttr do
-                      xml.text pageNumber
-                    end
+
+                  # generate page notation
+                  numbers = []
+                  numbers[0] = leaf.folio_number
+                  pages = [rectoSide.page_number, versoSide.page_number]
+                  pages.compact!
+                  page_number = pages.empty? ? nil : pages.join('-')
+                  numbers[1] = page_number
+                  pageNotation = nil
+                  pageNotation = numbers.nil? ? nil : numbers.compact!.join('; ')
+
+                  # folioNumber element
+                  folioNumberAttr = {}
+                  folioNumberAttr[:certainty] = 1
+                  folioNumberAttr[:val] = pageNotation
+                  xml.folioNumber folioNumberAttr do
+                    xml.text pageNotation
                   end
 
                   mode = {}
