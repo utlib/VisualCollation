@@ -39,8 +39,8 @@ export default class AddGroupDialog extends React.Component {
 
   componentWillReceiveProps() {
     this.resetForm();
-    if (this.props.selectedGroups['memberIDs'] !== undefined) {
-      this.setState({selectedChild: this.props.selectedGroups['memberIDs'][0]})
+    if (this.props.Groups[this.props.selectedGroups]['memberIDs'] !== undefined) {
+      this.setState({selectedChild: this.props.Groups[this.props.selectedGroups]['memberIDs'][0]})
     }
   }
 
@@ -255,7 +255,7 @@ export default class AddGroupDialog extends React.Component {
       }
       else {
         // Add group(s)
-        const group = this.props.selectedGroups[0];
+        const group = this.props.Groups[this.props.selectedGroups[0]];
         let memberOrder = getMemberOrder(group, this.props.Groups, this.props.groupIDs);
         let groupOrder = this.props.groupIDs.indexOf(group.id)+1;
         if (group.parentID) {
@@ -582,8 +582,8 @@ export default class AddGroupDialog extends React.Component {
                               id='leafSelect'
                               label='select where the quire should be positioned'
                               onChange={v => this.dropDownChange(v, 'selectedChild')}
-                              value={this.props.selectedGroups['memberIDs'][0]}
-                              data={this.props.selectedGroups['memberIDs'].map((itemID) => {
+                              value={this.props.Groups[this.props.selectedGroups]['memberIDs'][0]}
+                              data={this.props.Groups[this.props.selectedGroups]['memberIDs'].map((itemID) => {
                                 if (itemID[0] === 'L') {
                                   return {value: itemID, text: `Leaf ${this.props.leafIDs.indexOf(itemID) + 1}`}
                                 } else if (itemID[0] === 'G') {
