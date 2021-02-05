@@ -221,6 +221,9 @@ export default class NewProjectContainer extends React.Component {
       },
       groups: [],
       folioNumber:
+        // generateFolioNumber and generatePageNumber could be replaced by a single
+        // generateFolioPageNumber variable that is assigned the correct value based on state
+        // either 'folio_number' or 'page_number'
         this.state.generateFolioNumber === 'folio_number'
           ? this.state.startFolioPageNumber
           : null,
