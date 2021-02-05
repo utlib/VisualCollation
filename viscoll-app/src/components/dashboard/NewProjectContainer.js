@@ -225,7 +225,7 @@ export default class NewProjectContainer extends React.Component {
           ? this.state.startFolioPageNumber
           : null,
       pageNumber:
-        this.state.generateFolioNumber === 'page_number'
+        this.state.generatePageNumber === 'page_number'
           ? this.state.startFolioPageNumber
           : null,
       startingTexture: this.state.startingTexture,
