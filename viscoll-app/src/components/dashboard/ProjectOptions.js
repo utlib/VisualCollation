@@ -11,6 +11,8 @@ import IconHelp from 'material-ui/svg-icons/action/help';
 const ProjectOptions = props => {
 
     let handleChange = (e, v) => {
+        // assigning values to null would not have to happen if generateFolioNumber
+        // and generatePageNumber were combined into a single variable
         if (v === 'folio_number') {
             props.set('generateFolioNumber', v);
             props.set('generatePageNumber', null)
