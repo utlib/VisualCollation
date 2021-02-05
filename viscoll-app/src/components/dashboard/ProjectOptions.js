@@ -9,9 +9,7 @@ import IconHelp from 'material-ui/svg-icons/action/help';
 
 /** New Project dialog - panel with additional options for project creation  */
 const ProjectOptions = props => {
-  console.log(props.generateFolioNumber);
   let handleChange = (e, v) => {
-    console.log(`Event: ${e}, Value: ${v}`);
     if (v === 'folio_number') {
       props.set('generateFolioNumber', v);
     } else if (v === 'page_number') {
