@@ -13,6 +13,8 @@ services:
       - api
     stdin_open: true
   api:
+    tty: true
+    stdin_open: true
     env_file: ./.docker-environment-dev
     container_name: viscoll_api
     image: viscoll-api
