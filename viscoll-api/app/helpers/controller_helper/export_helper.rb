@@ -418,25 +418,6 @@ module ControllerHelper
               end
             end
           end
-          # Member IDs of each Group
-          groupAttribute = {"xml:id": 'group_members'}
-          xml.taxonomy groupAttribute do
-            xml.label do
-              xml.text 'List of values for each Group\'s members'
-            end
-            @groupIDs.each do |groupID|
-              group = @groups[groupID]
-              memberIDs = []
-              group.memberIDs.each do |memberID|
-                memberIDs.push(memberID)
-              end
-              memberIDs = memberIDs.join(" #").strip
-              termID = {"xml:id": "group_members_"+groupID}
-              xml.term termID do
-                xml.text "#"+memberIDs
-              end
-            end
-          end
 
           # Leaf Attributes Taxonomy
           ['material'].each do |attribute|
