@@ -385,29 +385,6 @@ module ControllerHelper
             end
           end
 
-          # Group Attributes Taxonomy
-          ['title', 'type'].each do |attribute|
-            groupAttribute = {"xml:id": 'group_'+attribute}
-            xml.taxonomy groupAttribute do
-              xml.label do
-                xml.text 'List of values for Group ' + attribute
-              end
-              groupAttributeValues = []
-              @groupIDs.each do |groupID|
-                group = @groups[groupID]
-                if not groupAttributeValues.include? group[attribute]
-                  groupAttributeValues.push(group[attribute])
-                end
-              end
-              groupAttributeValues.each do |attributeValue|
-                termID = {"xml:id": "group_"+attribute+"_"+attributeValue.parameterize.underscore}
-                xml.term termID do
-                  xml.text attributeValue
-                end
-              end
-              @allGroupAttributeValues = @allGroupAttributeValues + groupAttributeValues
-            end
-          end
           ['tacketed', 'sewing'].each do |attribute|
             groupAttribute = {"xml:id": 'group_'+attribute}
             groupAttributeValues = []
