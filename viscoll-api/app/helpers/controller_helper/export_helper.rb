@@ -394,8 +394,8 @@ module ControllerHelper
               if not groupAttributeValues.include? group[attribute]
                 group[attribute].each do |leafID|
                   parents = parentsOrders(leafID, project)
-                  leafemberOrder = parents.pop
-                  idPostfix = parents.join("-")+"-"+leafemberOrder.to_s
+                  leafMemberOrder = parents.pop
+                  idPostfix = parents.join("-")+"-"+leafMemberOrder.to_s
                   leaves = leaves + " #" + idPrefix+"-"+idPostfix + " "
                   leaves = leaves.strip
                 end
@@ -500,8 +500,8 @@ module ControllerHelper
                 attributeValue = ""
                 group[attribute].each do |leafID|
                   parents = parentsOrders(leafID, project)
-                  leafemberOrder = parents.pop
-                  idPostfix = parents.join("-")+"-"+leafemberOrder.to_s
+                  leafMemberOrder = parents.pop
+                  idPostfix = parents.join("-")+"-"+leafMemberOrder.to_s
                   attributeValue = attributeValue + " #" + idPrefix+"-"+idPostfix + " "
                   attributeValue = attributeValue.strip
                 end
@@ -528,8 +528,8 @@ module ControllerHelper
             @leafIDs.each do |leafID|
               leaf = @leafs[leafID]
               parents = parentsOrders(leafID, project)
-              leafemberOrder = parents.pop
-              idPostfix = parents.join("-")+"-"+leafemberOrder.to_s
+              leafMemberOrder = parents.pop
+              idPostfix = parents.join("-")+"-"+leafMemberOrder.to_s
               linkedTerms = (leaf.terms.map {|term| "#term_title"+"_"+term.title.parameterize.underscore}).join(" ")
               attachementMethods = []
               if leaf.attached_above != "None"
