@@ -480,39 +480,6 @@ module ControllerHelper
 
           # MAPPING
           xml.mapping do
-            # Map leaves to attributes and terms
-            @leafIDs.each do |leafID|
-              leaf = @leafs[leafID]
-              parents = parentsOrders(leafID, project)
-              leafMemberOrder = parents.pop
-              idPostfix = parents.join("-")+"-"+leafMemberOrder.to_s
-              linkedTerms = (leaf.terms.map {|term| "#term_title"+"_"+term.title.parameterize.underscore}).join(" ")
-              attachementMethods = []
-              if leaf.attached_above != "None"
-                if leaf.attached_above == "Other"
-                  attachementMethods.push("#Glued_Above_Other")
-                else
-                  attachementMethods.push("#Glued_Above_"+leaf.attached_above)
-                end
-              end
-              if leaf.attached_below != "None"
-                if leaf.attached_below == "Other"
-                  attachementMethods.push("#Glued_Below_Other")
-                else
-                  attachementMethods.push("#Glued_Below_"+leaf.attached_below)
-                end
-              end
-              attachementMethods = attachementMethods.join(" ").strip
-              material = ""
-              if @allLeafAttributeValues.include? leaf.material and material != ""
-                material = "#leaf_material_"+leaf.material.parameterize.underscore.strip
-              end
-              if linkedTerms+attachementMethods+material != ""
-                xml.map :target => "#"+leaf.id do
-                  xml.term :target => (linkedTerms+" "+material+attachementMethods).strip
-                end
-              end
-            end
             # Map rectos to attributes and terms and sides
             @rectos.each do |rectoID, attributes|
               recto = attributes["recto"]
