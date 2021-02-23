@@ -478,23 +478,6 @@ module ControllerHelper
             end
           end
 
-          # NOTES
-          # if not project.notes.empty?
-          #   xml.notes do
-          #     project.notes.each_with_index do |note, index|
-          #       noteAttributes = {}
-          #       noteAttributes["xml:id"] = idPrefix+"-n-"+(index+1).to_s
-          #       noteAttributes[:type] = note.type
-          #       xml.note noteAttributes do
-          #         xml.text note.description
-          #       end
-          #       @notes[note.id.to_s] = {}
-          #       @notes[note.id.to_s]["xml:id"] = "#"+noteAttributes["xml:id"]
-          #       @notes[note.id.to_s][:note] = note
-          #     end
-          #   end
-          # end
-
           # MAPPING
           xml.mapping do
             # Map quires to attributes and terms and memberIDs
