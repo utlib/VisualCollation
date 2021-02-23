@@ -445,41 +445,6 @@ module ControllerHelper
             end
           end
 
-          # Side Attributes Taxonomy
-          ['texture', 'script_direction', 'page_number'].each do |attribute|
-            sideAttribute = {"xml:id": 'side_'+attribute}
-            sideAttributeValues = []
-            @rectos.each do |rectoID, recto|
-              if recto[attribute] == nil and not sideAttributeValues.include? "EMPTY"
-                sideAttributeValues.push("EMPTY")
-              elsif recto[attribute] != nil and not sideAttributeValues.include? recto[attribute] and recto[attribute] != "None"
-                sideAttributeValues.push(recto[attribute])
-              end
-            end
-            @versos.each do |versoID, verso|
-              if verso[attribute] == nil and not sideAttributeValues.include? "EMPTY"
-                sideAttributeValues.push("EMPTY")
-              elsif verso[attribute] != nil and not sideAttributeValues.include? verso[attribute] and  verso[attribute] != "None"
-                sideAttributeValues.push(verso[attribute])
-              end
-            end
-            if not sideAttributeValues.empty?
-              xml.taxonomy sideAttribute do
-                xml.label do
-                  xml.text 'List of values for Side ' + attribute
-                end
-                sideAttributeValues.each do |attributeValue|
-                  if attributeValue
-                    termID = {"xml:id": "side_"+attribute+"_"+attributeValue.parameterize.underscore}
-                    xml.term termID do
-                      xml.text attributeValue
-                    end
-                  end
-                end
-                @allSideAttributeValues += sideAttributeValues
-              end
-            end
-          end
 
           # Term Attributes Taxonomy
           if not project.terms.empty?
