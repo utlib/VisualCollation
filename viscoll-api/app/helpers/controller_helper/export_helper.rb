@@ -546,7 +546,7 @@ module ControllerHelper
                 material = "#leaf_material_"+leaf.material.parameterize.underscore.strip
               end
               if linkedTerms+attachementMethods+material != ""
-                xml.map :target => "#"+group.id do
+                xml.map :target => "#"+leaf.id do
                   xml.term :target => (linkedTerms+" "+material+attachementMethods).strip
                 end
               end
