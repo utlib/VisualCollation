@@ -370,21 +370,6 @@ module ControllerHelper
             end
           end
 
-          # Project Attributes Taxonomy
-          ['preferences'].each do |attribute|
-            manuscriptAttribute = {"xml:id": 'manuscript_'+attribute}
-            xml.taxonomy manuscriptAttribute do
-              xml.label do
-                xml.text 'Manuscript ' + attribute
-              end
-              project[attribute].each do |key, value|
-                termID = {"xml:id": "manuscript_"+attribute+"_"+idPrefix+"_"+key}
-                xml.term termID do
-                  xml.text value
-                end
-              end
-            end
-          end
           if not project.manifests.empty?
             manifestAttribute = {"xml:id": 'manifests'}
             xml.taxonomy manifestAttribute do
