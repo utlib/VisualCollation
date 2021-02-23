@@ -490,12 +490,6 @@ module ControllerHelper
               idPostfix = parents.empty? ? groupOrder.to_s : parents.join("-")+"-"+groupOrder.to_s
               linkedTerms = (group.terms.map {|term| "#term_title"+"_"+term.title.parameterize.underscore}).join(" ")
               linkedAttributes = []
-              ['title', 'type'].each do |attribute|
-                attributeValue = group[attribute]
-                if @allGroupAttributeValues.include? attributeValue
-                  linkedAttributes.push("group_"+attribute+"_"+attributeValue.parameterize.underscore)
-                end
-              end
               ['tacketed', 'sewing'].each do |attribute|
                 attributeValue = ""
                 group[attribute].each do |leafID|
