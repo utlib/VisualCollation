@@ -480,44 +480,6 @@ module ControllerHelper
 
           # MAPPING
           xml.mapping do
-            # Map quires to attributes and terms and memberIDs
-            @groupIDs.each do |groupID|
-              group = @groups[groupID]
-              parents = parentsOrders(groupID, project)
-              groupOrder = parents.pop
-              groupMemberOrder = group["memberOrder"]
-              idPrefix = project.shelfmark.parameterize.underscore
-              idPostfix = parents.empty? ? groupOrder.to_s : parents.join("-")+"-"+groupOrder.to_s
-              linkedTerms = (group.terms.map {|term| "#term_title"+"_"+term.title.parameterize.underscore}).join(" ")
-              linkedAttributes = []
-              ['tacketed', 'sewing'].each do |attribute|
-                attributeValue = ""
-                group[attribute].each do |leafID|
-                  parents = parentsOrders(leafID, project)
-                  leafMemberOrder = parents.pop
-                  idPostfix = parents.join("-")+"-"+leafMemberOrder.to_s
-                  attributeValue = attributeValue + " #" + idPrefix+"-"+idPostfix + " "
-                  attributeValue = attributeValue.strip
-                end
-                if @allGroupAttributeValues.include? attributeValue
-                  parents = parentsOrders(groupID, project)
-                  groupOrder = parents.pop
-                  groupMemberOrder = group["memberOrder"]
-                  idPostfix = parents.empty? ? groupOrder.to_s : parents.join("-")+"-"+groupOrder.to_s
-                  linkedAttributes.push("group_"+attribute+"_"+idPrefix+"-q-"+idPostfix)
-                end
-              end
-              linkedAttributes = linkedAttributes.join(" #")
-              if linkedTerms+linkedAttributes != ""
-                xml.map :target => '#' + group.id do
-                  if linkedAttributes != ""
-                    xml.term :target => linkedTerms+" #"+linkedAttributes+" #group_members_"+group.id
-                  else
-                    xml.term :target => linkedTerms+" #group_members_"+group.id
-                  end
-                end
-              end
-            end
             # Map leaves to attributes and terms
             @leafIDs.each do |leafID|
               leaf = @leafs[leafID]
