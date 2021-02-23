@@ -444,24 +444,6 @@ module ControllerHelper
               end
             end
           end
-          leafAttribute = {"xml:id": 'leaf_attachment_method'}
-          xml.taxonomy leafAttribute do
-            xml.label do
-              xml.text 'List of Attachment Methods'
-            end
-            ['Glued_Above_Partial', 'Glued_Above_Complete', 'Glued_Above_Drumming', 'Glued_Above_Other'].each do |attribute|
-              termID = {"xml:id": attribute}
-              xml.term termID do
-                xml.text attribute.split("_")[0]+" ("+attribute.split("_")[2]+")"
-              end
-            end
-            ['Glued_Below_Partial', 'Glued_Below_Complete', 'Glued_Below_Drumming', 'Glued_Below_Other'].each do |attribute|
-              termID = {"xml:id": attribute}
-              xml.term termID do
-                xml.text attribute.split("_")[0]+" ("+attribute.split("_")[2]+")"
-              end
-            end
-          end
 
           # Side Attributes Taxonomy
           ['texture', 'script_direction', 'page_number'].each do |attribute|
