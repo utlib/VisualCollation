@@ -370,82 +370,6 @@ module ControllerHelper
             end
           end
 
-          if not project.manifests.empty?
-            manifestAttribute = {"xml:id": 'manifests'}
-            xml.taxonomy manifestAttribute do
-              xml.label do
-                xml.text 'List of Manifests'
-              end
-              project.manifests.each do |manifestID, manifest|
-                termID = {"xml:id": 'manifest_'+manifest["id"]}
-                xml.term termID do
-                  xml.text manifest["url"]
-                end
-              end
-            end
-          end
-
-          ['tacketed', 'sewing'].each do |attribute|
-            groupAttribute = {"xml:id": 'group_'+attribute}
-            groupAttributeValues = []
-            @groupIDs.each do |groupID|
-              group = @groups[groupID]
-              leaves = ""
-              if not groupAttributeValues.include? group[attribute]
-                group[attribute].each do |leafID|
-                  parents = parentsOrders(leafID, project)
-                  leafMemberOrder = parents.pop
-                  idPostfix = parents.join("-")+"-"+leafMemberOrder.to_s
-                  leaves = leaves + " #" + idPrefix+"-"+idPostfix + " "
-                  leaves = leaves.strip
-                end
-              end
-              if leaves != ""
-                xml.taxonomy groupAttribute do
-                  xml.label do
-                    xml.text 'List of Groups ' + attribute
-                  end
-                  parents = parentsOrders(groupID, project)
-                  groupOrder = parents.pop
-                  groupMemberOrder = group["memberOrder"]
-                  idPostfix = parents.empty? ? groupOrder.to_s : parents.join("-")+"-"+groupOrder.to_s
-                  termID = {"xml:id": "group_"+attribute+"_"+idPrefix+"-q-"+idPostfix}
-                  xml.term termID do
-                    xml.text leaves
-                  end
-                end
-                @allGroupAttributeValues = @allGroupAttributeValues + [leaves]
-              end
-            end
-          end
-
-          # Leaf Attributes Taxonomy
-          ['material'].each do |attribute|
-            leafAttribute = {"xml:id": 'leaf_'+attribute}
-            leafAttributeValues = []
-            @leafIDs.each do |leafID|
-              leaf = @leafs[leafID]
-              if not leafAttributeValues.include? leaf[attribute] and leaf[attribute] != "None"
-                leafAttributeValues.push(leaf[attribute])
-              end
-            end
-            if not leafAttributeValues.empty?
-              xml.taxonomy leafAttribute do
-                xml.label do
-                  xml.text 'List of values for Leaf ' + attribute
-                end
-                leafAttributeValues.each do |attributeValue|
-                  termID = {"xml:id": "leaf_"+attribute+"_"+attributeValue.parameterize.underscore}
-                  xml.term termID do
-                    xml.text attributeValue
-                  end
-                end
-                @allLeafAttributeValues += leafAttributeValues
-              end
-            end
-          end
-
-
           # Term Attributes Taxonomy
           if not project.terms.empty?
             termTitle = {"xml:id": 'term_title'}
@@ -463,17 +387,6 @@ module ControllerHelper
                 xml.term termID do
                   xml.text termTitle
                 end
-              end
-            end
-
-            termShow = {"xml:id": 'term_show'}
-            xml.taxonomy termShow do
-              xml.label do
-                xml.text 'Whether to show Term in Visualizations'
-              end
-              termID = {"xml:id": "term_show"}
-              xml.term termID do
-                xml.text true
               end
             end
           end
