@@ -391,6 +391,7 @@ module ControllerHelper
             end
           end
 
+          if project.terms.present?
           # MAPPING
           xml.mapping do
             # Map rectos to attributes and terms and sides
@@ -399,14 +400,6 @@ module ControllerHelper
               linkedTerms = (recto.terms.map {|term| "#term_title"+"_"+term.title.parameterize.underscore}).join(" ")
               linkedImage = recto.image.empty? ? "" : recto.image[:url]
               linkedAttributes = []
-              ['texture', 'script_direction', 'page_number'].each do |attribute|
-                attributeValue = recto[attribute]
-                if @allSideAttributeValues.include? attributeValue and attributeValue
-                  linkedAttributes.push("side_"+attribute+"_"+attributeValue.parameterize.underscore)
-                elsif attributeValue==nil and attribute=="page_number" and @allSideAttributeValues.include? "EMPTY"
-                  linkedAttributes.push("side_"+attribute+"_EMPTY")
-                end
-              end
               linkedAttributes = linkedAttributes.empty? ? "" : linkedAttributes.join(" #")
               if linkedTerms+linkedImage+linkedAttributes.strip != ""
                 if linkedAttributes != ""
@@ -477,7 +470,7 @@ module ControllerHelper
               end
             end
           end
-
+          end
         end
       }.to_xml
     end
