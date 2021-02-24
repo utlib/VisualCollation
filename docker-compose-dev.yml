@@ -13,8 +13,6 @@ services:
       - api
     stdin_open: true
   api:
-    tty: true
-    stdin_open: true
     env_file: ./.docker-environment-dev
     container_name: viscoll_api
     image: viscoll-api
@@ -26,7 +24,6 @@ services:
     command: bundle exec rails server -p 3001 -b 0.0.0.0
     ports:
       - 3001:3001
-      - 1234:1234
     depends_on:
       - mongo
       - xproc
