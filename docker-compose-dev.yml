@@ -26,6 +26,7 @@ services:
     command: bundle exec rails server -p 3001 -b 0.0.0.0
     ports:
       - 3001:3001
+      - 1234:1234
     depends_on:
       - mongo
       - xproc
