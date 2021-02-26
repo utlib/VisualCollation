@@ -147,7 +147,7 @@ export const leaf1 = {
     belowID: "",
     belowMethod: ""
   },
-  stub: "None",
+  stub: "No",
   terms: [],
   sides: [
     side0_leaf1,
@@ -169,7 +169,7 @@ export const leaf2 = {
     belowID: "",
     belowMethod: ""
   },
-  stub: "None",
+  stub: "No",
   terms: [],
   sides: [
     side0_leaf2,
@@ -191,7 +191,7 @@ export const leaf3 = {
     belowID: "",
     belowMethod: ""
   },
-  stub: "None",
+  stub: "No",
   terms: [],
   sides: [
     side0_leaf3,
@@ -213,7 +213,7 @@ export const leaf4 = {
     belowID: "",
     belowMethod: ""
   },
-  stub: "None",
+  stub: "No",
   terms: [],
   sides: [
     side0_leaf4,
@@ -235,7 +235,7 @@ export const leaf5 = {
     belowID: "",
     belowMethod: ""
   },
-  stub: "None",
+  stub: "No",
   terms: [],
   sides: [
     side0_leaf5,

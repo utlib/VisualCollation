@@ -225,7 +225,7 @@ module ControllerHelper
                 leaf = project.leafs.find(leafID)
                 leafAttributes = {}
                 leafAttributes["xml:id"] = leaf.id
-                leafAttributes["stub"] = "yes" if leaf.stubType != "None"
+                leafAttributes["stub"] = "yes" if leaf.stubType != "No"
                 xml.leaf leafAttributes do
                   
                   # if leaf.folio_number

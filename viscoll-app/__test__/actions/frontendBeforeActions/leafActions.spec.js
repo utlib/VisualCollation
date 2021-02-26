@@ -51,7 +51,7 @@ describe('>>>A C T I O N --- Test leaf actions', () => {
       attached_below: 'None',
       conjoined_to: null,
       material: 'None',
-      stub: 'None',
+      stub: 'No',
       type: 'None',
       memberType: 'Leaf',
       nestLevel: 1,

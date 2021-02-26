@@ -9,7 +9,7 @@ class Leaf
   field :conjoined_to, type: String
   field :attached_above, type: String, default: "None"
   field :attached_below, type: String, default: "None"
-  field :stubType, :as => :stub, type: String, default: "None"
+  field :stubType, :as => :stub, type: String, default: "No"
   field :parentID, type: String
   field :nestLevel, type: Integer, default: 1
   field :rectoID, type: String

@@ -11,7 +11,7 @@ PaperLeaf.prototype = {
         let x1 = this.multiplier<1? 10 + this.indent*this.spacing*this.multiplier : this.indent*this.spacing*this.multiplier;
         let x2 = this.width;
         this.path.add(new paper.Point(x1, this.y));
-        if (this.leaf.stub !== "None") {
+        if (this.leaf.stub !== "No") {
             x2 = this.width*0.15+x1;
         }
         this.path.add(new paper.Point(x2, this.y));
@@ -225,7 +225,7 @@ PaperLeaf.prototype = {
             }
         } else if (this.leaf.attached_above.includes("Drumming")) {
             let glueLineCount = 15;
-            if (this.leaf.stub!=="None") glueLineCount = 4;
+            if (this.leaf.stub!=="No") glueLineCount = 4;
             // Draw left drum glue
             for (let i=0; i<glueLineCount; i++) {
                 let glueLine = new paper.Path();
@@ -441,7 +441,7 @@ PaperLeaf.prototype = {
         const visibleAttributeCount = this.visibleAttributes.side? Object.keys(this.visibleAttributes.side).reduce(reducer,0) : 0;
 
         if (visibleAttributeCount===3) {
-            if (this.leaf.stub === "None") {
+            if (this.leaf.stub === "No") {
                 // Reduce leaf width so we can fit attribute text
                 this.path.segments[this.path.segments.length-1].point.x = this.width-this.spacing*3;
                 this.highlight.segments[this.highlight.segments.length-1].point.x = this.width-this.spacing*2.8;
@@ -451,7 +451,7 @@ PaperLeaf.prototype = {
             this.textRecto.set({point:[this.textLeafOrder.bounds.right+this.spacing*0.4, this.textRecto.point.y], content: rectoContent});
             this.textVerso.set({point:[this.textLeafOrder.bounds.right+this.spacing*0.4, this.textVerso.point.y], content: versoContent});
         } else if (visibleAttributeCount===2) {
-            if (this.leaf.stub === "None") {
+            if (this.leaf.stub === "No") {
                 // Reduce leaf width so we can fit attribute text
                 this.path.segments[this.path.segments.length-1].point.x = this.width-this.spacing*2;
                 this.highlight.segments[this.highlight.segments.length-1].point.x = this.width-this.spacing*1.8;
@@ -462,7 +462,7 @@ PaperLeaf.prototype = {
             this.textVerso.set({point:[this.textLeafOrder.bounds.right+this.spacing*0.2, this.textVerso.point.y], content: versoContent});
         } 
         else if (visibleAttributeCount===1) {
-            if (this.leaf.stub === "None") {
+            if (this.leaf.stub === "No") {
                 // Reduce leaf width so we can fit folio number text
                 this.path.segments[this.path.segments.length-1].point.x = this.width - this.spacing;
                 this.highlight.segments[this.highlight.segments.length-1].point.x = this.width - this.spacing*0.8;
@@ -473,7 +473,7 @@ PaperLeaf.prototype = {
             this.textVerso.set({point:[this.textLeafOrder.bounds.right+this.spacing*0.2, this.textVerso.point.y], content: versoContent});
         } else {
             // Reset leaf 
-            if (this.leaf.stub === "None") {
+            if (this.leaf.stub === "No") {
                 this.path.segments[this.path.segments.length-1].point.x = this.width;
                 this.highlight.segments[this.highlight.segments.length-1].point.x = this.width + 5;
                 this.filterHighlight.segments[this.filterHighlight.segments.length-1].point.x = this.width + 5;
