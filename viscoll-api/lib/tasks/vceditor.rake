@@ -1,16 +1,16 @@
 namespace :vce do
-  desc "Update Leaf#stub_type to Yes|No values"
-  task :update_stubs do
+  desc "Update Leaf#stubType to Yes|No values"
+  task :update_stubs => :environment do
     Leaf.all.each do |leaf|
-      next if %w{No Yes}.include? leaf.stub_type
-      case leaf.stub_type
+      next if %w{No Yes}.include? leaf.stubType
+      case leaf.stubType
       when 'None'
-        leaf.stub_type = 'No'
+        leaf.stubType = 'No'
       when 'Added'
-        leaf.stub_type = 'Yes'
+        leaf.stubType = 'Yes'
         leaf.type = 'Added'
       when 'Original'
-        leaf.stub_type = 'Yes'
+        leaf.stubType = 'Yes'
         leaf.type = 'Original'
       end
       leaf.save!
