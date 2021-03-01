@@ -41,12 +41,12 @@ RSpec.describe ControllerHelper::ExportHelper, type: :helper do
       2 => {:params=>{:type=>"Quire", :title=>"Group 2", :nestLevel=>2}, :tacketed=>[], :sewing=>[], :parentOrder=>1, :memberOrders=>["Leaf_3", "Leaf_4"]}
     })
     expect(result[:leafs]).to eq({
-      1 => {:params=>{:folio_number=>"", :material=>"Paper", :type=>"Original", :attached_above=>"None", :attached_below=>"None", :stub=>"None", :nestLevel=>1}, :conjoined_leaf_order=>nil, :parentOrder=>1, :rectoOrder=>1, :versoOrder=>1},
-      2 => {:params=>{:folio_number=>"", :material=>"Paper", :type=>"Original", :attached_above=>"None", :attached_below=>"None", :stub=>"None", :nestLevel=>1}, :conjoined_leaf_order=>nil, :parentOrder=>1, :rectoOrder=>2, :versoOrder=>2},
-      3 => {:params=>{:folio_number=>"", :material=>"Paper", :type=>"Original", :attached_above=>"None", :attached_below=>"None", :stub=>"None", :nestLevel=>2}, :conjoined_leaf_order=>nil, :parentOrder=>2, :rectoOrder=>3, :versoOrder=>3},
-      4 => {:params=>{:folio_number=>"", :material=>"Paper", :type=>"Original", :attached_above=>"None", :attached_below=>"None", :stub=>"None", :nestLevel=>2}, :conjoined_leaf_order=>nil, :parentOrder=>2, :rectoOrder=>4, :versoOrder=>4},
-      5 => {:params=>{:folio_number=>"", :material=>"Paper", :type=>"Original", :attached_above=>"None", :attached_below=>"None", :stub=>"None", :nestLevel=>1}, :conjoined_leaf_order=>nil, :parentOrder=>1, :rectoOrder=>5, :versoOrder=>5},
-      6 => {:params=>{:folio_number=>"", :material=>"Paper", :type=>"Endleaf", :attached_above=>"None", :attached_below=>"None", :stub=>"None", :nestLevel=>1}, :conjoined_leaf_order=>nil, :parentOrder=>1, :rectoOrder=>6, :versoOrder=>6}
+      1 => {:params=>{:folio_number=>"", :material=>"Paper", :type=>"Original", :attached_above=>"None", :attached_below=>"None", :stub=>"No", :nestLevel=>1}, :conjoined_leaf_order=>nil, :parentOrder=>1, :rectoOrder=>1, :versoOrder=>1},
+      2 => {:params=>{:folio_number=>"", :material=>"Paper", :type=>"Original", :attached_above=>"None", :attached_below=>"None", :stub=>"No", :nestLevel=>1}, :conjoined_leaf_order=>nil, :parentOrder=>1, :rectoOrder=>2, :versoOrder=>2},
+      3 => {:params=>{:folio_number=>"", :material=>"Paper", :type=>"Original", :attached_above=>"None", :attached_below=>"None", :stub=>"No", :nestLevel=>2}, :conjoined_leaf_order=>nil, :parentOrder=>2, :rectoOrder=>3, :versoOrder=>3},
+      4 => {:params=>{:folio_number=>"", :material=>"Paper", :type=>"Original", :attached_above=>"None", :attached_below=>"None", :stub=>"No", :nestLevel=>2}, :conjoined_leaf_order=>nil, :parentOrder=>2, :rectoOrder=>4, :versoOrder=>4},
+      5 => {:params=>{:folio_number=>"", :material=>"Paper", :type=>"Original", :attached_above=>"None", :attached_below=>"None", :stub=>"No", :nestLevel=>1}, :conjoined_leaf_order=>nil, :parentOrder=>1, :rectoOrder=>5, :versoOrder=>5},
+      6 => {:params=>{:folio_number=>"", :material=>"Paper", :type=>"Endleaf", :attached_above=>"None", :attached_below=>"None", :stub=>"No", :nestLevel=>1}, :conjoined_leaf_order=>nil, :parentOrder=>1, :rectoOrder=>6, :versoOrder=>6}
     })
     expect(result[:rectos]).to eq({
       1 => {:params=>{:page_number=>"", :texture=>"None", :image=>{}, :script_direction=>"None"}, :parentOrder=>1},

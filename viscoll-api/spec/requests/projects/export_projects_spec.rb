@@ -84,12 +84,12 @@ describe "GET /projects/:id/export/:format", :type => :request do
           '2' => {'params'=>{'type'=>"Quire", 'title'=>"Group 2", 'nestLevel'=>2}, 'tacketed'=>[], 'sewing'=>[], 'parentOrder'=>1, 'memberOrders'=>["Leaf_3", "Leaf_4"]}
         })
         expect(export_result['Leafs']).to eq({
-          '1' => {'params'=>{'folio_number'=>'', 'material'=>"Paper", 'type'=>"Original", 'attached_above'=>"None", 'attached_below'=>"None", 'stub'=>"None", 'nestLevel'=>1}, 'conjoined_leaf_order'=>nil, 'parentOrder'=>1, 'rectoOrder'=>1, 'versoOrder'=>1},
-          '2' => {'params'=>{'folio_number'=>'', 'material'=>"Paper", 'type'=>"Original", 'attached_above'=>"None", 'attached_below'=>"None", 'stub'=>"None", 'nestLevel'=>1}, 'conjoined_leaf_order'=>nil, 'parentOrder'=>1, 'rectoOrder'=>2, 'versoOrder'=>2},
-          '3' => {'params'=>{'folio_number'=>'', 'material'=>"Paper", 'type'=>"Original", 'attached_above'=>"None", 'attached_below'=>"None", 'stub'=>"None", 'nestLevel'=>2}, 'conjoined_leaf_order'=>nil, 'parentOrder'=>2, 'rectoOrder'=>3, 'versoOrder'=>3},
-          '4' => {'params'=>{'folio_number'=>'', 'material'=>"Paper", 'type'=>"Original", 'attached_above'=>"None", 'attached_below'=>"None", 'stub'=>"None", 'nestLevel'=>2}, 'conjoined_leaf_order'=>nil, 'parentOrder'=>2, 'rectoOrder'=>4, 'versoOrder'=>4},
-          '5' => {'params'=>{'folio_number'=>'', 'material'=>"Paper", 'type'=>"Original", 'attached_above'=>"None", 'attached_below'=>"None", 'stub'=>"None", 'nestLevel'=>1}, 'conjoined_leaf_order'=>nil, 'parentOrder'=>1, 'rectoOrder'=>5, 'versoOrder'=>5},
-          '6' => {'params'=>{'folio_number'=>'', 'material'=>"Paper", 'type'=>"Endleaf", 'attached_above'=>"None", 'attached_below'=>"None", 'stub'=>"None", 'nestLevel'=>1}, 'conjoined_leaf_order'=>nil, 'parentOrder'=>1, 'rectoOrder'=>6, 'versoOrder'=>6}
+          '1' => {'params'=>{'folio_number'=>'', 'material'=>"Paper", 'type'=>"Original", 'attached_above'=>"None", 'attached_below'=>"None", 'stub'=>"No", 'nestLevel'=>1}, 'conjoined_leaf_order'=>nil, 'parentOrder'=>1, 'rectoOrder'=>1, 'versoOrder'=>1},
+          '2' => {'params'=>{'folio_number'=>'', 'material'=>"Paper", 'type'=>"Original", 'attached_above'=>"None", 'attached_below'=>"None", 'stub'=>"No", 'nestLevel'=>1}, 'conjoined_leaf_order'=>nil, 'parentOrder'=>1, 'rectoOrder'=>2, 'versoOrder'=>2},
+          '3' => {'params'=>{'folio_number'=>'', 'material'=>"Paper", 'type'=>"Original", 'attached_above'=>"None", 'attached_below'=>"None", 'stub'=>"No", 'nestLevel'=>2}, 'conjoined_leaf_order'=>nil, 'parentOrder'=>2, 'rectoOrder'=>3, 'versoOrder'=>3},
+          '4' => {'params'=>{'folio_number'=>'', 'material'=>"Paper", 'type'=>"Original", 'attached_above'=>"None", 'attached_below'=>"None", 'stub'=>"No", 'nestLevel'=>2}, 'conjoined_leaf_order'=>nil, 'parentOrder'=>2, 'rectoOrder'=>4, 'versoOrder'=>4},
+          '5' => {'params'=>{'folio_number'=>'', 'material'=>"Paper", 'type'=>"Original", 'attached_above'=>"None", 'attached_below'=>"None", 'stub'=>"No", 'nestLevel'=>1}, 'conjoined_leaf_order'=>nil, 'parentOrder'=>1, 'rectoOrder'=>5, 'versoOrder'=>5},
+          '6' => {'params'=>{'folio_number'=>'', 'material'=>"Paper", 'type'=>"Endleaf", 'attached_above'=>"None", 'attached_below'=>"None", 'stub'=>"No", 'nestLevel'=>1}, 'conjoined_leaf_order'=>nil, 'parentOrder'=>1, 'rectoOrder'=>6, 'versoOrder'=>6}
         })
         expect(export_result['Rectos']).to eq({
           '1' => {'params'=>{'page_number'=>"", 'texture'=>"None", 'image'=>{'manifestID' => 'DIYImages', 'label' => "Pixel", 'url' => "https://dummy.library.utoronto.ca/images/#{@testimage.id}_pixel.png"}, 'script_direction'=>"None"}, 'parentOrder'=>1},

@@ -118,7 +118,7 @@ module ControllerHelper
       allLeafNodes = xml.xpath('//x:leaf', "x" => "http://schoenberginstitute.org/schema/collation")
       allLeafNodes.each_with_index do |leafNode, index|
         leafNodeID = leafNode.attributes["id"].value
-        stub = leafNode.attributes["stub"] ? "Original" : "None"
+        stub = leafNode.attributes["stub"] ? "Original" : "No"
         type = "None"
         conjoinedToNodeID = nil
         leafOrder = index+1

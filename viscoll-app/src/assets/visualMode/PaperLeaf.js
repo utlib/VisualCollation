@@ -14,7 +14,7 @@ PaperLeaf.prototype = {
         : this.indent * this.spacing * this.multiplier;
     let x2 = this.width;
     this.path.add(new paper.Point(x1, this.y));
-    if (this.leaf.stub !== 'None') {
+    if (this.leaf.stub !== 'No') {
       x2 = this.width * 0.15 + x1;
     }
     this.path.add(new paper.Point(x2, this.y));
@@ -296,8 +296,8 @@ PaperLeaf.prototype = {
         x += 5;
       }
       if (
-        this.leaf.stub === 'None' &&
-        this.prevPaperLeaf().leaf.stub === 'None'
+        this.leaf.stub === 'No' &&
+        this.prevPaperLeaf().leaf.stub === 'No'
       ) {
         // Draw right drum glue if above or below are not stubs
         x = this.path.segments[this.path.segments.length - 1].point.x;
@@ -314,8 +314,8 @@ PaperLeaf.prototype = {
     } else if (this.leaf.attached_above.includes('Pasted')) {
       // Complete glue
       if (
-        this.leaf.stub !== 'None' ||
-        this.prevPaperLeaf().leaf.stub !== 'None'
+        this.leaf.stub !== 'No' ||
+        this.prevPaperLeaf().leaf.stub !== 'No'
       ) {
         let glueLineCount = 15;
         for (let i = 0; i < glueLineCount; i++) {
@@ -537,7 +537,7 @@ PaperLeaf.prototype = {
       : 0;
 
     if (visibleAttributeCount === 3) {
-      if (this.leaf.stub === 'None') {
+      if (this.leaf.stub === 'No') {
         // Reduce leaf width so we can fit attribute text
         this.path.segments[this.path.segments.length - 1].point.x =
           this.width - this.spacing * 3;
@@ -565,7 +565,7 @@ PaperLeaf.prototype = {
         content: versoContent,
       });
     } else if (visibleAttributeCount === 2) {
-      if (this.leaf.stub === 'None') {
+      if (this.leaf.stub === 'No') {
         // Reduce leaf width so we can fit attribute text
         this.path.segments[this.path.segments.length - 1].point.x =
           this.width - this.spacing * 2;
@@ -593,7 +593,7 @@ PaperLeaf.prototype = {
         content: versoContent,
       });
     } else if (visibleAttributeCount === 1) {
-      if (this.leaf.stub === 'None') {
+      if (this.leaf.stub === 'No') {
         // Reduce leaf width so we can fit folio number text
         this.path.segments[this.path.segments.length - 1].point.x =
           this.width - this.spacing;
@@ -622,7 +622,7 @@ PaperLeaf.prototype = {
       });
     } else {
       // Reset leaf
-      if (this.leaf.stub === 'None') {
+      if (this.leaf.stub === 'No') {
         this.path.segments[this.path.segments.length - 1].point.x = this.width;
         this.highlight.segments[this.highlight.segments.length - 1].point.x =
           this.width + 5;

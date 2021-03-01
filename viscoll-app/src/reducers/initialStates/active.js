@@ -101,7 +101,7 @@ export const initialState = {
         {
           name: 'stub',
           displayName: 'Stub',
-          options: ['None', 'Original', 'Added'],
+          options: ['No', 'Yes'],
           isDropdown: true,
         },
         {
