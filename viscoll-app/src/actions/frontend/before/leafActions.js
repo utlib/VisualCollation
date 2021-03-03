@@ -63,7 +63,7 @@ export function createLeaves(action, state, fromGroupCreation = false) {
       attached_below: 'None',
       stub: action.payload.request.data.leaf.stub
         ? action.payload.request.data.leaf.stub
-        : 'None',
+        : 'No',
       nestLevel: parentGroup.nestLevel,
       parentID: parentGroupID,
       rectoID: 'Recto_' + sideIDs[sideCount],
