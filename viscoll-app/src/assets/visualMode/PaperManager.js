@@ -277,6 +277,7 @@ PaperManager.prototype = {
                 leaf.deactivate();
               }
             }
+            // do it again - recursion required for nested beyond one level
           })
           //
         }
