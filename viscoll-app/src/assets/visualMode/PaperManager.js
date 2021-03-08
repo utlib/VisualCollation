@@ -165,6 +165,36 @@ PaperManager.prototype = {
         this.groupContainer.position.y += 10;
         this.fitCanvas();
     },
+    tacketTargetLeaves: function (groupID, targets) {
+        const targetGroup = this.paperGroups.find(member => {
+            return member.group.id === groupID;
+        })
+        targetGroup.group.memberIDs.forEach(memberID => {
+            if (memberID.charAt(0) === 'L') {
+                const leaf = this.getLeaf(
+                    this.leafIDs.indexOf(this.Leafs[memberID].id) + 1
+                );
+                if (
+                    leaf.isConjoined() &&
+                    (this.tacketLineDrag.getIntersections(leaf.path).length > 0 ||
+                     this.tacketLineDrag.getIntersections(leaf.conjoinedLeaf().path)
+                         .length > 0)
+                ) {
+                    leaf.path.strokeColor = '#ffffff';
+                    leaf.conjoinedLeaf().path.strokeColor = '#ffffff';
+                    // Add leaf to list of targets to tacket
+                    targets.push(leaf);
+                } else {
+                    leaf.deactivate();
+                }
+            } else if (memberID.charAt(0) === 'G') {
+                const subGroup = this.getGroup(
+                    this.groupIDs.indexOf(this.Groups[memberID].id) + 1
+                );
+                this.tacketTargetLeaves(memberID, targets)
+            }
+        })
+    },
     activateTacketTool: function (groupID, type = 'tacketed') {
         // Remove existing tacket
         this.groupTacket.removeChildren();
@@ -223,63 +253,7 @@ PaperManager.prototype = {
                 this.tacketLineDrag.segments[1].point = event.point;
             }
             targets = [];
-            // Highlight leaves that intersect the line
-            // targetGroup returns a single group to work in - we need it to return multiple groups
-            // in the case of a subquire
-            const targetGroup = this.paperGroups.find(member => {
-                // member is a JS object that contains group information
-                // member.group is a singular group, but member.Groups has all project groups
-                return member.group.id === groupID;
-            });
-            targetGroup.group.memberIDs.forEach(memberID => {
-                // loop through each member in the target group
-                if (memberID.charAt(0) === 'L') {
-                    const leaf = this.getLeaf(
-                        this.leafIDs.indexOf(this.Leafs[memberID].id) + 1
-                    );
-                    if (
-                        leaf.isConjoined() &&
-                        (this.tacketLineDrag.getIntersections(leaf.path).length > 0 ||
-                         this.tacketLineDrag.getIntersections(leaf.conjoinedLeaf().path)
-                             .length > 0)
-                    ) {
-                        leaf.path.strokeColor = '#ffffff';
-                        leaf.conjoinedLeaf().path.strokeColor = '#ffffff';
-                        // Add leaf to list of targets to tacket
-                        targets.push(leaf);
-                    } else {
-                        leaf.deactivate();
-                    }
-                } else if (memberID.charAt(0) === 'G') {
-                    // get the paperGroup from the ID, so we can access members
-                    const subGroup = this.getGroup(
-                        this.groupIDs.indexOf(this.Groups[memberID].id) + 1
-                    );
-                    // loop through members of this group and get leafs
-                    subGroup.group.memberIDs.forEach(memberID => {
-                        if (memberID.charAt(0) === 'L') {
-                            const leaf = this.getLeaf(
-                                this.leafIDs.indexOf(this.Leafs[memberID].id) + 1
-                            );
-                            if (
-                                leaf.isConjoined() &&
-                                (this.tacketLineDrag.getIntersections(leaf.path).length > 0 ||
-                                 this.tacketLineDrag.getIntersections(leaf.conjoinedLeaf().path)
-                                     .length > 0)
-                            ) {
-                                leaf.path.strokeColor = '#ffffff';
-                                leaf.conjoinedLeaf().path.strokeColor = '#ffffff';
-                                // Add leaf to list of targets to tacket
-                                targets.push(leaf);
-                            } else {
-                                leaf.deactivate();
-                            }
-                        }
-                        // do it again - recursion required for nested beyond one level
-                    })
-                    //
-                }
-            });
+            this.tacketTargetLeaves(groupID, targets)
         };
         this.tool.activate();
     },
