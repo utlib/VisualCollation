@@ -57,7 +57,8 @@ module ControllerHelper
       rescue
         return {name: "Unparseable manifest URL", images: images}
       end
-      return {name: response["label"][0..150], images: images}
+      return {name: response["label"][0..150], images: images} unless response["label"].empty?
+      return {name: "Unnamed manifest", images: images}
     end
 
     def assignTexture(leaves, startingTexture)
