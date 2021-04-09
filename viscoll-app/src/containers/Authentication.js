@@ -174,8 +174,13 @@ class Landing extends Component {
             {resendConfirmation}
           </div>
         </div>
-        <div className="panelBottom"></div>
-        <NetworkErrorScreen />
+        <div className="panelBottom">
+          <div>
+            <span>Developed by the University of Toronto Libraries</span>
+            <span>In collaboration with <b>Dot Porter</b> and <b>Alberto Campagnolo</b></span>
+          </div>
+        </div>
+        <NetworkErrorScreen/>
       </div>
     );
   }
