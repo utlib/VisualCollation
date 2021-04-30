@@ -88,6 +88,11 @@ PaperGroup.prototype = {
     this.text.set({
       content: groupText,
     });
+    if(this.direction === "right-to-left"){
+      this.text.set({
+        point: [this.width-this.text.bounds.width-this.text.point.x, this.text.point.y],
+      })
+    }
   },
 }
 // Constructor for group
@@ -95,6 +100,7 @@ function PaperGroup(args) {
   this.manager = args.manager;
   this.group = args.group;
   this.groupOrder = args.groupIDs.indexOf(args.group.id)+1
+  this.direction = args.direction;
   this.y = args.y;
   this.x = args.x;
   this.width = args.width;

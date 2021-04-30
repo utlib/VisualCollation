@@ -146,6 +146,7 @@ module ControllerHelper
         @groups[group.id.to_s] = { 
           "id": group.id.to_s, 
           "type": group.type,
+          "direction": group.direction,
           "title": group.title,
           "tacketed": group.tacketed,
           "sewing": group.sewing,

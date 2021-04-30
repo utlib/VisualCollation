@@ -24,6 +24,7 @@ export function createGroups(action, state) {
       id: "Group_" + groupIDs[count],
       title: title? title : "None",
       type: type? type : "Quire",
+      direction: "left-to-right",
       tacketed: tacketed? tacketed : [],
       sewing: sewing? sewing : [],
       nestLevel: parentGroup ? parentGroup.nestLevel+1 : 1,

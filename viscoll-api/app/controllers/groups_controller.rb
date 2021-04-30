@@ -16,6 +16,7 @@ class GroupsController < ApplicationController
       sideIDs = additional_params.to_h[:sideIDs]
       project_id = group_params.to_h[:project_id]
       order = additional_params.to_h[:order]
+      direction = group_params.to_h[:direction]
       # Validate group parameters
       @additionalErrors = validateAdditionalGroupParams(noOfGroups, parentGroupID, memberOrder, noOfLeafs, conjoin, oddMemberLeftOut)
       hasAdditionalErrors = false
@@ -167,7 +168,7 @@ class GroupsController < ApplicationController
   end
 
   def group_params
-    params.require(:group).permit(:project_id, :type, :title, :tacketed=>[], :sewing=>[])
+    params.require(:group).permit(:project_id, :type, :title, :direction, :tacketed=>[], :sewing=>[])
   end
 
   def additional_params
@@ -175,7 +176,7 @@ class GroupsController < ApplicationController
   end
 
   def group_params_batch_update
-    params.permit(:groups => [:id, :attributes=>[:type, :title, :tacketed=>[], :sewing=>[]]])
+    params.permit(:groups => [:id, :attributes=>[:type, :title, :direction, :tacketed=>[], :sewing=>[]]])
   end
 
   def group_params_batch_delete

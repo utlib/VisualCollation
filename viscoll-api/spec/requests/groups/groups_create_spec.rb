@@ -14,6 +14,7 @@ describe "POST /groups", :type => :request do
       "group": {
         "project_id": @project.id.to_str,
         "title": "New Quire",
+        "direction": "left-to-right",
         "type": "Quire",
       },
       "additional": {

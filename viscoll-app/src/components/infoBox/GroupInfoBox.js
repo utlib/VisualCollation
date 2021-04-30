@@ -261,6 +261,14 @@ export default class GroupInfoBox extends React.Component {
     }
   }
 
+  toggleGroupDirection = () => {
+    if(this.props.Groups[this.props.selectedGroups[0]].direction === "left-to-right"){
+      this.singleSubmit("direction", "right-to-left")
+    } else {
+      this.singleSubmit("direction", "left-to-right")
+    }
+  }
+
   clickVisibility = (attributeName, value) => {
     if (attributeName!=="type"||this.props.viewMode==="TABULAR") {
       this.props.action.updatePreferences({group:{...this.props.preferences.group, [attributeName]:value}});
@@ -469,7 +477,15 @@ export default class GroupInfoBox extends React.Component {
           {...btnBase()}
           style={this.props.selectedGroups ? {...btnBase().style, width: "48%", float:"left", marginRight:"2%"} : {width:"100%", float:"left", marginRight:"2%"}}
         />
-    }
+    }      
+    let flipBtn = <RaisedButton 
+                    primary 
+                    label={"Flip View Direction"} 
+                    onClick={this.toggleGroupDirection}
+                    tabIndex={this.props.tabIndex}
+                    {...btnBase()}
+                    style={this.props.selectedGroups ? {...btnBase().style, width: "48%", float:"left", marginRight:"2%", marginTop:"2%"} : {width:"100%", float:"left", marginRight:"2%"}}
+                  />
     let deleteBtn = 
                 <DeleteConfirmationDialog
                   fullWidth={isBatch}
@@ -608,6 +624,7 @@ export default class GroupInfoBox extends React.Component {
               <div style={{textAlign:"center"}}>
                 {addBtn}
                 {deleteBtn}
+                {flipBtn}
               </div>
           </div>
           <AddGroupDialog

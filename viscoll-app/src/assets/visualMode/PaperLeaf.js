@@ -1,5 +1,4 @@
 import paper from 'paper';
-
 PaperLeaf.prototype = {
     constructor: PaperLeaf,
     draw: function() {
@@ -8,12 +7,24 @@ PaperLeaf.prototype = {
         // to compute their indentations relative to each other
         this.setIndent();
         // Draw horizontal part
-        let x1 = this.multiplier<1? 10 + this.indent*this.spacing*this.multiplier : this.indent*this.spacing*this.multiplier;
-        let x2 = this.width;
-        this.path.add(new paper.Point(x1, this.y));
-        if (this.leaf.stub !== "None") {
-            x2 = this.width*0.15+x1;
+        let x1, x2
+        if(this.groupDirection === "left-to-right"){
+            x1 = this.multiplier<1? 10 + this.indent*this.spacing*this.multiplier : this.indent*this.spacing*this.multiplier;
+            x2 = this.width;
+        } else {
+            x1 = this.groupWidth - (this.multiplier < 1 ? 10 + this.indent*this.spacing*this.multiplier : this.indent*this.spacing*this.multiplier);
+            x2 = this.groupWidth - this.width;
+            this.oldPointX = x2;
         }
+        this.dirMultiplier = (this.groupDirection === "left-to-right") ? 1 : -1;
+
+        this.path.add(new paper.Point(x1, this.y));
+        if (this.leaf.stub !== "None" && this.groupDirection === "left-to-right") {
+            x2 = this.width*0.15+x1;
+        } else if (this.leaf.stub !== "None") {
+            x2 = (x1-this.width*0.15)-x2;
+        }
+
         this.path.add(new paper.Point(x2, this.y));
         // Draw vertical part
         if (this.isConjoined()) {
@@ -72,15 +83,23 @@ PaperLeaf.prototype = {
             textX = this.path.segments[1].point.x;
         } else {
             // Separate leaf
-            textX = this.path.segments[0].point.x + 10;
+            textX = this.path.segments[0].point.x+this.dirMultiplier*10;
         }
         if (this.leaf.attached_above.includes("Partial")) {
             // This leaf has a partial glue attachment
             // Place text to the right of attachment drawing
-            textX = this.attachment.bounds.right+5;
+            if(this.groupDirection === "left-to-right"){
+                textX = this.attachment.bounds.right+5;
+            } else {
+                textX = this.attachment.bounds.left - 5;
+            }
         } else if (this.leaf.attached_above.includes("Glued")) {
             // Other type of glueing exists
-            textY -= this.spacing*0.7;
+            if(this.groupDirection === "left-to-right"){
+                textY -= this.spacing*0.7;
+            } else {
+                textY += this.spacing*0.7;
+            }
         } 
         let that = this;
         let clickListener = function(note) {
@@ -98,6 +117,8 @@ PaperLeaf.prototype = {
                 fillColor: this.strokeColor,
                 fontSize: fontSize,
             });
+            const textPointX = (this.groupDirection === "left-to-right") ? textX : textX-textNote.bounds.width;
+            textNote.set({point: [textPointX, textY - noteIndex * (this.spacing * 0.7) - this.spacing * 0.3]});
             textNote.onClick = !this.viewingMode && clickListener(note);
             this.textNotes.addChild(textNote);
         }
@@ -107,10 +128,11 @@ PaperLeaf.prototype = {
             
             let textNote = new paper.PointText({
                 content: "▼ L" + this.order + " : " + note.title.substr(0,numChars),
-                point: [textX, textY - rectoNotesToShow.length*(this.spacing*0.7) - noteIndex*(this.spacing*0.7) - this.spacing*0.3],
                 fillColor: this.strokeColor,
                 fontSize: fontSize,
             });
+            const textPointX = (this.groupDirection === "left-to-right") ? textX : textX - textNote.bounds.width;
+            textNote.set({point: [textPointX, textY - rectoNotesToShow.length*(this.spacing*0.7) - noteIndex*(this.spacing*0.7) - this.spacing*0.3]});
             textNote.onClick = !this.viewingMode && clickListener(note);
             this.textNotes.addChild(textNote);
         }
@@ -124,6 +146,8 @@ PaperLeaf.prototype = {
                 fillColor: this.strokeColor,
                 fontSize: fontSize,
             });
+            const textPointX = (this.groupDirection === "left-to-right") ? textX : textX-textNote.bounds.width;
+            textNote.set({point: [textPointX, this.y + noteIndex*(this.spacing*0.7) + this.spacing*0.8]})
             textNote.onClick = !this.viewingMode && clickListener(note);
             this.textNotes.addChild(textNote);
         }
@@ -204,7 +228,7 @@ PaperLeaf.prototype = {
         let x = this.path.segments[0].point.x;
         if (this.isConjoined() && this.conjoined_to<this.order) {
             if (this.conjoined_to+1===this.order) {
-                x += this.strokeWidth;
+                x += this.dirMultiplier*this.strokeWidth;
             } else {
                 x = this.prevPaperLeaf().path.segments[0].point.x;
             }
@@ -213,11 +237,11 @@ PaperLeaf.prototype = {
             for (let i=0; i<6; i++) {
                 let glueLine = new paper.Path();
                 glueLine.add(new paper.Point(x, this.y-this.spacing*0.3));
-                glueLine.add(new paper.Point(x+10, this.y-this.spacing*0.7));
+                glueLine.add(new paper.Point(x+this.dirMultiplier*10, this.y-this.spacing*0.7));
                 glueLine.strokeColor = "#707070";
                 glueLine.strokeWidth = 2;
                 this.attachment.addChild(glueLine);
-                x += 5;
+                x += this.dirMultiplier*5;
             }
         } else if (this.leaf.attached_above.includes("Drumming")) {
             let glueLineCount = 15;
@@ -226,18 +250,29 @@ PaperLeaf.prototype = {
             for (let i=0; i<glueLineCount; i++) {
                 let glueLine = new paper.Path();
                 glueLine.add(new paper.Point(x, this.y-this.spacing*0.3));
-                glueLine.add(new paper.Point(x+10, this.y-this.spacing*0.7));
+                glueLine.add(new paper.Point(x+this.dirMultiplier*10, this.y-this.spacing*0.7));
                 glueLine.strokeColor = "#707070";
                 glueLine.strokeWidth = 2;
                 this.attachment.addChild(glueLine);
-                x += 5;
+                x += this.dirMultiplier*5;
             }
             // Draw right drum glue
             x = this.path.segments[this.path.segments.length-1].point.x;
             for (let i=0; i<glueLineCount; i++) {
                 let glueLine = new paper.Path();
-                glueLine.add(new paper.Point(x-10, this.y-this.spacing*0.3));
+                glueLine.add(new paper.Point(x-this.dirMultiplier*10, this.y-this.spacing*0.3));
                 glueLine.add(new paper.Point(x, this.y-this.spacing*0.7));
+                glueLine.strokeColor = "#707070";
+                glueLine.strokeWidth = 2;
+                this.attachment.addChild(glueLine);
+                x -= this.dirMultiplier*5;
+            }
+        } else if (this.groupDirection === "right-to-left") {
+            // Complete glue
+            while (x > (this.path.segments[this.path.segments.length-1].point.x-10)) {
+                let glueLine = new paper.Path();
+                glueLine.add(new paper.Point(x, this.y-this.spacing*0.3));
+                glueLine.add(new paper.Point(x-10, this.y-this.spacing*0.7));
                 glueLine.strokeColor = "#707070";
                 glueLine.strokeWidth = 2;
                 this.attachment.addChild(glueLine);
@@ -267,7 +302,7 @@ PaperLeaf.prototype = {
                 thread.strokeColor = "#ffffff";
                 thread.strokeWidth = 1;
                 this.attachment.addChild(thread);
-                x += 3;
+                x += this.dirMultiplier*3;
             }
         }
     },
@@ -275,7 +310,7 @@ PaperLeaf.prototype = {
         let x = this.path.segments[0].point.x;
         if (this.isConjoined() && this.conjoined_to<this.order) {
             if (this.conjoined_to+1===this.order) {
-                x += this.strokeWidth;
+                x += this.dirMultiplier*this.strokeWidth;
             } else {
                 x = this.prevPaperLeaf().path.segments[0].point.x;
             }
@@ -284,10 +319,10 @@ PaperLeaf.prototype = {
             let attachLine = new paper.Path();
             attachLine.add(new paper.Point(x, this.y-10));
             attachLine.add(new paper.Point(x, this.y-20));
-            attachLine.strokeColor = "#707070";
+            attachLine.strokeColor = "#ff0000";
             attachLine.strokeWidth = 2;
             this.attachment.addChild(attachLine);
-            x += 5;
+            x += this.dirMultiplier*5;
         }
     },
     isConjoined: function() {
@@ -340,7 +375,7 @@ PaperLeaf.prototype = {
             // Remove the middle point and insert a new one with handles
             this.path.removeSegment(1);
             // // Calculate new point's location and radius
-            var new_x = midpoint.x + 20;
+            var new_x = midpoint.x + this.dirMultiplier*20;
             var radius = new_x - this.path.segments[0].point.x;
             var s1 = new paper.Segment(new paper.Point(new_x, midpoint.y), new paper.Point(-radius,0), null);
             this.path.insert(1, s1);
@@ -434,44 +469,82 @@ PaperLeaf.prototype = {
         const visibleAttributeCount = this.visibleAttributes.side? Object.keys(this.visibleAttributes.side).reduce(reducer,0) : 0;
 
         if (visibleAttributeCount===3) {
+            const newPointX = (this.groupDirection === "left-to-right") ? this.width-this.spacing*3 : this.oldPointX + this.spacing * 3;
+            const newHighlightX = (this.groupDirection === "left-to-right") ? this.width-this.spacing*2.8 : this.oldPointX + this.spacing * 2.8;
+            const newfilterHighlightX = (this.groupDirection === "left-to-right") ? this.width-this.spacing*2.8 : this.oldPointX + this.spacing * 2.8;
+            const textLeafOrderX = (this.groupDirection === "left-to-right") ? this.width-this.spacing*2.8 : this.oldPointX - this.textLeafOrder.bounds.width + this.spacing * 2.8;
+
             if (this.leaf.stub === "None") {
                 // Reduce leaf width so we can fit attribute text
-                this.path.segments[this.path.segments.length-1].point.x = this.width-this.spacing*3;
-                this.highlight.segments[this.highlight.segments.length-1].point.x = this.width-this.spacing*2.8;
-                this.filterHighlight.segments[this.filterHighlight.segments.length-1].point.x = this.width-this.spacing*2.8;
+                this.path.segments[this.path.segments.length-1].point.x = newPointX;
+                this.highlight.segments[this.highlight.segments.length-1].point.x = newHighlightX;
+                this.filterHighlight.segments[this.filterHighlight.segments.length-1].point.x = newfilterHighlightX;
             }
-            this.textLeafOrder.set({point: [this.width-this.spacing*2.8, this.textLeafOrder.point.y]});
-            this.textRecto.set({point:[this.textLeafOrder.bounds.right+this.spacing*0.4, this.textRecto.point.y], content: rectoContent});
-            this.textVerso.set({point:[this.textLeafOrder.bounds.right+this.spacing*0.4, this.textVerso.point.y], content: versoContent});
+            this.textLeafOrder.set({point: [textLeafOrderX, this.textLeafOrder.point.y]});
+            this.textRecto.set({content: rectoContent});
+            this.textVerso.set({content: versoContent});
+
+            const textRectoX = (this.groupDirection === "left-to-right") ? this.textLeafOrder.bounds.right+this.spacing*0.4 : this.textLeafOrder.bounds.left - this.textRecto.bounds.width - this.spacing * 0.4;
+            const textVersoX = (this.groupDirection === "left-to-right") ? this.textLeafOrder.bounds.right+this.spacing*0.4 :this.textLeafOrder.bounds.left - this.textVerso.bounds.width - this.spacing * 0.4;
+
+            this.textRecto.set({ point: [textRectoX, this.textRecto.point.y], });
+            this.textVerso.set({ point: [textVersoX, this.textVerso.point.y], });
         } else if (visibleAttributeCount===2) {
+            const newPointX = (this.groupDirection === "left-to-right") ? this.width-this.spacing*2 : this.oldPointX + this.spacing * 2;
+            const newHighlightX = (this.groupDirection === "left-to-right") ? this.width-this.spacing*1.8 : this.oldPointX + this.spacing * 1.8;
+            const newfilterHighlightX = (this.groupDirection === "left-to-right") ? this.width-this.spacing*1.8 : this.oldPointX + this.spacing * 1.8;
+            const textLeafOrderX = (this.groupDirection === "left-to-right") ? this.width-this.spacing*1.8 : this.oldPointX- this.textLeafOrder.bounds.width  + this.spacing * 1.8;
+
             if (this.leaf.stub === "None") {
                 // Reduce leaf width so we can fit attribute text
-                this.path.segments[this.path.segments.length-1].point.x = this.width-this.spacing*2;
-                this.highlight.segments[this.highlight.segments.length-1].point.x = this.width-this.spacing*1.8;
-                this.filterHighlight.segments[this.filterHighlight.segments.length-1].point.x = this.width-this.spacing*1.8;
+                this.path.segments[this.path.segments.length-1].point.x = newPointX;
+                this.highlight.segments[this.highlight.segments.length-1].point.x = newHighlightX;
+                this.filterHighlight.segments[this.filterHighlight.segments.length-1].point.x = newfilterHighlightX;
             }
-            this.textLeafOrder.set({point: [this.width-this.spacing*1.8, this.textLeafOrder.point.y]});
-            this.textRecto.set({point:[this.textLeafOrder.bounds.right+this.spacing*0.2, this.textRecto.point.y], content: rectoContent});
-            this.textVerso.set({point:[this.textLeafOrder.bounds.right+this.spacing*0.2, this.textVerso.point.y], content: versoContent});
+            this.textLeafOrder.set({point: [textLeafOrderX, this.textLeafOrder.point.y]});
+            this.textRecto.set({content: rectoContent});
+            this.textVerso.set({content: versoContent});
+
+            const textRectoX = (this.groupDirection === "left-to-right") ? this.textLeafOrder.bounds.right+this.spacing*0.2 : this.textLeafOrder.bounds.left - this.textRecto.bounds.width - this.spacing * 0.2;
+            const textVersoX = (this.groupDirection === "left-to-right") ? this.textLeafOrder.bounds.right+this.spacing*0.2 : this.textLeafOrder.bounds.left - this.textVerso.bounds.width - this.spacing * 0.2;
+
+            this.textRecto.set({ point: [textRectoX, this.textRecto.point.y], });
+            this.textVerso.set({ point: [textVersoX, this.textVerso.point.y], });
         } 
         else if (visibleAttributeCount===1) {
+            const newPointX = (this.groupDirection === "left-to-right") ? this.width-this.spacing : this.oldPointX + this.spacing;
+            const newHighlightX = (this.groupDirection === "left-to-right") ? this.width-this.spacing*0.8 : this.oldPointX + this.spacing * 0.8;
+            const newfilterHighlightX = (this.groupDirection === "left-to-right") ? this.width-this.spacing*0.8 : this.oldPointX + this.spacing * 0.8;
+            const textLeafOrderX = (this.groupDirection === "left-to-right") ? this.width-this.spacing*0.8 : this.oldPointX- this.textLeafOrder.bounds.width  + this.spacing * 0.8;
+
             if (this.leaf.stub === "None") {
                 // Reduce leaf width so we can fit folio number text
-                this.path.segments[this.path.segments.length-1].point.x = this.width - this.spacing;
-                this.highlight.segments[this.highlight.segments.length-1].point.x = this.width - this.spacing*0.8;
-                this.filterHighlight.segments[this.filterHighlight.segments.length-1].point.x = this.width - this.spacing*0.8;
+                this.path.segments[this.path.segments.length-1].point.x = newPointX;
+                this.highlight.segments[this.highlight.segments.length-1].point.x = newHighlightX;
+                this.filterHighlight.segments[this.filterHighlight.segments.length-1].point.x = newfilterHighlightX;
             }
-            this.textLeafOrder.set({point: [this.width-this.spacing*0.8, this.textLeafOrder.point.y]});
-            this.textRecto.set({point:[this.textLeafOrder.bounds.right+this.spacing*0.2, this.textRecto.point.y], content: rectoContent});
-            this.textVerso.set({point:[this.textLeafOrder.bounds.right+this.spacing*0.2, this.textVerso.point.y], content: versoContent});
+            this.textLeafOrder.set({point: [textLeafOrderX, this.textLeafOrder.point.y]});
+            this.textRecto.set({content: rectoContent});
+            this.textVerso.set({content: versoContent});
+
+            const textRectoX = (this.groupDirection === "left-to-right") ? this.textLeafOrder.bounds.right+this.spacing*0.2 : this.textLeafOrder.bounds.left - this.textRecto.bounds.width - this.spacing * 0.2;
+            const textVersoX = (this.groupDirection === "left-to-right") ? this.textLeafOrder.bounds.right+this.spacing*0.2 : this.textLeafOrder.bounds.left - this.textVerso.bounds.width - this.spacing * 0.2;
+
+            this.textRecto.set({ point: [textRectoX, this.textRecto.point.y], });
+            this.textVerso.set({ point: [textVersoX, this.textVerso.point.y], });
         } else {
+            const newPointX = (this.groupDirection === "left-to-right") ? this.width : this.oldPointX;
+            const newHighlightX = (this.groupDirection === "left-to-right") ? this.width + 5 : this.oldPointX - 5;
+            const newfilterHighlightX = (this.groupDirection === "left-to-right") ? this.width + 5 : this.oldPointX - 5;
+            const textLeafOrderX = (this.groupDirection === "left-to-right") ? this.width+10 : this.oldPointX - this.textLeafOrder.bounds.width - 5;
+
             // Reset leaf 
             if (this.leaf.stub === "None") {
-                this.path.segments[this.path.segments.length-1].point.x = this.width;
-                this.highlight.segments[this.highlight.segments.length-1].point.x = this.width + 5;
-                this.filterHighlight.segments[this.filterHighlight.segments.length-1].point.x = this.width + 5;
+                this.path.segments[this.path.segments.length-1].point.x = newPointX;
+                this.highlight.segments[this.highlight.segments.length-1].point.x = newHighlightX;
+                this.filterHighlight.segments[this.filterHighlight.segments.length-1].point.x = newfilterHighlightX;
             }
-            this.textLeafOrder.set({point: [this.width+10, this.textLeafOrder.point.y]});
+            this.textLeafOrder.set({point: [textLeafOrderX, this.textLeafOrder.point.y]});
         }
     },
 }
@@ -490,6 +563,8 @@ function PaperLeaf(args) {
     this.origin = args.origin;
     this.viewingMode = args.viewingMode;
     this.width = this.viewingMode? args.width*0.88 : args.width*0.92;
+    this.groupDirection = args.Groups[this.leaf.parentID].direction;
+    this.groupWidth = args.width;
     this.spacing = args.spacing;
     this.y = args.y;
     this.strokeWidth = args.strokeWidth;

@@ -1,5 +1,6 @@
 
 export function addGroups(group, additional) {
+    group = {...group, direction: "left-to-right"}
     return {
         types: ['CREATE_GROUPS_FRONTEND','CREATE_GROUPS_SUCCESS_BACKEND','CREATE_GROUPS_FAILED_BACKEND'],
         payload: {
