@@ -172,7 +172,13 @@ export default class GroupInfoBox extends React.Component {
   batchFlip() {
     let groups = [];
     for (let id of this.props.selectedGroups) {
-      const flippedDir = (this.props.Groups[id].direction === "left-to-right") ? "right-to-left" : "left-to-right";
+      let flippedDir
+      const dir = this.props.Groups[id].direction;
+      if(dir){
+        flippedDir = (dir === "left-to-right") ? "right-to-left" : "left-to-right";
+      } else {
+        flippedDir = "right-to-left"
+      }
       const attributes = {"direction": flippedDir};
       groups.push({id, attributes});
     }

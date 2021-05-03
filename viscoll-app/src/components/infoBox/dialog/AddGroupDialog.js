@@ -188,13 +188,13 @@ export default class AddGroupDialog extends React.Component {
           title: "None", 
           type: "Quire"
         };
+        data.group["direction"]=this.state.direction;
         if (group.parentID) {
           // If active group is nested, the new group(s) must have the same parent as the active group
           data.additional["parentGroupID"] = group.parentID;
         }
         if (this.state.location==="below") {
           // Add group below
-          data.group["direction"]=this.state.direction;
           memberOrder += 1;
           let sibling = this.getNextSibling();
           if (sibling) {
@@ -223,7 +223,11 @@ export default class AddGroupDialog extends React.Component {
           // Add group inside
           groupOrder += 1;
           memberOrder = 1;
-          data.group["direction"] = group.direction;
+          if(!group.direction){
+            data.group["direction"] = "left-to-right";
+          } else {
+            data.group["direction"] = group.direction;
+          }
           data.additional["parentGroupID"] = group.id;
         }
         data.additional["memberOrder"] = memberOrder;
