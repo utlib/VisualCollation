@@ -45,10 +45,10 @@ const ProjectStructure = (props) => {
     const unconjoinLeafsList = !group.leaves? [] : Array.from(Array(group.leaves).keys());
     collationGroupsRows.push(
       <TableRow key={group.number}>
-        <TableRowColumn aria-label="Group number" style={{paddingTop:"1em",textAlign: "center"}}>{group.number}</TableRowColumn>
-        <TableRowColumn aria-label="Number of leaves" style={{textAlign: "center"}}>
+        <TableRowColumn aria-label="Group number APPLE" style={{paddingTop:"1em",textAlign: "center"}}>{group.number}</TableRowColumn>
+        <TableRowColumn aria-label="Number of leaves APPLE" style={{textAlign: "center"}}>
           <TextField
-            aria-label={"Number of leaves in group " + group.number}
+            aria-label={"Number of leaves in group APPLE " + group.number}
             id={group.number+"_number_of_leaves"}
             type="number"
             value={group.leaves}
@@ -58,8 +58,16 @@ const ProjectStructure = (props) => {
             style={{width:50}}
           />
         </TableRowColumn>
-        <TableRowColumn aria-label="Conjoined?" style={{paddingTop:"0.75em"}}>
+        <TableRowColumn aria-label="Right-to-Left?" style={{paddingTop:"0.75em"}}>
           <Checkbox 
+            aria-label="Set right-to-left direction"
+            onClick={() => {props.handleToggleDirection(group)}}
+            checked={group.direction === "right-to-left"}
+            style={{marginLeft:8}}
+          /> 
+        </TableRowColumn>
+        <TableRowColumn aria-label="Conjoined?" style={{paddingTop:"0.75em"}}>
+          <Checkbox
             aria-label="Conjoin leaves in quire"
             onClick={() => props.handleToggleConjoin(group)}
             checked={group.conjoin}
@@ -105,7 +113,7 @@ const ProjectStructure = (props) => {
         </p>
         <div style={{width: "100%", margin: "auto", display: "flex", justifyContent:"space-evenly", alignItems: "center", padding:"1em 0em", background:"#f8f8f8", border:"solid 1px #e2e2e2"}}>
           <label id="numQuires" style={{color:"#4e4e4e"}}>
-            # of Quires 
+            # of Quires
           </label>
           <div>
             <TextField
@@ -134,6 +142,14 @@ const ProjectStructure = (props) => {
           </div>
           <div>
             <Checkbox
+              label="Right-to-Left"
+              aria-label="Set direction as right-to-left"
+              checked={props.direction === "right-to-left"}
+              onClick={()=>{if(props.direction === "right-to-left"){return props.set("direction", "left-to-right")}else if(props.direction === "left-to-right"){return props.set("direction", "right-to-left")}}}
+            />
+          </div>
+          <div>
+            <Checkbox
               label="Conjoin"
               aria-label="Conjoin leaves in quire"
               checked={props.conjoined}
@@ -156,6 +172,7 @@ const ProjectStructure = (props) => {
                 <TableRow>
                   <TableHeaderColumn style={{textAlign: "center", color:"#4e4e4e"}}>Quire no.</TableHeaderColumn>
                   <TableHeaderColumn style={{color:"#4e4e4e"}}>Number of leaves</TableHeaderColumn>
+                  <TableHeaderColumn style={{color:"#4e4e4e"}}>Right-to-Left</TableHeaderColumn>
                   <TableHeaderColumn style={{color:"#4e4e4e"}}>Conjoin</TableHeaderColumn>
                   <TableHeaderColumn style={{color:"#4e4e4e"}}>Unconjoined leaf</TableHeaderColumn>
                 </TableRow>

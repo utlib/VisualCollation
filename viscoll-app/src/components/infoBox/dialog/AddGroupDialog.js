@@ -20,6 +20,7 @@ export default class AddGroupDialog extends React.Component {
       numberOfGroups: 1,
       hasLeaves: props.addLeafs || false,
       numberOfLeaves: 1,
+      direction: "left-to-right",
       conjoin: false,
       oddLeaf: 2,
       copies: 1,
@@ -159,11 +160,12 @@ export default class AddGroupDialog extends React.Component {
         if (this.state.numberOfLeaves>1 && this.state.conjoin && !(this.state.numberOfLeaves%2===0)) {
           data.additional["oddMemberLeftOut"] = this.state.oddLeaf;
         }
-      } 
+      }
       if (this.props.selectedGroups.length===0){
         // Empty project. Add new group
         data.additional["order"] = 1;
         data.additional["memberOrder"] = 1;
+        data.group["direction"] = this.state.direction;
         data.group["type"] = "Quire";
         data.group["title"] = "None";
       } else if(this.props.addLeafs) {
@@ -182,12 +184,17 @@ export default class AddGroupDialog extends React.Component {
         const group = this.props.Groups[this.props.selectedGroups[0]];
         let memberOrder = getMemberOrder(group, this.props.Groups, this.props.groupIDs);
         let groupOrder = this.props.groupIDs.indexOf(group.id)+1;
+        data.group = {
+          title: "None", 
+          type: "Quire"
+        };
         if (group.parentID) {
           // If active group is nested, the new group(s) must have the same parent as the active group
           data.additional["parentGroupID"] = group.parentID;
         }
         if (this.state.location==="below") {
           // Add group below
+          data.group["direction"]=this.state.direction;
           memberOrder += 1;
           let sibling = this.getNextSibling();
           if (sibling) {
@@ -216,12 +223,9 @@ export default class AddGroupDialog extends React.Component {
           // Add group inside
           groupOrder += 1;
           memberOrder = 1;
+          data.group["direction"] = group.direction;
           data.additional["parentGroupID"] = group.id;
         }
-        data.group = {
-          title: "None", 
-          type: "Quire"
-        };
         data.additional["memberOrder"] = memberOrder;
         data.additional["order"] = groupOrder;
       }
@@ -252,6 +256,7 @@ export default class AddGroupDialog extends React.Component {
       numberOfGroups: 1,
       hasLeaves: this.props.addLeafs || false,
       numberOfLeaves: 1,
+      direction: "left-to-right",
       conjoin: false,
       oddLeaf: 2,
       copies: 1,
@@ -290,6 +295,7 @@ export default class AddGroupDialog extends React.Component {
     };
 
     let conjoinOption = "";
+    let directionOption = "";
     let oddLeaf = "";
     // let copies = "";
     let numberOfLeaves = "";
@@ -368,6 +374,21 @@ export default class AddGroupDialog extends React.Component {
             >
               <AddCircle color={light.palette.primary1Color}/>
             </IconButton >
+          </div>
+        </div>
+    }
+    if(this.state.location !== "inside" && !this.props.addLeafs){
+      directionOption = 
+        <div>
+          <div className="label">
+            <h4>Right-to-Left Direction</h4>
+          </div>
+          <div className="input">
+            <Checkbox
+              aria-label="Right-to-Left Direction"
+              checked={this.state.direction === "right-to-left"}
+              onClick={()=>{if(this.state.direction === "right-to-left"){this.onToggleCheckbox("direction", "left-to-right")}else if(this.state.direction === "left-to-right"){this.onToggleCheckbox("direction", "right-to-left")}}}
+              />
           </div>
         </div>
     }
@@ -473,6 +494,7 @@ export default class AddGroupDialog extends React.Component {
           {numberOfGroups}
           {addLeafsCheckbox}         
           {numberOfLeaves}
+          {directionOption}
           {conjoinOption}
           {oddLeaf}
         </Dialog>

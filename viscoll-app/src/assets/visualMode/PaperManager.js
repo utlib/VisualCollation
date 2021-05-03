@@ -225,10 +225,10 @@ PaperManager.prototype = {
     },
     drawTacketGuide: function(groupID, type) {
         const direction = this.Groups[groupID].direction
-        const dirMultiplier = (direction === "left-to-right") ? 1 : -1;
+        const dirMultiplier = (!direction || direction === "left-to-right") ? 1 : -1;
         const targetGroup = this.paperGroups.find((member)=>{return (member.group.id===groupID)});
         const guideY = targetGroup.path.bounds.height/2;
-        const guideX = (direction === "left-to-right") ? targetGroup.path.bounds.left : targetGroup.path.bounds.right;
+        const guideX = (!direction || direction === "left-to-right") ? targetGroup.path.bounds.left : targetGroup.path.bounds.right;
         let guideLine = new paper.Path();
         guideLine.strokeColor = "#ffffff";
         guideLine.strokeWidth = 5;
@@ -260,11 +260,11 @@ PaperManager.prototype = {
             fillColor: "#000000",
             fontSize: 12,
           });
-        const guideTextX = (direction === "left-to-right") ? guideX+20 : guideX-guideText.bounds.width-20;
+        const guideTextX = (!direction || direction === "left-to-right") ? guideX+20 : guideX-guideText.bounds.width-20;
         guideText.set({point: [guideTextX, targetGroup.path.bounds.y+guideY-20],})
 
-        const guideTextRectangleX = (direction === "left-to-right") ? guideX+15 : guideX-guideText.bounds.width-35;
-        const guideTextRectangleWidth = (direction === "left-to-right") ? guideText.bounds.width+10 : guideText.bounds.width+30;
+        const guideTextRectangleX = (!direction || direction === "left-to-right") ? guideX+15 : guideX-guideText.bounds.width-35;
+        const guideTextRectangleWidth = (!direction || direction === "left-to-right") ? guideText.bounds.width+10 : guideText.bounds.width+30;
 
         let guideTextRectangle = new paper.Rectangle(
             new paper.Point(guideTextRectangleX, targetGroup.path.bounds.y+guideY-35),
@@ -293,7 +293,7 @@ PaperManager.prototype = {
     },
     drawSewing: function() {
         this.paperGroups.forEach((group)=> {
-            const dirMultiplier = (group.direction === "left-to-right") ? 1 : -1 
+            const dirMultiplier = (!group.direction || group.direction === "left-to-right") ? 1 : -1 
             if (group.group.sewing!==null && group.group.sewing.length>0) {
                 const leafID1 = group.group.sewing[0];
                 const leafID2 = group.group.sewing.length>1? group.group.sewing[1] : undefined;
@@ -341,7 +341,7 @@ PaperManager.prototype = {
     },
     drawTackets: function() {
         this.paperGroups.forEach((group)=> {
-            const dirMultiplier = (group.direction === "left-to-right") ? 1 : -1 
+            const dirMultiplier = (!group.direction || group.direction === "left-to-right") ? 1 : -1 
             if (group.group.tacketed!==null && group.group.tacketed.length>0) {
                 const leafID1 = group.group.tacketed[0];
                 const leafID2 =group.group.tacketed[1];

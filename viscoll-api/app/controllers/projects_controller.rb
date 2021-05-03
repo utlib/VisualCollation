@@ -215,7 +215,7 @@ class ProjectsController < ApplicationController
   end
 
   def group_params
-    params.permit(:folioNumber, :pageNumber, :startingTexture, :groups => [:number, :leaves, :conjoin, :oddLeaf])
+    params.permit(:folioNumber, :pageNumber, :startingTexture, :groups => [:number, :leaves, :direction, :conjoin, :oddLeaf])
   end
 
   def manifest_params

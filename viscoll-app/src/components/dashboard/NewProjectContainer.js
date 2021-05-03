@@ -18,6 +18,7 @@ export default class NewProjectContainer extends React.Component {
       title: "",
       shelfmark: "",
       date: "",
+      direction: "left-to-right",
       quireNo: 2,
       leafNo: 10,
       conjoined: true,
@@ -46,6 +47,7 @@ export default class NewProjectContainer extends React.Component {
       title: "",
       shelfmark: "",
       date: "",
+      direction: "left-to-right",
       quireNo: 1,
       leafNo: 10,
       conjoined: true,
@@ -132,7 +134,7 @@ export default class NewProjectContainer extends React.Component {
   handleAddNewCollationGroupRow = () => {
     let newCollationGroups = [].concat(this.state.collationGroups);
     for (let i=0; i<parseInt(this.state.quireNo, 10); i++) {
-      newCollationGroups.push({number: newCollationGroups.length+1, leaves: this.state.leafNo, conjoin: this.state.conjoined, oddLeaf: 1});
+      newCollationGroups.push({number: newCollationGroups.length+1, leaves: this.state.leafNo, direction: this.state.direction, conjoin: this.state.conjoined, oddLeaf: 1});
     }
     this.setState({ collationGroups: newCollationGroups });
   }
@@ -188,6 +190,24 @@ export default class NewProjectContainer extends React.Component {
     this.setState({ collationGroups: newCollationGroups });
   }
 
+  handleToggleDirection = (updatedGroup) => {
+    let newCollationGroups = [];
+    this.state.collationGroups.forEach((group, i) => {
+      if (updatedGroup.number === i+1) {
+        if (updatedGroup.direction === "right-to-left") {
+          updatedGroup = {...group};
+          updatedGroup.direction = "left-to-right";
+        } else {
+          updatedGroup = {...group};
+          updatedGroup.direction = "right-to-left";
+        }
+        newCollationGroups.push(updatedGroup);
+      } else {
+        newCollationGroups.push(group);
+      }
+    });
+    this.setState({ collationGroups: newCollationGroups });
+  }
 
   finish = () => {
     const user = {
@@ -211,19 +231,18 @@ export default class NewProjectContainer extends React.Component {
       pageNumber: this.state.generateFolioPageNumber==="page_number"? this.state.startFolioPageNumber : null,
       startingTexture: this.state.startingTexture,
     }
-    this.state.collationGroups.forEach((group)=>request.groups.push(group));
+    this.state.collationGroups.forEach((group)=>{return request.groups.push(group)});
     this.props.createProject(request, user);
     this.reset(); 
     this.props.close();
   }
 
-  handleRequestClose = () => {  
+  handleRequestClose = () => {
     if (this.state.step===1) {
       this.reset();
       this.props.close();
     }
   }
-
 
   render() {
     let content = <NewProjectSelection 
@@ -242,27 +261,30 @@ export default class NewProjectContainer extends React.Component {
           previousStep={this.reset}
           doErrorsExist={this.doErrorsExist}
         />;
-      } else if (this.state.step===2) { 
+      } else if (this.state.step===2) {
         content = <NewProjectChoice 
           previousStep={()=>this.set("step", 1)}
           nextStep={()=>this.set("step",3)}
           finish={this.finish}
           />
       } else if (this.state.step===3) {
-        content = <ProjectStructure 
-          previousStep={()=>this.setState({
+        content = <ProjectStructure
+          previousStep={()=>this.setState({ 
                           step: 1, 
                           quireNo: 2,
                           leafNo: 10,
+                          direction: "left-to-right",
                           conjoined: true,
                           collationGroups: []})}
           nextStep={()=>this.set("step",4)}
           set={this.set}
           quireNo={this.state.quireNo}
           leafNo={this.state.leafNo}
+          direction={this.state.direction}
           conjoined={this.state.conjoined}
           collationGroups={this.state.collationGroups}
           handleToggleConjoin={this.handleToggleConjoin}
+          handleToggleDirection={this.handleToggleDirection}
           onInputChangeCollationGroupsRows={this.onInputChangeCollationGroupsRows}
           addCollationRows={this.handleAddNewCollationGroupRow}
           handleRemoveCollationGroupRow={this.handleRemoveCollationGroupRow}

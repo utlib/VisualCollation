@@ -8,7 +8,7 @@ PaperLeaf.prototype = {
         this.setIndent();
         // Draw horizontal part
         let x1, x2
-        if(this.groupDirection === "left-to-right"){
+        if(!this.groupDirection || this.groupDirection === "left-to-right"){
             x1 = this.multiplier<1? 10 + this.indent*this.spacing*this.multiplier : this.indent*this.spacing*this.multiplier;
             x2 = this.width;
         } else {
@@ -16,10 +16,10 @@ PaperLeaf.prototype = {
             x2 = this.groupWidth - this.width;
             this.oldPointX = x2;
         }
-        this.dirMultiplier = (this.groupDirection === "left-to-right") ? 1 : -1;
+        this.dirMultiplier = (!this.groupDirection || this.groupDirection === "left-to-right") ? 1 : -1;
 
         this.path.add(new paper.Point(x1, this.y));
-        if (this.leaf.stub !== "None" && this.groupDirection === "left-to-right") {
+        if (this.leaf.stub !== "None" && (!this.groupDirection || this.groupDirection === "left-to-right")) {
             x2 = this.width*0.15+x1;
         } else if (this.leaf.stub !== "None") {
             x2 = (x1-this.width*0.15)-x2;
@@ -88,14 +88,14 @@ PaperLeaf.prototype = {
         if (this.leaf.attached_above.includes("Partial")) {
             // This leaf has a partial glue attachment
             // Place text to the right of attachment drawing
-            if(this.groupDirection === "left-to-right"){
+            if(!this.groupDirection || this.groupDirection === "left-to-right"){
                 textX = this.attachment.bounds.right+5;
             } else {
                 textX = this.attachment.bounds.left - 5;
             }
         } else if (this.leaf.attached_above.includes("Glued")) {
             // Other type of glueing exists
-            if(this.groupDirection === "left-to-right"){
+            if(!this.groupDirection || this.groupDirection === "left-to-right"){
                 textY -= this.spacing*0.7;
             } else {
                 textY += this.spacing*0.7;
@@ -117,7 +117,7 @@ PaperLeaf.prototype = {
                 fillColor: this.strokeColor,
                 fontSize: fontSize,
             });
-            const textPointX = (this.groupDirection === "left-to-right") ? textX : textX-textNote.bounds.width;
+            const textPointX = (!this.groupDirection || this.groupDirection === "left-to-right") ? textX : textX-textNote.bounds.width;
             textNote.set({point: [textPointX, textY - noteIndex * (this.spacing * 0.7) - this.spacing * 0.3]});
             textNote.onClick = !this.viewingMode && clickListener(note);
             this.textNotes.addChild(textNote);
@@ -131,7 +131,7 @@ PaperLeaf.prototype = {
                 fillColor: this.strokeColor,
                 fontSize: fontSize,
             });
-            const textPointX = (this.groupDirection === "left-to-right") ? textX : textX - textNote.bounds.width;
+            const textPointX = (!this.groupDirection || this.groupDirection === "left-to-right") ? textX : textX - textNote.bounds.width;
             textNote.set({point: [textPointX, textY - rectoNotesToShow.length*(this.spacing*0.7) - noteIndex*(this.spacing*0.7) - this.spacing*0.3]});
             textNote.onClick = !this.viewingMode && clickListener(note);
             this.textNotes.addChild(textNote);
@@ -146,7 +146,7 @@ PaperLeaf.prototype = {
                 fillColor: this.strokeColor,
                 fontSize: fontSize,
             });
-            const textPointX = (this.groupDirection === "left-to-right") ? textX : textX-textNote.bounds.width;
+            const textPointX = (!this.groupDirection || this.groupDirection === "left-to-right") ? textX : textX-textNote.bounds.width;
             textNote.set({point: [textPointX, this.y + noteIndex*(this.spacing*0.7) + this.spacing*0.8]})
             textNote.onClick = !this.viewingMode && clickListener(note);
             this.textNotes.addChild(textNote);
@@ -469,10 +469,10 @@ PaperLeaf.prototype = {
         const visibleAttributeCount = this.visibleAttributes.side? Object.keys(this.visibleAttributes.side).reduce(reducer,0) : 0;
 
         if (visibleAttributeCount===3) {
-            const newPointX = (this.groupDirection === "left-to-right") ? this.width-this.spacing*3 : this.oldPointX + this.spacing * 3;
-            const newHighlightX = (this.groupDirection === "left-to-right") ? this.width-this.spacing*2.8 : this.oldPointX + this.spacing * 2.8;
-            const newfilterHighlightX = (this.groupDirection === "left-to-right") ? this.width-this.spacing*2.8 : this.oldPointX + this.spacing * 2.8;
-            const textLeafOrderX = (this.groupDirection === "left-to-right") ? this.width-this.spacing*2.8 : this.oldPointX - this.textLeafOrder.bounds.width + this.spacing * 2.8;
+            const newPointX = (!this.groupDirection || this.groupDirection === "left-to-right") ? this.width-this.spacing*3 : this.oldPointX + this.spacing * 3;
+            const newHighlightX = (!this.groupDirection || this.groupDirection === "left-to-right") ? this.width-this.spacing*2.8 : this.oldPointX + this.spacing * 2.8;
+            const newfilterHighlightX = (!this.groupDirection || this.groupDirection === "left-to-right") ? this.width-this.spacing*2.8 : this.oldPointX + this.spacing * 2.8;
+            const textLeafOrderX = (!this.groupDirection || this.groupDirection === "left-to-right") ? this.width-this.spacing*2.8 : this.oldPointX - this.textLeafOrder.bounds.width + this.spacing * 2.8;
 
             if (this.leaf.stub === "None") {
                 // Reduce leaf width so we can fit attribute text
@@ -484,16 +484,16 @@ PaperLeaf.prototype = {
             this.textRecto.set({content: rectoContent});
             this.textVerso.set({content: versoContent});
 
-            const textRectoX = (this.groupDirection === "left-to-right") ? this.textLeafOrder.bounds.right+this.spacing*0.4 : this.textLeafOrder.bounds.left - this.textRecto.bounds.width - this.spacing * 0.4;
-            const textVersoX = (this.groupDirection === "left-to-right") ? this.textLeafOrder.bounds.right+this.spacing*0.4 :this.textLeafOrder.bounds.left - this.textVerso.bounds.width - this.spacing * 0.4;
+            const textRectoX = (!this.groupDirection || this.groupDirection === "left-to-right") ? this.textLeafOrder.bounds.right+this.spacing*0.4 : this.textLeafOrder.bounds.left - this.textRecto.bounds.width - this.spacing * 0.4;
+            const textVersoX = (!this.groupDirection || this.groupDirection === "left-to-right") ? this.textLeafOrder.bounds.right+this.spacing*0.4 :this.textLeafOrder.bounds.left - this.textVerso.bounds.width - this.spacing * 0.4;
 
             this.textRecto.set({ point: [textRectoX, this.textRecto.point.y], });
             this.textVerso.set({ point: [textVersoX, this.textVerso.point.y], });
         } else if (visibleAttributeCount===2) {
-            const newPointX = (this.groupDirection === "left-to-right") ? this.width-this.spacing*2 : this.oldPointX + this.spacing * 2;
-            const newHighlightX = (this.groupDirection === "left-to-right") ? this.width-this.spacing*1.8 : this.oldPointX + this.spacing * 1.8;
-            const newfilterHighlightX = (this.groupDirection === "left-to-right") ? this.width-this.spacing*1.8 : this.oldPointX + this.spacing * 1.8;
-            const textLeafOrderX = (this.groupDirection === "left-to-right") ? this.width-this.spacing*1.8 : this.oldPointX- this.textLeafOrder.bounds.width  + this.spacing * 1.8;
+            const newPointX = (!this.groupDirection || this.groupDirection === "left-to-right") ? this.width-this.spacing*2 : this.oldPointX + this.spacing * 2;
+            const newHighlightX = (!this.groupDirection || this.groupDirection === "left-to-right") ? this.width-this.spacing*1.8 : this.oldPointX + this.spacing * 1.8;
+            const newfilterHighlightX = (!this.groupDirection || this.groupDirection === "left-to-right") ? this.width-this.spacing*1.8 : this.oldPointX + this.spacing * 1.8;
+            const textLeafOrderX = (!this.groupDirection || this.groupDirection === "left-to-right") ? this.width-this.spacing*1.8 : this.oldPointX- this.textLeafOrder.bounds.width  + this.spacing * 1.8;
 
             if (this.leaf.stub === "None") {
                 // Reduce leaf width so we can fit attribute text
@@ -505,17 +505,17 @@ PaperLeaf.prototype = {
             this.textRecto.set({content: rectoContent});
             this.textVerso.set({content: versoContent});
 
-            const textRectoX = (this.groupDirection === "left-to-right") ? this.textLeafOrder.bounds.right+this.spacing*0.2 : this.textLeafOrder.bounds.left - this.textRecto.bounds.width - this.spacing * 0.2;
-            const textVersoX = (this.groupDirection === "left-to-right") ? this.textLeafOrder.bounds.right+this.spacing*0.2 : this.textLeafOrder.bounds.left - this.textVerso.bounds.width - this.spacing * 0.2;
+            const textRectoX = (!this.groupDirection || this.groupDirection === "left-to-right") ? this.textLeafOrder.bounds.right+this.spacing*0.2 : this.textLeafOrder.bounds.left - this.textRecto.bounds.width - this.spacing * 0.2;
+            const textVersoX = (!this.groupDirection || this.groupDirection === "left-to-right") ? this.textLeafOrder.bounds.right+this.spacing*0.2 : this.textLeafOrder.bounds.left - this.textVerso.bounds.width - this.spacing * 0.2;
 
             this.textRecto.set({ point: [textRectoX, this.textRecto.point.y], });
             this.textVerso.set({ point: [textVersoX, this.textVerso.point.y], });
         } 
         else if (visibleAttributeCount===1) {
-            const newPointX = (this.groupDirection === "left-to-right") ? this.width-this.spacing : this.oldPointX + this.spacing;
-            const newHighlightX = (this.groupDirection === "left-to-right") ? this.width-this.spacing*0.8 : this.oldPointX + this.spacing * 0.8;
-            const newfilterHighlightX = (this.groupDirection === "left-to-right") ? this.width-this.spacing*0.8 : this.oldPointX + this.spacing * 0.8;
-            const textLeafOrderX = (this.groupDirection === "left-to-right") ? this.width-this.spacing*0.8 : this.oldPointX- this.textLeafOrder.bounds.width  + this.spacing * 0.8;
+            const newPointX = (!this.groupDirection || this.groupDirection === "left-to-right") ? this.width-this.spacing : this.oldPointX + this.spacing;
+            const newHighlightX = (!this.groupDirection || this.groupDirection === "left-to-right") ? this.width-this.spacing*0.8 : this.oldPointX + this.spacing * 0.8;
+            const newfilterHighlightX = (!this.groupDirection || this.groupDirection === "left-to-right") ? this.width-this.spacing*0.8 : this.oldPointX + this.spacing * 0.8;
+            const textLeafOrderX = (!this.groupDirection || this.groupDirection === "left-to-right") ? this.width-this.spacing*0.8 : this.oldPointX- this.textLeafOrder.bounds.width  + this.spacing * 0.8;
 
             if (this.leaf.stub === "None") {
                 // Reduce leaf width so we can fit folio number text
@@ -527,16 +527,16 @@ PaperLeaf.prototype = {
             this.textRecto.set({content: rectoContent});
             this.textVerso.set({content: versoContent});
 
-            const textRectoX = (this.groupDirection === "left-to-right") ? this.textLeafOrder.bounds.right+this.spacing*0.2 : this.textLeafOrder.bounds.left - this.textRecto.bounds.width - this.spacing * 0.2;
-            const textVersoX = (this.groupDirection === "left-to-right") ? this.textLeafOrder.bounds.right+this.spacing*0.2 : this.textLeafOrder.bounds.left - this.textVerso.bounds.width - this.spacing * 0.2;
+            const textRectoX = (!this.groupDirection || this.groupDirection === "left-to-right") ? this.textLeafOrder.bounds.right+this.spacing*0.2 : this.textLeafOrder.bounds.left - this.textRecto.bounds.width - this.spacing * 0.2;
+            const textVersoX = (!this.groupDirection || this.groupDirection === "left-to-right") ? this.textLeafOrder.bounds.right+this.spacing*0.2 : this.textLeafOrder.bounds.left - this.textVerso.bounds.width - this.spacing * 0.2;
 
             this.textRecto.set({ point: [textRectoX, this.textRecto.point.y], });
             this.textVerso.set({ point: [textVersoX, this.textVerso.point.y], });
         } else {
-            const newPointX = (this.groupDirection === "left-to-right") ? this.width : this.oldPointX;
-            const newHighlightX = (this.groupDirection === "left-to-right") ? this.width + 5 : this.oldPointX - 5;
-            const newfilterHighlightX = (this.groupDirection === "left-to-right") ? this.width + 5 : this.oldPointX - 5;
-            const textLeafOrderX = (this.groupDirection === "left-to-right") ? this.width+10 : this.oldPointX - this.textLeafOrder.bounds.width - 5;
+            const newPointX = (!this.groupDirection || this.groupDirection === "left-to-right") ? this.width : this.oldPointX;
+            const newHighlightX = (!this.groupDirection || this.groupDirection === "left-to-right") ? this.width + 5 : this.oldPointX - 5;
+            const newfilterHighlightX = (!this.groupDirection || this.groupDirection === "left-to-right") ? this.width + 5 : this.oldPointX - 5;
+            const textLeafOrderX = (!this.groupDirection || this.groupDirection === "left-to-right") ? this.width+10 : this.oldPointX - this.textLeafOrder.bounds.width - 5;
 
             // Reset leaf 
             if (this.leaf.stub === "None") {
