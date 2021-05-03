@@ -284,8 +284,10 @@ export default class GroupInfoBox extends React.Component {
   toggleGroupDirection = () => {
     if(this.props.Groups[this.props.selectedGroups[0]].direction === "left-to-right"){
       this.singleSubmit("direction", "right-to-left")
-    } else {
+    } else if(this.props.Groups[this.props.selectedGroups[0]].direction === "right-to-left"){
       this.singleSubmit("direction", "left-to-right")
+    } else {
+      this.singleSubmit("direction", "right-to-left")
     }
   }
 
