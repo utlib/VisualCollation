@@ -10,8 +10,9 @@ PaperManager.prototype = {
             manager: this,
             group: group,
             groupIDs: this.groupIDs,
+            direction: group.direction,
             y: this.groupYs[this.groupIDs.indexOf(group.id)],
-            x: (group.nestLevel-1)*(this.spacing),
+            x: (group.direction === "left-to-right") ? (group.nestLevel-1)*(this.spacing) : 0,
             width: this.width,
             groupHeight: this.getGroupHeight(group),
             isActive: this.activeGroups.includes(group.id),
@@ -23,8 +24,8 @@ PaperManager.prototype = {
             visibleAttributes: this.visibleAttributes.group,
             viewingMode: this.viewingMode,
             spacing: this.spacing,
+            nestLevel: group.nestLevel,
         });
-
         g.draw();
         g.setMouseEventHandlers();
 
@@ -224,42 +225,51 @@ PaperManager.prototype = {
         this.tool.activate();
     },
     drawTacketGuide: function(groupID, type) {
+        const direction = this.Groups[groupID].direction
+        const dirMultiplier = (!direction || direction === "left-to-right") ? 1 : -1;
         const targetGroup = this.paperGroups.find((member)=>{return (member.group.id===groupID)});
         const guideY = targetGroup.path.bounds.height/2;
-        const guideX = targetGroup.path.bounds.left;
+        const guideX = (!direction || direction === "left-to-right") ? targetGroup.path.bounds.left : targetGroup.path.bounds.right;
         let guideLine = new paper.Path();
         guideLine.strokeColor = "#ffffff";
         guideLine.strokeWidth = 5;
         guideLine.dashArray = [10,10];
         guideLine.add(new paper.Point(guideX, targetGroup.path.bounds.y + guideY+ (this.strokeWidth/2)));
-        guideLine.add(new paper.Point(guideX+targetGroup.path.bounds.width/3, targetGroup.path.bounds.y + guideY+(this.strokeWidth/2)));
+        guideLine.add(new paper.Point(guideX+dirMultiplier*targetGroup.path.bounds.width/3, targetGroup.path.bounds.y + guideY+(this.strokeWidth/2)));
         let guideLineArrow = new paper.Path();
         guideLineArrow.strokeColor = "#ffffff";
         guideLineArrow.strokeWidth = 3;
-        guideLineArrow.add(guideLine.segments[1].point.x-10, guideLine.segments[1].point.y-10);
+        guideLineArrow.add(guideLine.segments[1].point.x-dirMultiplier*10, guideLine.segments[1].point.y-10);
         guideLineArrow.add(guideLine.segments[1].point.x, guideLine.segments[1].point.y);
-        guideLineArrow.add(guideLine.segments[1].point.x-10, guideLine.segments[1].point.y+10);
+        guideLineArrow.add(guideLine.segments[1].point.x-dirMultiplier*10, guideLine.segments[1].point.y+10);
+
         let guideLineX1 = new paper.Path();
         guideLineX1.strokeColor = "#ffffff";
         guideLineX1.strokeWidth = 3;
-        guideLineX1.add(new paper.Point(guideX-10, guideLine.segments[0].point.y-10));
-        guideLineX1.add(new paper.Point(guideX+10, guideLine.segments[0].point.y+10));
+        guideLineX1.add(new paper.Point(guideX-dirMultiplier*10, guideLine.segments[0].point.y-10));
+        guideLineX1.add(new paper.Point(guideX+dirMultiplier*10, guideLine.segments[0].point.y+10));
+
         let guideLineX2 = new paper.Path();
         guideLineX2.strokeColor = "#ffffff";
         guideLineX2.strokeWidth = 3;
-        guideLineX2.add(new paper.Point(guideX-10, guideLine.segments[0].point.y+10));
-        guideLineX2.add(new paper.Point(guideX+10, guideLine.segments[0].point.y-10));
+        guideLineX2.add(new paper.Point(guideX-dirMultiplier*10, guideLine.segments[0].point.y+10));
+        guideLineX2.add(new paper.Point(guideX+dirMultiplier*10, guideLine.segments[0].point.y-10));
 
         const drawType = type==="tacketed"? "TACKET" : "SEWING";
         let guideText = new paper.PointText({
             content: "DRAW " + drawType + " LINE",
-            point: [guideX+20, targetGroup.path.bounds.y + guideY - 20],
             fillColor: "#000000",
             fontSize: 12,
           });
+        const guideTextX = (!direction || direction === "left-to-right") ? guideX+20 : guideX-guideText.bounds.width-20;
+        guideText.set({point: [guideTextX, targetGroup.path.bounds.y+guideY-20],})
+
+        const guideTextRectangleX = (!direction || direction === "left-to-right") ? guideX+15 : guideX-guideText.bounds.width-35;
+        const guideTextRectangleWidth = (!direction || direction === "left-to-right") ? guideText.bounds.width+10 : guideText.bounds.width+30;
+
         let guideTextRectangle = new paper.Rectangle(
-            new paper.Point(guideX+15, targetGroup.path.bounds.y + guideY - 35),
-            new paper.Size(guideText.bounds.width + 10, guideText.bounds.height + 5)
+            new paper.Point(guideTextRectangleX, targetGroup.path.bounds.y+guideY-35),
+            new paper.Size(guideTextRectangleWidth, guideText.bounds.height+5)
         );
         let guideTextBackground = new paper.Path.Rectangle(guideTextRectangle);
         guideTextBackground.fillColor = "rgba(255,255,255,0.75)";
@@ -284,6 +294,7 @@ PaperManager.prototype = {
     },
     drawSewing: function() {
         this.paperGroups.forEach((group)=> {
+            const dirMultiplier = (!group.direction || group.direction === "left-to-right") ? 1 : -1 
             if (group.group.sewing!==null && group.group.sewing.length>0) {
                 const leafID1 = group.group.sewing[0];
                 const leafID2 = group.group.sewing.length>1? group.group.sewing[1] : undefined;
@@ -295,7 +306,7 @@ PaperManager.prototype = {
                     paperLeaf1 = this.getLeaf(this.leafIDs.indexOf(leafID1)+1);
                     if (leafID2!==undefined) {
                         paperLeaf2 = this.getLeaf(this.leafIDs.indexOf(leafID2)+1);
-                        startX = paperLeaf1.path.segments[0].point.x-this.strokeWidth;
+                        startX = paperLeaf1.path.segments[0].point.x-dirMultiplier*this.strokeWidth;
                         startY = paperLeaf2.path.segments[0].point.y;
                         endX = paperLeaf2.path.segments[0].point.x;
                     } else {
@@ -312,7 +323,7 @@ PaperManager.prototype = {
                     sewingPath.strokeColor = this.strokeColorTacket;
                     sewingPath.strokeWidth = 3;
                     sewingPath.add(new paper.Point(startX, startY));
-                    sewingPath.add(new paper.Point(endX+this.strokeWidth, endY));
+                    sewingPath.add(new paper.Point(endX+dirMultiplier*this.strokeWidth, endY));
                     const that = this;
                     // Add listeners
                     sewingPath.onClick = function(event) {
@@ -331,6 +342,7 @@ PaperManager.prototype = {
     },
     drawTackets: function() {
         this.paperGroups.forEach((group)=> {
+            const dirMultiplier = (!group.direction || group.direction === "left-to-right") ? 1 : -1 
             if (group.group.tacketed!==null && group.group.tacketed.length>0) {
                 const leafID1 = group.group.tacketed[0];
                 const leafID2 =group.group.tacketed[1];
@@ -341,7 +353,7 @@ PaperManager.prototype = {
                     paperLeaf1 = this.getLeaf(this.leafIDs.indexOf(leafID1)+1);
                     if (leafID2!==undefined) {
                         paperLeaf2 = this.getLeaf(this.leafIDs.indexOf(leafID2)+1);
-                        startX = paperLeaf1.path.segments[0].point.x-this.strokeWidth;
+                        startX = paperLeaf1.path.segments[0].point.x-dirMultiplier*this.strokeWidth;
                         startY = paperLeaf2.path.segments[0].point.y;
                         endX = paperLeaf2.path.segments[0].point.x;
                     } else {
@@ -361,15 +373,15 @@ PaperManager.prototype = {
                     tacketPath1.strokeColor = this.strokeColorTacket;
                     tacketPath1.strokeWidth = 3;
                     tacketPath1.add(new paper.Point(startX, startY-2));
-                    tacketPath1.add(new paper.Point(endX+this.strokeWidth, endY-2));
-                    tacketPath1.add(new paper.Point(tacketPath1.segments[1].point.x+5, tacketPath1.segments[1].point.y-3));
+                    tacketPath1.add(new paper.Point(endX+dirMultiplier*this.strokeWidth, endY-2));
+                    tacketPath1.add(new paper.Point(tacketPath1.segments[1].point.x+dirMultiplier*5, tacketPath1.segments[1].point.y-3));
                     let tacketPath2 = new paper.Path();
                     tacketPath2.name = "tacket2";
                     tacketPath2.strokeColor = this.strokeColorTacket;
                     tacketPath2.strokeWidth = 3;
                     tacketPath2.add(new paper.Point(startX, startY+2));
-                    tacketPath2.add(new paper.Point(endX+this.strokeWidth, endY+2));
-                    tacketPath2.add(new paper.Point(tacketPath2.segments[1].point.x+5, tacketPath2.segments[1].point.y+3));
+                    tacketPath2.add(new paper.Point(endX+dirMultiplier*this.strokeWidth, endY+2));
+                    tacketPath2.add(new paper.Point(tacketPath2.segments[1].point.x+dirMultiplier*5, tacketPath2.segments[1].point.y+3));
                     const that = this;
                     // Add listeners
                     tacketPath1.onClick = function(event) {

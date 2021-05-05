@@ -81,6 +81,7 @@ module ControllerHelper
           params: {
             type: "Quire",
             title: "",
+            direction: "",
             nestLevel: nestLevel
           },
           tacketed: [],
@@ -104,6 +105,7 @@ module ControllerHelper
             groupTermTaxonomyID = groupTerm.parent.attributes["id"].value
             groupTermTaxonomyID=="group_title" ? @groups[groupOrder][:params][:title]=groupTerm.text : nil
             groupTermTaxonomyID=="group_type" ? @groups[groupOrder][:params][:type]=groupTerm.text : nil
+            groupTermTaxonomyID=="group_direction" ? @groups[groupOrder][:params][:direction]=groupTerm.text : nil
             groupTermTaxonomyID=="group_sewing" ? @groups[groupOrder][:sewing]=groupTerm.text.split(" ") : nil
             groupTermTaxonomyID=="group_tacketed" ? @groups[groupOrder][:tacketed]=groupTerm.text.split(" ") : nil
             groupTermTaxonomyID=="group_members" ?  @groups[groupOrder][:memberOrders]=groupTerm.text.split(" ") : nil

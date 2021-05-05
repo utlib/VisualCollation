@@ -12,9 +12,9 @@ RSpec.describe ControllerHelper::ExportHelper, type: :helper do
       'manifests' => { '12341234': { 'id' => '12341234', 'url' => 'https://digital.library.villanova.edu/Item/vudl:99213/Manifest', 'name' => 'Boston, and Bunker Hill.' } }
     )
     # Attach group with 2 leafs - (group with 2 leafs) - 2 conjoined leafs
-    @testgroup = FactoryGirl.create(:group, project: @project, nestLevel: 1, title: 'Group 1')
+    @testgroup = FactoryGirl.create(:group, project: @project, nestLevel: 1, title: 'Group 1', direction: "left-to-right")
     @upleafs = 2.times.collect { FactoryGirl.create(:leaf, project: @project, parentID: @testgroup.id.to_s, nestLevel: 1) }
-    @testmidgroup = FactoryGirl.create(:group, project: @project, parentID: @testgroup.id.to_s, nestLevel: 2, title: 'Group 2')
+    @testmidgroup = FactoryGirl.create(:group, project: @project, parentID: @testgroup.id.to_s, nestLevel: 2, title: 'Group 2', direction: "left-to-right")
     @midleafs = 2.times.collect { FactoryGirl.create(:leaf, project: @project, parentID: @testmidgroup.id.to_s, nestLevel: 2) }  
     @botleafs = 2.times.collect { FactoryGirl.create(:leaf, project: @project, parentID: @testgroup.id.to_s, nestLevel: 1) }
     @botleafs[1].update(type: 'Endleaf')
@@ -35,8 +35,8 @@ RSpec.describe ControllerHelper::ExportHelper, type: :helper do
       noteTypes: ['Ink', 'Unknown']
     })
     expect(result[:groups]).to eq({
-      1 => {:params=>{:type=>"Quire", :title=>"Group 1", :nestLevel=>1}, :tacketed=>[], :sewing=>[], :parentOrder=>nil, :memberOrders=>["Leaf_1", "Leaf_2", "Group_2", "Leaf_5", "Leaf_6"]},
-      2 => {:params=>{:type=>"Quire", :title=>"Group 2", :nestLevel=>2}, :tacketed=>[], :sewing=>[], :parentOrder=>1, :memberOrders=>["Leaf_3", "Leaf_4"]}
+      1 => {:params=>{:type=>"Quire", :title=>"Group 1", :direction=>"left-to-right", :nestLevel=>1}, :tacketed=>[], :sewing=>[], :parentOrder=>nil, :memberOrders=>["Leaf_1", "Leaf_2", "Group_2", "Leaf_5", "Leaf_6"]},
+      2 => {:params=>{:type=>"Quire", :title=>"Group 2", :direction=>"left-to-right", :nestLevel=>2}, :tacketed=>[], :sewing=>[], :parentOrder=>1, :memberOrders=>["Leaf_3", "Leaf_4"]}
     })
     expect(result[:leafs]).to eq({
       1 => {:params=>{:material=>"Paper", :type=>"Original", :attached_above=>"None", :attached_below=>"None", :stub=>"None", :nestLevel=>1}, :conjoined_leaf_order=>nil, :parentOrder=>1, :rectoOrder=>1, :versoOrder=>1},

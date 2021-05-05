@@ -27,9 +27,26 @@
   }
 
   .panelBottom {
+    display: table;
     width: 100%;
     height:10vh;
     background: $teal;
+
+    div {
+      display: table-cell;
+      vertical-align: middle;
+    }
+
+    span:first-child {
+      font-weight: bold;
+    }
+
+    span {
+      color: #2b4352;
+      font-size: 1.1em;
+      display: block;
+      margin-bottom: .5em;
+    }
   }
 
   hr {

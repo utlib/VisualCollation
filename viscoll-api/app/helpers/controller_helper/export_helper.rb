@@ -30,6 +30,7 @@ module ControllerHelper
           "params": {
             "type": group.type,
             "title": group.title,
+            "direction": group.direction,
             "nestLevel": group.nestLevel
           },
           "tacketed": group.tacketed,
@@ -222,7 +223,7 @@ module ControllerHelper
           end
 
           # Group Attributes Taxonomy
-          ['title', 'type'].each do |attribute|
+          ['title', 'type', 'direction'].each do |attribute|
             groupAttribute = {"xml:id": 'group_'+attribute}
             xml.taxonomy groupAttribute do
               xml.label do
@@ -565,7 +566,7 @@ module ControllerHelper
               idPostfix = parents.empty? ? groupOrder.to_s : parents.join("-")+"-"+groupOrder.to_s
               linkedNotes = (group.notes.map {|note| "#note_title"+"_"+note.title.parameterize.underscore}).join(" ")
               linkedAttributes = []
-              ['title', 'type'].each do |attribute|
+              ['title', 'type', 'direction'].each do |attribute|
                 attributeValue = group[attribute]
                 if @allGroupAttributeValues.include? attributeValue
                   linkedAttributes.push("group_"+attribute+"_"+attributeValue.parameterize.underscore)
@@ -762,4 +763,3 @@ module ControllerHelper
 
   end
 end
-

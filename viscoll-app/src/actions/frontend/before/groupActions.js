@@ -15,6 +15,7 @@ export function createGroups(action, state) {
   const sideIDs = action.payload.request.data.additional.sideIDs
   const title = action.payload.request.data.group.title
   const type = action.payload.request.data.group.type
+  const direction = action.payload.request.data.group.direction
   const tacketed = action.payload.request.data.group.tacketed
   const sewing = action.payload.request.data.group.sewing
   let newlyAddedGroupIDs = []
@@ -24,6 +25,7 @@ export function createGroups(action, state) {
       id: "Group_" + groupIDs[count],
       title: title? title : "None",
       type: type? type : "Quire",
+      direction: direction,
       tacketed: tacketed? tacketed : [],
       sewing: sewing? sewing : [],
       nestLevel: parentGroup ? parentGroup.nestLevel+1 : 1,

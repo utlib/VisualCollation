@@ -5,7 +5,8 @@ module ControllerHelper
     def addGroupsLeafsConjoin(project, allGroups, folioNumber, pageNumber, startingTexture)
       groupIDs = []
       allGroups.each do |groupInfo|
-        group = Group.new({project_id: project, title:"Default", type:"Quire"})
+        direction = groupInfo["direction"]
+        group = Group.new({project_id: project, title:"Default", type:"Quire", direction: direction})
         
         # Create leaves
         newlyAddedLeafs = []
@@ -146,6 +147,7 @@ module ControllerHelper
         @groups[group.id.to_s] = { 
           "id": group.id.to_s, 
           "type": group.type,
+          "direction": group.direction,
           "title": group.title,
           "tacketed": group.tacketed,
           "sewing": group.sewing,

@@ -164,6 +164,26 @@ export default class GroupInfoBox extends React.Component {
     let id = this.props.selectedGroups[0];
     this.props.action.updateGroup(id, group);
   }
+  clickVisibility = (attributeName, value) => {
+    if (attributeName!=="type"||this.props.viewMode==="TABULAR") {
+      this.props.action.updatePreferences({group:{...this.props.preferences.group, [attributeName]:value}});
+    }
+  }
+  batchFlip() {
+    let groups = [];
+    for (let id of this.props.selectedGroups) {
+      let flippedDir
+      const dir = this.props.Groups[id].direction;
+      if(dir){
+        flippedDir = (dir === "left-to-right") ? "right-to-left" : "left-to-right";
+      } else {
+        flippedDir = "right-to-left"
+      }
+      const attributes = {"direction": flippedDir};
+      groups.push({id, attributes});
+    }
+    this.props.action.updateGroups(groups);
+  }
 
   batchSubmit() {
     let attributes = {};
@@ -258,6 +278,16 @@ export default class GroupInfoBox extends React.Component {
       this.props.togglePopUp(false);
     } else {
       this.props.togglePopUp(true);
+    }
+  }
+
+  toggleGroupDirection = () => {
+    if(this.props.Groups[this.props.selectedGroups[0]].direction === "left-to-right"){
+      this.singleSubmit("direction", "right-to-left")
+    } else if(this.props.Groups[this.props.selectedGroups[0]].direction === "right-to-left"){
+      this.singleSubmit("direction", "left-to-right")
+    } else {
+      this.singleSubmit("direction", "right-to-left")
     }
   }
 
@@ -437,8 +467,8 @@ export default class GroupInfoBox extends React.Component {
     let submitBtn = "";
     if (isBatch && this.hasActiveAttributes()) {
       submitBtn = <RaisedButton 
-                    primary fullWidth 
-                    onClick={this.batchSubmit} 
+                    primary fullWidth
+                    onClick={this.batchSubmit}
                     label="Submit changes" 
                     style={{marginBottom:10}}
                     tabIndex={this.props.tabIndex}
@@ -470,6 +500,15 @@ export default class GroupInfoBox extends React.Component {
           style={this.props.selectedGroups ? {...btnBase().style, width: "48%", float:"left", marginRight:"2%"} : {width:"100%", float:"left", marginRight:"2%"}}
         />
     }
+
+    let flipBtn = <RaisedButton 
+                    primary 
+                    label={"Flip View Direction"} 
+                    onClick={() => {if(this.props.selectedGroups.length > 1){this.batchFlip()}else{this.toggleGroupDirection()}}}
+                    tabIndex={this.props.tabIndex}
+                    {...btnBase()}
+                    style={(this.props.selectedGroups && this.props.selectedGroups.length === 1) ? {...btnBase().style, width: "48%", float:"left", marginRight:"2%", marginTop:"2%"} : {width:"100%", float:"left", marginRight:"2%", marginTop:"2%", marginBottom:"2%"}}
+                  />
     let deleteBtn = 
                 <DeleteConfirmationDialog
                   fullWidth={isBatch}
@@ -608,6 +647,7 @@ export default class GroupInfoBox extends React.Component {
               <div style={{textAlign:"center"}}>
                 {addBtn}
                 {deleteBtn}
+                {flipBtn}
               </div>
           </div>
           <AddGroupDialog
