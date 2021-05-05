@@ -4,20 +4,21 @@ PaperGroup.prototype = {
   constructor: PaperGroup,
   draw: function() {
     // Create rectangle shapes
+    const rightIndent = (this.direction === "left-to-right") ? 0 : (this.spacing*(this.nestLevel-1));
     let rectangle = new paper.Rectangle(
       new paper.Point(this.x+10, this.y),
-      new paper.Size(this.width-this.x-20, this.groupHeight)
+      new paper.Size(this.width-this.x-rightIndent-20, this.groupHeight)
     );
     if (this.viewingMode) {
       rectangle = new paper.Rectangle(
         new paper.Point(this.x+10, this.y),
-        new paper.Size(this.width-this.x, this.groupHeight)
+        new paper.Size(this.width-rightIndent-this.x, this.groupHeight)
       );
     }
     let highlightRectangle = rectangle.clone();
     highlightRectangle.set(
         new paper.Point(this.x, this.y-10),
-        new paper.Size(this.width-this.x, this.groupHeight+20)
+        new paper.Size(this.width-rightIndent-this.x, this.groupHeight+20)
     );
 
     // Create path from rectangle
@@ -90,7 +91,7 @@ PaperGroup.prototype = {
     });
     if(this.direction === "right-to-left"){
       this.text.set({
-        point: [this.width-this.text.bounds.width-this.text.point.x, this.text.point.y],
+        point: [this.width-this.text.bounds.width-this.text.point.x-(this.spacing*(this.nestLevel-1)), this.text.point.y],
       })
     }
   },
@@ -103,6 +104,8 @@ function PaperGroup(args) {
   this.direction = args.direction;
   this.y = args.y;
   this.x = args.x;
+  this.nestLevel = args.nestLevel;
+  this.spacing = args.spacing;
   this.width = args.width;
   this.groupHeight = args.groupHeight;
   this.isActive = args.isActive;

@@ -12,7 +12,7 @@ PaperManager.prototype = {
             allGroupIDs: this.allGroupIDs,
             direction: group.direction,
             y: this.groupYs[this.groupIDs.indexOf(group.id)],
-            x: (group.nestLevel-1)*(this.spacing),
+            x: (group.direction === "left-to-right") ? (group.nestLevel-1)*(this.spacing) : 0,
             width: this.width,
             groupHeight: this.getGroupHeight(group),
             isActive: this.activeGroups.includes(group.id),
@@ -24,6 +24,7 @@ PaperManager.prototype = {
             visibleAttributes: this.visibleAttributes.group,
             viewingMode: this.viewingMode,
             spacing: this.spacing,
+            nestLevel: group.nestLevel,
         });
         g.draw();
         g.setMouseEventHandlers();

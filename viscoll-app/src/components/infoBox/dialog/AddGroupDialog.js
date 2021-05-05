@@ -223,11 +223,6 @@ export default class AddGroupDialog extends React.Component {
           // Add group inside
           groupOrder += 1;
           memberOrder = 1;
-          if(!group.direction){
-            data.group["direction"] = "left-to-right";
-          } else {
-            data.group["direction"] = group.direction;
-          }
           data.additional["parentGroupID"] = group.id;
         }
         data.additional["memberOrder"] = memberOrder;
@@ -381,7 +376,7 @@ export default class AddGroupDialog extends React.Component {
           </div>
         </div>
     }
-    if(this.state.location !== "inside" && !this.props.addLeafs){
+    if(!this.props.addLeafs){
       directionOption = 
         <div>
           <div className="label">
