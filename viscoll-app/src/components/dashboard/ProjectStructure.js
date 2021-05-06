@@ -45,10 +45,10 @@ const ProjectStructure = (props) => {
     const unconjoinLeafsList = !group.leaves? [] : Array.from(Array(group.leaves).keys());
     collationGroupsRows.push(
       <TableRow key={group.number}>
-        <TableRowColumn aria-label="Group number APPLE" style={{paddingTop:"1em",textAlign: "center"}}>{group.number}</TableRowColumn>
-        <TableRowColumn aria-label="Number of leaves APPLE" style={{textAlign: "center"}}>
+        <TableRowColumn aria-label="Group number" style={{paddingTop:"1em",textAlign: "center"}}>{group.number}</TableRowColumn>
+        <TableRowColumn aria-label="Number of leaves" style={{textAlign: "center"}}>
           <TextField
-            aria-label={"Number of leaves in group APPLE " + group.number}
+            aria-label={"Number of leaves in group " + group.number}
             id={group.number+"_number_of_leaves"}
             type="number"
             value={group.leaves}

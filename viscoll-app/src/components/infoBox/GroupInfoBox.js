@@ -282,9 +282,7 @@ export default class GroupInfoBox extends React.Component {
   }
 
   toggleGroupDirection = () => {
-    if(this.props.Groups[this.props.selectedGroups[0]].direction === "left-to-right"){
-      this.singleSubmit("direction", "right-to-left")
-    } else if(this.props.Groups[this.props.selectedGroups[0]].direction === "right-to-left"){
+    if(this.props.Groups[this.props.selectedGroups[0]].direction === "right-to-left"){
       this.singleSubmit("direction", "left-to-right")
     } else {
       this.singleSubmit("direction", "right-to-left")
@@ -503,12 +501,12 @@ export default class GroupInfoBox extends React.Component {
 
     let flipBtn = <RaisedButton 
                     primary 
-                    label={"Flip View Direction"} 
+                    label={"Flip Direction"} 
                     onClick={() => {if(this.props.selectedGroups.length > 1){this.batchFlip()}else{this.toggleGroupDirection()}}}
                     tabIndex={this.props.tabIndex}
                     {...btnBase()}
-                    style={(this.props.selectedGroups && this.props.selectedGroups.length === 1) ? {...btnBase().style, width: "48%", float:"left", marginRight:"2%", marginTop:"2%"} : {width:"100%", float:"left", marginRight:"2%", marginTop:"2%", marginBottom:"2%"}}
-                  />
+                    style={(this.props.selectedGroups && this.props.selectedGroups.length === 1) ? {...btnBase().style, width: "48%", float:"left", marginRight:"2%", marginTop:"2%", marginBottom: "2%"} : {width:"100%", float:"left", marginRight:"2%", marginTop:"2%", marginBottom:"2%"}}
+                    />
     let deleteBtn = 
                 <DeleteConfirmationDialog
                   fullWidth={isBatch}
