@@ -424,10 +424,11 @@ export default class SideInfoBox extends React.Component {
 
     let imageModalContent;
     let imageThumbnail = [];
-    if (this.props.viewMode!=="VIEWING") {
+    // if (this.props.viewMode!=="VIEWING") {
       // Show the side image if available
       if (this.props.selectedSides.length===1){
         const side = this.props.Sides[this.props.selectedSides[0]];
+
         // replace imageModalContent view OSD component
         const rectoURL = side.memberType==="Recto" ? side.image.url : null;
         const versoURL = side.memberType==="Verso" ? side.image.url : null;
@@ -454,7 +455,7 @@ export default class SideInfoBox extends React.Component {
           )
         }
       }
-    }
+    // }
 
     return (
       <div className="inner">

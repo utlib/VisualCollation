@@ -129,13 +129,17 @@ export default class ViewingMode extends React.Component {
     isVersoDIY = verso!==undefined && verso.image.manifestID!==undefined && verso.image.manifestID.includes("DIY");
     rectoURL = recto!==undefined && recto.image.url!==undefined? recto.image.url : null;
     versoURL = verso!==undefined && verso.image.url!==undefined? verso.image.url : null;
+
+    // conditionally render image viewer only if an Image exists for the selected object
+    const hasImage = isRectoDIY || isVersoDIY || rectoURL || versoURL
+
     return (
     <div className="viewingMode">
-      <div style={this.props.imageViewerEnabled?{width: "40%"}:{}}>
+        <div style={this.props.imageViewerEnabled && hasImage ? { width: "40%" } : {}}>
         
         <canvas id="myCanvas" {...canvasAttr}></canvas>
       </div>
-      {this.props.imageViewerEnabled?
+      {this.props.imageViewerEnabled && hasImage?
         <ImageViewer isRectoDIY={isRectoDIY} isVersoDIY={isVersoDIY} rectoURL={rectoURL} versoURL={versoURL} fixed={true} />
         :""
       }

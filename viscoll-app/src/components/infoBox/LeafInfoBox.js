@@ -437,7 +437,7 @@ export default class LeafInfoBox extends React.Component {
 
     let imageModalContent;
     let imageThumbnails = [];
-    if (this.props.viewMode!=="VIEWING") {
+    // if (this.props.viewMode!=="VIEWING") {
       // Show the side image if available
       if (this.props.selectedLeaves.length===1) {
         const leaf = this.props.Leafs[this.props.selectedLeaves[0]]
@@ -497,7 +497,7 @@ export default class LeafInfoBox extends React.Component {
           )
         }
       }
-    }
+    // }
 
     const notes = this.renderNotes();
     return (

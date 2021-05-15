@@ -89,10 +89,29 @@ class CollationManagerViewOnly extends Component {
       containerStyle["width"] = "30%";
     }
 
+    // conditionally render image viewer only if an Image exists for the selected object
+    let leafID, leaf, recto, verso, isRectoDIY, isVersoDIY, rectoURL, versoURL;
+    if (this.props.selectedObjects.type === "Leaf") {
+      leafID = this.props.selectedObjects.members[0];
+      leaf = this.props.project.Leafs[leafID];
+      recto = this.props.project.Rectos[leaf.rectoID];
+      verso = this.props.project.Versos[leaf.versoID];
+    } else if (this.props.selectedObjects.type === "Recto") {
+      recto = this.props.project.Rectos[this.props.selectedObjects.members[0]];
+    } else if (this.props.selectedObjects.type === "Verso") {
+      verso = this.props.project.Versos[this.props.selectedObjects.members[0]];
+    }
+    isRectoDIY = recto !== undefined && recto.image.manifestID !== undefined && recto.image.manifestID.includes("DIY");
+    isVersoDIY = verso !== undefined && verso.image.manifestID !== undefined && verso.image.manifestID.includes("DIY");
+    rectoURL = recto !== undefined && recto.image.url !== undefined ? recto.image.url : null;
+    versoURL = verso !== undefined && verso.image.url !== undefined ? verso.image.url : null;
+
+    const hasImage = isRectoDIY || isVersoDIY || rectoURL || versoURL
+
     const infobox = (
       <div
         className="infoBox"
-        style={{ ...this.state.contentStyle, ...this.state.infoBoxStyle, right: "8%"}}
+        style={{ ...this.state.contentStyle, ...this.state.infoBoxStyle, right: hasImage ? 0 : "8%"}}
       >
         <InfoBox
           type={this.props.selectedObjects.type}
@@ -116,14 +135,14 @@ class CollationManagerViewOnly extends Component {
     if (this.props.project.groupIDs.length > 0) {
       workspace = (
         <div role="main">
-          <div className="projectWorkspace" style={{ ...this.state.contentStyle, left: "8%", width: "inherit" }}>
+          <div className="projectWorkspace" style={{ ...this.state.contentStyle, left: hasImage ? 0 : '8%', width: "inherit" }}>
             <h1>{this.props.project.title}</h1>
             <ViewingMode
               project={this.props.project}
               collationManager={this.props.collationManager}
               handleObjectClick={this.handleObjectClick}
               selectedObjects={this.props.selectedObjects}
-              imageViewerEnabled={false}
+              imageViewerEnabled={hasImage}
             />
           </div>
           {infobox}
